@@ -32,7 +32,7 @@
     "ws": "^8.14.2"
   },
   "devDependencies": {
-    "electron": "^27.0.0",
+    "electron": "^39.0.0",
     "electron-builder": "^24.6.4"
   },
   "build": {
