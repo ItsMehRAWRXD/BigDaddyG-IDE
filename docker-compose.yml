@@ -1,0 +1,184 @@
+# GenesisOS Local Development Stack
+# Run: docker-compose up -d
+# Open: http://localhost:9942
+
+version: '3.8'
+
+services:
+  # ============================================================================
+  # CORE INFRASTRUCTURE
+  # ============================================================================
+  
+  postgres:
+    image: postgres:15-alpine
+    container_name: genesis-postgres
+    environment:
+      POSTGRES_DB: genesis
+      POSTGRES_USER: genesis
+      POSTGRES_PASSWORD: genesis_dev_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./genesis-iar/schema:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U genesis"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  
+  redis:
+    image: redis:7-alpine
+    container_name: genesis-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+  
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: genesis-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: genesis-zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+  
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: genesis-clickhouse
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    environment:
+      CLICKHOUSE_DB: genesis
+      CLICKHOUSE_USER: genesis
+      CLICKHOUSE_PASSWORD: genesis_dev_password
+  
+  # ============================================================================
+  # GENESISΟΣ SERVICES
+  # ============================================================================
+  
+  genesis-kernel:
+    build: ./genesis-kernel
+    container_name: genesis-kernel
+    ports:
+      - "9942:9942"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://genesis:genesis_dev_password@postgres:5432/genesis
+      - REDIS_URL=redis://redis:6379
+      - KAFKA_BROKERS=kafka:9092
+      - PORT=9942
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      kafka:
+        condition: service_started
+    volumes:
+      - ./genesis-kernel:/app
+      - /app/node_modules
+    command: npm run dev
+  
+  genesis-iar:
+    build: ./genesis-iar
+    container_name: genesis-iar
+    ports:
+      - "8080:8080"
+    environment:
+      - DATABASE_URL=postgresql://genesis:genesis_dev_password@postgres:5432/genesis
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./genesis-iar:/app
+    command: npm run dev
+  
+  genesis-shell:
+    build: ./genesis-shell
+    container_name: genesis-shell
+    ports:
+      - "3000:3000"
+    environment:
+      - IAR_API_URL=http://genesis-iar:8080
+    volumes:
+      - ./genesis-shell:/app
+      - /app/node_modules
+    command: npm run dev
+  
+  # GPU Worker for WebGPU compute
+  genesis-gpu:
+    build: ./genesis-gpu
+    container_name: genesis-gpu
+    runtime: nvidia
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+      - IAR_API_URL=http://genesis-iar:8080
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+  
+  # ============================================================================
+  # MONITORING
+  # ============================================================================
+  
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: genesis-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+  
+  grafana:
+    image: grafana/grafana:latest
+    container_name: genesis-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=genesis
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+
+volumes:
+  postgres_data:
+  redis_data:
+  clickhouse_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  default:
+    name: genesis-mesh
+    driver: bridge
+

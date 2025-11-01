@@ -1,0 +1,10 @@
+Agent Info:
+Name: export-arcjet-example-nextjs-dependabot-npm-and-yarn-nosecone-next-1-0-0-beta-10
+Original Path: D:\Security Research aka GitHub Repos\export-arcjet-example-nextjs-dependabot-npm-and-yarn-nosecone-next-1-0-0-beta-10
+Type: directory
+Discovered: 2025-10-29T11:43:14.710Z
+
+To use this agent:
+1. Copy to agents/ directory
+2. Or create symlink
+3. Or reference original path in server config

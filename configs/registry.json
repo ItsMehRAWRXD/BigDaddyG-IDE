@@ -1,0 +1,654 @@
+{
+  "models": [
+    {
+      "name": "BigDaddyGProject",
+      "path": "D:\\Security Research aka GitHub Repos\\BigDaddyGProject",
+      "size": 0,
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.702Z"
+    },
+    {
+      "name": "test_payload.bin",
+      "path": "D:\\Security Research aka GitHub Repos\\Burp\\ItsMehRAWRXD-Burp-bb5784f\\test_payload.bin",
+      "size": 0,
+      "type": "file",
+      "discovered": "2025-10-29T11:43:14.703Z"
+    },
+    {
+      "name": "calc_aes-256-gcm_2025-09-19T23-51-48-373Z.bin",
+      "path": "D:\\Security Research aka GitHub Repos\\itsmehrawrxd\\ItsMehRAWRXD-itsmehrawrxd-54605de\\calc_aes-256-gcm_2025-09-19T23-51-48-373Z.bin",
+      "size": 9,
+      "type": "file",
+      "discovered": "2025-10-29T11:43:14.752Z"
+    },
+    {
+      "name": "calc_aes-256-gcm_2025-09-20T01-01-06-489Z.bin",
+      "path": "D:\\Security Research aka GitHub Repos\\itsmehrawrxd\\ItsMehRAWRXD-itsmehrawrxd-54605de\\calc_aes-256-gcm_2025-09-20T01-01-06-489Z.bin",
+      "size": 9,
+      "type": "file",
+      "discovered": "2025-10-29T11:43:14.752Z"
+    },
+    {
+      "name": "models",
+      "path": "D:\\Security Research aka GitHub Repos\\itsmehrawrxd\\ItsMehRAWRXD-itsmehrawrxd-54605de\\models",
+      "size": 0,
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.754Z"
+    },
+    {
+      "name": "test-pe-binary-direct.bin",
+      "path": "D:\\Security Research aka GitHub Repos\\itsmehrawrxd\\ItsMehRAWRXD-itsmehrawrxd-54605de\\test-pe-binary-direct.bin",
+      "size": 49184,
+      "type": "file",
+      "discovered": "2025-10-29T11:43:14.756Z"
+    },
+    {
+      "name": "test-pe-binary.bin",
+      "path": "D:\\Security Research aka GitHub Repos\\itsmehrawrxd\\ItsMehRAWRXD-itsmehrawrxd-54605de\\test-pe-binary.bin",
+      "size": 49227,
+      "type": "file",
+      "discovered": "2025-10-29T11:43:14.756Z"
+    },
+    {
+      "name": "test-pe-download.bin",
+      "path": "D:\\Security Research aka GitHub Repos\\itsmehrawrxd\\ItsMehRAWRXD-itsmehrawrxd-54605de\\test-pe-download.bin",
+      "size": 66699,
+      "type": "file",
+      "discovered": "2025-10-29T11:43:14.756Z"
+    },
+    {
+      "name": "bigdaddyg-adapter",
+      "path": "D:\\Security Research aka GitHub Repos\\neuro-symphonic-workspace\\ai-orchestration\\bigdaddyg-adapter",
+      "size": 0,
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.757Z"
+    },
+    {
+      "name": "local-llm",
+      "path": "D:\\Security Research aka GitHub Repos\\neuro-symphonic-workspace\\ai-orchestration\\local-llm",
+      "size": 0,
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.757Z"
+    },
+    {
+      "name": "BigDaddyG-Standalone-Complete",
+      "path": "D:\\Security Research aka GitHub Repos\\neuro-symphonic-workspace\\BigDaddyG-Standalone-Complete",
+      "size": 0,
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.757Z"
+    },
+    {
+      "name": "models",
+      "path": "D:\\Security Research aka GitHub Repos\\ProjectIDEAI\\models",
+      "size": 0,
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.759Z"
+    },
+    {
+      "name": "models",
+      "path": "D:\\Security Research aka GitHub Repos\\rawrz-http-encryptor\\ItsMehRAWRXD-rawrz-http-encryptor-47724c6\\models",
+      "size": 0,
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.760Z"
+    },
+    {
+      "name": "calc_encrypted.bin",
+      "path": "D:\\Security Research aka GitHub Repos\\Star\\ItsMehRAWRXD-Star-9e3ac78\\calc_encrypted.bin",
+      "size": 68,
+      "type": "file",
+      "discovered": "2025-10-29T11:43:14.763Z"
+    },
+    {
+      "name": "custom_encrypted.bin",
+      "path": "D:\\Security Research aka GitHub Repos\\Star\\ItsMehRAWRXD-Star-9e3ac78\\custom_encrypted.bin",
+      "size": 141,
+      "type": "file",
+      "discovered": "2025-10-29T11:43:14.763Z"
+    },
+    {
+      "name": "decrypted_output.bin",
+      "path": "D:\\Security Research aka GitHub Repos\\Star\\ItsMehRAWRXD-Star-9e3ac78\\decrypted_output.bin",
+      "size": 39744,
+      "type": "file",
+      "discovered": "2025-10-29T11:43:14.763Z"
+    },
+    {
+      "name": "encrypted_document.bin",
+      "path": "D:\\Security Research aka GitHub Repos\\Star\\ItsMehRAWRXD-Star-9e3ac78\\encrypted_document.bin",
+      "size": 543,
+      "type": "file",
+      "discovered": "2025-10-29T11:43:14.763Z"
+    },
+    {
+      "name": "mirc_bot_encrypted.bin",
+      "path": "D:\\Security Research aka GitHub Repos\\Star\\ItsMehRAWRXD-Star-9e3ac78\\mirc_bot_encrypted.bin",
+      "size": 9885,
+      "type": "file",
+      "discovered": "2025-10-29T11:43:14.764Z"
+    },
+    {
+      "name": "mirc_encrypted.bin",
+      "path": "D:\\Security Research aka GitHub Repos\\Star\\ItsMehRAWRXD-Star-9e3ac78\\mirc_encrypted.bin",
+      "size": 52,
+      "type": "file",
+      "discovered": "2025-10-29T11:43:14.764Z"
+    },
+    {
+      "name": "mirc_encrypted_test.bin",
+      "path": "D:\\Security Research aka GitHub Repos\\Star\\ItsMehRAWRXD-Star-9e3ac78\\mirc_encrypted_test.bin",
+      "size": 52,
+      "type": "file",
+      "discovered": "2025-10-29T11:43:14.764Z"
+    },
+    {
+      "name": "output_1754257955.bin",
+      "path": "D:\\Security Research aka GitHub Repos\\Star\\ItsMehRAWRXD-Star-9e3ac78\\output_1754257955.bin",
+      "size": 12,
+      "type": "file",
+      "discovered": "2025-10-29T11:43:14.765Z"
+    },
+    {
+      "name": "output_1754257968.bin",
+      "path": "D:\\Security Research aka GitHub Repos\\Star\\ItsMehRAWRXD-Star-9e3ac78\\output_1754257968.bin",
+      "size": 53912,
+      "type": "file",
+      "discovered": "2025-10-29T11:43:14.765Z"
+    },
+    {
+      "name": "test_calc_decrypted_native.bin",
+      "path": "D:\\Security Research aka GitHub Repos\\Star\\ItsMehRAWRXD-Star-9e3ac78\\test_calc_decrypted_native.bin",
+      "size": 125,
+      "type": "file",
+      "discovered": "2025-10-29T11:43:14.766Z"
+    },
+    {
+      "name": "test_calc_encrypted_native.bin",
+      "path": "D:\\Security Research aka GitHub Repos\\Star\\ItsMehRAWRXD-Star-9e3ac78\\test_calc_encrypted_native.bin",
+      "size": 141,
+      "type": "file",
+      "discovered": "2025-10-29T11:43:14.766Z"
+    },
+    {
+      "name": "test_calc_encrypted_random.bin",
+      "path": "D:\\Security Research aka GitHub Repos\\Star\\ItsMehRAWRXD-Star-9e3ac78\\test_calc_encrypted_random.bin",
+      "size": 141,
+      "type": "file",
+      "discovered": "2025-10-29T11:43:14.766Z"
+    },
+    {
+      "name": "test_decrypted.bin",
+      "path": "D:\\Security Research aka GitHub Repos\\Star\\ItsMehRAWRXD-Star-9e3ac78\\test_decrypted.bin",
+      "size": 109,
+      "type": "file",
+      "discovered": "2025-10-29T11:43:14.766Z"
+    },
+    {
+      "name": "test_encrypted.bin",
+      "path": "D:\\Security Research aka GitHub Repos\\Star\\ItsMehRAWRXD-Star-9e3ac78\\test_encrypted.bin",
+      "size": 74584,
+      "type": "file",
+      "discovered": "2025-10-29T11:43:14.766Z"
+    },
+    {
+      "name": "test_encrypted_calc.bin",
+      "path": "D:\\Security Research aka GitHub Repos\\Star\\ItsMehRAWRXD-Star-9e3ac78\\test_encrypted_calc.bin",
+      "size": 141,
+      "type": "file",
+      "discovered": "2025-10-29T11:43:14.766Z"
+    },
+    {
+      "name": "test_shellcode.bin",
+      "path": "D:\\Security Research aka GitHub Repos\\Star\\ItsMehRAWRXD-Star-9e3ac78\\test_shellcode.bin",
+      "size": 70,
+      "type": "file",
+      "discovered": "2025-10-29T11:43:14.767Z"
+    }
+  ],
+  "agents": [
+    {
+      "name": "export-arcjet-example-dependabot-npm-and-yarn-arcjet-js-2ae4012b02",
+      "path": "D:\\Security Research aka GitHub Repos\\export-arcjet-example-dependabot-npm-and-yarn-arcjet-js-2ae4012b02",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.705Z"
+    },
+    {
+      "name": "ItsMehRAWRXD-export-arcjet-example-dependabot-npm-and-yarn-arcjet-js-2ae4012b02-d8a44b9",
+      "path": "D:\\Security Research aka GitHub Repos\\export-arcjet-example-dependabot-npm-and-yarn-arcjet-js-2ae4012b02\\ItsMehRAWRXD-export-arcjet-example-dependabot-npm-and-yarn-arcjet-js-2ae4012b02-d8a44b9",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.705Z"
+    },
+    {
+      "name": "export-arcjet-example-dependabot-npm-and-yarn-dependencies-major-9585cc6ea9",
+      "path": "D:\\Security Research aka GitHub Repos\\export-arcjet-example-dependabot-npm-and-yarn-dependencies-major-9585cc6ea9",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.705Z"
+    },
+    {
+      "name": "ItsMehRAWRXD-export-arcjet-example-dependabot-npm-and-yarn-dependencies-major-9585cc6ea9-ab42d07",
+      "path": "D:\\Security Research aka GitHub Repos\\export-arcjet-example-dependabot-npm-and-yarn-dependencies-major-9585cc6ea9\\ItsMehRAWRXD-export-arcjet-example-dependabot-npm-and-yarn-dependencies-major-9585cc6ea9-ab42d07",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.705Z"
+    },
+    {
+      "name": "export-arcjet-example-dependabot-npm-and-yarn-dependencies-minor-9b27a195d5",
+      "path": "D:\\Security Research aka GitHub Repos\\export-arcjet-example-dependabot-npm-and-yarn-dependencies-minor-9b27a195d5",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.706Z"
+    },
+    {
+      "name": "ItsMehRAWRXD-export-arcjet-example-dependabot-npm-and-yarn-dependencies-minor-9b27a195d5-9442980",
+      "path": "D:\\Security Research aka GitHub Repos\\export-arcjet-example-dependabot-npm-and-yarn-dependencies-minor-9b27a195d5\\ItsMehRAWRXD-export-arcjet-example-dependabot-npm-and-yarn-dependencies-minor-9b27a195d5-9442980",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.706Z"
+    },
+    {
+      "name": "export-arcjet-example-dependabot-npm-and-yarn-nosecone-next-1-0-0-beta-10",
+      "path": "D:\\Security Research aka GitHub Repos\\export-arcjet-example-dependabot-npm-and-yarn-nosecone-next-1-0-0-beta-10",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.707Z"
+    },
+    {
+      "name": "ItsMehRAWRXD-export-arcjet-example-dependabot-npm-and-yarn-nosecone-next-1-0-0-beta-10-a21ec12",
+      "path": "D:\\Security Research aka GitHub Repos\\export-arcjet-example-dependabot-npm-and-yarn-nosecone-next-1-0-0-beta-10\\ItsMehRAWRXD-export-arcjet-example-dependabot-npm-and-yarn-nosecone-next-1-0-0-beta-10-a21ec12",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.707Z"
+    },
+    {
+      "name": "export-arcjet-example-nextjs-dependabot-npm-and-yarn-arcjet-js-2ae4012b02",
+      "path": "D:\\Security Research aka GitHub Repos\\export-arcjet-example-nextjs-dependabot-npm-and-yarn-arcjet-js-2ae4012b02",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.708Z"
+    },
+    {
+      "name": "ItsMehRAWRXD-export-arcjet-example-nextjs-dependabot-npm-and-yarn-arcjet-js-2ae4012b02-83042f8",
+      "path": "D:\\Security Research aka GitHub Repos\\export-arcjet-example-nextjs-dependabot-npm-and-yarn-arcjet-js-2ae4012b02\\ItsMehRAWRXD-export-arcjet-example-nextjs-dependabot-npm-and-yarn-arcjet-js-2ae4012b02-83042f8",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.708Z"
+    },
+    {
+      "name": "export-arcjet-example-nextjs-dependabot-npm-and-yarn-dependencies-major-9585cc6ea9",
+      "path": "D:\\Security Research aka GitHub Repos\\export-arcjet-example-nextjs-dependabot-npm-and-yarn-dependencies-major-9585cc6ea9",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.708Z"
+    },
+    {
+      "name": "ItsMehRAWRXD-export-arcjet-example-nextjs-dependabot-npm-and-yarn-dependencies-major-9585cc6ea9-83cd4df",
+      "path": "D:\\Security Research aka GitHub Repos\\export-arcjet-example-nextjs-dependabot-npm-and-yarn-dependencies-major-9585cc6ea9\\ItsMehRAWRXD-export-arcjet-example-nextjs-dependabot-npm-and-yarn-dependencies-major-9585cc6ea9-83cd4df",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.708Z"
+    },
+    {
+      "name": "export-arcjet-example-nextjs-dependabot-npm-and-yarn-dependencies-minor-9b27a195d5",
+      "path": "D:\\Security Research aka GitHub Repos\\export-arcjet-example-nextjs-dependabot-npm-and-yarn-dependencies-minor-9b27a195d5",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.709Z"
+    },
+    {
+      "name": "ItsMehRAWRXD-export-arcjet-example-nextjs-dependabot-npm-and-yarn-dependencies-minor-9b27a195d5-4a61787",
+      "path": "D:\\Security Research aka GitHub Repos\\export-arcjet-example-nextjs-dependabot-npm-and-yarn-dependencies-minor-9b27a195d5\\ItsMehRAWRXD-export-arcjet-example-nextjs-dependabot-npm-and-yarn-dependencies-minor-9b27a195d5-4a61787",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.709Z"
+    },
+    {
+      "name": "export-arcjet-example-nextjs-dependabot-npm-and-yarn-nosecone-next-1-0-0-beta-10",
+      "path": "D:\\Security Research aka GitHub Repos\\export-arcjet-example-nextjs-dependabot-npm-and-yarn-nosecone-next-1-0-0-beta-10",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.710Z"
+    },
+    {
+      "name": "ItsMehRAWRXD-export-arcjet-example-nextjs-dependabot-npm-and-yarn-nosecone-next-1-0-0-beta-10-3c07ed6",
+      "path": "D:\\Security Research aka GitHub Repos\\export-arcjet-example-nextjs-dependabot-npm-and-yarn-nosecone-next-1-0-0-beta-10\\ItsMehRAWRXD-export-arcjet-example-nextjs-dependabot-npm-and-yarn-nosecone-next-1-0-0-beta-10-3c07ed6",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.710Z"
+    },
+    {
+      "name": "export-example-nextjs-dependabot-npm-and-yarn-dependencies-major-9585cc6ea9",
+      "path": "D:\\Security Research aka GitHub Repos\\export-example-nextjs-dependabot-npm-and-yarn-dependencies-major-9585cc6ea9",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.711Z"
+    },
+    {
+      "name": "ItsMehRAWRXD-export-example-nextjs-dependabot-npm-and-yarn-dependencies-major-9585cc6ea9-cb2c847",
+      "path": "D:\\Security Research aka GitHub Repos\\export-example-nextjs-dependabot-npm-and-yarn-dependencies-major-9585cc6ea9\\ItsMehRAWRXD-export-example-nextjs-dependabot-npm-and-yarn-dependencies-major-9585cc6ea9-cb2c847",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.712Z"
+    },
+    {
+      "name": "export-example-nextjs-dependabot-npm-and-yarn-dependencies-minor-9b27a195d5",
+      "path": "D:\\Security Research aka GitHub Repos\\export-example-nextjs-dependabot-npm-and-yarn-dependencies-minor-9b27a195d5",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.712Z"
+    },
+    {
+      "name": "ItsMehRAWRXD-export-example-nextjs-dependabot-npm-and-yarn-dependencies-minor-9b27a195d5-a33aa8e",
+      "path": "D:\\Security Research aka GitHub Repos\\export-example-nextjs-dependabot-npm-and-yarn-dependencies-minor-9b27a195d5\\ItsMehRAWRXD-export-example-nextjs-dependabot-npm-and-yarn-dependencies-minor-9b27a195d5-a33aa8e",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.712Z"
+    },
+    {
+      "name": "export-example-nextjs-dependabot-npm-and-yarn-nosecone-next-1-0-0-beta-10",
+      "path": "D:\\Security Research aka GitHub Repos\\export-example-nextjs-dependabot-npm-and-yarn-nosecone-next-1-0-0-beta-10",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.713Z"
+    },
+    {
+      "name": "ItsMehRAWRXD-export-example-nextjs-dependabot-npm-and-yarn-nosecone-next-1-0-0-beta-10-4e45d66",
+      "path": "D:\\Security Research aka GitHub Repos\\export-example-nextjs-dependabot-npm-and-yarn-nosecone-next-1-0-0-beta-10\\ItsMehRAWRXD-export-example-nextjs-dependabot-npm-and-yarn-nosecone-next-1-0-0-beta-10-4e45d66",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.713Z"
+    },
+    {
+      "name": "export-NotYours-dependabot-npm-and-yarn-arcjet-js-2ae4012b02",
+      "path": "D:\\Security Research aka GitHub Repos\\export-NotYours-dependabot-npm-and-yarn-arcjet-js-2ae4012b02",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.714Z"
+    },
+    {
+      "name": "ItsMehRAWRXD-export-NotYours-dependabot-npm-and-yarn-arcjet-js-2ae4012b02-c132103",
+      "path": "D:\\Security Research aka GitHub Repos\\export-NotYours-dependabot-npm-and-yarn-arcjet-js-2ae4012b02\\ItsMehRAWRXD-export-NotYours-dependabot-npm-and-yarn-arcjet-js-2ae4012b02-c132103",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.714Z"
+    },
+    {
+      "name": "export-NotYours-dependabot-npm-and-yarn-dependencies-major-9585cc6ea9",
+      "path": "D:\\Security Research aka GitHub Repos\\export-NotYours-dependabot-npm-and-yarn-dependencies-major-9585cc6ea9",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.714Z"
+    },
+    {
+      "name": "ItsMehRAWRXD-export-NotYours-dependabot-npm-and-yarn-dependencies-major-9585cc6ea9-60f0855",
+      "path": "D:\\Security Research aka GitHub Repos\\export-NotYours-dependabot-npm-and-yarn-dependencies-major-9585cc6ea9\\ItsMehRAWRXD-export-NotYours-dependabot-npm-and-yarn-dependencies-major-9585cc6ea9-60f0855",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.714Z"
+    },
+    {
+      "name": "export-NotYours-dependabot-npm-and-yarn-dependencies-minor-9b27a195d5",
+      "path": "D:\\Security Research aka GitHub Repos\\export-NotYours-dependabot-npm-and-yarn-dependencies-minor-9b27a195d5",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.715Z"
+    },
+    {
+      "name": "ItsMehRAWRXD-export-NotYours-dependabot-npm-and-yarn-dependencies-minor-9b27a195d5-604d697",
+      "path": "D:\\Security Research aka GitHub Repos\\export-NotYours-dependabot-npm-and-yarn-dependencies-minor-9b27a195d5\\ItsMehRAWRXD-export-NotYours-dependabot-npm-and-yarn-dependencies-minor-9b27a195d5-604d697",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.715Z"
+    },
+    {
+      "name": "export-NotYours-dependabot-npm-and-yarn-nosecone-next-1-0-0-beta-10",
+      "path": "D:\\Security Research aka GitHub Repos\\export-NotYours-dependabot-npm-and-yarn-nosecone-next-1-0-0-beta-10",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.715Z"
+    },
+    {
+      "name": "ItsMehRAWRXD-export-NotYours-dependabot-npm-and-yarn-nosecone-next-1-0-0-beta-10-4b393dc",
+      "path": "D:\\Security Research aka GitHub Repos\\export-NotYours-dependabot-npm-and-yarn-nosecone-next-1-0-0-beta-10\\ItsMehRAWRXD-export-NotYours-dependabot-npm-and-yarn-nosecone-next-1-0-0-beta-10-4b393dc",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.715Z"
+    },
+    {
+      "name": "export-SaaSEncryptionSecurity-dependabot-npm-and-yarn-arcjet-js-2ae4012b02",
+      "path": "D:\\Security Research aka GitHub Repos\\export-SaaSEncryptionSecurity-dependabot-npm-and-yarn-arcjet-js-2ae4012b02",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.716Z"
+    },
+    {
+      "name": "ItsMehRAWRXD-export-SaaSEncryptionSecurity-dependabot-npm-and-yarn-arcjet-js-2ae4012b02-a9d9896",
+      "path": "D:\\Security Research aka GitHub Repos\\export-SaaSEncryptionSecurity-dependabot-npm-and-yarn-arcjet-js-2ae4012b02\\ItsMehRAWRXD-export-SaaSEncryptionSecurity-dependabot-npm-and-yarn-arcjet-js-2ae4012b02-a9d9896",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.716Z"
+    },
+    {
+      "name": "export-SaaSEncryptionSecurity-dependabot-npm-and-yarn-dependencies-major-9585cc6ea9",
+      "path": "D:\\Security Research aka GitHub Repos\\export-SaaSEncryptionSecurity-dependabot-npm-and-yarn-dependencies-major-9585cc6ea9",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.717Z"
+    },
+    {
+      "name": "ItsMehRAWRXD-export-SaaSEncryptionSecurity-dependabot-npm-and-yarn-dependencies-major-9585cc6ea9-c62a554",
+      "path": "D:\\Security Research aka GitHub Repos\\export-SaaSEncryptionSecurity-dependabot-npm-and-yarn-dependencies-major-9585cc6ea9\\ItsMehRAWRXD-export-SaaSEncryptionSecurity-dependabot-npm-and-yarn-dependencies-major-9585cc6ea9-c62a554",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.717Z"
+    },
+    {
+      "name": "export-SaaSEncryptionSecurity-dependabot-npm-and-yarn-dependencies-minor-9b27a195d5",
+      "path": "D:\\Security Research aka GitHub Repos\\export-SaaSEncryptionSecurity-dependabot-npm-and-yarn-dependencies-minor-9b27a195d5",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.717Z"
+    },
+    {
+      "name": "ItsMehRAWRXD-export-SaaSEncryptionSecurity-dependabot-npm-and-yarn-dependencies-minor-9b27a195d5-2dfe1ff",
+      "path": "D:\\Security Research aka GitHub Repos\\export-SaaSEncryptionSecurity-dependabot-npm-and-yarn-dependencies-minor-9b27a195d5\\ItsMehRAWRXD-export-SaaSEncryptionSecurity-dependabot-npm-and-yarn-dependencies-minor-9b27a195d5-2dfe1ff",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.717Z"
+    },
+    {
+      "name": "export-SaaSEncryptionSecurity-dependabot-npm-and-yarn-nosecone-next-1-0-0-beta-10",
+      "path": "D:\\Security Research aka GitHub Repos\\export-SaaSEncryptionSecurity-dependabot-npm-and-yarn-nosecone-next-1-0-0-beta-10",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.718Z"
+    },
+    {
+      "name": "ItsMehRAWRXD-export-SaaSEncryptionSecurity-dependabot-npm-and-yarn-nosecone-next-1-0-0-beta-10-d34b428",
+      "path": "D:\\Security Research aka GitHub Repos\\export-SaaSEncryptionSecurity-dependabot-npm-and-yarn-nosecone-next-1-0-0-beta-10\\ItsMehRAWRXD-export-SaaSEncryptionSecurity-dependabot-npm-and-yarn-nosecone-next-1-0-0-beta-10-d34b428",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.718Z"
+    },
+    {
+      "name": "irc_scanner_bot",
+      "path": "D:\\Security Research aka GitHub Repos\\export-Star5IDE-cursor-add-local-ollama-connection-3cd3\\ItsMehRAWRXD-export-Star5IDE-cursor-add-local-ollama-connection-3cd3-f4dfa69\\irc_scanner_bot",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.719Z"
+    },
+    {
+      "name": "irc_scanner_bot",
+      "path": "D:\\Security Research aka GitHub Repos\\export-Star5IDE-cursor-add-local-ollama-connection-4dc0\\ItsMehRAWRXD-export-Star5IDE-cursor-add-local-ollama-connection-4dc0-0f17fef\\irc_scanner_bot",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.721Z"
+    },
+    {
+      "name": "irc_scanner_bot",
+      "path": "D:\\Security Research aka GitHub Repos\\export-Star5IDE-cursor-add-local-ollama-connection-bc4e\\ItsMehRAWRXD-export-Star5IDE-cursor-add-local-ollama-connection-bc4e-da922e3\\irc_scanner_bot",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.722Z"
+    },
+    {
+      "name": "irc_scanner_bot",
+      "path": "D:\\Security Research aka GitHub Repos\\export-Star5IDE-cursor-add-local-ollama-connection-bff6\\ItsMehRAWRXD-export-Star5IDE-cursor-add-local-ollama-connection-bff6-32e2425\\irc_scanner_bot",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.724Z"
+    },
+    {
+      "name": "irc_scanner_bot",
+      "path": "D:\\Security Research aka GitHub Repos\\export-Star5IDE-cursor-add-local-ollama-connection-c435\\ItsMehRAWRXD-export-Star5IDE-cursor-add-local-ollama-connection-c435-ff4789e\\irc_scanner_bot",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.725Z"
+    },
+    {
+      "name": "irc_scanner_bot",
+      "path": "D:\\Security Research aka GitHub Repos\\export-Star5IDE-cursor-automated-droplet-setup-and-deployment-73fb\\ItsMehRAWRXD-export-Star5IDE-cursor-automated-droplet-setup-and-deployment-73fb-1a8a1b7\\irc_scanner_bot",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.727Z"
+    },
+    {
+      "name": "irc_scanner_bot",
+      "path": "D:\\Security Research aka GitHub Repos\\export-Star5IDE-cursor-automated-droplet-setup-with-cloud-init-0983\\ItsMehRAWRXD-export-Star5IDE-cursor-automated-droplet-setup-with-cloud-init-0983-c0989cd\\irc_scanner_bot",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.728Z"
+    },
+    {
+      "name": "irc_scanner_bot",
+      "path": "D:\\Security Research aka GitHub Repos\\export-Star5IDE-cursor-automated-droplet-setup-with-cloud-init-4fc3\\ItsMehRAWRXD-export-Star5IDE-cursor-automated-droplet-setup-with-cloud-init-4fc3-d177901\\irc_scanner_bot",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.730Z"
+    },
+    {
+      "name": "irc_scanner_bot",
+      "path": "D:\\Security Research aka GitHub Repos\\export-Star5IDE-cursor-automated-droplet-setup-with-cloud-init-960b\\ItsMehRAWRXD-export-Star5IDE-cursor-automated-droplet-setup-with-cloud-init-960b-80a83a4\\irc_scanner_bot",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.731Z"
+    },
+    {
+      "name": "irc_scanner_bot",
+      "path": "D:\\Security Research aka GitHub Repos\\export-Star5IDE-cursor-automated-droplet-setup-with-cloud-init-b216\\ItsMehRAWRXD-export-Star5IDE-cursor-automated-droplet-setup-with-cloud-init-b216-3a21efb\\irc_scanner_bot",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.733Z"
+    },
+    {
+      "name": "irc_scanner_bot",
+      "path": "D:\\Security Research aka GitHub Repos\\export-Star5IDE-cursor-automated-web-vulnerability-scanner-88fd\\ItsMehRAWRXD-export-Star5IDE-cursor-automated-web-vulnerability-scanner-88fd-25294c0\\irc_scanner_bot",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.734Z"
+    },
+    {
+      "name": "irc_scanner_bot",
+      "path": "D:\\Security Research aka GitHub Repos\\export-Star5IDE-cursor-bc-00b8e443-72d8-441b-8c27-99011a13078c-7be6\\ItsMehRAWRXD-export-Star5IDE-cursor-bc-00b8e443-72d8-441b-8c27-99011a13078c-7be6-029c2ac\\irc_scanner_bot",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.736Z"
+    },
+    {
+      "name": "irc_scanner_bot",
+      "path": "D:\\Security Research aka GitHub Repos\\export-Star5IDE-cursor-bc-471a45cb-c6c5-466d-80ae-a489fc664379-449e\\ItsMehRAWRXD-export-Star5IDE-cursor-bc-471a45cb-c6c5-466d-80ae-a489fc664379-449e-6be48ca\\irc_scanner_bot",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.738Z"
+    },
+    {
+      "name": "irc_scanner_bot",
+      "path": "D:\\Security Research aka GitHub Repos\\export-Star5IDE-cursor-bc-8f0bc901-1b2a-4766-bb5e-0e618ef9e510-bb9f\\ItsMehRAWRXD-export-Star5IDE-cursor-bc-8f0bc901-1b2a-4766-bb5e-0e618ef9e510-bb9f-5123be3\\irc_scanner_bot",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.739Z"
+    },
+    {
+      "name": "irc_scanner_bot",
+      "path": "D:\\Security Research aka GitHub Repos\\export-Star5IDE-cursor-bc-a6643161-6b53-4889-ba1c-7e7e14066b9d-213a\\ItsMehRAWRXD-export-Star5IDE-cursor-bc-a6643161-6b53-4889-ba1c-7e7e14066b9d-213a-0d12634\\irc_scanner_bot",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.741Z"
+    },
+    {
+      "name": "irc_scanner_bot",
+      "path": "D:\\Security Research aka GitHub Repos\\export-Star5IDE-cursor-bc-bc4f7be2-9841-42af-9c2b-923611d43467-10b1\\ItsMehRAWRXD-export-Star5IDE-cursor-bc-bc4f7be2-9841-42af-9c2b-923611d43467-10b1-dbb9ae0\\irc_scanner_bot",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.743Z"
+    },
+    {
+      "name": "irc_scanner_bot",
+      "path": "D:\\Security Research aka GitHub Repos\\export-Star5IDE-cursor-bc-e689af09-f824-40ef-a1a6-b4bd5b0bf553-1283\\ItsMehRAWRXD-export-Star5IDE-cursor-bc-e689af09-f824-40ef-a1a6-b4bd5b0bf553-1283-d1a692c\\irc_scanner_bot",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.746Z"
+    },
+    {
+      "name": "agents",
+      "path": "D:\\Security Research aka GitHub Repos\\export-Star5IDE-cursor-fetch-all-uncensored-apis-2a77\\ItsMehRAWRXD-export-Star5IDE-cursor-fetch-all-uncensored-apis-2a77-3f55bb9\\agents",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.746Z"
+    },
+    {
+      "name": "irc_scanner_bot",
+      "path": "D:\\Security Research aka GitHub Repos\\export-Star5IDE-feature-carmilla-carpatcher\\ItsMehRAWRXD-export-Star5IDE-feature-carmilla-carpatcher-cd635dc\\irc_scanner_bot",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.748Z"
+    },
+    {
+      "name": "irc_scanner_bot",
+      "path": "D:\\Security Research aka GitHub Repos\\Game-Deception\\ItsMehRAWRXD-Game-Deception-2f952a2\\irc_scanner_bot",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.751Z"
+    },
+    {
+      "name": "language-agents",
+      "path": "D:\\Security Research aka GitHub Repos\\neuro-symphonic-workspace\\language-agents",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.758Z"
+    },
+    {
+      "name": "cpp-agent",
+      "path": "D:\\Security Research aka GitHub Repos\\neuro-symphonic-workspace\\language-agents\\cpp-agent",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.758Z"
+    },
+    {
+      "name": "js-agent",
+      "path": "D:\\Security Research aka GitHub Repos\\neuro-symphonic-workspace\\language-agents\\js-agent",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.758Z"
+    },
+    {
+      "name": "python-agent",
+      "path": "D:\\Security Research aka GitHub Repos\\neuro-symphonic-workspace\\language-agents\\python-agent",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.758Z"
+    },
+    {
+      "name": "rust-agent",
+      "path": "D:\\Security Research aka GitHub Repos\\neuro-symphonic-workspace\\language-agents\\rust-agent",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.758Z"
+    },
+    {
+      "name": "agent_registry",
+      "path": "D:\\Security Research aka GitHub Repos\\neuro-symphonic-workspace\\orchestrator\\agent_registry",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.758Z"
+    },
+    {
+      "name": "agent_template.lua",
+      "path": "D:\\Security Research aka GitHub Repos\\neuro-symphonic-workspace\\templates\\agent_template.lua",
+      "size": 5868,
+      "type": "file",
+      "discovered": "2025-10-29T11:43:14.758Z"
+    },
+    {
+      "name": "agents",
+      "path": "D:\\Security Research aka GitHub Repos\\ProjectIDEAI\\agents",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.759Z"
+    },
+    {
+      "name": "agent_generated_files",
+      "path": "D:\\Security Research aka GitHub Repos\\Star\\ItsMehRAWRXD-Star-9e3ac78\\agent_generated_files",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.763Z"
+    },
+    {
+      "name": "CSPBypassAgent.js",
+      "path": "C:\\Users\\HiH8e\\OneDrive\\Desktop\\CSPBypassAgent.js",
+      "size": 22094,
+      "type": "file",
+      "discovered": "2025-10-29T11:43:14.771Z"
+    },
+    {
+      "name": "rawrz_agentic_workspace",
+      "path": "C:\\Users\\HiH8e\\OneDrive\\Desktop\\rawrz_agentic_workspace",
+      "type": "directory",
+      "discovered": "2025-10-29T11:43:14.777Z"
+    },
+    {
+      "name": "SimpleCursorAgent.py",
+      "path": "C:\\Users\\HiH8e\\OneDrive\\Desktop\\SimpleCursorAgent.py",
+      "size": 13321,
+      "type": "file",
+      "discovered": "2025-10-29T11:43:14.778Z"
+    },
+    {
+      "name": "StealthBrowserAgent.js",
+      "path": "C:\\Users\\HiH8e\\OneDrive\\Desktop\\StealthBrowserAgent.js",
+      "size": 19061,
+      "type": "file",
+      "discovered": "2025-10-29T11:43:14.779Z"
+    },
+    {
+      "name": "StreamProxyAgent.js",
+      "path": "C:\\Users\\HiH8e\\OneDrive\\Desktop\\StreamProxyAgent.js",
+      "size": 20950,
+      "type": "file",
+      "discovered": "2025-10-29T11:43:14.779Z"
+    },
+    {
+      "name": "UltraCursorAgent.py",
+      "path": "C:\\Users\\HiH8e\\OneDrive\\Desktop\\UltraCursorAgent.py",
+      "size": 13389,
+      "type": "file",
+      "discovered": "2025-10-29T11:43:14.779Z"
+    }
+  ],
+  "indexed": "2025-10-29T11:43:14.693Z"
+}

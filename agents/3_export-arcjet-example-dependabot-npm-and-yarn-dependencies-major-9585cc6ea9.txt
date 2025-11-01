@@ -1,0 +1,10 @@
+Agent Info:
+Name: export-arcjet-example-dependabot-npm-and-yarn-dependencies-major-9585cc6ea9
+Original Path: D:\Security Research aka GitHub Repos\export-arcjet-example-dependabot-npm-and-yarn-dependencies-major-9585cc6ea9
+Type: directory
+Discovered: 2025-10-29T11:43:14.705Z
+
+To use this agent:
+1. Copy to agents/ directory
+2. Or create symlink
+3. Or reference original path in server config

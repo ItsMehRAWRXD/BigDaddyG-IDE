@@ -1,0 +1,147 @@
+{
+  "realModels": [
+    {
+      "name": "sha256-68bbe6dc9cf42eb60c9a7f96137fb8d472f752de6ebf53e9942f267f1a1e2577",
+      "path": "C:\\Users\\HiH8e\\.ollama\\models\\blobs\\sha256-68bbe6dc9cf42eb60c9a7f96137fb8d472f752de6ebf53e9942f267f1a1e2577",
+      "sizeMB": "37072.39",
+      "sizeGB": "36.20",
+      "ext": "no extension"
+    },
+    {
+      "name": "sha256-b112e727c6f18875636c56a779790a590d705aec9e1c0eb5a97d51fc2a778583",
+      "path": "C:\\Users\\HiH8e\\.ollama\\models\\blobs\\sha256-b112e727c6f18875636c56a779790a590d705aec9e1c0eb5a97d51fc2a778583",
+      "sizeMB": "13141.78",
+      "sizeGB": "12.83",
+      "ext": "no extension"
+    },
+    {
+      "name": "sha256-e8ad13eff07a78d89926e9e8b882317d082ef5bf9768ad7b50fcdbbcd63748de",
+      "path": "C:\\Users\\HiH8e\\.ollama\\models\\blobs\\sha256-e8ad13eff07a78d89926e9e8b882317d082ef5bf9768ad7b50fcdbbcd63748de",
+      "sizeMB": "7771.66",
+      "sizeGB": "7.59",
+      "ext": "no extension"
+    },
+    {
+      "name": "sha256-64e8f4d6856fca67b11f0875f9552264e62ababbe68fd6ddd0129015ee6df70a",
+      "path": "C:\\Users\\HiH8e\\.ollama\\models\\blobs\\sha256-64e8f4d6856fca67b11f0875f9552264e62ababbe68fd6ddd0129015ee6df70a",
+      "sizeMB": "7531.29",
+      "sizeGB": "7.35",
+      "ext": "no extension"
+    },
+    {
+      "name": "sha256-ff1d1fc78170d787ee1201778e2dd65ea211654ca5fb7d69b5a2e7b123a50373",
+      "path": "C:\\Users\\HiH8e\\.ollama\\models\\blobs\\sha256-ff1d1fc78170d787ee1201778e2dd65ea211654ca5fb7d69b5a2e7b123a50373",
+      "sizeMB": "5190.99",
+      "sizeGB": "5.07",
+      "ext": "no extension"
+    },
+    {
+      "name": "sha256-e6a7edc1a4d7d9b2de136a221a57336b76316cfe53a252aeba814496c5ae439d",
+      "path": "C:\\Users\\HiH8e\\.ollama\\models\\blobs\\sha256-e6a7edc1a4d7d9b2de136a221a57336b76316cfe53a252aeba814496c5ae439d",
+      "sizeMB": "4983.30",
+      "sizeGB": "4.87",
+      "ext": "no extension"
+    },
+    {
+      "name": "sha256-ef311de6af9db043d51ca4b1e766c28e0a1ac41d60420fed5e001dc470c64b77",
+      "path": "C:\\Users\\HiH8e\\.ollama\\models\\blobs\\sha256-ef311de6af9db043d51ca4b1e766c28e0a1ac41d60420fed5e001dc470c64b77",
+      "sizeMB": "4779.67",
+      "sizeGB": "4.67",
+      "ext": "no extension"
+    },
+    {
+      "name": "sha256-667b0c1932bc6ffc593ed1d03f895bf2dc8dc6df21db3042284a6f4416b06a29",
+      "path": "C:\\Users\\HiH8e\\.ollama\\models\\blobs\\sha256-667b0c1932bc6ffc593ed1d03f895bf2dc8dc6df21db3042284a6f4416b06a29",
+      "sizeMB": "4692.78",
+      "sizeGB": "4.58",
+      "ext": "no extension"
+    },
+    {
+      "name": "sha256-2bada8a7450677000f678be90653b85d364de7db25eb5ea54136ada5f3933730",
+      "path": "C:\\Users\\HiH8e\\.ollama\\models\\blobs\\sha256-2bada8a7450677000f678be90653b85d364de7db25eb5ea54136ada5f3933730",
+      "sizeMB": "4466.13",
+      "sizeGB": "4.36",
+      "ext": "no extension"
+    },
+    {
+      "name": "sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463",
+      "path": "C:\\Users\\HiH8e\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463",
+      "sizeMB": "4466.13",
+      "sizeGB": "4.36",
+      "ext": "no extension"
+    },
+    {
+      "name": "sha256_60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463",
+      "path": "C:\\Users\\HiH8e\\.ollama\\models\\qwen2.5-coder-7b\\sha256_60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463",
+      "sizeMB": "4466.13",
+      "sizeGB": "4.36",
+      "ext": "no extension"
+    },
+    {
+      "name": "sha256-f5074b1221da0f5a2910d33b642efa5b9eb58cfdddca1c79e16d7ad28aa2b31f",
+      "path": "C:\\Users\\HiH8e\\.ollama\\models\\blobs\\sha256-f5074b1221da0f5a2910d33b642efa5b9eb58cfdddca1c79e16d7ad28aa2b31f",
+      "sizeMB": "4170.24",
+      "sizeGB": "4.07",
+      "ext": "no extension"
+    },
+    {
+      "name": "sha256-170370233dd5c5415250a2ecd5c71586352850729062ccef1496385647293868",
+      "path": "C:\\Users\\HiH8e\\.ollama\\models\\blobs\\sha256-170370233dd5c5415250a2ecd5c71586352850729062ccef1496385647293868",
+      "sizeMB": "3918.57",
+      "sizeGB": "3.83",
+      "ext": "no extension"
+    },
+    {
+      "name": "sha256-3a43f93b78ec50f7c4e4dc8bd1cb3fff5a900e7d574c51a6f7495e48486e0dac",
+      "path": "C:\\Users\\HiH8e\\.ollama\\models\\blobs\\sha256-3a43f93b78ec50f7c4e4dc8bd1cb3fff5a900e7d574c51a6f7495e48486e0dac",
+      "sizeMB": "3648.66",
+      "sizeGB": "3.56",
+      "ext": "no extension"
+    },
+    {
+      "name": "sha256-59bb50d8116b6a1f9bfbb940d6bb946a05554e591e30c8c2429ed6c854867ecb",
+      "path": "C:\\Users\\HiH8e\\.ollama\\models\\blobs\\sha256-59bb50d8116b6a1f9bfbb940d6bb946a05554e591e30c8c2429ed6c854867ecb",
+      "sizeMB": "3650.49",
+      "sizeGB": "3.56",
+      "ext": "no extension"
+    },
+    {
+      "name": "sha256-633fc5be925f9a484b61d6f9b9a78021eeb462100bd557309f01ba84cac26adf",
+      "path": "C:\\Users\\HiH8e\\.ollama\\models\\blobs\\sha256-633fc5be925f9a484b61d6f9b9a78021eeb462100bd557309f01ba84cac26adf",
+      "sizeMB": "2075.36",
+      "sizeGB": "2.03",
+      "ext": "no extension"
+    },
+    {
+      "name": "sha256-dde5aa3fc5ffc17176b5e8bdc82f587b24b2678c6c66101bf7da77af9f7ccdff",
+      "path": "C:\\Users\\HiH8e\\.ollama\\models\\blobs\\sha256-dde5aa3fc5ffc17176b5e8bdc82f587b24b2678c6c66101bf7da77af9f7ccdff",
+      "sizeMB": "1925.83",
+      "sizeGB": "1.88",
+      "ext": "no extension"
+    },
+    {
+      "name": "sha256-5ee4f07cdb9beadbbb293e85803c569b01bd37ed059d2715faa7bb405f31caa6",
+      "path": "C:\\Users\\HiH8e\\.ollama\\models\\blobs\\sha256-5ee4f07cdb9beadbbb293e85803c569b01bd37ed059d2715faa7bb405f31caa6",
+      "sizeMB": "1840.50",
+      "sizeGB": "1.80",
+      "ext": "no extension"
+    },
+    {
+      "name": "sha256-29d8c98fa6b098e200069bfb88b9508dc3e85586d20cba59f8dda9a808165104",
+      "path": "C:\\Users\\HiH8e\\.ollama\\models\\blobs\\sha256-29d8c98fa6b098e200069bfb88b9508dc3e85586d20cba59f8dda9a808165104",
+      "sizeMB": "940.37",
+      "sizeGB": "0.92",
+      "ext": "no extension"
+    },
+    {
+      "name": "sha256-72d6f08a42f656d36b356dbe0920675899a99ce21192fd66266fb7d82ed07539",
+      "path": "C:\\Users\\HiH8e\\.ollama\\models\\blobs\\sha256-72d6f08a42f656d36b356dbe0920675899a99ce21192fd66266fb7d82ed07539",
+      "sizeMB": "595.51",
+      "sizeGB": "0.58",
+      "ext": "no extension"
+    }
+  ],
+  "total": 20,
+  "totalSizeGB": "118.47",
+  "scanned": "2025-10-29T11:46:22.909Z"
+}

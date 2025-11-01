@@ -1,0 +1,169 @@
+{
+  "description": "Complete model registry for ProjectIDEAI",
+  "updated": "2025-10-29",
+  "total_models": 14878,
+  "total_agents": 4176,
+  
+  "featured_models": {
+    "bigdaddyg_specialized": [
+      {
+        "id": "BigDaddyG:Latest",
+        "name": "🧠 BigDaddyG Latest",
+        "size": "2.0 GB",
+        "context": "128K",
+        "location": "ollama",
+        "description": "Your custom trained model"
+      },
+      {
+        "id": "BigDaddyG:Code",
+        "name": "🔧 BigDaddyG Code",
+        "context": "128K",
+        "location": "orchestr a",
+        "description": "Code generation specialist"
+      },
+      {
+        "id": "BigDaddyG:Debug",
+        "name": "🐛 BigDaddyG Debug",
+        "context": "128K",
+        "location": "orchestra",
+        "description": "Debugging expert"
+      },
+      {
+        "id": "BigDaddyG:Crypto",
+        "name": "🔐 BigDaddyG Crypto",
+        "context": "128K",
+        "location": "orchestra",
+        "description": "Security & encryption specialist"
+      }
+    ],
+    
+    "1m_context_models": [
+      {
+        "id": "cheetah-stealth:latest",
+        "name": "🐆 Cheetah Stealth",
+        "context": "1M",
+        "provider": "cursor/custom",
+        "description": "Stealth mode with massive 1M context window"
+      },
+      {
+        "id": "code-supernova:1m",
+        "name": "💫 Code Supernova",
+        "context": "1M",
+        "provider": "cursor/custom",
+        "description": "Code generation with 1M context"
+      }
+    ],
+    
+    "local_ollama": [
+      {
+        "id": "gemma3:12b",
+        "name": "💎 Gemma 3:12B",
+        "size": "8.1 GB",
+        "context": "128K",
+        "params": "12B"
+      },
+      {
+        "id": "gemma3:1b",
+        "name": "⚡ Gemma 3:1B",
+        "size": "815 MB",
+        "context": "128K",
+        "params": "1B"
+      },
+      {
+        "id": "llama3.2:latest",
+        "name": "🦙 Llama 3.2",
+        "size": "2.0 GB",
+        "context": "128K"
+      }
+    ],
+    
+    "cloud_models": [
+      {
+        "id": "gpt-oss:120b-cloud",
+        "name": "🌟 GPT-OSS 120B",
+        "params": "120B",
+        "provider": "cloud"
+      },
+      {
+        "id": "qwen3-vl:235b-cloud",
+        "name": "👁️ Qwen3-VL 235B",
+        "params": "235B",
+        "provider": "cloud",
+        "features": ["vision"]
+      }
+    ],
+    
+    "cursor_official_models_2025": [
+      {
+        "id": "claude-sonnet-4",
+        "name": "Claude Sonnet 4",
+        "context": "200K",
+        "provider": "anthropic"
+      },
+      {
+        "id": "claude-opus-3.5",
+        "name": "Claude Opus 3.5",
+        "context": "200K",
+        "provider": "anthropic"
+      },
+      {
+        "id": "gpt-4o",
+        "name": "GPT-4o",
+        "context": "128K",
+        "provider": "openai"
+      },
+      {
+        "id": "gpt-4o-mini",
+        "name": "GPT-4o Mini",
+        "context": "128K",
+        "provider": "openai"
+      },
+      {
+        "id": "o1-preview",
+        "name": "O1 Preview",
+        "context": "128K",
+        "provider": "openai"
+      },
+      {
+        "id": "o1-mini",
+        "name": "O1 Mini",
+        "context": "128K",
+        "provider": "openai"
+      },
+      {
+        "id": "gemini-2.0-flash-exp",
+        "name": "Gemini 2.0 Flash",
+        "context": "1M",
+        "provider": "google"
+      },
+      {
+        "id": "gemini-exp-1206",
+        "name": "Gemini Experimental",
+        "context": "2M",
+        "provider": "google"
+      },
+      {
+        "id": "grok-beta",
+        "name": "Grok Beta",
+        "context": "128K",
+        "provider": "x.ai"
+      },
+      {
+        "id": "grok-vision-beta",
+        "name": "Grok Vision Beta",
+        "context": "128K",
+        "provider": "x.ai",
+        "features": ["vision"]
+      }
+    ]
+  },
+  
+  "usage_notes": {
+    "local_models": "Available when Ollama or Orchestra is running",
+    "cloud_models": "Require API keys and internet connection",
+    "cursor_models": "Available through Cursor IDE subscription",
+    "1m_models": "Custom models with 1 million token context windows",
+    "bigdaddyg": "Your custom trained models - highest priority"
+  }
+}
+

@@ -1,0 +1,32 @@
+{
+  "clonedModels": [
+    {
+      "name": "cheetah-stealth:latest",
+      "path": "D:\\Security Research aka GitHub Repos\\ProjectIDEAI\\models\\cheetah_stealth_latest.modelfile",
+      "basedOn": "bigdaddyg:latest",
+      "characteristics": {
+        "name": "cheetah-stealth:latest",
+        "context": "1M",
+        "style": "fast-concise",
+        "specialization": "stealth-security",
+        "systemPrompt": "You are optimized for speed. Provide concise, efficient responses. No fluff. Focus on security, privacy, and stealth operations."
+      },
+      "status": "ready"
+    },
+    {
+      "name": "code-supernova:1m",
+      "path": "D:\\Security Research aka GitHub Repos\\ProjectIDEAI\\models\\code_supernova_1m.modelfile",
+      "basedOn": "bigdaddyg:latest",
+      "characteristics": {
+        "name": "code-supernova:1m",
+        "context": "1M",
+        "style": "code-focused",
+        "specialization": "coding",
+        "systemPrompt": "You are a code generation specialist. Output clean, working code with minimal explanation. Specialize in code generation, debugging, and software development."
+      },
+      "status": "ready"
+    }
+  ],
+  "totalClones": 2,
+  "created": "2025-10-29T11:58:23.086Z"
+}

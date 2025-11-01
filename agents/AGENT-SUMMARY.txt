@@ -1,0 +1,16 @@
+COMPLETE AGENT REGISTRY
+Generated: 2025-10-29T11:53:45.181Z
+
+Total Agents Found: 4176
+
+Breakdown:
+- Agent directories: 1810
+- Agent scripts: 2366
+
+Agent Script Types:
+- JavaScript: 1069
+- Python: 279
+- Lua: 2
+- TypeScript: 1016
+
+Full list in: configs/complete-registry.json
