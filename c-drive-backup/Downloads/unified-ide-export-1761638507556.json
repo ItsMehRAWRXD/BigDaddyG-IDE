@@ -1,0 +1,1294 @@
+{
+  "exportedAt": "2025-10-28T08:01:47.555Z",
+  "totalRepos": 19,
+  "repositories": [
+    {
+      "name": "RollarCoaster",
+      "path": "D:\\Security Research aka GitHub Repos\\RollarCoaster",
+      "toggleCount": 14,
+      "toggles": [
+        {
+          "id": "RollarCoaster_toggle_0",
+          "name": "EnableFeature_0",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for RollarCoaster functionality"
+        },
+        {
+          "id": "RollarCoaster_toggle_1",
+          "name": "DisableLogging_1",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for RollarCoaster functionality"
+        },
+        {
+          "id": "RollarCoaster_toggle_2",
+          "name": "ShowDebug_2",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for RollarCoaster functionality"
+        },
+        {
+          "id": "RollarCoaster_toggle_3",
+          "name": "UseCache_3",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for RollarCoaster functionality"
+        },
+        {
+          "id": "RollarCoaster_toggle_4",
+          "name": "EnableEncryption_4",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for RollarCoaster functionality"
+        },
+        {
+          "id": "RollarCoaster_toggle_5",
+          "name": "VerboseMode_5",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for RollarCoaster functionality"
+        },
+        {
+          "id": "RollarCoaster_toggle_6",
+          "name": "AutoSave_6",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for RollarCoaster functionality"
+        },
+        {
+          "id": "RollarCoaster_toggle_7",
+          "name": "DarkMode_7",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for RollarCoaster functionality"
+        },
+        {
+          "id": "RollarCoaster_toggle_8",
+          "name": "EnableFeature_8",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for RollarCoaster functionality"
+        },
+        {
+          "id": "RollarCoaster_toggle_9",
+          "name": "DisableLogging_9",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for RollarCoaster functionality"
+        },
+        {
+          "id": "RollarCoaster_toggle_10",
+          "name": "ShowDebug_10",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for RollarCoaster functionality"
+        },
+        {
+          "id": "RollarCoaster_toggle_11",
+          "name": "UseCache_11",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for RollarCoaster functionality"
+        },
+        {
+          "id": "RollarCoaster_toggle_12",
+          "name": "EnableEncryption_12",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for RollarCoaster functionality"
+        },
+        {
+          "id": "RollarCoaster_toggle_13",
+          "name": "VerboseMode_13",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for RollarCoaster functionality"
+        }
+      ]
+    },
+    {
+      "name": "ai-tools-collection",
+      "path": "D:\\Security Research aka GitHub Repos\\ai-tools-collection",
+      "toggleCount": 5,
+      "toggles": [
+        {
+          "id": "ai-tools-collection_toggle_0",
+          "name": "EnableFeature_0",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for ai-tools-collection functionality"
+        },
+        {
+          "id": "ai-tools-collection_toggle_1",
+          "name": "DisableLogging_1",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for ai-tools-collection functionality"
+        },
+        {
+          "id": "ai-tools-collection_toggle_2",
+          "name": "ShowDebug_2",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for ai-tools-collection functionality"
+        },
+        {
+          "id": "ai-tools-collection_toggle_3",
+          "name": "UseCache_3",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for ai-tools-collection functionality"
+        },
+        {
+          "id": "ai-tools-collection_toggle_4",
+          "name": "EnableEncryption_4",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for ai-tools-collection functionality"
+        }
+      ]
+    },
+    {
+      "name": "mRAWR",
+      "path": "D:\\Security Research aka GitHub Repos\\mRAWR",
+      "toggleCount": 9,
+      "toggles": [
+        {
+          "id": "mRAWR_toggle_0",
+          "name": "EnableFeature_0",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for mRAWR functionality"
+        },
+        {
+          "id": "mRAWR_toggle_1",
+          "name": "DisableLogging_1",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for mRAWR functionality"
+        },
+        {
+          "id": "mRAWR_toggle_2",
+          "name": "ShowDebug_2",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for mRAWR functionality"
+        },
+        {
+          "id": "mRAWR_toggle_3",
+          "name": "UseCache_3",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for mRAWR functionality"
+        },
+        {
+          "id": "mRAWR_toggle_4",
+          "name": "EnableEncryption_4",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for mRAWR functionality"
+        },
+        {
+          "id": "mRAWR_toggle_5",
+          "name": "VerboseMode_5",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for mRAWR functionality"
+        },
+        {
+          "id": "mRAWR_toggle_6",
+          "name": "AutoSave_6",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for mRAWR functionality"
+        },
+        {
+          "id": "mRAWR_toggle_7",
+          "name": "DarkMode_7",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for mRAWR functionality"
+        },
+        {
+          "id": "mRAWR_toggle_8",
+          "name": "EnableFeature_8",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for mRAWR functionality"
+        }
+      ]
+    },
+    {
+      "name": "hon",
+      "path": "D:\\Security Research aka GitHub Repos\\hon",
+      "toggleCount": 8,
+      "toggles": [
+        {
+          "id": "hon_toggle_0",
+          "name": "EnableFeature_0",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for hon functionality"
+        },
+        {
+          "id": "hon_toggle_1",
+          "name": "DisableLogging_1",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for hon functionality"
+        },
+        {
+          "id": "hon_toggle_2",
+          "name": "ShowDebug_2",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for hon functionality"
+        },
+        {
+          "id": "hon_toggle_3",
+          "name": "UseCache_3",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for hon functionality"
+        },
+        {
+          "id": "hon_toggle_4",
+          "name": "EnableEncryption_4",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for hon functionality"
+        },
+        {
+          "id": "hon_toggle_5",
+          "name": "VerboseMode_5",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for hon functionality"
+        },
+        {
+          "id": "hon_toggle_6",
+          "name": "AutoSave_6",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for hon functionality"
+        },
+        {
+          "id": "hon_toggle_7",
+          "name": "DarkMode_7",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for hon functionality"
+        }
+      ]
+    },
+    {
+      "name": "Star",
+      "path": "D:\\Security Research aka GitHub Repos\\Star",
+      "toggleCount": 10,
+      "toggles": [
+        {
+          "id": "Star_toggle_0",
+          "name": "EnableFeature_0",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for Star functionality"
+        },
+        {
+          "id": "Star_toggle_1",
+          "name": "DisableLogging_1",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for Star functionality"
+        },
+        {
+          "id": "Star_toggle_2",
+          "name": "ShowDebug_2",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for Star functionality"
+        },
+        {
+          "id": "Star_toggle_3",
+          "name": "UseCache_3",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for Star functionality"
+        },
+        {
+          "id": "Star_toggle_4",
+          "name": "EnableEncryption_4",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for Star functionality"
+        },
+        {
+          "id": "Star_toggle_5",
+          "name": "VerboseMode_5",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for Star functionality"
+        },
+        {
+          "id": "Star_toggle_6",
+          "name": "AutoSave_6",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for Star functionality"
+        },
+        {
+          "id": "Star_toggle_7",
+          "name": "DarkMode_7",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for Star functionality"
+        },
+        {
+          "id": "Star_toggle_8",
+          "name": "EnableFeature_8",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for Star functionality"
+        },
+        {
+          "id": "Star_toggle_9",
+          "name": "DisableLogging_9",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for Star functionality"
+        }
+      ]
+    },
+    {
+      "name": "ScreenPilot",
+      "path": "D:\\Security Research aka GitHub Repos\\ScreenPilot",
+      "toggleCount": 3,
+      "toggles": [
+        {
+          "id": "ScreenPilot_toggle_0",
+          "name": "EnableFeature_0",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for ScreenPilot functionality"
+        },
+        {
+          "id": "ScreenPilot_toggle_1",
+          "name": "DisableLogging_1",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for ScreenPilot functionality"
+        },
+        {
+          "id": "ScreenPilot_toggle_2",
+          "name": "ShowDebug_2",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for ScreenPilot functionality"
+        }
+      ]
+    },
+    {
+      "name": "neuro-symphonic-workspace",
+      "path": "D:\\Security Research aka GitHub Repos\\neuro-symphonic-workspace",
+      "toggleCount": 7,
+      "toggles": [
+        {
+          "id": "neuro-symphonic-workspace_toggle_0",
+          "name": "EnableFeature_0",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for neuro-symphonic-workspace functionality"
+        },
+        {
+          "id": "neuro-symphonic-workspace_toggle_1",
+          "name": "DisableLogging_1",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for neuro-symphonic-workspace functionality"
+        },
+        {
+          "id": "neuro-symphonic-workspace_toggle_2",
+          "name": "ShowDebug_2",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for neuro-symphonic-workspace functionality"
+        },
+        {
+          "id": "neuro-symphonic-workspace_toggle_3",
+          "name": "UseCache_3",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for neuro-symphonic-workspace functionality"
+        },
+        {
+          "id": "neuro-symphonic-workspace_toggle_4",
+          "name": "EnableEncryption_4",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for neuro-symphonic-workspace functionality"
+        },
+        {
+          "id": "neuro-symphonic-workspace_toggle_5",
+          "name": "VerboseMode_5",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for neuro-symphonic-workspace functionality"
+        },
+        {
+          "id": "neuro-symphonic-workspace_toggle_6",
+          "name": "AutoSave_6",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for neuro-symphonic-workspace functionality"
+        }
+      ]
+    },
+    {
+      "name": "carmilla-encryption-system",
+      "path": "D:\\Security Research aka GitHub Repos\\carmilla-encryption-system",
+      "toggleCount": 11,
+      "toggles": [
+        {
+          "id": "carmilla-encryption-system_toggle_0",
+          "name": "EnableFeature_0",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for carmilla-encryption-system functionality"
+        },
+        {
+          "id": "carmilla-encryption-system_toggle_1",
+          "name": "DisableLogging_1",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for carmilla-encryption-system functionality"
+        },
+        {
+          "id": "carmilla-encryption-system_toggle_2",
+          "name": "ShowDebug_2",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for carmilla-encryption-system functionality"
+        },
+        {
+          "id": "carmilla-encryption-system_toggle_3",
+          "name": "UseCache_3",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for carmilla-encryption-system functionality"
+        },
+        {
+          "id": "carmilla-encryption-system_toggle_4",
+          "name": "EnableEncryption_4",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for carmilla-encryption-system functionality"
+        },
+        {
+          "id": "carmilla-encryption-system_toggle_5",
+          "name": "VerboseMode_5",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for carmilla-encryption-system functionality"
+        },
+        {
+          "id": "carmilla-encryption-system_toggle_6",
+          "name": "AutoSave_6",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for carmilla-encryption-system functionality"
+        },
+        {
+          "id": "carmilla-encryption-system_toggle_7",
+          "name": "DarkMode_7",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for carmilla-encryption-system functionality"
+        },
+        {
+          "id": "carmilla-encryption-system_toggle_8",
+          "name": "EnableFeature_8",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for carmilla-encryption-system functionality"
+        },
+        {
+          "id": "carmilla-encryption-system_toggle_9",
+          "name": "DisableLogging_9",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for carmilla-encryption-system functionality"
+        },
+        {
+          "id": "carmilla-encryption-system_toggle_10",
+          "name": "ShowDebug_10",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for carmilla-encryption-system functionality"
+        }
+      ]
+    },
+    {
+      "name": "carmilla-base",
+      "path": "D:\\Security Research aka GitHub Repos\\carmilla-base",
+      "toggleCount": 10,
+      "toggles": [
+        {
+          "id": "carmilla-base_toggle_0",
+          "name": "EnableFeature_0",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for carmilla-base functionality"
+        },
+        {
+          "id": "carmilla-base_toggle_1",
+          "name": "DisableLogging_1",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for carmilla-base functionality"
+        },
+        {
+          "id": "carmilla-base_toggle_2",
+          "name": "ShowDebug_2",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for carmilla-base functionality"
+        },
+        {
+          "id": "carmilla-base_toggle_3",
+          "name": "UseCache_3",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for carmilla-base functionality"
+        },
+        {
+          "id": "carmilla-base_toggle_4",
+          "name": "EnableEncryption_4",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for carmilla-base functionality"
+        },
+        {
+          "id": "carmilla-base_toggle_5",
+          "name": "VerboseMode_5",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for carmilla-base functionality"
+        },
+        {
+          "id": "carmilla-base_toggle_6",
+          "name": "AutoSave_6",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for carmilla-base functionality"
+        },
+        {
+          "id": "carmilla-base_toggle_7",
+          "name": "DarkMode_7",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for carmilla-base functionality"
+        },
+        {
+          "id": "carmilla-base_toggle_8",
+          "name": "EnableFeature_8",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for carmilla-base functionality"
+        },
+        {
+          "id": "carmilla-base_toggle_9",
+          "name": "DisableLogging_9",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for carmilla-base functionality"
+        }
+      ]
+    },
+    {
+      "name": "compiler-toolchain",
+      "path": "D:\\Security Research aka GitHub Repos\\compiler-toolchain",
+      "toggleCount": 7,
+      "toggles": [
+        {
+          "id": "compiler-toolchain_toggle_0",
+          "name": "EnableFeature_0",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for compiler-toolchain functionality"
+        },
+        {
+          "id": "compiler-toolchain_toggle_1",
+          "name": "DisableLogging_1",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for compiler-toolchain functionality"
+        },
+        {
+          "id": "compiler-toolchain_toggle_2",
+          "name": "ShowDebug_2",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for compiler-toolchain functionality"
+        },
+        {
+          "id": "compiler-toolchain_toggle_3",
+          "name": "UseCache_3",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for compiler-toolchain functionality"
+        },
+        {
+          "id": "compiler-toolchain_toggle_4",
+          "name": "EnableEncryption_4",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for compiler-toolchain functionality"
+        },
+        {
+          "id": "compiler-toolchain_toggle_5",
+          "name": "VerboseMode_5",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for compiler-toolchain functionality"
+        },
+        {
+          "id": "compiler-toolchain_toggle_6",
+          "name": "AutoSave_6",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for compiler-toolchain functionality"
+        }
+      ]
+    },
+    {
+      "name": "Burp",
+      "path": "D:\\Security Research aka GitHub Repos\\Burp",
+      "toggleCount": 12,
+      "toggles": [
+        {
+          "id": "Burp_toggle_0",
+          "name": "EnableFeature_0",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for Burp functionality"
+        },
+        {
+          "id": "Burp_toggle_1",
+          "name": "DisableLogging_1",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for Burp functionality"
+        },
+        {
+          "id": "Burp_toggle_2",
+          "name": "ShowDebug_2",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for Burp functionality"
+        },
+        {
+          "id": "Burp_toggle_3",
+          "name": "UseCache_3",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for Burp functionality"
+        },
+        {
+          "id": "Burp_toggle_4",
+          "name": "EnableEncryption_4",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for Burp functionality"
+        },
+        {
+          "id": "Burp_toggle_5",
+          "name": "VerboseMode_5",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for Burp functionality"
+        },
+        {
+          "id": "Burp_toggle_6",
+          "name": "AutoSave_6",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for Burp functionality"
+        },
+        {
+          "id": "Burp_toggle_7",
+          "name": "DarkMode_7",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for Burp functionality"
+        },
+        {
+          "id": "Burp_toggle_8",
+          "name": "EnableFeature_8",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for Burp functionality"
+        },
+        {
+          "id": "Burp_toggle_9",
+          "name": "DisableLogging_9",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for Burp functionality"
+        },
+        {
+          "id": "Burp_toggle_10",
+          "name": "ShowDebug_10",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for Burp functionality"
+        },
+        {
+          "id": "Burp_toggle_11",
+          "name": "UseCache_11",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for Burp functionality"
+        }
+      ]
+    },
+    {
+      "name": "aws-cost-analyzer",
+      "path": "D:\\Security Research aka GitHub Repos\\aws-cost-analyzer",
+      "toggleCount": 3,
+      "toggles": [
+        {
+          "id": "aws-cost-analyzer_toggle_0",
+          "name": "EnableFeature_0",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for aws-cost-analyzer functionality"
+        },
+        {
+          "id": "aws-cost-analyzer_toggle_1",
+          "name": "DisableLogging_1",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for aws-cost-analyzer functionality"
+        },
+        {
+          "id": "aws-cost-analyzer_toggle_2",
+          "name": "ShowDebug_2",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for aws-cost-analyzer functionality"
+        }
+      ]
+    },
+    {
+      "name": "arcjet-example",
+      "path": "D:\\Security Research aka GitHub Repos\\arcjet-example",
+      "toggleCount": 5,
+      "toggles": [
+        {
+          "id": "arcjet-example_toggle_0",
+          "name": "EnableFeature_0",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for arcjet-example functionality"
+        },
+        {
+          "id": "arcjet-example_toggle_1",
+          "name": "DisableLogging_1",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for arcjet-example functionality"
+        },
+        {
+          "id": "arcjet-example_toggle_2",
+          "name": "ShowDebug_2",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for arcjet-example functionality"
+        },
+        {
+          "id": "arcjet-example_toggle_3",
+          "name": "UseCache_3",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for arcjet-example functionality"
+        },
+        {
+          "id": "arcjet-example_toggle_4",
+          "name": "EnableEncryption_4",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for arcjet-example functionality"
+        }
+      ]
+    },
+    {
+      "name": "arcjet-example-nextjs",
+      "path": "D:\\Security Research aka GitHub Repos\\arcjet-example-nextjs",
+      "toggleCount": 11,
+      "toggles": [
+        {
+          "id": "arcjet-example-nextjs_toggle_0",
+          "name": "EnableFeature_0",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for arcjet-example-nextjs functionality"
+        },
+        {
+          "id": "arcjet-example-nextjs_toggle_1",
+          "name": "DisableLogging_1",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for arcjet-example-nextjs functionality"
+        },
+        {
+          "id": "arcjet-example-nextjs_toggle_2",
+          "name": "ShowDebug_2",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for arcjet-example-nextjs functionality"
+        },
+        {
+          "id": "arcjet-example-nextjs_toggle_3",
+          "name": "UseCache_3",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for arcjet-example-nextjs functionality"
+        },
+        {
+          "id": "arcjet-example-nextjs_toggle_4",
+          "name": "EnableEncryption_4",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for arcjet-example-nextjs functionality"
+        },
+        {
+          "id": "arcjet-example-nextjs_toggle_5",
+          "name": "VerboseMode_5",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for arcjet-example-nextjs functionality"
+        },
+        {
+          "id": "arcjet-example-nextjs_toggle_6",
+          "name": "AutoSave_6",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for arcjet-example-nextjs functionality"
+        },
+        {
+          "id": "arcjet-example-nextjs_toggle_7",
+          "name": "DarkMode_7",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for arcjet-example-nextjs functionality"
+        },
+        {
+          "id": "arcjet-example-nextjs_toggle_8",
+          "name": "EnableFeature_8",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for arcjet-example-nextjs functionality"
+        },
+        {
+          "id": "arcjet-example-nextjs_toggle_9",
+          "name": "DisableLogging_9",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for arcjet-example-nextjs functionality"
+        },
+        {
+          "id": "arcjet-example-nextjs_toggle_10",
+          "name": "ShowDebug_10",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for arcjet-example-nextjs functionality"
+        }
+      ]
+    },
+    {
+      "name": "example-nextjs",
+      "path": "D:\\Security Research aka GitHub Repos\\example-nextjs",
+      "toggleCount": 10,
+      "toggles": [
+        {
+          "id": "example-nextjs_toggle_0",
+          "name": "EnableFeature_0",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for example-nextjs functionality"
+        },
+        {
+          "id": "example-nextjs_toggle_1",
+          "name": "DisableLogging_1",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for example-nextjs functionality"
+        },
+        {
+          "id": "example-nextjs_toggle_2",
+          "name": "ShowDebug_2",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for example-nextjs functionality"
+        },
+        {
+          "id": "example-nextjs_toggle_3",
+          "name": "UseCache_3",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for example-nextjs functionality"
+        },
+        {
+          "id": "example-nextjs_toggle_4",
+          "name": "EnableEncryption_4",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for example-nextjs functionality"
+        },
+        {
+          "id": "example-nextjs_toggle_5",
+          "name": "VerboseMode_5",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for example-nextjs functionality"
+        },
+        {
+          "id": "example-nextjs_toggle_6",
+          "name": "AutoSave_6",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for example-nextjs functionality"
+        },
+        {
+          "id": "example-nextjs_toggle_7",
+          "name": "DarkMode_7",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for example-nextjs functionality"
+        },
+        {
+          "id": "example-nextjs_toggle_8",
+          "name": "EnableFeature_8",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for example-nextjs functionality"
+        },
+        {
+          "id": "example-nextjs_toggle_9",
+          "name": "DisableLogging_9",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for example-nextjs functionality"
+        }
+      ]
+    },
+    {
+      "name": "SaaSEncryptionSecurity",
+      "path": "D:\\Security Research aka GitHub Repos\\SaaSEncryptionSecurity",
+      "toggleCount": 10,
+      "toggles": [
+        {
+          "id": "SaaSEncryptionSecurity_toggle_0",
+          "name": "EnableFeature_0",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for SaaSEncryptionSecurity functionality"
+        },
+        {
+          "id": "SaaSEncryptionSecurity_toggle_1",
+          "name": "DisableLogging_1",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for SaaSEncryptionSecurity functionality"
+        },
+        {
+          "id": "SaaSEncryptionSecurity_toggle_2",
+          "name": "ShowDebug_2",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for SaaSEncryptionSecurity functionality"
+        },
+        {
+          "id": "SaaSEncryptionSecurity_toggle_3",
+          "name": "UseCache_3",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for SaaSEncryptionSecurity functionality"
+        },
+        {
+          "id": "SaaSEncryptionSecurity_toggle_4",
+          "name": "EnableEncryption_4",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for SaaSEncryptionSecurity functionality"
+        },
+        {
+          "id": "SaaSEncryptionSecurity_toggle_5",
+          "name": "VerboseMode_5",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for SaaSEncryptionSecurity functionality"
+        },
+        {
+          "id": "SaaSEncryptionSecurity_toggle_6",
+          "name": "AutoSave_6",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for SaaSEncryptionSecurity functionality"
+        },
+        {
+          "id": "SaaSEncryptionSecurity_toggle_7",
+          "name": "DarkMode_7",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for SaaSEncryptionSecurity functionality"
+        },
+        {
+          "id": "SaaSEncryptionSecurity_toggle_8",
+          "name": "EnableFeature_8",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for SaaSEncryptionSecurity functionality"
+        },
+        {
+          "id": "SaaSEncryptionSecurity_toggle_9",
+          "name": "DisableLogging_9",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for SaaSEncryptionSecurity functionality"
+        }
+      ]
+    },
+    {
+      "name": "NotYours",
+      "path": "D:\\Security Research aka GitHub Repos\\NotYours",
+      "toggleCount": 10,
+      "toggles": [
+        {
+          "id": "NotYours_toggle_0",
+          "name": "EnableFeature_0",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for NotYours functionality"
+        },
+        {
+          "id": "NotYours_toggle_1",
+          "name": "DisableLogging_1",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for NotYours functionality"
+        },
+        {
+          "id": "NotYours_toggle_2",
+          "name": "ShowDebug_2",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for NotYours functionality"
+        },
+        {
+          "id": "NotYours_toggle_3",
+          "name": "UseCache_3",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for NotYours functionality"
+        },
+        {
+          "id": "NotYours_toggle_4",
+          "name": "EnableEncryption_4",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for NotYours functionality"
+        },
+        {
+          "id": "NotYours_toggle_5",
+          "name": "VerboseMode_5",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for NotYours functionality"
+        },
+        {
+          "id": "NotYours_toggle_6",
+          "name": "AutoSave_6",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for NotYours functionality"
+        },
+        {
+          "id": "NotYours_toggle_7",
+          "name": "DarkMode_7",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for NotYours functionality"
+        },
+        {
+          "id": "NotYours_toggle_8",
+          "name": "EnableFeature_8",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for NotYours functionality"
+        },
+        {
+          "id": "NotYours_toggle_9",
+          "name": "DisableLogging_9",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for NotYours functionality"
+        }
+      ]
+    },
+    {
+      "name": "bootstrap-1757011171",
+      "path": "D:\\Security Research aka GitHub Repos\\bootstrap-1757011171",
+      "toggleCount": 11,
+      "toggles": [
+        {
+          "id": "bootstrap-1757011171_toggle_0",
+          "name": "EnableFeature_0",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for bootstrap-1757011171 functionality"
+        },
+        {
+          "id": "bootstrap-1757011171_toggle_1",
+          "name": "DisableLogging_1",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for bootstrap-1757011171 functionality"
+        },
+        {
+          "id": "bootstrap-1757011171_toggle_2",
+          "name": "ShowDebug_2",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for bootstrap-1757011171 functionality"
+        },
+        {
+          "id": "bootstrap-1757011171_toggle_3",
+          "name": "UseCache_3",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for bootstrap-1757011171 functionality"
+        },
+        {
+          "id": "bootstrap-1757011171_toggle_4",
+          "name": "EnableEncryption_4",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for bootstrap-1757011171 functionality"
+        },
+        {
+          "id": "bootstrap-1757011171_toggle_5",
+          "name": "VerboseMode_5",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for bootstrap-1757011171 functionality"
+        },
+        {
+          "id": "bootstrap-1757011171_toggle_6",
+          "name": "AutoSave_6",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for bootstrap-1757011171 functionality"
+        },
+        {
+          "id": "bootstrap-1757011171_toggle_7",
+          "name": "DarkMode_7",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for bootstrap-1757011171 functionality"
+        },
+        {
+          "id": "bootstrap-1757011171_toggle_8",
+          "name": "EnableFeature_8",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for bootstrap-1757011171 functionality"
+        },
+        {
+          "id": "bootstrap-1757011171_toggle_9",
+          "name": "DisableLogging_9",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for bootstrap-1757011171 functionality"
+        },
+        {
+          "id": "bootstrap-1757011171_toggle_10",
+          "name": "ShowDebug_10",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for bootstrap-1757011171 functionality"
+        }
+      ]
+    },
+    {
+      "name": "droplet-cloudinit-oneshot-reproducible-9l1o7",
+      "path": "D:\\Security Research aka GitHub Repos\\droplet-cloudinit-oneshot-reproducible-9l1o7",
+      "toggleCount": 9,
+      "toggles": [
+        {
+          "id": "droplet-cloudinit-oneshot-reproducible-9l1o7_toggle_0",
+          "name": "EnableFeature_0",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for droplet-cloudinit-oneshot-reproducible-9l1o7 functionality"
+        },
+        {
+          "id": "droplet-cloudinit-oneshot-reproducible-9l1o7_toggle_1",
+          "name": "DisableLogging_1",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for droplet-cloudinit-oneshot-reproducible-9l1o7 functionality"
+        },
+        {
+          "id": "droplet-cloudinit-oneshot-reproducible-9l1o7_toggle_2",
+          "name": "ShowDebug_2",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for droplet-cloudinit-oneshot-reproducible-9l1o7 functionality"
+        },
+        {
+          "id": "droplet-cloudinit-oneshot-reproducible-9l1o7_toggle_3",
+          "name": "UseCache_3",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for droplet-cloudinit-oneshot-reproducible-9l1o7 functionality"
+        },
+        {
+          "id": "droplet-cloudinit-oneshot-reproducible-9l1o7_toggle_4",
+          "name": "EnableEncryption_4",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for droplet-cloudinit-oneshot-reproducible-9l1o7 functionality"
+        },
+        {
+          "id": "droplet-cloudinit-oneshot-reproducible-9l1o7_toggle_5",
+          "name": "VerboseMode_5",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for droplet-cloudinit-oneshot-reproducible-9l1o7 functionality"
+        },
+        {
+          "id": "droplet-cloudinit-oneshot-reproducible-9l1o7_toggle_6",
+          "name": "AutoSave_6",
+          "type": "boolean",
+          "value": true,
+          "description": "Toggle for droplet-cloudinit-oneshot-reproducible-9l1o7 functionality"
+        },
+        {
+          "id": "droplet-cloudinit-oneshot-reproducible-9l1o7_toggle_7",
+          "name": "DarkMode_7",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for droplet-cloudinit-oneshot-reproducible-9l1o7 functionality"
+        },
+        {
+          "id": "droplet-cloudinit-oneshot-reproducible-9l1o7_toggle_8",
+          "name": "EnableFeature_8",
+          "type": "boolean",
+          "value": false,
+          "description": "Toggle for droplet-cloudinit-oneshot-reproducible-9l1o7 functionality"
+        }
+      ]
+    }
+  ]
+}
