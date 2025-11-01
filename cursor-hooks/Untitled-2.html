@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS-Free Copilot - Completely Standalone</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #252526;
+            padding: 15px 20px;
+            border-bottom: 1px solid #3e3e42;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .header h1 {
+            color: #ffffff;
+            font-size: 20px;
+            font-weight: 500;
+        }
+
+        .mode-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mode-selector label {
+            color: #d4d4d4;
+            font-size: 14px;
+        }
+
+        .mode-selector select {
+            background: #3c3c3c;
+            color: #d4d4d4;
+            border: 1px solid #555;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .agentic-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-left: 10px;
+        }
+
+        .agentic-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-small {
+            background: #3c3c3c;
+            color: #d4d4d4;
+            border: 1px solid #555;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        .btn-small:hover {
+            background: #4c4c4c;
+        }
+
+        .api-config {
+            background: #2d2d30;
+            padding: 10px 15px;
+            border-bottom: 1px solid #3e3e42;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 12px;
+            flex-wrap: wrap;
+        }
+
+        .api-config input {
+            background: #3c3c3c;
+            color: #d4d4d4;
+            border: 1px solid #555;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            width: 200px;
+        }
+
+        .api-config input:focus {
+            outline: none;
+            border-color: #0e639c;
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .input-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #3e3e42;
+            background: #252526;
+        }
+
+        .output-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #1e1e1e;
+        }
+
+        .panel-header {
+            background: #2d2d30;
+            padding: 10px 15px;
+            border-bottom: 1px solid #3e3e42;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .panel-header h3 {
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .panel-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            overflow: hidden;
+        }
+
+        .input-section {
+            margin-bottom: 15px;
+        }
+
+        .input-section label {
+            display: block;
+            color: #d4d4d4;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        textarea {
+            width: 100%;
+            background: #3c3c3c;
+            color: #d4d4d4;
+            border: 1px solid #555;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #0e639c;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: #0e639c;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: #1177bb;
+        }
+
+        .btn.primary {
+            background: #007acc;
+        }
+
+        .btn.primary:hover {
+            background: #0088dd;
+        }
+
+        .btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+        }
+
+        .output-content {
+            flex: 1;
+            background: #1e1e1e;
+            border: 1px solid #3e3e42;
+            border-radius: 4px;
+            padding: 15px;
+            overflow-y: auto;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .status-bar {
+            background: #2d2d30;
+            padding: 8px 15px;
+            border-top: 1px solid #3e3e42;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-ready { background: #4caf50; }
+        .status-processing { background: #ff9800; }
+        .status-error { background: #f44336; }
+
+        .code-block {
+            background: #2d2d30;
+            border: 1px solid #3e3e42;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 10px 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            overflow-x: auto;
+        }
+
+        .ai-response {
+            background: #2d2d30;
+            border-left: 4px solid #0e639c;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .input-panel {
+                border-right: none;
+                border-bottom: 1px solid #3e3e42;
+            }
+            
+            .button-group {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>AWS-Free Copilot - Completely Standalone</h1>
+        <div class="mode-selector">
+            <label for="mode-select">AI Mode:</label>
+            <select id="mode-select" onchange="changeMode()">
+                <option value="simulated">Simulated AI (Always Works)</option>
+                <option value="openai">OpenAI API</option>
+                <option value="anthropic">Anthropic Claude</option>
+                <option value="local">Local AI (Ollama)</option>
+                <option value="multi">Multi-Service</option>
+                <option value="agentic">Agentic AI</option>
+            </select>
+        </div>
+        <div class="agentic-controls" style="display:flex;gap:10px;align-items:center;margin-left:10px;">
+            <div style="display:flex;align-items:center;gap:6px;">
+                <span id="agentic-thinking-indicator">🟢</span>
+                <button id="agentic-toggle-thinking" class="btn-small" type="button">Toggle Thinking</button>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;">
+                <span id="agentic-search-indicator">🟢</span>
+                <button id="agentic-toggle-search" class="btn-small" type="button">Toggle Search</button>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;">
+                <span id="agentic-planning-indicator">🟢</span>
+                <button id="agentic-toggle-planning" class="btn-small" type="button">Toggle Planning</button>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;">
+                <span id="agentic-selfReflection-indicator">🟢</span>
+                <button id="agentic-toggle-selfReflection" class="btn-small" type="button">Toggle Reflect</button>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;">
+                <span id="agentic-learning-indicator">🟢</span>
+                <button id="agentic-toggle-learning" class="btn-small" type="button">Toggle Learn</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="api-config">
+        <div>
+            <label>OpenAI Key:</label>
+            <input type="password" id="openai-key" placeholder="sk-..." onchange="saveSettings()">
+        </div>
+        <div>
+            <label>Anthropic Key:</label>
+            <input type="password" id="anthropic-key" placeholder="sk-ant-..." onchange="saveSettings()">
+        </div>
+        <div>
+            <label>Local AI URL:</label>
+            <input type="text" id="local-ai-url" value="http://localhost:11434" placeholder="http://localhost:11434" title="Local AI endpoint URL" onchange="saveSettings()">
+        </div>
+        <div>
+            <button class="btn" onclick="clearSettings()">Clear Keys</button>
+            <button class="btn primary" onclick="testConnection()">Test Connection</button>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="input-panel">
+            <div class="panel-header">
+                <h3>Input</h3>
+                <div>
+                    <button class="btn" onclick="getClipboard()">Clipboard</button>
+                    <button class="btn" onclick="loadFile()">Load File</button>
+                </div>
+            </div>
+            <div class="panel-content">
+                <div class="input-section">
+                    <label for="query-input">Query:</label>
+                    <textarea id="query-input" placeholder="Ask me anything about coding, debugging, optimization, or general programming questions..."></textarea>
+                </div>
+
+                <div class="input-section">
+                    <label for="context-input">Context (optional):</label>
+                    <textarea id="context-input" placeholder="Paste your code here for context-aware responses..."></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn" onclick="clearInput()">Clear</button>
+                    <button class="btn primary" id="process-btn" onclick="processQuery()">Process Query</button>
+                    <button class="btn" onclick="generateCode()">Generate Code</button>
+                    <button class="btn" onclick="explainError()">Explain Error</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="output-panel">
+            <div class="panel-header">
+                <h3>Output</h3>
+                <div>
+                    <button class="btn" onclick="copyResponse()">Copy Response</button>
+                    <button class="btn" onclick="clearOutput()">Clear Output</button>
+                </div>
+            </div>
+            <div class="panel-content">
+                <div id="output-content" class="output-content">
+                    <div style="text-align: center; color: #888; padding: 40px;">
+                        <h3>[SUCCESS] AWS-Free Copilot Ready!</h3>
+                        <p>Select an AI mode and start asking questions.</p>
+                        <ul style="text-align: left; margin-top: 20px; max-width: 400px; margin-left: auto; margin-right: auto;">
+                            <li><strong>Simulated Mode:</strong> Works instantly, no setup required</li>
+                            <li><strong>OpenAI/Anthropic:</strong> Add API keys above for premium AI</li>
+                            <li><strong>Local AI:</strong> Connect to your local Ollama/LM Studio</li>
+                            <li><strong>Multi-Service:</strong> Combines responses from all available AIs</li>
+                            <li><strong>Agentic AI:</strong> Advanced AI with thinking, planning, and learning</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="status-bar">
+        <div>
+            <span id="status-indicator" class="status-indicator status-ready"></span>
+            <span id="status-text">Ready</span>
+        </div>
+        <div id="response-info">Ready for new query</div>
+    </div>
+
+    <script>
+        // Global variables
+        let isProcessing = false;
+        let currentMode = 'simulated';
+        let responseHistory = [];
+
+        // Embedded Agentic AI System
+        class AgenticCopilot {
+            constructor(apiKeys = {}) {
+                this.apiKeys = apiKeys;
+                this.tools = {};
+                this.thinkingEnabled = true;
+                this.searchEnabled = true;
+                this.planningEnabled = true;
+                this.selfReflectionEnabled = true;
+                this.learningEnabled = true;
+                this.memory = [];
+                this.currentPlan = null;
+                this.executionHistory = [];
+            }
+
+            registerTool(name, func, description = '') {
+                this.tools[name] = {
+                    func: func,
+                    description: description,
+                    usageCount: 0,
+                    successRate: 1.0
+                };
+                console.log(`AgenticCopilot: Tool '${name}' registered`);
+            }
+
+            toggleThinking(enable) {
+                this.thinkingEnabled = enable;
+                console.log(`Agentic thinking ${this.thinkingEnabled ? 'enabled' : 'disabled'}`);
+                this.updateUI('thinking', enable);
+            }
+
+            toggleSearch(enable) {
+                this.searchEnabled = enable;
+                console.log(`Agentic search ${this.searchEnabled ? 'enabled' : 'disabled'}`);
+                this.updateUI('search', enable);
+            }
+
+            togglePlanning(enable) {
+                this.planningEnabled = enable;
+                console.log(`Agentic planning ${this.planningEnabled ? 'enabled' : 'disabled'}`);
+                this.updateUI('planning', enable);
+            }
+
+            toggleSelfReflection(enable) {
+                this.selfReflectionEnabled = enable;
+                console.log(`Agentic self-reflection ${this.selfReflectionEnabled ? 'enabled' : 'disabled'}`);
+                this.updateUI('selfReflection', enable);
+            }
+
+            toggleLearning(enable) {
+                this.learningEnabled = enable;
+                console.log(`Agentic learning ${this.learningEnabled ? 'enabled' : 'disabled'}`);
+                this.updateUI('learning', enable);
+            }
+
+            updateUI(component, enabled) {
+                const indicator = document.getElementById(`agentic-${component}-indicator`);
+                if (indicator) {
+                    indicator.textContent = enabled ? '🟢' : '🔴';
+                }
+            }
+
+            async agenticThinking(query, context) {
+                if (!this.thinkingEnabled) return { confidence: 0.5, reasoning: 'Thinking disabled' };
+                
+                console.log('AgenticCopilot: Starting thinking process...');
+                
+                // Simulate thinking process
+                const thinkingSteps = [
+                    'Analyzing query intent...',
+                    'Identifying required tools...',
+                    'Assessing complexity...',
+                    'Evaluating confidence...'
+                ];
+                
+                let reasoning = '';
+                for (const step of thinkingSteps) {
+                    console.log(`AgenticCopilot: ${step}`);
+                    await new Promise(resolve => setTimeout(resolve, 200));
+                    reasoning += step + ' ';
+                }
+                
+                const confidence = Math.random() * 0.4 + 0.6; // 0.6-1.0
+                return { confidence, reasoning: reasoning.trim() };
+            }
+
+            createPlan(query, context, thinkingResult) {
+                if (!this.planningEnabled) return { steps: [], estimatedTime: 0 };
+                
+                console.log('AgenticCopilot: Creating execution plan...');
+                
+                const steps = [
+                    { action: 'analyze', tool: 'analyzeQuery', params: { query, context } },
+                    { action: 'generate', tool: 'generateResponse', params: { query, context } },
+                    { action: 'validate', tool: 'validateResponse', params: {} }
+                ];
+                
+                const estimatedTime = steps.length * 2; // seconds
+                return { steps, estimatedTime };
+            }
+
+            async executePlan(plan) {
+                console.log('AgenticCopilot: Executing plan...');
+                const results = [];
+                
+                for (const step of plan.steps) {
+                    console.log(`AgenticCopilot: Executing step: ${step.action}`);
+                    
+                    if (this.tools[step.tool]) {
+                        try {
+                            const result = await this.tools[step.tool].func(step.params);
+                            results.push({ step: step.action, success: true, result });
+                            this.tools[step.tool].usageCount++;
+                        } catch (error) {
+                            console.error(`AgenticCopilot: Step ${step.action} failed:`, error);
+                            results.push({ step: step.action, success: false, error: error.message });
+                        }
+                    } else {
+                        console.warn(`AgenticCopilot: Tool ${step.tool} not found`);
+                        results.push({ step: step.action, success: false, error: 'Tool not found' });
+                    }
+                }
+                
+                return results;
+            }
+
+            selfReflect(plan, results) {
+                if (!this.selfReflectionEnabled) return { insights: [], improvements: [] };
+                
+                console.log('AgenticCopilot: Self-reflecting on execution...');
+                
+                const insights = [];
+                const improvements = [];
+                
+                results.forEach(result => {
+                    if (result.success) {
+                        insights.push(`Step ${result.step} completed successfully`);
+                    } else {
+                        improvements.push(`Improve ${result.step}: ${result.error}`);
+                    }
+                });
+                
+                return { insights, improvements };
+            }
+
+            learnFromFeedback(feedback) {
+                if (!this.learningEnabled) return;
+                
+                console.log('AgenticCopilot: Learning from feedback...');
+                this.memory.push({
+                    timestamp: new Date().toISOString(),
+                    feedback: feedback,
+                    context: this.currentPlan
+                });
+                
+                // Keep only last 100 memories
+                if (this.memory.length > 100) {
+                    this.memory = this.memory.slice(-100);
+                }
+            }
+
+            async processAgenticQuery(query, context) {
+                console.log('AgenticCopilot: Processing agentic query...');
+                
+                // Step 1: Thinking
+                const thinkingResult = await this.agenticThinking(query, context);
+                console.log('AgenticCopilot: Thinking result:', thinkingResult);
+                
+                // Step 2: Planning
+                const plan = this.createPlan(query, context, thinkingResult);
+                this.currentPlan = plan;
+                console.log('AgenticCopilot: Plan created:', plan);
+                
+                // Step 3: Execution
+                const results = await this.executePlan(plan);
+                console.log('AgenticCopilot: Execution results:', results);
+                
+                // Step 4: Self-reflection
+                const reflection = this.selfReflect(plan, results);
+                console.log('AgenticCopilot: Reflection:', reflection);
+                
+                // Step 5: Synthesize response
+                return this.synthesizeResponse(query, context, results, reflection);
+            }
+
+            synthesizeResponse(query, context, results, reflection) {
+                const successfulResults = results.filter(r => r.success);
+                const failedResults = results.filter(r => !r.success);
+                
+                let response = `[AGENTIC AI RESPONSE]\n\n`;
+                response += `Query: ${query}\n\n`;
+                
+                if (successfulResults.length > 0) {
+                    response += `[SUCCESS] Executed ${successfulResults.length} steps successfully.\n\n`;
+                    successfulResults.forEach(result => {
+                        response += `- ${result.step}: ${JSON.stringify(result.result)}\n`;
+                    });
+                }
+                
+                if (failedResults.length > 0) {
+                    response += `\n[WARNING] ${failedResults.length} steps failed:\n`;
+                    failedResults.forEach(result => {
+                        response += `- ${result.step}: ${result.error}\n`;
+                    });
+                }
+                
+                if (reflection.insights.length > 0) {
+                    response += `\n[INSIGHTS]\n`;
+                    reflection.insights.forEach(insight => {
+                        response += `- ${insight}\n`;
+                    });
+                }
+                
+                if (reflection.improvements.length > 0) {
+                    response += `\n[IMPROVEMENTS]\n`;
+                    reflection.improvements.forEach(improvement => {
+                        response += `- ${improvement}\n`;
+                    });
+                }
+                
+                return response;
+            }
+
+            getStatus() {
+                return {
+                    thinkingEnabled: this.thinkingEnabled,
+                    searchEnabled: this.searchEnabled,
+                    planningEnabled: this.planningEnabled,
+                    selfReflectionEnabled: this.selfReflectionEnabled,
+                    learningEnabled: this.learningEnabled,
+                    toolsCount: Object.keys(this.tools).length,
+                    memorySize: this.memory.length
+                };
+            }
+
+            reset() {
+                this.memory = [];
+                this.currentPlan = null;
+                this.executionHistory = [];
+                console.log('AgenticCopilot: Reset completed');
+            }
+        }
+
+        // Initialize Agentic AI
+        let agenticAI = null;
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('AWS-Free Copilot: Initializing...');
+            
+            // Initialize agentic AI
+            agenticAI = new AgenticCopilot();
+            
+            // Register tools
+            agenticAI.registerTool('analyzeQuery', async (params) => {
+                return `Analyzed query: "${params.query}" 
