@@ -23,6 +23,30 @@ That's it! ✨
 
 ---
 
+## 🌟 BigDaddyG Ecosystem - All Repositories
+
+**This is part of a complete development ecosystem!**
+
+### 🏠 Main IDE
+- **[BigDaddyG-IDE](https://github.com/ItsMehRAWRXD/BigDaddyG-IDE)** ⭐ You are here
+
+### 🔧 Extensions
+- **[BigDaddyG-ASM-IDE](https://github.com/ItsMehRAWRXD/BigDaddyG-ASM-IDE)** - Assembly Development Extension
+- **[RawrZ-Extensions](https://github.com/ItsMehRAWRXD/RawrZ-Extensions)** - Security-Focused Extensions
+- **[VSCode-AI-Chat-Extension](https://github.com/ItsMehRAWRXD/VSCode-AI-Chat-Extension)** - AI Chat Interface
+- **[BigDaddyG-Cursor-Extension](https://github.com/ItsMehRAWRXD/BigDaddyG-Cursor-Extension)** - Cursor IDE Integration
+- **[bigdaddyg-extension](https://github.com/ItsMehRAWRXD/bigdaddyg-extension)** - General Extension Tools
+- **[UnifiedAI-Extension](https://github.com/ItsMehRAWRXD/UnifiedAI-Extension)** - Multi-Model AI Interface
+- **[ai-assistant-extension](https://github.com/ItsMehRAWRXD/ai-assistant-extension)** - AI Coding Assistant
+
+### 🏆 Compiler Ecosystem (Revolutionary!)
+- **[Pure-PowerShell-Compilers](https://github.com/ItsMehRAWRXD/Pure-PowerShell-Compilers)** ⭐ 38 Languages!
+- **[Compiler-Framework](https://github.com/ItsMehRAWRXD/Compiler-Framework)** - Self-Hosting Compiler
+
+**Total: 10 repositories in the ecosystem**
+
+---
+
 ## 🎯 What's Included in This Repo
 
 ✅ **All Source Code** (6.8 MB)
