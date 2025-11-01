@@ -1,0 +1,92 @@
+{
+  "name": "bigdaddyg-ide",
+  "version": "2.0.0",
+  "description": "The world's first 100% agentic IDE with voice coding and self-healing",
+  "main": "electron/main.js",
+  "author": "BigDaddyG IDE Team",
+  "license": "MIT",
+  "homepage": "https://github.com/ItsMehRAWRXD/BigDaddyG-IDE",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ItsMehRAWRXD/BigDaddyG-IDE.git"
+  },
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build": "node build-installer.js all",
+    "build:win": "node build-installer.js windows",
+    "build:mac": "node build-installer.js macos",
+    "build:linux": "node build-installer.js linux",
+    "build:portable": "electron-builder --win portable",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "dependencies": {
+    "adm-zip": "^0.5.10",
+    "electron-window-state": "^5.0.3",
+    "express": "^4.18.2",
+    "ini": "^6.0.0",
+    "node-fetch": "^2.7.0",
+    "uuid": "^9.0.1",
+    "ws": "^8.14.2"
+  },
+  "devDependencies": {
+    "electron": "^27.0.0",
+    "electron-builder": "^24.6.4"
+  },
+  "build": {
+    "appId": "com.bigdaddyg.ide",
+    "productName": "BigDaddyG IDE",
+    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build-resources"
+    },
+    "files": [
+      "electron/**/*",
+      "server/**/*",
+      "hooks/**/*",
+      "orchestration/**/*",
+      "package.json",
+      "node_modules/**/*"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "BigDaddyG IDE"
+    },
+    "portable": {
+      "artifactName": "BigDaddyG-Portable-${version}.exe"
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "category": "public.app-category.developer-tools"
+    },
+    "dmg": {
+      "title": "BigDaddyG IDE ${version}"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb",
+        "rpm"
+      ],
+      "category": "Development"
+    },
+    "appImage": {
+      "artifactName": "BigDaddyG-${version}.AppImage"
+    }
+  }
+}

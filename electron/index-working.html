@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BigDaddyG IDE Professional Edition</title>
+    
+    <style>
+        :root {
+            --bg: #0a0a1e;
+            --void: #05050f;
+            --cyan: #00d4ff;
+            --green: #00ff88;
+            --purple: #a855f7;
+            --orange: #ff6b35;
+            --red: #ff4757;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--void);
+            color: #fff;
+            overflow: hidden;
+        }
+        
+        #app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        #title-bar {
+            height: 35px;
+            background: var(--void);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+        }
+        
+        #title-bar .title {
+            font-size: 12px;
+            color: var(--cyan);
+            font-weight: bold;
+        }
+        
+        #main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        #sidebar {
+            width: 250px;
+            background: var(--void);
+            border-right: 1px solid rgba(0, 212, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #sidebar-header {
+            padding: 15px;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        #sidebar-header h3 {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--cyan);
+        }
+        
+        #add-file-btn {
+            background: none;
+            border: 1px solid var(--green);
+            color: var(--green);
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        #add-file-btn:hover {
+            background: rgba(0, 255, 136, 0.1);
+        }
+        
+        #file-tree {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        
+        .file-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+        
+        .file-item:hover {
+            background: rgba(0, 212, 255, 0.1);
+        }
+        
+        .file-item.active {
+            background: rgba(0, 212, 255, 0.2);
+            color: var(--cyan);
+            font-weight: bold;
+        }
+        
+        #editor-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg);
+        }
+        
+        #tab-bar {
+            display: flex;
+            background: var(--void);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+            overflow-x: auto;
+            height: 40px;
+            scroll-behavior: smooth;
+        }
+        
+        #tab-bar::-webkit-scrollbar {
+            height: 4px;
+        }
+        
+        #tab-bar::-webkit-scrollbar-thumb {
+            background: rgba(0, 212, 255, 0.5);
+            border-radius: 2px;
+        }
+        
+        .editor-tab {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-right: 1px solid rgba(0, 212, 255, 0.1);
+            cursor: pointer;
+            font-size: 13px;
+            color: #888;
+            transition: all 0.2s;
+            min-width: 150px;
+            max-width: 250px;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+        
+        .editor-tab:hover {
+            background: rgba(0, 212, 255, 0.1);
+            color: #fff;
+        }
+        
+        .editor-tab.active {
+            background: var(--bg);
+            color: var(--cyan);
+            font-weight: bold;
+            border-bottom: 2px solid var(--cyan);
+        }
+        
+        .editor-tab .close-btn {
+            opacity: 0;
+            color: var(--red);
+            font-weight: bold;
+            margin-left: auto;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        
+        .editor-tab:hover .close-btn {
+            opacity: 1;
+        }
+        
+        .editor-tab .close-btn:hover {
+            background: rgba(255, 71, 87, 0.2);
+        }
+        
+        .tab-count-badge {
+            position: fixed;
+            top: 40px;
+            right: 420px;
+            padding: 4px 10px;
+            background: rgba(0, 212, 255, 0.2);
+            border: 1px solid var(--cyan);
+            border-radius: 12px;
+            font-size: 11px;
+            color: var(--cyan);
+            z-index: 100;
+            font-weight: bold;
+        }
+        
+        #editor-area {
+            flex: 1;
+            padding: 15px;
+            overflow: auto;
+        }
+        
+        #editor {
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 5px;
+            color: #fff;
+            padding: 15px;
+            font-family: 'Courier New', Consolas, monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: none;
+        }
+        
+        #editor:focus {
+            outline: none;
+            border-color: var(--cyan);
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+        
+        #right-sidebar {
+            width: 400px;
+            background: var(--void);
+            border-left: 1px solid rgba(0, 212, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #ai-chat-header {
+            padding: 15px;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        #ai-chat-header h3 {
+            font-size: 14px;
+            color: var(--cyan);
+        }
+        
+        .settings-btn {
+            background: none;
+            border: 1px solid var(--cyan);
+            color: var(--cyan);
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+        
+        #model-selector {
+            width: 100%;
+            padding: 8px;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid var(--cyan);
+            border-radius: 4px;
+            color: var(--cyan);
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        #quick-toggles {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+            font-size: 11px;
+        }
+        
+        #quick-toggles label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px;
+            background: rgba(0, 255, 255, 0.05);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .quality-buttons {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .quality-btn {
+            flex: 1;
+            padding: 6px;
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid var(--cyan);
+            color: var(--cyan);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+        
+        .quality-btn.active {
+            background: rgba(0, 255, 0, 0.2);
+            border-color: var(--green);
+            color: var(--green);
+            font-weight: bold;
+        }
+        
+        #ai-chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+        
+        .ai-message {
+            margin-bottom: 15px;
+            padding: 12px;
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 3px solid var(--cyan);
+            border-radius: 5px;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+        
+        .user-message {
+            background: rgba(255, 107, 53, 0.1);
+            border-left: 3px solid var(--orange);
+        }
+        
+        #ai-input-container {
+            padding: 15px;
+            border-top: 1px solid rgba(0, 212, 255, 0.2);
+        }
+        
+        #ai-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 5px;
+            color: #fff;
+            font-size: 13px;
+            resize: vertical;
+            min-height: 80px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        #ai-input:focus {
+            outline: none;
+            border-color: var(--cyan);
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            flex: 1;
+            background: var(--cyan);
+            color: var(--void);
+        }
+        
+        .btn-primary:hover {
+            background: var(--green);
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 107, 53, 0.2);
+            color: var(--orange);
+            border: 1px solid var(--orange);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 107, 53, 0.3);
+        }
+        
+        .btn-danger {
+            background: rgba(255, 71, 87, 0.2);
+            color: var(--red);
+            border: 1px solid var(--red);
+        }
+        
+        .btn-danger:hover {
+            background: rgba(255, 71, 87, 0.3);
+        }
+        
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--void);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 212, 255, 0.3);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 212, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div id="title-bar">
+            <div class="title">🌌 BigDaddyG IDE - Professional Edition (Working!)</div>
+        </div>
+        
+        <div id="main-container">
+            <!-- Left Sidebar -->
+            <div id="sidebar">
+                <div id="sidebar-header">
+                    <h3>📁 Explorer</h3>
+                    <button id="add-file-btn" title="New File">+</button>
+                </div>
+                <div id="file-tree">
+                    <div class="file-item active" data-tab="welcome">
+                        <span>📄</span>
+                        <span>Welcome.md</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Editor Container -->
+            <div id="editor-container">
+                <div id="tab-bar">
+                    <div class="editor-tab active" data-tab="welcome">
+                        <span>📄</span>
+                        <span>Welcome.md</span>
+                        <span class="close-btn">×</span>
+                    </div>
+                </div>
+                
+                <div id="editor-area">
+                    <textarea id="editor" spellcheck="false"># 🌌 Welcome to BigDaddyG IDE Professional Edition!
+
+## Your AI-Powered Development Environment
+
+**This is the WORKING version!** ✅
+
+### Features:
+- ✅ **Unlimited Tabs** - Open as many files as you want
+- ✅ **Syntax Highlighting** - Color-coded (coming soon with Monaco)
+- ✅ **AI Copilot** - Chat with BigDaddyG on the right
+- ✅ **Multi-Tab Editing** - Work on multiple files
+- ✅ **File System Integration** - Save and load real files
+- ✅ **1M Context Window** - AI remembers everything
+
+### Keyboard Shortcuts:
+- `Ctrl+Tab` / `Ctrl+Shift+Tab` - Navigate tabs
+- `Ctrl+W` - Close tab
+- `Ctrl+1-9` - Jump to specific tab
+- `Alt+Left/Right` - Navigate tabs (browser-style)
+
+### Try It Out:
+1. Click the **+ button** on the left to create a new file
+2. Type your code in this editor
+3. Chat with BigDaddyG AI on the right
+4. Use the toggles to enable features
+
+**🚀 Start coding and let BigDaddyG help you build amazing things!**
+</textarea>
+                </div>
+            </div>
+            
+            <!-- Right Sidebar - AI Chat -->
+            <div id="right-sidebar">
+                <div id="ai-chat-header">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3>🤖 BigDaddyG AI</h3>
+                        <button class="settings-btn">⚙️ Settings</button>
+                    </div>
+                    
+                    <select id="model-selector">
+                        <option value="bigdaddyg-latest">🧠 BigDaddyG Latest (Local)</option>
+                        <option value="claude-sonnet-4">🤖 Claude Sonnet 4</option>
+                        <option value="gpt-4-turbo">🌟 GPT-4 Turbo</option>
+                    </select>
+                    
+                    <div id="quick-toggles">
+                        <label>
+                            <input type="checkbox" id="toggle-thinking" checked>
+                            <span>🤔 Thinking</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" id="toggle-web-search">
+                            <span>🌐 Web Search</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" id="toggle-deep-research">
+                            <span>📚 Deep Research</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" id="toggle-agentic" checked>
+                            <span>🤖 Agentic Mode</span>
+                        </label>
+                    </div>
+                    
+                    <div class="quality-buttons">
+                        <button class="quality-btn active" data-quality="auto">Auto</button>
+                        <button class="quality-btn" data-quality="fast">Fast</button>
+                        <button class="quality-btn" data-quality="max">Max</button>
+                    </div>
+                </div>
+                
+                <div id="ai-chat-messages">
+                    <div class="ai-message">
+                        <strong style="color: var(--cyan);">BigDaddyG:</strong><br><br>
+                        Welcome to BigDaddyG IDE Professional Edition! 🌌<br><br>
+                        I'm your AI copilot, trained on 200K lines of assembly and security code.<br><br>
+                        <strong>Features:</strong><br>
+                        • ✅ Ultra-fast autocomplete<br>
+                        • 🤖 Full agentic capabilities<br>
+                        • 📚 Deep research engine<br>
+                        • 1M context window<br>
+                        • 🐝 200 parallel mini-agents<br><br>
+                        Ask me anything! Or try:<br>
+                        • "Create a REST API"<br>
+                        • "Debug this code"<br>
+                        • "Optimize performance"
+                    </div>
+                </div>
+                
+                <div id="ai-input-container">
+                    <textarea id="ai-input" placeholder="Ask BigDaddyG anything..."></textarea>
+                    <div class="btn-group">
+                        <button class="btn btn-primary">💬 Send</button>
+                        <button class="btn btn-secondary">🎤</button>
+                        <button class="btn btn-danger">🗑️</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="working-ide.js"></script>
+</body>
+</html>
+

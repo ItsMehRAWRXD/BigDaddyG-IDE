@@ -1,0 +1,93 @@
+[
+  {
+    "id": "T1562.001",
+    "name": "Impair Defenses: Disable or Modify Tools",
+    "description": "Adversaries may disable security tools to avoid detection",
+    "sprite": "shield-break.png",
+    "position": { "x": -3.0, "y": 2.0, "z": 0.0 },
+    "color": "#FF4444",
+    "watchFor": ["Clear-StaleProcesses", "Stop-Process", "taskkill"]
+  },
+  {
+    "id": "T1055",
+    "name": "Process Injection",
+    "description": "Inject code into processes to evade defenses",
+    "sprite": "syringe.png",
+    "position": { "x": 2.0, "y": 1.0, "z": 0.0 },
+    "color": "#FF8800",
+    "watchFor": ["Start-Process", "Invoke-Expression", "node", "python"]
+  },
+  {
+    "id": "T1059.001",
+    "name": "Command and Scripting: PowerShell",
+    "description": "Abuse PowerShell for execution",
+    "sprite": "terminal.png",
+    "position": { "x": 0.0, "y": 3.0, "z": 0.0 },
+    "color": "#4488FF",
+    "watchFor": ["powershell", "pwsh", "Invoke-Command"]
+  },
+  {
+    "id": "T1071.001",
+    "name": "Application Layer Protocol: Web Protocols",
+    "description": "Communicate using application layer protocols",
+    "sprite": "network.png",
+    "position": { "x": -2.0, "y": -1.0, "z": 0.0 },
+    "color": "#44FF44",
+    "watchFor": ["Invoke-RestMethod", "Invoke-WebRequest", "websocket"]
+  },
+  {
+    "id": "T1090",
+    "name": "Proxy",
+    "description": "Use connection proxies to hide traffic",
+    "sprite": "proxy.png",
+    "position": { "x": 3.0, "y": -2.0, "z": 0.0 },
+    "color": "#8844FF",
+    "watchFor": ["proxy", "socks", "tunnel"]
+  },
+  {
+    "id": "T1003",
+    "name": "OS Credential Dumping",
+    "description": "Obtain credential material from the OS",
+    "sprite": "key-theft.png",
+    "position": { "x": -1.0, "y": -3.0, "z": 0.0 },
+    "color": "#FF0088",
+    "watchFor": ["mimikatz", "lsass", "credential"]
+  },
+  {
+    "id": "T1027",
+    "name": "Obfuscated Files or Information",
+    "description": "Make files/information difficult to discover",
+    "sprite": "stealth.png",
+    "position": { "x": 1.0, "y": -2.5, "z": 0.0 },
+    "color": "#666666",
+    "watchFor": ["base64", "compress", "encode", "obfuscate"]
+  },
+  {
+    "id": "T1083",
+    "name": "File and Directory Discovery",
+    "description": "Enumerate files and directories",
+    "sprite": "search.png",
+    "position": { "x": -2.5, "y": 1.5, "z": 0.0 },
+    "color": "#FFAA00",
+    "watchFor": ["Get-ChildItem", "ls", "dir", "find"]
+  },
+  {
+    "id": "T1082",
+    "name": "System Information Discovery",
+    "description": "Gather detailed system information",
+    "sprite": "magnify.png",
+    "position": { "x": 2.5, "y": -1.5, "z": 0.0 },
+    "color": "#00AAFF",
+    "watchFor": ["Get-WmiObject", "systeminfo", "uname"]
+  },
+  {
+    "id": "T1518",
+    "name": "Software Discovery",
+    "description": "Get list of software and versions",
+    "sprite": "scan.png",
+    "position": { "x": 0.0, "y": -4.0, "z": 0.0 },
+    "color": "#AA00FF",
+    "watchFor": ["Get-Package", "Get-Command", "which"]
+  }
+]
+

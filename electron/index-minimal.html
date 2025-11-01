@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BigDaddyG IDE - Minimal Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0a0a1e;
+            color: #00d4ff;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        #header {
+            background: #05050f;
+            padding: 15px;
+            border-bottom: 2px solid #00d4ff;
+        }
+        
+        #main {
+            flex: 1;
+            display: flex;
+        }
+        
+        #sidebar {
+            width: 250px;
+            background: #0f0f1f;
+            padding: 15px;
+            border-right: 1px solid #00d4ff;
+        }
+        
+        #editor-area {
+            flex: 1;
+            padding: 20px;
+        }
+        
+        #chat {
+            width: 400px;
+            background: #0f0f1f;
+            padding: 15px;
+            border-left: 1px solid #00d4ff;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 200px;
+            background: #1a1a2e;
+            border: 1px solid #00d4ff;
+            color: #fff;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background: #00d4ff;
+            color: #000;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        button:hover {
+            background: #00ff88;
+        }
+        
+        .file-item {
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        
+        .file-item:hover {
+            background: rgba(0, 212, 255, 0.2);
+        }
+        
+        #messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+        
+        .message {
+            padding: 10px;
+            margin: 8px 0;
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 3px solid #00d4ff;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <h1>🌌 BigDaddyG IDE - Minimal Working Version</h1>
+        <p style="margin: 5px 0 0 0; font-size: 12px;">If you see this, Electron is working! ✅</p>
+    </div>
+    
+    <div id="main">
+        <div id="sidebar">
+            <h3>📁 Files</h3>
+            <button onclick="createFile()">+ New File</button>
+            <div id="file-list" style="margin-top: 15px;">
+                <div class="file-item" onclick="alert('File clicked!')">📄 Welcome.md</div>
+            </div>
+        </div>
+        
+        <div id="editor-area">
+            <h2>📝 Editor</h2>
+            <textarea id="editor" placeholder="Start coding here...">// Welcome to BigDaddyG IDE!
+// This is the minimal working version.
+
+console.log('Hello, World!');
+</textarea>
+            <br>
+            <button onclick="runCode()">▶️ Run Code</button>
+            <button onclick="saveFile()">💾 Save</button>
+        </div>
+        
+        <div id="chat">
+            <h3>🤖 AI Chat</h3>
+            <div id="messages">
+                <div class="message">
+                    <strong>BigDaddyG:</strong><br>
+                    Welcome! I'm your AI assistant. Type a message and click Send!
+                </div>
+            </div>
+            <textarea id="chat-input" placeholder="Ask me anything..." style="height: 80px;"></textarea>
+            <button onclick="sendMessage()">💬 Send</button>
+        </div>
+    </div>
+    
+    <script>
+        console.log('✅ JavaScript is working!');
+        
+        function createFile() {
+            const name = prompt('Enter filename:');
+            if (!name) return;
+            
+            const fileList = document.getElementById('file-list');
+            const div = document.createElement('div');
+            div.className = 'file-item';
+            div.textContent = '📄 ' + name;
+            div.onclick = () => alert('Opened: ' + name);
+            fileList.appendChild(div);
+        }
+        
+        function runCode() {
+            const code = document.getElementById('editor').value;
+            try {
+                eval(code);
+                addMessage('System', '✅ Code executed successfully!', '#00ff88');
+            } catch (error) {
+                addMessage('Error', '❌ ' + error.message, '#ff4757');
+            }
+        }
+        
+        function saveFile() {
+            alert('💾 File saved! (This is a demo)');
+        }
+        
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            addMessage('You', message, '#ff6b35');
+            input.value = '';
+            
+            setTimeout(() => {
+                addMessage('BigDaddyG', 'I received your message: "' + message + '"', '#00d4ff');
+            }, 500);
+        }
+        
+        function addMessage(sender, text, color) {
+            const messages = document.getElementById('messages');
+            const div = document.createElement('div');
+            div.className = 'message';
+            div.style.borderLeftColor = color;
+            div.innerHTML = '<strong style="color: ' + color + '">' + sender + ':</strong><br>' + text;
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+        }
+        
+        console.log('🎯 All functions loaded!');
+    </script>
+</body>
+</html>
+

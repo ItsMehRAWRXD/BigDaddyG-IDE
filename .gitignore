@@ -1,0 +1,85 @@
+# ============================================
+# EXCLUDE LARGE FILES - KEEP SOURCE ONLY
+# ============================================
+
+# Node modules (can be recreated with npm install)
+node_modules/
+package-lock.json
+npm-debug.log*
+yarn.lock
+.yarn/
+
+# Build outputs (can be recreated with npm run build)
+dist/
+dist-with-ai/
+build/
+out/
+*.exe
+*.dmg
+*.AppImage
+*.msi
+*.deb
+*.rpm
+
+# Compressed archives
+*.zip
+*.7z
+*.tar.gz
+*.rar
+
+# AI Models (too large - document how to download instead)
+models/
+*.gguf
+OllamaModels/
+D:\OllamaModels/
+BigDaddyG-AI-Bundle/
+
+# IDE settings (user-specific)
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# User data & configs (user-specific)
+settings.ini
+bigdaddyg.ini
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.cache
+
+# Test results
+*.test.js.snap
+coverage/
+.nyc_output/
+
+# OS files
+desktop.ini
+.BIN/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# ============================================
+# KEEP THESE (ESSENTIAL SOURCE)
+# ============================================
+!electron/**/*.js
+!electron/**/*.html
+!electron/**/*.css
+!server/**/*.js
+!hooks/**/*
+!orchestration/**/*.js
+!*.ps1
+!*.bat
+!*.md
+!package.json
+!LICENSE
