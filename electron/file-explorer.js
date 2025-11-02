@@ -420,6 +420,17 @@ class FileExplorer {
             const result = await window.electron.readFile(filePath);
             
             if (result.success) {
+                // Hide all center tab content panels
+                document.querySelectorAll('.tab-content-panel').forEach(panel => {
+                    panel.style.display = 'none';
+                });
+                
+                // Show Monaco container
+                const monaco = document.getElementById('monaco-container');
+                if (monaco) {
+                    monaco.style.display = 'flex';
+                }
+                
                 // Create new tab in Monaco
                 const language = detectLanguage(filename);
                 if (typeof createNewTab === 'function') {
@@ -428,6 +439,12 @@ class FileExplorer {
                 } else {
                     console.error('[Explorer] ❌ createNewTab function not available');
                 }
+                
+                // Close the Explorer center tab (optional - keeps Explorer tab but hides content)
+                // Uncomment next 2 lines if you want to close the Explorer tab completely:
+                // if (window.tabSystem) {
+                //     window.tabSystem.closeTab(window.tabSystem.activeTab);
+                // }
             } else {
                 alert(`Cannot open ${filename}: ${result.error}`);
             }
