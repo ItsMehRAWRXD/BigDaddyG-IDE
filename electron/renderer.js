@@ -192,7 +192,7 @@ Use the AI panel on the right to:
 // TAB MANAGEMENT
 // ============================================================================
 
-function createNewTab(filename, language, content = '') {
+function createNewTab(filename, language, content = '', filePath = null) {
     // Check if we've reached the tab limit
     const currentTabCount = Object.keys(openTabs).length;
     if (currentTabCount >= MAX_TABS) {
@@ -216,8 +216,10 @@ function createNewTab(filename, language, content = '') {
         language: language,
         content: content,
         icon: icon,
+        filePath: filePath,  // Track the actual file path on disk
         created: Date.now(),
-        modified: Date.now()
+        modified: Date.now(),
+        isDirty: false  // Track if file has unsaved changes
     };
     
     renderTabs();
@@ -806,18 +808,15 @@ if (window.electron) {
                 break;
             
             case 'open-file':
-                // TODO: Implement file browser dialog
-                console.log('[BigDaddyG] ⚠️ Open file not yet implemented');
+                openFileDialog();
                 break;
             
             case 'save-file':
-                // TODO: Implement save current file
-                console.log('[BigDaddyG] ⚠️ Save file not yet implemented');
+                saveCurrentFile();
                 break;
             
             case 'save-as':
-                // TODO: Implement save as dialog
-                console.log('[BigDaddyG] ⚠️ Save as not yet implemented');
+                saveFileAs();
                 break;
             
             case 'toggle-sidebar':
@@ -856,6 +855,126 @@ function detectLanguage(filename) {
         sql: 'sql', sh: 'shell', bat: 'bat', ps1: 'powershell'
     };
     return langMap[ext] || 'plaintext';
+}
+
+// ============================================================================
+// FILE OPERATIONS
+// ============================================================================
+
+async function openFileDialog() {
+    try {
+        console.log('[BigDaddyG] 📂 Opening file dialog...');
+        const result = await window.electron.openFileDialog();
+        
+        if (result.success && !result.canceled) {
+            const { filename, content, filePath } = result;
+            const language = detectLanguage(filename);
+            
+            // Check if file is already open
+            const existingTab = Object.values(openTabs).find(tab => tab.filePath === filePath);
+            if (existingTab) {
+                console.log(`[BigDaddyG] ⚠️ File already open: ${filename}`);
+                switchTab(existingTab.id);
+                return;
+            }
+            
+            createNewTab(filename, language, content, filePath);
+            console.log(`[BigDaddyG] ✅ Opened file: ${filePath}`);
+        } else if (result.canceled) {
+            console.log('[BigDaddyG] ℹ️ File open canceled');
+        } else {
+            console.error('[BigDaddyG] ❌ Failed to open file:', result.error);
+        }
+    } catch (error) {
+        console.error('[BigDaddyG] ❌ Error opening file:', error);
+    }
+}
+
+async function saveCurrentFile() {
+    const tab = openTabs[activeTab];
+    if (!tab) {
+        console.log('[BigDaddyG] ⚠️ No active tab to save');
+        return;
+    }
+    
+    try {
+        // Save current editor content to tab
+        tab.content = editor.getValue();
+        
+        // If tab doesn't have a file path, use save as
+        if (!tab.filePath) {
+            console.log('[BigDaddyG] ℹ️ No file path, using Save As...');
+            await saveFileAs();
+            return;
+        }
+        
+        console.log(`[BigDaddyG] 💾 Saving file: ${tab.filePath}`);
+        const result = await window.electron.writeFile(tab.filePath, tab.content);
+        
+        if (result.success) {
+            tab.isDirty = false;
+            tab.modified = Date.now();
+            renderTabs();  // Update UI to remove dirty indicator
+            console.log(`[BigDaddyG] ✅ Saved: ${tab.filename}`);
+        } else {
+            console.error('[BigDaddyG] ❌ Failed to save file:', result.error);
+            alert(`Failed to save file: ${result.error}`);
+        }
+    } catch (error) {
+        console.error('[BigDaddyG] ❌ Error saving file:', error);
+        alert(`Error saving file: ${error.message}`);
+    }
+}
+
+async function saveFileAs() {
+    const tab = openTabs[activeTab];
+    if (!tab) {
+        console.log('[BigDaddyG] ⚠️ No active tab to save');
+        return;
+    }
+    
+    try {
+        // Save current editor content to tab
+        tab.content = editor.getValue();
+        
+        console.log('[BigDaddyG] 💾 Opening Save As dialog...');
+        const result = await window.electron.saveFileDialog({ 
+            defaultPath: tab.filename 
+        });
+        
+        if (result.success && !result.canceled) {
+            const { filePath, filename } = result;
+            
+            // Write the file
+            const writeResult = await window.electron.writeFile(filePath, tab.content);
+            
+            if (writeResult.success) {
+                // Update tab with new file path and name
+                tab.filePath = filePath;
+                tab.filename = filename;
+                tab.language = detectLanguage(filename);
+                tab.isDirty = false;
+                tab.modified = Date.now();
+                
+                // Update Monaco model language
+                const model = editor.getModel();
+                monaco.editor.setModelLanguage(model, tab.language);
+                
+                renderTabs();
+                console.log(`[BigDaddyG] ✅ Saved as: ${filePath}`);
+            } else {
+                console.error('[BigDaddyG] ❌ Failed to write file:', writeResult.error);
+                alert(`Failed to save file: ${writeResult.error}`);
+            }
+        } else if (result.canceled) {
+            console.log('[BigDaddyG] ℹ️ Save As canceled');
+        } else {
+            console.error('[BigDaddyG] ❌ Save As dialog error:', result.error);
+        }
+    } catch (error) {
+        console.error('[BigDaddyG] ❌ Error in Save As:', error);
+        alert(`Error saving file: ${error.message}`);
+    }
 }
 
 // Allow Enter key to send message

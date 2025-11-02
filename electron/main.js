@@ -3,7 +3,7 @@
  * Professional desktop IDE with dedicated tabs and syntax highlighting
  */
 
-const { app, BrowserWindow, ipcMain, Menu } = require('electron');
+const { app, BrowserWindow, ipcMain, Menu, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const http = require('http');
@@ -617,6 +617,126 @@ ipcMain.handle('write-file', async (event, filePath, content) => {
     return { success: true };
   } catch (error) {
     return { success: false, error: error.message };
+  }
+});
+
+// Open file dialog
+ipcMain.handle('open-file-dialog', async (event, options = {}) => {
+  try {
+    const result = await dialog.showOpenDialog(mainWindow, {
+      properties: ['openFile'],
+      filters: options.filters || [
+        { name: 'All Files', extensions: ['*'] },
+        { name: 'Text Files', extensions: ['txt', 'md', 'json', 'js', 'ts', 'py', 'java', 'cpp', 'c', 'h', 'html', 'css'] }
+      ]
+    });
+    
+    if (!result.canceled && result.filePaths.length > 0) {
+      const filePath = result.filePaths[0];
+      const content = await fs.promises.readFile(filePath, 'utf-8');
+      return { 
+        success: true, 
+        filePath, 
+        content,
+        filename: path.basename(filePath)
+      };
+    }
+    return { success: false, canceled: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Save file dialog
+ipcMain.handle('save-file-dialog', async (event, options = {}) => {
+  try {
+    const result = await dialog.showSaveDialog(mainWindow, {
+      defaultPath: options.defaultPath || 'untitled.txt',
+      filters: options.filters || [
+        { name: 'All Files', extensions: ['*'] },
+        { name: 'Text Files', extensions: ['txt', 'md', 'json', 'js', 'ts', 'py', 'java', 'cpp', 'c', 'h', 'html', 'css'] }
+      ]
+    });
+    
+    if (!result.canceled) {
+      return { 
+        success: true, 
+        filePath: result.filePath,
+        filename: path.basename(result.filePath)
+      };
+    }
+    return { success: false, canceled: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Open folder dialog
+ipcMain.handle('open-folder-dialog', async () => {
+  try {
+    const result = await dialog.showOpenDialog(mainWindow, {
+      properties: ['openDirectory']
+    });
+    
+    if (!result.canceled && result.filePaths.length > 0) {
+      const folderPath = result.filePaths[0];
+      return { 
+        success: true, 
+        folderPath,
+        folderName: path.basename(folderPath)
+      };
+    }
+    return { success: false, canceled: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Read directory
+ipcMain.handle('read-dir', async (event, dirPath) => {
+  const fs = require('fs').promises;
+  try {
+    const entries = await fs.readdir(dirPath, { withFileTypes: true });
+    const files = entries.map(entry => ({
+      name: entry.name,
+      isDirectory: entry.isDirectory(),
+      isFile: entry.isFile(),
+      path: path.join(dirPath, entry.name)
+    }));
+    return { success: true, files };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Get file stats
+ipcMain.handle('get-file-stats', async (event, filePath) => {
+  const fs = require('fs').promises;
+  try {
+    const stats = await fs.stat(filePath);
+    return { 
+      success: true, 
+      stats: {
+        size: stats.size,
+        isFile: stats.isFile(),
+        isDirectory: stats.isDirectory(),
+        modified: stats.mtime,
+        created: stats.birthtime
+      }
+    };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Check if file exists
+ipcMain.handle('file-exists', async (event, filePath) => {
+  const fs = require('fs').promises;
+  try {
+    await fs.access(filePath);
+    return { success: true, exists: true };
+  } catch (error) {
+    return { success: true, exists: false };
   }
 });
 

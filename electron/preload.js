@@ -15,6 +15,12 @@ contextBridge.exposeInMainWorld('electron', {
   // File system operations
   readFile: (filePath) => ipcRenderer.invoke('read-file', filePath),
   writeFile: (filePath, content) => ipcRenderer.invoke('write-file', filePath, content),
+  openFileDialog: (options) => ipcRenderer.invoke('open-file-dialog', options),
+  saveFileDialog: (options) => ipcRenderer.invoke('save-file-dialog', options),
+  openFolderDialog: () => ipcRenderer.invoke('open-folder-dialog'),
+  readDir: (dirPath) => ipcRenderer.invoke('read-dir', dirPath),
+  getFileStats: (filePath) => ipcRenderer.invoke('get-file-stats', filePath),
+  fileExists: (filePath) => ipcRenderer.invoke('file-exists', filePath),
   
   // App info
   getAppVersion: () => ipcRenderer.invoke('get-app-version'),
