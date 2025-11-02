@@ -36,15 +36,15 @@ jobs:
       
       - name: Build app (Ubuntu)
         if: matrix.os == 'ubuntu-latest'
-        run: npm run build:linux
+        run: npx electron-builder --linux AppImage deb rpm
       
       - name: Build app (Windows)
         if: matrix.os == 'windows-latest'
-        run: npm run build:win
+        run: npx electron-builder --win nsis portable
       
       - name: Build app (macOS)
         if: matrix.os == 'macos-latest'
-        run: npm run build:mac
+        run: npx electron-builder --mac dmg zip
       
       - name: Get current date
         id: date

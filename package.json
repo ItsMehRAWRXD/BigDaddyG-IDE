@@ -13,10 +13,10 @@
   "scripts": {
     "start": "electron .",
     "dev": "electron . --dev",
-    "build": "node build-installer.js all",
-    "build:win": "node build-installer.js windows",
-    "build:mac": "node build-installer.js macos",
-    "build:linux": "node build-installer.js linux",
+    "build": "electron-builder --win --mac --linux",
+    "build:win": "electron-builder --win nsis portable",
+    "build:mac": "electron-builder --mac dmg zip",
+    "build:linux": "electron-builder --linux AppImage deb rpm",
     "build:portable": "electron-builder --win portable",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
@@ -27,6 +27,7 @@
     "electron-window-state": "^5.0.3",
     "express": "^4.18.2",
     "ini": "^6.0.0",
+    "monaco-editor": "^0.54.0",
     "node-fetch": "^2.7.0",
     "uuid": "^9.0.1",
     "ws": "^8.14.2"
