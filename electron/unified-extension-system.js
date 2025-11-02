@@ -86,23 +86,23 @@ class UnifiedExtensionSystem {
         
         try {
             // Check if RawrZ is already running
-            const response = await fetch(this.rawrzServer.health);
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 1000);
+            
+            const response = await fetch(this.rawrzServer.health, { 
+                signal: controller.signal 
+            });
+            
+            clearTimeout(timeout);
             
             if (response.ok) {
                 this.rawrzServer.status = 'running';
                 console.log('[UnifiedExtensions] ✅ RawrZ Security Platform online');
             }
         } catch (error) {
-            // Start RawrZ if not running
-            console.log('[UnifiedExtensions] Starting RawrZ server...');
-            
-            if (window.electron && window.electron.spawn) {
-                // Spawn RawrZ server process
-                // await window.electron.spawn('node', ['D:\\14-Desktop-Files\\launch-rawrz.js']);
-                console.log('[UnifiedExtensions] 🔐 RawrZ server started');
-            }
-            
-            this.rawrzServer.status = 'running';
+            // RawrZ not running (optional service)
+            this.rawrzServer.status = 'offline';
+            console.log('[UnifiedExtensions] ℹ️ RawrZ Security Platform offline (optional)');
         }
     }
     
@@ -127,7 +127,14 @@ class UnifiedExtensionSystem {
         
         try {
             // Check if Multi AI is already running
-            const response = await fetch(this.multiAIServer.health);
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 1000);
+            
+            const response = await fetch(this.multiAIServer.health, {
+                signal: controller.signal
+            });
+            
+            clearTimeout(timeout);
             
             if (response.ok) {
                 const data = await response.json();
@@ -137,8 +144,9 @@ class UnifiedExtensionSystem {
                 console.log('[UnifiedExtensions] 🤖 Available AI providers:', Object.keys(this.multiAIServer.availableProviders).join(', '));
             }
         } catch (error) {
-            console.log('[UnifiedExtensions] ⚠️ Multi AI Aggregator not available (optional)');
+            // Multi AI not running (optional service)
             this.multiAIServer.status = 'offline';
+            console.log('[UnifiedExtensions] ℹ️ Multi AI Aggregator offline (optional)');
         }
     }
     
