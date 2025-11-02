@@ -628,6 +628,11 @@
     
     <!-- Monaco Editor - Proper AMD Loader Setup -->
     <script>
+        // CRITICAL: Save AMD require before Node.js require overwrites it
+        // (nodeIntegration: true makes Node's require available after scripts load)
+        var amdRequire = null;
+        var amdDefine = null;
+        
         // Set up AMD loader configuration BEFORE loading Monaco
         var require = { 
             paths: { 
@@ -644,36 +649,59 @@
     </script>
     <script src="../node_modules/monaco-editor/min/vs/loader.js"></script>
     <script>
+        // Save AMD require/define IMMEDIATELY after loader loads
+        console.log('[Monaco] 💾 Checking for AMD loader...');
+        if (typeof require === 'function' && typeof require.config === 'function') {
+            amdRequire = require;
+            amdDefine = define;
+            console.log('[Monaco] ✅ AMD loader saved!');
+        } else {
+            console.error('[Monaco] ❌ AMD loader not found!');
+            console.log('[Monaco] require type:', typeof require);
+            console.log('[Monaco] require.config:', typeof (require && require.config));
+        }
+        
         // Wait for AMD loader to be ready, then define stubs and load Monaco
         (function() {
-            // Define empty modules for Node.js dependencies Monaco might try to load
-            if (typeof define === 'function' && define.amd) {
-                define('fs', [], function() { console.log('[Monaco] Stubbed fs module'); return {}; });
-                define('os', [], function() { console.log('[Monaco] Stubbed os module'); return {}; });
-                define('child_process', [], function() { console.log('[Monaco] Stubbed child_process'); return {}; });
-                define('path', [], function() { 
-                    console.log('[Monaco] Stubbed path module'); 
-                    return { 
-                        join: function() { return Array.prototype.slice.call(arguments).join('/'); }, 
-                        resolve: function() { return Array.prototype.slice.call(arguments).join('/'); },
-                        dirname: function(p) { return p.split('/').slice(0, -1).join('/'); },
-                        basename: function(p) { return p.split('/').pop(); }
-                    }; 
-                });
-                
-                console.log('[Monaco] ✅ Node module stubs registered');
-                
-                // Now load Monaco Editor
-                require(['vs/editor/editor.main'], function() {
-                    console.log('[BigDaddyG] ✅ Monaco Editor loaded via AMD');
-                    // Monaco is now available globally as 'monaco'
-                    if (typeof window.onMonacoLoad === 'function') {
-                        window.onMonacoLoad();
-                    }
-                });
-            } else {
-                console.error('[Monaco] ❌ AMD loader not available!');
+            // Use saved AMD define/require
+            var myDefine = amdDefine || (typeof define === 'function' && define.amd ? define : null);
+            var myRequire = amdRequire || (typeof require === 'function' && typeof require.config === 'function' ? require : null);
+            
+            if (!myDefine || !myRequire) {
+                console.error('[Monaco] ❌ AMD loader not available after save attempt!');
+                return;
             }
+            
+            // Define empty modules for Node.js dependencies Monaco might try to load
+            myDefine('fs', [], function() { console.log('[Monaco] Stubbed fs module'); return {}; });
+            myDefine('os', [], function() { console.log('[Monaco] Stubbed os module'); return {}; });
+            myDefine('child_process', [], function() { console.log('[Monaco] Stubbed child_process'); return {}; });
+            myDefine('path', [], function() { 
+                console.log('[Monaco] Stubbed path module'); 
+                return { 
+                    join: function() { return Array.prototype.slice.call(arguments).join('/'); }, 
+                    resolve: function() { return Array.prototype.slice.call(arguments).join('/'); },
+                    dirname: function(p) { return p.split('/').slice(0, -1).join('/'); },
+                    basename: function(p) { return p.split('/').pop(); }
+                }; 
+            });
+            
+            console.log('[Monaco] ✅ Node module stubs registered');
+            
+            // Now load Monaco Editor using saved AMD require
+            console.log('[Monaco] 📦 Attempting to load vs/editor/editor.main...');
+            myRequire(['vs/editor/editor.main'], function() {
+                console.log('[BigDaddyG] ✅ Monaco Editor loaded via AMD');
+                // Monaco is now available globally as 'monaco'
+                if (typeof window.onMonacoLoad === 'function') {
+                    console.log('[BigDaddyG] 🎨 Calling onMonacoLoad()');
+                    window.onMonacoLoad();
+                } else {
+                    console.error('[BigDaddyG] ❌ window.onMonacoLoad not defined!');
+                }
+            }, function(err) {
+                console.error('[Monaco] ❌ Failed to load Monaco editor.main:', err);
+            });
         })();
     </script>
     
