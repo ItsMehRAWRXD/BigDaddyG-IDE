@@ -200,7 +200,9 @@ class BackgroundAgentManager {
     // ============================================================================
     
     initializeUI() {
-        const sidebar = document.querySelector('.right-sidebar') || document.querySelector('.sidebar');
+        const sidebar = document.getElementById('right-sidebar') || 
+                        document.querySelector('.right-sidebar') || 
+                        document.querySelector('.sidebar');
         
         if (!sidebar) {
             console.warn('Sidebar not found for agent panel');
