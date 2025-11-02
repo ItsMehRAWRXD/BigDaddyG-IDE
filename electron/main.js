@@ -94,15 +94,18 @@ function startOrchestraServer() {
   let serverCwd = null;
   
   for (const tryPath of possiblePaths) {
+    console.log(`[BigDaddyG] 🔍 Checking: ${tryPath}`);
     if (fs.existsSync(tryPath)) {
       serverPath = tryPath;
       serverCwd = path.dirname(tryPath);
+      console.log(`[BigDaddyG] ✅ Found Orchestra at: ${serverPath}`);
       break;
     }
   }
   
   if (!serverPath) {
     console.error('[BigDaddyG] ❌ Orchestra-Server.js not found!');
+    console.error('[BigDaddyG] ❌ Searched paths:', possiblePaths);
     if (mainWindow) {
       mainWindow.webContents.send('orchestra-log', {
         type: 'error',
