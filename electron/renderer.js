@@ -829,7 +829,6 @@ if (window.electron) {
         }
     });
 }
-} // End initMonacoEditor
 
 function detectLanguage(filename) {
     const ext = filename.split('.').pop().toLowerCase();
