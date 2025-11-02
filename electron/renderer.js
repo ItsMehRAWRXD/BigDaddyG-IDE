@@ -92,7 +92,7 @@ function initMonacoEditor() {
     });
     
     console.log('[BigDaddyG] ✅ Monaco Editor ready');
-});
+}
 
 // ============================================================================
 // WELCOME MESSAGE
