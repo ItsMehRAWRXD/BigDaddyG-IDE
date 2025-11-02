@@ -701,16 +701,20 @@ document.head.appendChild(style);
 // Wait for DOM to be ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-        createPerformanceOverlay();
-        createFPSGraph();
+        // Don't auto-create overlay - user can press F3 to toggle
+        // createPerformanceOverlay();  // Disabled - too intrusive
+        // createFPSGraph();  // Disabled - too intrusive
         console.log('[Benchmark] ✅ Visual benchmark system initialized');
         console.log(`[Benchmark] 🖥️ Current: ${DisplayConfigs[currentDisplayConfig].name}`);
+        console.log('[Benchmark] 💡 Performance overlay disabled by default (less clutter)');
     });
 } else {
-    createPerformanceOverlay();
-    createFPSGraph();
+    // Don't auto-create overlay - user can press F3 to toggle
+    // createPerformanceOverlay();  // Disabled - too intrusive
+    // createFPSGraph();  // Disabled - too intrusive
     console.log('[Benchmark] ✅ Visual benchmark system initialized');
     console.log(`[Benchmark] 🖥️ Current: ${DisplayConfigs[currentDisplayConfig].name}`);
+    console.log('[Benchmark] 💡 Performance overlay disabled by default (less clutter)');
 }
 
 // Export functions
