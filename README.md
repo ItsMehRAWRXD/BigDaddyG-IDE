@@ -23,6 +23,14 @@ That's it! ✨
 
 ---
 
+## 🧭 Start Here
+
+- New to the project? Follow the step-by-step guide in [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md).
+- Need an overview of how the renderer, servers, and automation layers connect? Read [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+- Looking for the original deep dives and marketing material? All legacy briefs remain in the repository root with the emoji-prefixed filenames.
+
+---
+
 ## 🌟 BigDaddyG Ecosystem - All Repositories
 
 **This is part of a complete development ecosystem!**
@@ -192,10 +200,9 @@ ollama list    # Check installed models
 
 ## 📖 Documentation
 
-- [Full Feature List](docs/FEATURES.md)
-- [Security Architecture](docs/SECURITY.md)
-- [API Reference](docs/API.md)
-- [Game Development Guide](docs/GAME-DEV.md)
+- **Start here:** [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md)
+- **Architecture overview:** [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
+- **Legacy deep dives:** Emoji-prefixed `.md` files in the repository root capture feature matrices, deployment plans, and comparison charts.
 
 ---
 
