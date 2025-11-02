@@ -14,6 +14,7 @@ const SafeModeDetector = require('./safe-mode-detector');
 
 let mainWindow;
 let orchestraServer = null;
+let remoteLogServer = null;
 let embeddedBrowser;
 let safeModeDetector = new SafeModeDetector();
 
@@ -46,6 +47,9 @@ app.whenReady().then(() => {
   // Start Orchestra server
   startOrchestraServer();
   
+  // Start Remote Log Server
+  startRemoteLogServer();
+  
   // Create main window
   createMainWindow();
   
@@ -63,6 +67,11 @@ app.on('window-all-closed', () => {
   // Stop Orchestra server
   if (orchestraServer) {
     orchestraServer.kill();
+  }
+  
+  // Stop Remote Log Server
+  if (remoteLogServer) {
+    remoteLogServer.kill();
   }
   
   if (process.platform !== 'darwin') {
@@ -274,6 +283,61 @@ function checkOrchestraHealth() {
       resolve(false);
     });
   });
+}
+
+// ============================================================================
+// REMOTE LOG SERVER
+// ============================================================================
+
+function startRemoteLogServer() {
+  if (remoteLogServer && !remoteLogServer.killed) {
+    console.log('[BigDaddyG] ⚠️ Remote log server already running');
+    return;
+  }
+  
+  console.log('[BigDaddyG] 📡 Starting Remote Log Server...');
+  
+  const possiblePaths = [
+    path.join(__dirname, '..', 'server', 'Remote-Log-Server.js'),
+    path.join(process.resourcesPath, 'app', 'server', 'Remote-Log-Server.js'),
+    path.join(app.getAppPath(), 'server', 'Remote-Log-Server.js')
+  ];
+  
+  let serverPath = null;
+  
+  for (const tryPath of possiblePaths) {
+    if (fs.existsSync(tryPath)) {
+      serverPath = tryPath;
+      console.log(`[BigDaddyG] ✅ Found Remote Log Server at: ${serverPath}`);
+      break;
+    }
+  }
+  
+  if (!serverPath) {
+    console.log('[BigDaddyG] ℹ️ Remote Log Server not found (optional)');
+    return;
+  }
+  
+  remoteLogServer = spawn('node', [serverPath], {
+    cwd: path.dirname(serverPath),
+    stdio: 'pipe',
+    shell: true
+  });
+  
+  remoteLogServer.stdout.on('data', (data) => {
+    console.log(`[RemoteLogServer] ${data.toString().trim()}`);
+  });
+  
+  remoteLogServer.stderr.on('data', (data) => {
+    console.error(`[RemoteLogServer] ERROR: ${data.toString().trim()}`);
+  });
+  
+  remoteLogServer.on('close', (code) => {
+    console.log(`[BigDaddyG] 📡 Remote Log Server exited with code ${code}`);
+    remoteLogServer = null;
+  });
+  
+  console.log('[BigDaddyG] ✅ Remote Log Server started on port 11442');
 }
 
 // ============================================================================
