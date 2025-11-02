@@ -644,20 +644,37 @@
     </script>
     <script src="../node_modules/monaco-editor/min/vs/loader.js"></script>
     <script>
-        // Define empty modules for Node.js dependencies Monaco might try to load
-        define('fs', [], function() { return {}; });
-        define('os', [], function() { return {}; });
-        define('child_process', [], function() { return {}; });
-        define('path', [], function() { return { join: (...args) => args.join('/'), resolve: (...args) => args.join('/') }; });
-        
-        // Load Monaco Editor using AMD loader
-        require(['vs/editor/editor.main'], function() {
-            console.log('[BigDaddyG] ✅ Monaco Editor loaded via AMD');
-            // Monaco is now available globally as 'monaco'
-            if (typeof window.onMonacoLoad === 'function') {
-                window.onMonacoLoad();
+        // Wait for AMD loader to be ready, then define stubs and load Monaco
+        (function() {
+            // Define empty modules for Node.js dependencies Monaco might try to load
+            if (typeof define === 'function' && define.amd) {
+                define('fs', [], function() { console.log('[Monaco] Stubbed fs module'); return {}; });
+                define('os', [], function() { console.log('[Monaco] Stubbed os module'); return {}; });
+                define('child_process', [], function() { console.log('[Monaco] Stubbed child_process'); return {}; });
+                define('path', [], function() { 
+                    console.log('[Monaco] Stubbed path module'); 
+                    return { 
+                        join: function() { return Array.prototype.slice.call(arguments).join('/'); }, 
+                        resolve: function() { return Array.prototype.slice.call(arguments).join('/'); },
+                        dirname: function(p) { return p.split('/').slice(0, -1).join('/'); },
+                        basename: function(p) { return p.split('/').pop(); }
+                    }; 
+                });
+                
+                console.log('[Monaco] ✅ Node module stubs registered');
+                
+                // Now load Monaco Editor
+                require(['vs/editor/editor.main'], function() {
+                    console.log('[BigDaddyG] ✅ Monaco Editor loaded via AMD');
+                    // Monaco is now available globally as 'monaco'
+                    if (typeof window.onMonacoLoad === 'function') {
+                        window.onMonacoLoad();
+                    }
+                });
+            } else {
+                console.error('[Monaco] ❌ AMD loader not available!');
             }
-        });
+        })();
     </script>
     
     <!-- Core Scripts -->
