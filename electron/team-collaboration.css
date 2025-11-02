@@ -1,0 +1,348 @@
+/* ============================================================================
+   BigDaddyG IDE - Team Collaboration Styles
+   ============================================================================ */
+
+.team-panel {
+    background: #1e1e1e;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.team-panel .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #333;
+}
+
+.team-panel .panel-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #fff;
+}
+
+/* Team Sections */
+.team-section {
+    color: #ccc;
+}
+
+.team-section h4 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Team Actions */
+.team-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.join-room-form {
+    display: flex;
+    gap: 8px;
+}
+
+.form-input {
+    flex: 1;
+    padding: 8px 12px;
+    background: #2d2d2d;
+    border: 1px solid #444;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 14px;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #007acc;
+    box-shadow: 0 0 0 2px rgba(0, 122, 204, 0.2);
+}
+
+.form-input::placeholder {
+    color: #666;
+}
+
+.form-input[readonly] {
+    background: #252525;
+    cursor: default;
+}
+
+/* Team Info */
+.team-info {
+    background: #252525;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+}
+
+/* Room Info */
+.room-info {
+    background: #252525;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+}
+
+.room-code-display {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.room-code-display input {
+    font-family: 'Courier New', monospace;
+    font-size: 18px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-align: center;
+    color: #4caf50;
+}
+
+/* Members */
+.team-members {
+    background: #252525;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+}
+
+.member-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.member-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    background: #2d2d2d;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.member-item:hover {
+    background: #333;
+}
+
+.member-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.member-name {
+    flex: 1;
+    color: #fff;
+    font-size: 14px;
+}
+
+.member-status {
+    font-size: 10px;
+}
+
+.member-status.online {
+    color: #4caf50;
+}
+
+.member-status.offline {
+    color: #999;
+}
+
+/* Chat */
+.team-chat {
+    background: #252525;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+}
+
+.chat-messages {
+    height: 250px;
+    overflow-y: auto;
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 8px;
+    margin-bottom: 8px;
+}
+
+.chat-message {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 6px;
+    margin-bottom: 4px;
+    border-radius: 3px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.chat-message:hover {
+    background: #252525;
+}
+
+.chat-message.system-message {
+    font-style: italic;
+    color: #888;
+    justify-content: center;
+}
+
+.chat-user {
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.chat-text {
+    flex: 1;
+    color: #ccc;
+    word-wrap: break-word;
+}
+
+.chat-time {
+    font-size: 11px;
+    color: #666;
+    flex-shrink: 0;
+}
+
+.chat-input-area {
+    display: flex;
+    gap: 8px;
+}
+
+/* Team Actions Connected */
+.team-actions-connected {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Scrollbars */
+.member-list::-webkit-scrollbar,
+.chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.member-list::-webkit-scrollbar-track,
+.chat-messages::-webkit-scrollbar-track {
+    background: #1e1e1e;
+}
+
+.member-list::-webkit-scrollbar-thumb,
+.chat-messages::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 3px;
+}
+
+.member-list::-webkit-scrollbar-thumb:hover,
+.chat-messages::-webkit-scrollbar-thumb:hover {
+    background: #666;
+}
+
+/* Remote Cursors (for future implementation) */
+.remote-cursor {
+    position: absolute;
+    pointer-events: none;
+    z-index: 100;
+}
+
+.remote-cursor-line {
+    position: absolute;
+    width: 2px;
+    background: currentColor;
+    animation: cursor-blink 1s infinite;
+}
+
+.remote-cursor-label {
+    position: absolute;
+    top: -20px;
+    left: 0;
+    padding: 2px 6px;
+    background: currentColor;
+    color: white;
+    font-size: 11px;
+    border-radius: 3px;
+    white-space: nowrap;
+}
+
+@keyframes cursor-blink {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0.3; }
+}
+
+/* Status Indicators */
+.status-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 4px;
+}
+
+.status-indicator.online {
+    background: #4caf50;
+    box-shadow: 0 0 4px #4caf50;
+}
+
+.status-indicator.offline {
+    background: #999;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .team-panel {
+        padding: 12px;
+    }
+    
+    .join-room-form {
+        flex-direction: column;
+    }
+    
+    .room-code-display {
+        flex-direction: column;
+    }
+    
+    .chat-messages {
+        height: 150px;
+    }
+    
+    .chat-input-area {
+        flex-direction: column;
+    }
+}
+
+/* Animations */
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+}
+

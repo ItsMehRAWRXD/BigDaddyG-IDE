@@ -1,0 +1,421 @@
+/* ============================================================================
+   BigDaddyG IDE - Background Agent Styles
+   ============================================================================ */
+
+.agent-panel {
+    background: #1e1e1e;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.agent-panel .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #333;
+}
+
+.agent-panel .panel-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #fff;
+}
+
+/* Agent Controls */
+.agent-controls {
+    background: #252525;
+    padding: 16px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+}
+
+.agent-controls h4 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-textarea {
+    width: 100%;
+    padding: 10px 12px;
+    background: #2d2d2d;
+    border: 1px solid #444;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 14px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    resize: vertical;
+    margin-bottom: 12px;
+}
+
+.form-textarea:focus {
+    outline: none;
+    border-color: #007acc;
+    box-shadow: 0 0 0 2px rgba(0, 122, 204, 0.2);
+}
+
+/* Agent List */
+.agent-list-section h4 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.agent-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.agent-list .empty-state {
+    text-align: center;
+    color: #666;
+    padding: 32px;
+    font-style: italic;
+}
+
+/* Agent Card */
+.agent-card {
+    background: #252525;
+    border: 1px solid #333;
+    border-left: 4px solid #555;
+    border-radius: 6px;
+    padding: 12px;
+    transition: all 0.3s ease;
+}
+
+.agent-card:hover {
+    background: #2d2d2d;
+    transform: translateX(2px);
+}
+
+.agent-status-running {
+    border-left-color: #007acc;
+    animation: pulse 2s infinite;
+}
+
+.agent-status-completed {
+    border-left-color: #4caf50;
+}
+
+.agent-status-error {
+    border-left-color: #f44336;
+}
+
+.agent-status-cancelled {
+    border-left-color: #999;
+    opacity: 0.7;
+}
+
+/* Agent Header */
+.agent-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.agent-icon {
+    font-size: 20px;
+}
+
+.agent-type {
+    flex: 1;
+    font-weight: 600;
+    color: #fff;
+    font-size: 14px;
+}
+
+.agent-status-badge {
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.agent-status-badge.agent-status-running {
+    background: rgba(0, 122, 204, 0.2);
+    color: #007acc;
+}
+
+.agent-status-badge.agent-status-completed {
+    background: rgba(76, 175, 80, 0.2);
+    color: #4caf50;
+}
+
+.agent-status-badge.agent-status-error {
+    background: rgba(244, 67, 54, 0.2);
+    color: #f44336;
+}
+
+.agent-status-badge.agent-status-cancelled {
+    background: rgba(153, 153, 153, 0.2);
+    color: #999;
+}
+
+/* Agent Description */
+.agent-description {
+    color: #ccc;
+    font-size: 13px;
+    margin-bottom: 12px;
+    line-height: 1.5;
+}
+
+/* Progress Bar */
+.agent-progress {
+    margin-top: 12px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 6px;
+    background: #333;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #007acc, #00a8ff);
+    transition: width 0.3s ease;
+    animation: progress-shimmer 2s infinite;
+}
+
+.progress-text {
+    font-size: 12px;
+    color: #888;
+    font-style: italic;
+}
+
+/* Agent Result */
+.agent-result {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #333;
+}
+
+.agent-duration {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 8px;
+}
+
+.agent-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+/* Agent Error */
+.agent-error {
+    margin-top: 12px;
+    padding: 12px;
+    background: rgba(244, 67, 54, 0.1);
+    border: 1px solid rgba(244, 67, 54, 0.3);
+    border-radius: 4px;
+}
+
+.error-message {
+    color: #f44336;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+/* Result Modal */
+.agent-result-modal {
+    max-width: 800px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #444;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 20px;
+    color: #fff;
+}
+
+.modal-close {
+    background: transparent;
+    border: none;
+    color: #aaa;
+    font-size: 32px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.modal-close:hover {
+    background: #444;
+    color: #fff;
+}
+
+.modal-body {
+    margin-bottom: 20px;
+}
+
+.result-section {
+    margin-bottom: 20px;
+}
+
+.result-section h4 {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    color: #007acc;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.result-section p {
+    margin: 0;
+    color: #ccc;
+    line-height: 1.6;
+}
+
+.result-section ul {
+    margin: 8px 0;
+    padding-left: 24px;
+    color: #ccc;
+}
+
+.result-section ul li {
+    margin: 4px 0;
+}
+
+.result-section pre {
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 12px;
+    overflow-x: auto;
+    margin: 8px 0 0 0;
+}
+
+.result-section code {
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #d4d4d4;
+}
+
+.performance-gain {
+    font-size: 24px;
+    font-weight: bold;
+    color: #4caf50;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    padding-top: 16px;
+    border-top: 1px solid #444;
+}
+
+/* Animations */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+@keyframes progress-shimmer {
+    0% {
+        background-position: -100% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.progress-fill {
+    background: linear-gradient(
+        90deg,
+        #007acc 0%,
+        #00a8ff 25%,
+        #007acc 50%,
+        #00a8ff 75%,
+        #007acc 100%
+    );
+    background-size: 200% 100%;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .agent-panel {
+        padding: 12px;
+    }
+    
+    .agent-controls {
+        padding: 12px;
+    }
+    
+    .agent-actions {
+        flex-direction: column;
+    }
+    
+    .agent-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .agent-result-modal {
+        max-width: 95%;
+    }
+    
+    .modal-footer {
+        flex-direction: column;
+    }
+    
+    .modal-footer .btn {
+        width: 100%;
+    }
+}
+
+/* Scrollbar for Result Modal */
+.agent-result-modal::-webkit-scrollbar {
+    width: 8px;
+}
+
+.agent-result-modal::-webkit-scrollbar-track {
+    background: #1e1e1e;
+}
+
+.agent-result-modal::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 4px;
+}
+
+.agent-result-modal::-webkit-scrollbar-thumb:hover {
+    background: #666;
+}
+

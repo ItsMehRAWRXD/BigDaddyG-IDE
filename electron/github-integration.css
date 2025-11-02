@@ -1,0 +1,415 @@
+/* ============================================================================
+   BigDaddyG IDE - GitHub Integration Styles
+   ============================================================================ */
+
+.github-panel {
+    background: #1e1e1e;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.github-panel .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #333;
+}
+
+.github-panel .panel-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #fff;
+}
+
+.github-panel .panel-content {
+    color: #ccc;
+}
+
+/* Auth Section */
+.github-user-info {
+    background: #2d2d2d;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.github-user-info p {
+    margin: 0;
+    color: #fff;
+}
+
+.github-user-info strong {
+    color: #4caf50;
+}
+
+/* Repository Section */
+.github-repo-section {
+    margin-bottom: 20px;
+}
+
+.github-repo-section h4 {
+    margin: 12px 0 8px 0;
+    font-size: 14px;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-select {
+    width: 100%;
+    padding: 8px 12px;
+    background: #2d2d2d;
+    border: 1px solid #444;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 14px;
+    margin-bottom: 12px;
+    cursor: pointer;
+}
+
+.form-select:hover {
+    border-color: #007acc;
+}
+
+.form-select:focus {
+    outline: none;
+    border-color: #007acc;
+    box-shadow: 0 0 0 2px rgba(0, 122, 204, 0.2);
+}
+
+/* File Tree */
+.file-tree {
+    background: #252525;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 8px;
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 16px;
+}
+
+.file-tree .file-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.file-tree .file-list li {
+    padding: 6px 8px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: background 0.2s;
+    font-size: 13px;
+}
+
+.file-tree .file-list li.file:hover {
+    background: #2d2d2d;
+}
+
+.file-tree .file-list li.directory {
+    font-weight: 600;
+    color: #007acc;
+    cursor: default;
+    margin-top: 8px;
+}
+
+.file-tree .file-list li.directory:first-child {
+    margin-top: 0;
+}
+
+/* Actions */
+.github-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+/* Buttons */
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background: #007acc;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #005a9e;
+}
+
+.btn-secondary {
+    background: #555;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #666;
+}
+
+.btn-success {
+    background: #4caf50;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #45a049;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 13px;
+}
+
+/* Auth Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal {
+    background: #2d2d2d;
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 24px;
+    max-width: 500px;
+    width: 90%;
+    color: #fff;
+    animation: slideUp 0.3s ease;
+}
+
+.modal h3 {
+    margin: 0 0 16px 0;
+    color: #fff;
+}
+
+.modal p {
+    margin: 12px 0;
+    line-height: 1.6;
+}
+
+.modal ol {
+    margin: 16px 0;
+    padding-left: 24px;
+}
+
+.modal ol li {
+    margin: 8px 0;
+}
+
+.modal a {
+    color: #007acc;
+    text-decoration: none;
+}
+
+.modal a:hover {
+    text-decoration: underline;
+}
+
+.code-display {
+    background: #1e1e1e;
+    border: 2px solid #007acc;
+    border-radius: 6px;
+    padding: 16px;
+    margin: 16px 0;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.code-display input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #4caf50;
+    font-size: 24px;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+    text-align: center;
+    letter-spacing: 4px;
+}
+
+.code-display input:focus {
+    outline: none;
+}
+
+.code-display button {
+    background: #007acc;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.code-display button:hover {
+    background: #005a9e;
+}
+
+.modal .waiting {
+    color: #aaa;
+    font-style: italic;
+    margin: 16px 0;
+    text-align: center;
+}
+
+.user-code {
+    color: #4caf50;
+    font-size: 20px;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 2px;
+}
+
+/* Notifications */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    border-radius: 4px;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 10001;
+    max-width: 400px;
+}
+
+.notification-success {
+    background: #4caf50;
+}
+
+.notification-error {
+    background: #f44336;
+}
+
+.notification-info {
+    background: #2196f3;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+}
+
+/* Scrollbar Styling */
+.file-tree::-webkit-scrollbar {
+    width: 8px;
+}
+
+.file-tree::-webkit-scrollbar-track {
+    background: #1e1e1e;
+}
+
+.file-tree::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 4px;
+}
+
+.file-tree::-webkit-scrollbar-thumb:hover {
+    background: #666;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .modal {
+        padding: 16px;
+        max-width: 95%;
+    }
+    
+    .code-display {
+        flex-direction: column;
+    }
+    
+    .code-display input {
+        font-size: 18px;
+    }
+    
+    .github-actions {
+        flex-direction: column;
+    }
+    
+    .github-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+

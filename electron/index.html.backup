@@ -400,15 +400,6 @@
             background: rgba(0, 212, 255, 0.5);
         }
     </style>
-    <link rel="stylesheet" href="github-integration.css">
-    <script src="github-integration.js"></script>
-    <link rel="stylesheet" href="background-agent.css">
-    <script src="background-agent-manager.js"></script>
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <link rel="stylesheet" href="team-collaboration.css">
-    <script src="team-collaboration.js"></script>
 </head>
 <body>
     <div id="app">
