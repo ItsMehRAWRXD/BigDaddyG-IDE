@@ -579,17 +579,21 @@ function createPowerModeSelector() {
         const mode = PowerModes[key];
         const isActive = key === currentPowerMode;
         
+        const bgActive = 'rgba(0,212,255,0.2)';
+        const bgInactive = 'rgba(0,0,0,0.3)';
+        const bgHover = 'rgba(0,212,255,0.1)';
+        
         html += `
             <div onclick="applyPowerMode('${key}')" style="
                 padding: 12px;
                 margin-bottom: 8px;
-                background: ${isActive ? 'rgba(0,212,255,0.2)' : 'rgba(0,0,0,0.3)'};
+                background: ${isActive ? bgActive : bgInactive};
                 border: 1px solid ${isActive ? 'var(--cyan)' : 'rgba(0,212,255,0.3)'};
                 border-left: 3px solid ${getModeColor(key)};
                 border-radius: 6px;
                 cursor: pointer;
                 transition: all 0.2s;
-            " onmouseover="this.style.background='rgba(0,212,255,0.1)'" onmouseout="this.style.background='${isActive ? 'rgba(0,212,255,0.2)' : 'rgba(0,0,0,0.3)}'">
+            " onmouseover="this.style.background='${bgHover}'" onmouseout="this.style.background='${isActive ? bgActive : bgInactive}'">
                 <div style="font-weight: bold; color: ${getModeColor(key)}; margin-bottom: 4px;">
                     ${mode.name}
                 </div>

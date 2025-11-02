@@ -209,11 +209,16 @@ class ConsolePanel {
         const statusText = document.getElementById('orchestra-status-text');
         const startBtn = document.getElementById('orchestra-start-btn');
         
+        // Null checks - these elements might not exist
+        if (!indicator || !startBtn) return;
+        
         if (running) {
             indicator.style.background = 'var(--green)';
             indicator.style.boxShadow = '0 0 10px var(--green)';
-            statusText.textContent = 'Running';
-            statusText.style.color = 'var(--green)';
+            if (statusText) {
+                statusText.textContent = 'Running';
+                statusText.style.color = 'var(--green)';
+            }
             startBtn.textContent = '⏸ Stop';
             startBtn.style.background = 'var(--orange)';
             startBtn.onclick = () => this.stopOrchestraServer();
@@ -224,8 +229,10 @@ class ConsolePanel {
         } else {
             indicator.style.background = 'var(--red)';
             indicator.style.boxShadow = '0 0 10px var(--red)';
-            statusText.textContent = 'Stopped';
-            statusText.style.color = 'var(--red)';
+            if (statusText) {
+                statusText.textContent = 'Stopped';
+                statusText.style.color = 'var(--red)';
+            }
             startBtn.textContent = '▶ Start';
             startBtn.style.background = 'var(--green)';
             startBtn.onclick = () => this.startOrchestraServer();
