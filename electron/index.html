@@ -633,6 +633,27 @@
                     
                     <!-- CHAT TAB (Active by default) -->
                     <div id="chat-tab-content" class="tab-content" style="flex: 1; display: flex; flex-direction: column;">
+                        <!-- Past Chats Section -->
+                        <div id="past-chats-section" style="border-bottom: 2px solid var(--cursor-border); background: var(--cursor-bg-secondary);">
+                            <div style="padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="document.getElementById('past-chats-list').style.display = document.getElementById('past-chats-list').style.display === 'none' ? 'block' : 'none'">
+                                <div style="font-size: 12px; font-weight: 600; color: var(--cursor-jade-dark);">
+                                    📚 Past Chats
+                                </div>
+                                <div style="display: flex; gap: 6px; align-items: center;">
+                                    <button onclick="event.stopPropagation(); chatHistory && chatHistory.createNewChat()" style="background: var(--cursor-accent); color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 10px; font-weight: 600; cursor: pointer;">
+                                        ✨ New Chat
+                                    </button>
+                                    <button onclick="event.stopPropagation(); chatHistory && chatHistory.exportChats()" style="background: none; border: 1px solid var(--cursor-jade-light); color: var(--cursor-jade-dark); padding: 4px 10px; border-radius: 4px; font-size: 10px; cursor: pointer;">
+                                        📥 Export
+                                    </button>
+                                    <span style="font-size: 14px; color: var(--cursor-text-muted);">▼</span>
+                                </div>
+                            </div>
+                            <div id="past-chats-list" style="max-height: 250px; overflow-y: auto; display: block;">
+                                <div style="padding: 20px; text-align: center; color: var(--cursor-text-muted); font-size: 11px;">Loading chats...</div>
+                            </div>
+                        </div>
+                        
                         <!-- AI Chat Header -->
                     
                     <!-- Advanced Settings Panel (Hidden by default) -->
@@ -910,6 +931,7 @@
     <script src="agentic-executor.js"></script>
     <script src="offline-speech-engine.js"></script>
     <script src="file-explorer.js"></script>
+    <script src="chat-history.js"></script>
     <script src="voice-coding.js"></script>
     
     <!-- REVOLUTIONARY NEW FEATURES -->

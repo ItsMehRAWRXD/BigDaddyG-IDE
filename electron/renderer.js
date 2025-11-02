@@ -907,7 +907,7 @@ async function sendToAI() {
     }
 }
 
-function addUserMessage(message) {
+function addUserMessage(message, attachments = null) {
     const container = document.getElementById('ai-chat-messages');
     if (!container) {
         console.error('[BigDaddyG] ❌ AI chat messages container not found');
@@ -917,21 +917,31 @@ function addUserMessage(message) {
     
     console.log('[BigDaddyG] 📝 Adding user message to chat');
     
-    const msgEl = document.createElement('div');
-    msgEl.className = 'ai-message user-message';
-    msgEl.style.cssText = `
-        margin-bottom: 15px;
-        padding: 15px;
-        background: rgba(255, 152, 0, 0.1);
-        border-left: 4px solid var(--orange);
-        border-radius: 8px;
-        font-size: 14px;
-        line-height: 1.6;
-    `;
-    msgEl.innerHTML = `<strong style="color: var(--orange); font-size: 13px;">You:</strong><br><br><div style="white-space: pre-wrap;">${escapeHtml(message)}</div>`;
-    container.appendChild(msgEl);
-    container.scrollTop = container.scrollHeight;
+    // Save to chat history
+    if (window.chatHistory) {
+        const messageData = window.chatHistory.addMessage('user', message, attachments);
+        
+        // Create element from chat history (includes read/unread buttons)
+        const msgEl = window.chatHistory.createMessageElement(messageData);
+        container.appendChild(msgEl);
+    } else {
+        // Fallback if chat history not loaded yet
+        const msgEl = document.createElement('div');
+        msgEl.className = 'ai-message user-message';
+        msgEl.style.cssText = `
+            margin-bottom: 15px;
+            padding: 15px;
+            background: rgba(255, 152, 0, 0.1);
+            border-left: 4px solid var(--orange);
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.6;
+        `;
+        msgEl.innerHTML = `<strong style="color: var(--orange); font-size: 13px;">You:</strong><br><br><div style="white-space: pre-wrap;">${escapeHtml(message)}</div>`;
+        container.appendChild(msgEl);
+    }
     
+    container.scrollTop = container.scrollHeight;
     console.log('[BigDaddyG] ✅ User message added to chat UI');
 }
 
@@ -945,50 +955,62 @@ function addAIMessage(message, isError = false, isThinking = false) {
     
     console.log('[BigDaddyG] 🤖 Adding AI message to chat');
     
-    const msgEl = document.createElement('div');
     const id = `ai-msg-${Date.now()}`;
-    msgEl.id = id;
-    msgEl.className = 'ai-message';
     
-    if (isError) {
-        msgEl.style.cssText = `
-            margin-bottom: 15px;
-            padding: 15px;
-            background: rgba(255, 82, 82, 0.1);
-            border-left: 4px solid var(--red);
-            border-radius: 8px;
-            font-size: 14px;
-            line-height: 1.6;
-        `;
-        msgEl.innerHTML = `<strong style="color: var(--red); font-size: 13px;">❌ Error:</strong><br><br><div style="white-space: pre-wrap;">${message}</div>`;
-    } else if (isThinking) {
-        msgEl.style.cssText = `
-            margin-bottom: 15px;
-            padding: 15px;
-            background: rgba(0, 212, 255, 0.1);
-            border-left: 4px solid var(--cyan);
-            border-radius: 8px;
-            font-size: 14px;
-            line-height: 1.6;
-            animation: pulse 1.5s ease-in-out infinite;
-        `;
-        msgEl.innerHTML = `<strong style="color: var(--cyan); font-size: 13px;">🤔 BigDaddyG:</strong><br><br><em style="opacity: 0.7;">${message}</em>`;
+    // Don't save thinking indicators to history
+    if (!isThinking && window.chatHistory) {
+        const messageData = window.chatHistory.addMessage('assistant', message, null, isError);
+        
+        // Create element from chat history (includes read/unread buttons)
+        const msgEl = window.chatHistory.createMessageElement(messageData);
+        msgEl.id = id;
+        container.appendChild(msgEl);
     } else {
-        msgEl.style.cssText = `
-            margin-bottom: 15px;
-            padding: 15px;
-            background: rgba(0, 212, 255, 0.1);
-            border-left: 4px solid var(--cyan);
-            border-radius: 8px;
-            font-size: 14px;
-            line-height: 1.6;
-        `;
-        msgEl.innerHTML = `<strong style="color: var(--cyan); font-size: 13px;">💎 BigDaddyG:</strong><br><br><div style="white-space: pre-wrap;">${escapeHtml(message)}</div>`;
+        // Fallback or thinking indicator
+        const msgEl = document.createElement('div');
+        msgEl.id = id;
+        msgEl.className = 'ai-message';
+        
+        if (isError) {
+            msgEl.style.cssText = `
+                margin-bottom: 15px;
+                padding: 15px;
+                background: rgba(255, 82, 82, 0.1);
+                border-left: 4px solid var(--red);
+                border-radius: 8px;
+                font-size: 14px;
+                line-height: 1.6;
+            `;
+            msgEl.innerHTML = `<strong style="color: var(--red); font-size: 13px;">❌ Error:</strong><br><br><div style="white-space: pre-wrap;">${message}</div>`;
+        } else if (isThinking) {
+            msgEl.style.cssText = `
+                margin-bottom: 15px;
+                padding: 15px;
+                background: rgba(0, 212, 255, 0.1);
+                border-left: 4px solid var(--cyan);
+                border-radius: 8px;
+                font-size: 14px;
+                line-height: 1.6;
+                animation: pulse 1.5s ease-in-out infinite;
+            `;
+            msgEl.innerHTML = `<strong style="color: var(--cyan); font-size: 13px;">🤔 BigDaddyG:</strong><br><br><em style="opacity: 0.7;">${message}</em>`;
+        } else {
+            msgEl.style.cssText = `
+                margin-bottom: 15px;
+                padding: 15px;
+                background: rgba(0, 212, 255, 0.1);
+                border-left: 4px solid var(--cyan);
+                border-radius: 8px;
+                font-size: 14px;
+                line-height: 1.6;
+            `;
+            msgEl.innerHTML = `<strong style="color: var(--cyan); font-size: 13px;">💎 BigDaddyG:</strong><br><br><div style="white-space: pre-wrap;">${escapeHtml(message)}</div>`;
+        }
+        
+        container.appendChild(msgEl);
     }
     
-    container.appendChild(msgEl);
     container.scrollTop = container.scrollHeight;
-    
     console.log('[BigDaddyG] ✅ AI message added to chat UI');
     
     return id;
