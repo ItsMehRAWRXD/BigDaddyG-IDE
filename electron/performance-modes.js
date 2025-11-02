@@ -491,17 +491,30 @@ function updatePerformanceOverlay() {
             position: fixed;
             top: 10px;
             right: 10px;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(10px);
-            border: 1px solid var(--cyan);
+            border: 1px solid rgba(0, 212, 255, 0.3);
             border-radius: 8px;
             padding: 10px;
             font-family: 'Courier New', monospace;
             font-size: 11px;
-            color: var(--cyan);
+            color: rgba(0, 212, 255, 0.7);
             z-index: 100000;
             min-width: 200px;
+            pointer-events: none;
+            opacity: 0.5;
+            transition: opacity 0.3s;
         `;
+        
+        // Make it more visible on hover
+        overlay.addEventListener('mouseenter', () => {
+            overlay.style.opacity = '0.9';
+            overlay.style.pointerEvents = 'auto';
+        });
+        overlay.addEventListener('mouseleave', () => {
+            overlay.style.opacity = '0.5';
+            overlay.style.pointerEvents = 'none';
+        });
         document.body.appendChild(overlay);
     }
     
