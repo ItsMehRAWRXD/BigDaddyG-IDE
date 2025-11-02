@@ -179,6 +179,11 @@ const BigDaddyGTrained = {
         console.log('[BigDaddyG] 🔄 Parameters reset to defaults');
     },
     
+    // Alias for chat endpoint compatibility
+    chat(prompt, useContext = true) {
+        return this.query(prompt, useContext);
+    },
+    
     query(prompt, useContext = true) {
         // Add to conversation history (1M context)
         this.conversationHistory.push({
