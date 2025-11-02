@@ -84,10 +84,10 @@ function startOrchestraServer() {
   
   // Try multiple possible paths
   const possiblePaths = [
-    path.join(__dirname, '../server/Orchestra-Server.js'),
-    path.join(process.resourcesPath, 'app/server/Orchestra-Server.js'),
-    path.join(app.getAppPath(), 'server/Orchestra-Server.js'),
-    path.join(process.cwd(), 'server/Orchestra-Server.js')
+    path.join(__dirname, '..', 'server', 'Orchestra-Server.js'),
+    path.join(process.resourcesPath, 'app', 'server', 'Orchestra-Server.js'),
+    path.join(app.getAppPath(), 'server', 'Orchestra-Server.js'),
+    path.join(process.cwd(), 'server', 'Orchestra-Server.js')
   ];
   
   let serverPath = null;
@@ -1262,6 +1262,12 @@ ipcMain.on('window-maximize', () => {
 });
 
 ipcMain.on('window-close', () => {
+  if (mainWindow) mainWindow.close();
+});
+
+console.log('[BigDaddyG] 🌌 Main process initialized');
+
+
   if (mainWindow) mainWindow.close();
 });
 
