@@ -109,7 +109,7 @@ class FileExplorer {
                 card.style.borderColor = 'var(--cursor-border)';
             };
             
-            card.onclick = () => this.browseDrive(drive.path);
+            card.onclick = () => this.browseDriveToCenter(drive);
             
             container.appendChild(card);
         });
@@ -190,6 +190,12 @@ class FileExplorer {
         await this.loadDirectory(drive.path);
     }
     
+    async browseDriveToCenter(drive) {
+        console.log('[Explorer] 📂 Browsing drive to center:', drive.path);
+        this.currentPath = drive.path;
+        await this.loadDirectoryToCenter(drive.path);
+    }
+    
     async loadDirectory(dirPath) {
         try {
             console.log('[Explorer] 📂 Loading directory:', dirPath);
@@ -198,6 +204,24 @@ class FileExplorer {
             
             if (result.success) {
                 this.renderDirectory(dirPath, result.files);
+            } else {
+                console.error('[Explorer] ❌ Failed to read directory:', result.error);
+                alert(`Cannot access ${dirPath}: ${result.error}`);
+            }
+        } catch (error) {
+            console.error('[Explorer] ❌ Error loading directory:', error);
+            alert(`Error: ${error.message}`);
+        }
+    }
+    
+    async loadDirectoryToCenter(dirPath) {
+        try {
+            console.log('[Explorer] 📂 Loading directory to center:', dirPath);
+            
+            const result = await window.electron.readDir(dirPath);
+            
+            if (result.success) {
+                this.renderDirectoryToCenter(dirPath, result.files);
             } else {
                 console.error('[Explorer] ❌ Failed to read directory:', result.error);
                 alert(`Cannot access ${dirPath}: ${result.error}`);
@@ -291,6 +315,91 @@ class FileExplorer {
         });
         
         container.appendChild(fileList);
+    }
+    
+    renderDirectoryToCenter(dirPath, files) {
+        const container = document.getElementById('center-explorer-content');
+        if (!container) {
+            console.error('[Explorer] ❌ Center explorer container not found');
+            return;
+        }
+        
+        container.innerHTML = '';
+        
+        // Add breadcrumb navigation header
+        const header = document.createElement('div');
+        header.style.cssText = `
+            grid-column: 1 / -1;
+            padding: 16px;
+            background: var(--cursor-bg-secondary);
+            border-radius: 12px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        `;
+        header.innerHTML = `
+            <button onclick="fileExplorer.loadDrivesToCenter()" style="background: var(--cursor-accent); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600;">
+                ← Back to Drives
+            </button>
+            <span style="font-size: 14px; color: var(--cursor-text); font-weight: 600;">📁 ${dirPath}</span>
+        `;
+        container.appendChild(header);
+        
+        // Sort: folders first, then files
+        const sorted = files.sort((a, b) => {
+            if (a.isDirectory && !b.isDirectory) return -1;
+            if (!a.isDirectory && b.isDirectory) return 1;
+            return a.name.localeCompare(b.name);
+        });
+        
+        // Render files and folders as cards
+        sorted.forEach(file => {
+            const card = document.createElement('div');
+            card.style.cssText = `
+                background: var(--cursor-bg-secondary);
+                border: 1px solid var(--cursor-border);
+                border-radius: 12px;
+                padding: 24px;
+                cursor: pointer;
+                transition: all 0.2s;
+                text-align: center;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            `;
+            
+            const icon = file.isDirectory ? '📁' : (file.name.endsWith('.js') ? '📜' : file.name.endsWith('.json') ? '⚙️' : file.name.endsWith('.md') ? '📝' : file.name.endsWith('.html') ? '🌐' : file.name.endsWith('.css') ? '🎨' : '📄');
+            
+            card.innerHTML = `
+                <div style="font-size: 48px; margin-bottom: 12px;">${icon}</div>
+                <div style="font-weight: 600; font-size: 14px; color: var(--cursor-text); margin-bottom: 4px; word-break: break-word; max-width: 100%;">${file.name}</div>
+                <div style="font-size: 11px; color: var(--cursor-text-secondary);">${file.isDirectory ? 'Folder' : 'File'}</div>
+            `;
+            
+            card.onmouseover = () => {
+                card.style.transform = 'translateY(-4px)';
+                card.style.boxShadow = '0 8px 16px rgba(119, 221, 190, 0.2)';
+                card.style.borderColor = 'var(--cursor-jade-light)';
+            };
+            
+            card.onmouseout = () => {
+                card.style.transform = 'translateY(0)';
+                card.style.boxShadow = 'none';
+                card.style.borderColor = 'var(--cursor-border)';
+            };
+            
+            card.onclick = () => {
+                if (file.isDirectory) {
+                    this.loadDirectoryToCenter(file.path);
+                } else {
+                    this.openFile(file.path, file.name);
+                }
+            };
+            
+            container.appendChild(card);
+        });
     }
     
     showDrives() {
