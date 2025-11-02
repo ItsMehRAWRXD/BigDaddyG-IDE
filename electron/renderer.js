@@ -855,19 +855,33 @@ async function sendToAI() {
             images: imageContext
         };
         
+        console.log('[BigDaddyG] 📤 Sending to AI:', { 
+            messageLength: fullMessage.length, 
+            attachments: attachedFiles.length 
+        });
+        
         const response = await fetch('http://localhost:11441/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(requestBody)
         });
         
+        console.log('[BigDaddyG] 📥 Response status:', response.status);
+        
+        if (!response.ok) {
+            throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+        }
+        
         const data = await response.json();
+        console.log('[BigDaddyG] 📥 Response data:', data);
         
         // Remove thinking indicator
-        document.getElementById(thinkingId).remove();
+        const thinkingEl = document.getElementById(thinkingId);
+        if (thinkingEl) thinkingEl.remove();
         
-        // Add AI response
-        addAIMessage(data.response);
+        // Add AI response - check multiple possible response formats
+        const aiResponse = data.response || data.message || data.text || 'No response from AI';
+        addAIMessage(aiResponse);
         
         // Clear attachments after sending
         attachedFiles = [];
@@ -875,8 +889,21 @@ async function sendToAI() {
         console.log('[BigDaddyG] ✅ Message sent with file context');
         
     } catch (error) {
-        document.getElementById(thinkingId).remove();
-        addAIMessage(`Error: ${error.message}`, true);
+        console.error('[BigDaddyG] ❌ Chat error:', error);
+        const thinkingEl = document.getElementById(thinkingId);
+        if (thinkingEl) thinkingEl.remove();
+        
+        // More helpful error message
+        let errorMsg = `❌ **Connection Error**\n\n`;
+        errorMsg += `Could not connect to Orchestra server at http://localhost:11441/api/chat\n\n`;
+        errorMsg += `**Possible causes:**\n`;
+        errorMsg += `• Orchestra server not running (check console for logs)\n`;
+        errorMsg += `• Port 11441 already in use\n`;
+        errorMsg += `• Endpoint /api/chat not found (404)\n\n`;
+        errorMsg += `**Error:** ${error.message}\n\n`;
+        errorMsg += `💡 **Try:** Check the Orchestra tab in Console panel for server status`;
+        
+        addAIMessage(errorMsg, true);
     }
 }
 
@@ -884,37 +911,85 @@ function addUserMessage(message) {
     const container = document.getElementById('ai-chat-messages');
     if (!container) {
         console.error('[BigDaddyG] ❌ AI chat messages container not found');
+        alert('Error: Chat container not found! Cannot display messages.');
         return;
     }
+    
+    console.log('[BigDaddyG] 📝 Adding user message to chat');
+    
     const msgEl = document.createElement('div');
     msgEl.className = 'ai-message user-message';
-    msgEl.innerHTML = `<strong style="color: var(--orange);">You:</strong><br><br>${escapeHtml(message)}`;
+    msgEl.style.cssText = `
+        margin-bottom: 15px;
+        padding: 15px;
+        background: rgba(255, 152, 0, 0.1);
+        border-left: 4px solid var(--orange);
+        border-radius: 8px;
+        font-size: 14px;
+        line-height: 1.6;
+    `;
+    msgEl.innerHTML = `<strong style="color: var(--orange); font-size: 13px;">You:</strong><br><br><div style="white-space: pre-wrap;">${escapeHtml(message)}</div>`;
     container.appendChild(msgEl);
     container.scrollTop = container.scrollHeight;
+    
+    console.log('[BigDaddyG] ✅ User message added to chat UI');
 }
 
 function addAIMessage(message, isError = false, isThinking = false) {
     const container = document.getElementById('ai-chat-messages');
     if (!container) {
         console.error('[BigDaddyG] ❌ AI chat messages container not found');
+        alert('Error: Chat container not found! Cannot display AI response.');
         return '';
     }
+    
+    console.log('[BigDaddyG] 🤖 Adding AI message to chat');
+    
     const msgEl = document.createElement('div');
     const id = `ai-msg-${Date.now()}`;
     msgEl.id = id;
     msgEl.className = 'ai-message';
     
     if (isError) {
-        msgEl.style.borderLeftColor = 'var(--red)';
-        msgEl.innerHTML = `<strong style="color: var(--red);">Error:</strong><br><br>${escapeHtml(message)}`;
+        msgEl.style.cssText = `
+            margin-bottom: 15px;
+            padding: 15px;
+            background: rgba(255, 82, 82, 0.1);
+            border-left: 4px solid var(--red);
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.6;
+        `;
+        msgEl.innerHTML = `<strong style="color: var(--red); font-size: 13px;">❌ Error:</strong><br><br><div style="white-space: pre-wrap;">${message}</div>`;
     } else if (isThinking) {
-        msgEl.innerHTML = `<strong style="color: var(--cyan);">BigDaddyG:</strong><br><br><em style="opacity: 0.7;">${message}</em>`;
+        msgEl.style.cssText = `
+            margin-bottom: 15px;
+            padding: 15px;
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 4px solid var(--cyan);
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.6;
+            animation: pulse 1.5s ease-in-out infinite;
+        `;
+        msgEl.innerHTML = `<strong style="color: var(--cyan); font-size: 13px;">🤔 BigDaddyG:</strong><br><br><em style="opacity: 0.7;">${message}</em>`;
     } else {
-        msgEl.innerHTML = `<strong style="color: var(--cyan);">BigDaddyG:</strong><br><br>${escapeHtml(message)}`;
+        msgEl.style.cssText = `
+            margin-bottom: 15px;
+            padding: 15px;
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 4px solid var(--cyan);
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.6;
+        `;
+        msgEl.innerHTML = `<strong style="color: var(--cyan); font-size: 13px;">💎 BigDaddyG:</strong><br><br><div style="white-space: pre-wrap;">${escapeHtml(message)}</div>`;
     }
     
     container.appendChild(msgEl);
     container.scrollTop = container.scrollHeight;
+    
+    console.log('[BigDaddyG] ✅ AI message added to chat UI');
     
     return id;
 }
