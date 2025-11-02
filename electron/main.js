@@ -134,6 +134,26 @@ function startOrchestraServer() {
   
   orchestraServer.stderr.on('data', (data) => {
     const message = data.toString().trim();
+    
+    // Check if port is already in use
+    if (message.includes('EADDRINUSE') || message.includes('address already in use')) {
+      console.log('[Orchestra] Port 11441 already in use - server already running, this is OK');
+      
+      if (mainWindow) {
+        mainWindow.webContents.send('orchestra-status', {
+          running: true,
+          alreadyRunning: true
+        });
+      }
+      
+      // Kill this duplicate process
+      if (orchestraServer) {
+        orchestraServer.kill();
+        orchestraServer = null;
+      }
+      return;
+    }
+    
     console.error(`[Orchestra Error] ${message}`);
     
     if (mainWindow) {
