@@ -1,0 +1,114 @@
+name: Nightly Build
+
+on:
+  schedule:
+    # Run every day at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:  # Allow manual trigger
+  push:
+    branches:
+      - main
+    paths:
+      - 'electron/**'
+      - 'package.json'
+
+jobs:
+  build:
+    name: Build ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm install
+      
+      - name: Build app (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: npm run build:linux
+      
+      - name: Build app (Windows)
+        if: matrix.os == 'windows-latest'
+        run: npm run build:win
+      
+      - name: Build app (macOS)
+        if: matrix.os == 'macos-latest'
+        run: npm run build:mac
+      
+      - name: Get current date
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+        shell: bash
+      
+      - name: Upload artifacts (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: BigDaddyG-Linux-${{ steps.date.outputs.date }}
+          path: |
+            dist/*.AppImage
+            dist/*.deb
+            dist/*.rpm
+          retention-days: 30
+      
+      - name: Upload artifacts (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: BigDaddyG-Windows-${{ steps.date.outputs.date }}
+          path: |
+            dist/*.exe
+          retention-days: 30
+      
+      - name: Upload artifacts (macOS)
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: BigDaddyG-macOS-${{ steps.date.outputs.date }}
+          path: |
+            dist/*.dmg
+            dist/*.zip
+          retention-days: 30
+      
+      - name: Create Release (on main branch push only)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: nightly-${{ steps.date.outputs.date }}
+          name: Nightly Build ${{ steps.date.outputs.date }}
+          body: |
+            🌙 Automated nightly build
+            
+            **What's New:**
+            - Latest changes from main branch
+            - All three phases integrated:
+              - 🐙 GitHub Integration
+              - 🤖 Background Agents
+              - 👥 Team Collaboration
+            
+            **Platform Support:**
+            - Windows: .exe installer & portable
+            - macOS: .dmg installer & .zip
+            - Linux: AppImage, .deb, .rpm
+            
+            **Setup Instructions:**
+            See README.md and setup guides in the repository.
+            
+            **Note:** This is an automated build. For stable releases, see the [Releases page](https://github.com/ItsMehRAWRXD/BigDaddyG-IDE/releases).
+          files: dist/*
+          draft: false
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
