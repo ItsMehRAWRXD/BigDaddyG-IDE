@@ -13,21 +13,16 @@ let activeTab = 'welcome';
 let tabCounter = 0; // For generating unique tab IDs
 const MAX_TABS = 100; // Configurable limit (can be changed in settings)
 
-// Monaco Editor initialization - AMD loader not available in Electron renderer
-// TODO: Fix Monaco Editor loading with proper Electron integration
-if (typeof require !== 'undefined' && require.config) {
-    require.config({ paths: { 'vs': '../node_modules/monaco-editor/min/vs' }});
-    require(['vs/editor/editor.main'], function() {
-        initMonacoEditor();
-    });
-} else {
-    // Fallback: try to initialize if Monaco is already loaded
-    console.log('[BigDaddyG] ⚠️ Monaco AMD loader not available, using fallback');
-    if (typeof monaco !== 'undefined') {
-        initMonacoEditor();
-    } else {
-        console.error('[BigDaddyG] ❌ Monaco Editor not loaded');
-    }
+// Monaco Editor initialization - Called when Monaco loads from index.html
+window.onMonacoLoad = function() {
+    console.log('[BigDaddyG] 🎨 Monaco loaded, initializing editor...');
+    initMonacoEditor();
+};
+
+// Also try immediate init if Monaco is already loaded
+if (typeof monaco !== 'undefined') {
+    console.log('[BigDaddyG] 🎨 Monaco already available, initializing...');
+    initMonacoEditor();
 }
 
 function initMonacoEditor() {

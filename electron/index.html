@@ -626,11 +626,26 @@
         </div>
     </div>
     
-    <!-- Monaco Editor -->
-    <script>var require = { paths: { 'vs': '../node_modules/monaco-editor/min/vs' } };</script>
+    <!-- Monaco Editor - Proper AMD Loader Setup -->
+    <script>
+        // Set up AMD loader before loading Monaco
+        var require = { 
+            paths: { 
+                'vs': '../node_modules/monaco-editor/min/vs' 
+            }
+        };
+    </script>
     <script src="../node_modules/monaco-editor/min/vs/loader.js"></script>
-    <script src="../node_modules/monaco-editor/min/vs/editor/editor.main.nls.js"></script>
-    <script src="../node_modules/monaco-editor/min/vs/editor/editor.main.js"></script>
+    <script>
+        // Load Monaco Editor using AMD loader
+        require(['vs/editor/editor.main'], function() {
+            console.log('[BigDaddyG] ✅ Monaco Editor loaded via AMD');
+            // Monaco is now available globally as 'monaco'
+            if (typeof window.onMonacoLoad === 'function') {
+                window.onMonacoLoad();
+            }
+        });
+    </script>
     
     <!-- Core Scripts -->
     <script src="renderer.js"></script>
