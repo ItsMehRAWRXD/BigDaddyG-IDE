@@ -3,6 +3,9 @@
  * 4K/8K @ 60Hz-540Hz with real-time FPS/Resolution overlay
  */
 
+(function() {
+'use strict';
+
 // ============================================================================
 // DISPLAY CONFIGURATIONS
 // ============================================================================
@@ -717,13 +720,18 @@ if (document.readyState === 'loading') {
     console.log('[Benchmark] 💡 Performance overlay disabled by default (less clutter)');
 }
 
-// Export functions
+// Export functions globally
+window.VisualBenchmark = {
+    DisplayConfigs,
+    applyDisplayConfig,
+    toggleBenchmark,
+    showDisplaySelector
+};
+
+// Browser/Node compatibility
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        DisplayConfigs,
-        applyDisplayConfig,
-        toggleBenchmark,
-        showDisplaySelector
-    };
+    module.exports = window.VisualBenchmark;
 }
+
+})(); // End IIFE
 

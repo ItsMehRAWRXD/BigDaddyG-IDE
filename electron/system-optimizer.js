@@ -558,5 +558,10 @@ class SystemOptimizer {
   }
 }
 
-module.exports = SystemOptimizer;
+// Browser/Node compatibility
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = SystemOptimizer;
+} else {
+  window.SystemOptimizer = SystemOptimizer;
+}
 

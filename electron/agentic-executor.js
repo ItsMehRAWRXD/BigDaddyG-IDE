@@ -4,6 +4,9 @@
  * Like Cursor + Devin - full autonomous development loop
  */
 
+(function() {
+'use strict';
+
 // Browser/Node compatibility
 const spawn = typeof require !== 'undefined' ? require('child_process').spawn : null;
 const fs = typeof require !== 'undefined' ? require('fs').promises : null;
@@ -655,9 +658,19 @@ function getAgenticExecutor() {
 // EXPORTS
 // ============================================================================
 
-module.exports = {
-    AgenticExecutor,
-    getAgenticExecutor,
-    AgenticConfig
-};
+// Export globally
+window.AgenticExecutor = AgenticExecutor;
+window.getAgenticExecutor = getAgenticExecutor;
+window.AgenticConfig = AgenticConfig;
+
+// Browser/Node compatibility
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        AgenticExecutor,
+        getAgenticExecutor,
+        AgenticConfig
+    };
+}
+
+})(); // End IIFE
 

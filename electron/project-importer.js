@@ -404,5 +404,10 @@ EndGlobal`;
   }
 }
 
-module.exports = ProjectImporter;
+// Browser/Node compatibility
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = ProjectImporter;
+} else {
+  window.ProjectImporter = ProjectImporter;
+}
 
