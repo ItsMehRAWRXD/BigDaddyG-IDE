@@ -3,8 +3,9 @@
  * Import/Export projects from JetBrains, VS Code, Cursor, Visual Studio
  */
 
-const fs = require('fs').promises;
-const path = require('path');
+// Browser/Node compatibility
+const fs_promises = typeof require !== 'undefined' ? require('fs').promises : null;
+const path_module = typeof require !== 'undefined' ? require('path') : null;
 
 class ProjectImporter {
   constructor() {

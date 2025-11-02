@@ -4,10 +4,11 @@
  * NO SIMULATIONS - 100% REAL FUNCTIONALITY
  */
 
-const os = require('os');
-const { execSync } = require('child_process');
-const fs = require('fs');
-const path = require('path');
+// Browser/Node compatibility
+const os_module = typeof require !== 'undefined' ? require('os') : null;
+const execSync = typeof require !== 'undefined' ? require('child_process').execSync : null;
+const fs_sync = typeof require !== 'undefined' ? require('fs') : null;
+const path_sys = typeof require !== 'undefined' ? require('path') : null;
 
 class SystemOptimizer {
   constructor() {

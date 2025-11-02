@@ -4,10 +4,11 @@
  * Like Cursor + Devin - full autonomous development loop
  */
 
-const { spawn } = require('child_process');
-const fs = require('fs').promises;
-const path = require('path');
-const { AgenticSecurityHardening } = require('./agentic-security-hardening');
+// Browser/Node compatibility
+const spawn = typeof require !== 'undefined' ? require('child_process').spawn : null;
+const fs = typeof require !== 'undefined' ? require('fs').promises : null;
+const path = typeof require !== 'undefined' ? require('path') : null;
+const AgenticSecurityHardening = typeof require !== 'undefined' ? require('./agentic-security-hardening').AgenticSecurityHardening : null;
 
 // ============================================================================
 // AGENTIC EXECUTOR CONFIGURATION

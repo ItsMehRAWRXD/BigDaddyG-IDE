@@ -235,5 +235,10 @@ class DeepResearchEngine {
   }
 }
 
-module.exports = DeepResearchEngine;
+// Browser compatibility - make globally available
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = DeepResearchEngine;
+} else {
+  window.DeepResearchEngine = DeepResearchEngine;
+}
 

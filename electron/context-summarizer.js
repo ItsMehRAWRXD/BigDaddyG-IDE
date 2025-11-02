@@ -244,5 +244,10 @@ class ContextSummarizer {
   }
 }
 
-module.exports = ContextSummarizer;
+// Browser compatibility - make globally available
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = ContextSummarizer;
+} else {
+  window.ContextSummarizer = ContextSummarizer;
+}
 

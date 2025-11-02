@@ -274,5 +274,10 @@ class EnhancedAgenticExecutor {
   }
 }
 
-module.exports = EnhancedAgenticExecutor;
+// Browser compatibility - make globally available
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = EnhancedAgenticExecutor;
+} else {
+  window.EnhancedAgenticExecutor = EnhancedAgenticExecutor;
+}
 
