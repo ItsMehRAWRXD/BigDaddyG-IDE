@@ -48,6 +48,73 @@ class FileExplorer {
         }
     }
     
+    async loadDrivesToCenter() {
+        try {
+            const result = await window.electron.listDrives();
+            
+            if (result.success && result.drives) {
+                this.drives = result.drives;
+                console.log(`[Explorer] 💾 Loaded ${this.drives.length} drives to center`);
+                this.renderDrivesToCenter();
+            } else {
+                console.error('[Explorer] ❌ Failed to load drives:', result.error);
+            }
+        } catch (error) {
+            console.error('[Explorer] ❌ Error loading drives to center:', error);
+        }
+    }
+    
+    renderDrivesToCenter() {
+        const container = document.getElementById('center-explorer-content');
+        if (!container) {
+            console.error('[Explorer] ❌ Center explorer container not found');
+            return;
+        }
+        
+        if (!this.drives || this.drives.length === 0) {
+            container.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--cursor-text-secondary); grid-column: 1 / -1;">No drives found. Click Refresh to try again.</div>';
+            return;
+        }
+        
+        container.innerHTML = '';
+        
+        this.drives.forEach(drive => {
+            const card = document.createElement('div');
+            card.style.cssText = `
+                background: var(--cursor-bg-secondary);
+                border: 1px solid var(--cursor-border);
+                border-radius: 12px;
+                padding: 24px;
+                cursor: pointer;
+                transition: all 0.2s;
+                text-align: center;
+            `;
+            
+            card.innerHTML = `
+                <div style="font-size: 48px; margin-bottom: 12px;">${drive.icon}</div>
+                <div style="font-weight: 600; font-size: 16px; color: var(--cursor-text); margin-bottom: 8px;">${drive.name}</div>
+                <div style="font-size: 12px; color: var(--cursor-text-secondary); margin-bottom: 4px;">${drive.type}</div>
+                <div style="font-size: 11px; color: var(--cursor-text-muted);">${drive.path}</div>
+            `;
+            
+            card.onmouseover = () => {
+                card.style.transform = 'translateY(-4px)';
+                card.style.boxShadow = '0 8px 16px rgba(119, 221, 190, 0.2)';
+                card.style.borderColor = 'var(--cursor-jade-light)';
+            };
+            
+            card.onmouseout = () => {
+                card.style.transform = 'translateY(0)';
+                card.style.boxShadow = 'none';
+                card.style.borderColor = 'var(--cursor-border)';
+            };
+            
+            card.onclick = () => this.browseDrive(drive.path);
+            
+            container.appendChild(card);
+        });
+    }
+    
     renderDrives() {
         const container = document.getElementById('drives-list');
         if (!container) {
