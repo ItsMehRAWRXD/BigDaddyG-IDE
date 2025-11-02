@@ -457,31 +457,31 @@ class FloatingChat {
                 
                 <!-- Expandable Thinking Section -->
                 <div id="${responseId}-thinking-section" style="display: ${thinkingDisplay}; margin-bottom: 12px;">
-                    <button onclick="floatingChat.toggleSection('${responseId}-thinking')" style="width: 100%; text-align: left; background: rgba(119, 221, 190, 0.05); border: 1px solid var(--cursor-jade-light); padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; color: var(--cursor-jade-dark); transition: all 0.2s; display: flex; align-items: center; gap: 8px;">
+                    <button onclick="floatingChat.toggleSection('${responseId}-thinking')" style="width: 100%; text-align: left; background: rgba(119, 221, 190, 0.05); border: 1px solid var(--cursor-jade-light); padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; color: var(--cursor-jade-dark); transition: all 0.2s; display: flex; align-items: center; gap: 8px; user-select: none;">
                         <span id="${responseId}-thinking-toggle">▶</span>
                         <span>💭 Thinking Process</span>
                         <span style="margin-left: auto; font-size: 10px; color: var(--cursor-text-muted);">Click to expand</span>
                     </button>
-                    <div id="${responseId}-thinking" style="display: none; margin-top: 8px; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 6px; font-family: 'Courier New', monospace; font-size: 11px; color: var(--cursor-text-secondary); max-height: 200px; overflow-y: auto;">
-                        <div style="color: var(--cursor-accent);">Analyzing your request...</div>
+                    <div id="${responseId}-thinking" style="display: none; margin-top: 8px; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 6px; font-family: 'Courier New', monospace; font-size: 11px; color: var(--cursor-text-secondary); max-height: 200px; overflow-y: auto; user-select: text; cursor: text;">
+                        <div style="color: var(--cursor-accent); user-select: text;">Analyzing your request...</div>
                     </div>
                 </div>
                 
                 <!-- Expandable Read Section -->
                 <div id="${responseId}-read-section" style="display: ${thinkingDisplay}; margin-bottom: 12px;">
-                    <button onclick="floatingChat.toggleSection('${responseId}-read')" style="width: 100%; text-align: left; background: rgba(119, 221, 190, 0.05); border: 1px solid var(--cursor-jade-light); padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; color: var(--cursor-jade-dark); transition: all 0.2s; display: flex; align-items: center; gap: 8px;">
+                    <button onclick="floatingChat.toggleSection('${responseId}-read')" style="width: 100%; text-align: left; background: rgba(119, 221, 190, 0.05); border: 1px solid var(--cursor-jade-light); padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; color: var(--cursor-jade-dark); transition: all 0.2s; display: flex; align-items: center; gap: 8px; user-select: none;">
                         <span id="${responseId}-read-toggle">▶</span>
                         <span>📖 Files Read</span>
                         <span id="${responseId}-read-count" style="margin-left: auto; font-size: 10px; background: rgba(119, 221, 190, 0.2); padding: 2px 8px; border-radius: 10px;">0 files</span>
                     </button>
-                    <div id="${responseId}-read" style="display: none; margin-top: 8px; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 6px; font-size: 11px; color: var(--cursor-text-secondary); max-height: 200px; overflow-y: auto;">
-                        <div style="color: var(--cursor-text-muted); font-style: italic;">No files analyzed yet...</div>
+                    <div id="${responseId}-read" style="display: none; margin-top: 8px; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 6px; font-size: 11px; color: var(--cursor-text-secondary); max-height: 200px; overflow-y: auto; user-select: text; cursor: text;">
+                        <div style="color: var(--cursor-text-muted); font-style: italic; user-select: text;">No files analyzed yet...</div>
                     </div>
                 </div>
                 
-                <!-- AI Response Content -->
-                <div id="${responseId}-content" style="color: var(--cursor-text); white-space: pre-wrap; font-size: 13px; line-height: 1.6;">
-                    <div style="display: inline-block; width: 8px; height: 12px; background: var(--cursor-jade-dark); animation: blink 1s infinite; margin-right: 2px;"></div>
+                 <!-- AI Response Content -->
+                <div id="${responseId}-content" style="color: var(--cursor-text); white-space: pre-wrap; font-size: 13px; line-height: 1.6; user-select: text; cursor: text;">
+                    <div style="display: inline-block; width: 8px; height: 12px; background: var(--cursor-jade-dark); animation: blink 1s infinite; margin-right: 2px; user-select: none;"></div>
                 </div>
             `;
             
@@ -1086,14 +1086,14 @@ class FloatingChat {
             // Simple markdown-like formatting
             let formatted = this.escapeHtml(text);
             
-            // Code blocks
-            formatted = formatted.replace(/`([^`]+)`/g, '<code style="background: rgba(119, 221, 190, 0.15); padding: 2px 6px; border-radius: 3px; font-family: \'Courier New\', monospace; color: var(--cursor-jade-dark); font-size: 12px;">$1</code>');
+             // Code blocks
+            formatted = formatted.replace(/`([^`]+)`/g, '<code style="background: rgba(119, 221, 190, 0.15); padding: 2px 6px; border-radius: 3px; font-family: \'Courier New\', monospace; color: var(--cursor-jade-dark); font-size: 12px; user-select: text; cursor: text;">$1</code>');
             
             // Bold
-            formatted = formatted.replace(/\*\*([^*]+)\*\*/g, '<strong style="color: var(--cursor-jade-dark); font-weight: 700;">$1</strong>');
+            formatted = formatted.replace(/\*\*([^*]+)\*\*/g, '<strong style="color: var(--cursor-jade-dark); font-weight: 700; user-select: text;">$1</strong>');
             
             // Italic
-            formatted = formatted.replace(/\*([^*]+)\*/g, '<em style="color: var(--cursor-accent);">$1</em>');
+            formatted = formatted.replace(/\*([^*]+)\*/g, '<em style="color: var(--cursor-accent); user-select: text;">$1</em>');
             
             // Line breaks
             formatted = formatted.replace(/\n/g, '<br>');
