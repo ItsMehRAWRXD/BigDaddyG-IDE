@@ -49,6 +49,7 @@
       "server/**/*",
       "hooks/**/*",
       "orchestration/**/*",
+      "models/**/*",
       "package.json",
       "node_modules/**/*"
     ],
