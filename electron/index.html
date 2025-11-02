@@ -628,26 +628,28 @@
     
     <!-- Monaco Editor - Proper AMD Loader Setup -->
     <script>
-        // Set up AMD loader before loading Monaco
-        // Define Node.js modules as empty to prevent Monaco from trying to load them
+        // Set up AMD loader configuration BEFORE loading Monaco
         var require = { 
             paths: { 
                 'vs': '../node_modules/monaco-editor/min/vs' 
-            },
-            // Stub out Node.js modules that Monaco might try to load
-            define: function(name, deps, callback) {
-                if (typeof name === 'string' && (name === 'fs' || name === 'os' || name === 'child_process')) {
-                    return {};
-                }
             }
         };
         
-        // Provide fake Node modules to prevent errors
-        window.module = undefined;
-        window.process = window.process || { env: {}, platform: 'browser' };
+        // Stub out process for Monaco
+        window.process = window.process || { 
+            env: {}, 
+            platform: 'browser',
+            cwd: () => '/'
+        };
     </script>
     <script src="../node_modules/monaco-editor/min/vs/loader.js"></script>
     <script>
+        // Define empty modules for Node.js dependencies Monaco might try to load
+        define('fs', [], function() { return {}; });
+        define('os', [], function() { return {}; });
+        define('child_process', [], function() { return {}; });
+        define('path', [], function() { return { join: (...args) => args.join('/'), resolve: (...args) => args.join('/') }; });
+        
         // Load Monaco Editor using AMD loader
         require(['vs/editor/editor.main'], function() {
             console.log('[BigDaddyG] ✅ Monaco Editor loaded via AMD');
