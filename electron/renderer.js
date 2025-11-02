@@ -798,11 +798,26 @@ if (window.electron) {
         
         switch(event) {
             case 'new-file':
-                const filename = prompt('Enter filename:');
-                if (filename) {
-                    const lang = detectLanguage(filename);
-                    createNewTab(filename, lang);
-                }
+                // Create a new untitled file
+                const newFilename = `Untitled-${tabCounter + 1}.txt`;
+                const lang = detectLanguage(newFilename);
+                createNewTab(newFilename, lang, '');
+                console.log('[BigDaddyG] ✅ Created new file via Ctrl+N');
+                break;
+            
+            case 'open-file':
+                // TODO: Implement file browser dialog
+                console.log('[BigDaddyG] ⚠️ Open file not yet implemented');
+                break;
+            
+            case 'save-file':
+                // TODO: Implement save current file
+                console.log('[BigDaddyG] ⚠️ Save file not yet implemented');
+                break;
+            
+            case 'save-as':
+                // TODO: Implement save as dialog
+                console.log('[BigDaddyG] ⚠️ Save as not yet implemented');
                 break;
             
             case 'toggle-sidebar':
