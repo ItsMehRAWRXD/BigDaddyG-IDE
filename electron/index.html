@@ -604,14 +604,16 @@
             <!-- Right Sidebar - AI Chat & Controls -->
             <div id="right-sidebar">
                 <!-- Model & Settings Header -->
-                <div id="ai-chat-header" style="flex-direction: column; align-items: stretch; gap: 12px;">
+                <div id="ai-chat-header" style="flex-direction: column; align-items: stretch; gap: 8px; padding: 12px; border-bottom: 1px solid rgba(0, 212, 255, 0.2);">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h3>🤖 BigDaddyG AI</h3>
+                        <h3 style="margin: 0; font-size: 14px; color: var(--cyan);">🤖 BigDaddyG AI</h3>
                         <button id="settings-toggle" onclick="toggleSettings()" style="background: none; border: 1px solid var(--cyan); color: var(--cyan); padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 11px;">⚙️ Settings</button>
                     </div>
                     
-                    <!-- Model Selector -->
-                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <!-- Advanced Settings Panel (Hidden by default) -->
+                    <div id="advanced-settings" style="display: none; flex-direction: column; gap: 8px; padding: 10px; background: rgba(0, 0, 0, 0.3); border-radius: 4px; max-height: 400px; overflow-y: auto;">
+                        <!-- Model Selector -->
+                        <div style="font-size: 11px; font-weight: bold; color: var(--cyan); margin-bottom: 4px;">🎯 Model Selection</div>
                         <select id="model-selector" style="width: 100%; padding: 8px; background: rgba(0, 212, 255, 0.1); border: 1px solid var(--cyan); border-radius: 4px; color: var(--cyan); font-size: 12px; cursor: pointer;">
                             <option value="bigdaddyg-latest">🧠 BigDaddyG Latest (Local)</option>
                             <option value="bigdaddyg-code">💻 BigDaddyG Code (Optimized)</option>
@@ -621,6 +623,7 @@
                         </select>
                         
                         <!-- Quick Toggles -->
+                        <div style="font-size: 11px; font-weight: bold; color: var(--cyan); margin-top: 8px; margin-bottom: 4px;">🎛️ Tune</div>
                         <div id="quick-toggles" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; font-size: 11px;">
                             <label style="display: flex; align-items: center; gap: 6px; padding: 6px; background: rgba(0, 255, 255, 0.05); border-radius: 4px; cursor: pointer;">
                                 <input type="checkbox" id="toggle-thinking" checked style="cursor: pointer;">
@@ -654,11 +657,9 @@
                             <button class="quality-btn" data-quality="fast" style="flex: 1; padding: 6px; background: rgba(0, 255, 255, 0.1); border: 1px solid var(--cyan); color: var(--cyan); border-radius: 4px; cursor: pointer; font-size: 11px;">Fast</button>
                             <button class="quality-btn" data-quality="max" style="flex: 1; padding: 6px; background: rgba(255, 107, 53, 0.1); border: 1px solid var(--orange); color: var(--orange); border-radius: 4px; cursor: pointer; font-size: 11px;">Max</button>
                         </div>
-                    </div>
-                    
-                    <!-- Advanced Settings Panel (Hidden by default) -->
-                    <div id="advanced-settings" style="display: none; flex-direction: column; gap: 8px; padding: 10px; background: rgba(0, 0, 0, 0.3); border-radius: 4px; max-height: 200px; overflow-y: auto;">
-                        <div style="font-size: 11px; font-weight: bold; color: var(--orange);">⚙️ Advanced Settings</div>
+                        
+                        <!-- Advanced Tuning -->
+                        <div style="font-size: 11px; font-weight: bold; color: var(--cyan); margin-top: 8px; margin-bottom: 4px;">⚙️ Advanced</div>
                         
                         <div style="display: flex; flex-direction: column; gap: 4px;">
                             <label style="font-size: 10px; opacity: 0.8;">Temperature: <span id="temp-value">0.7</span></label>

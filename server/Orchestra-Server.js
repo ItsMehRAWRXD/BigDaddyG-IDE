@@ -1448,6 +1448,42 @@ const server = http.createServer((req, res) => {
             message: 'Parameters reset to defaults',
             parameters: BigDaddyGTrained.getParameters()
         }));
+    } else if (pathname === '/api/chat' && req.method === 'POST') {
+        // Chat endpoint with file attachment support
+        let body = '';
+        req.on('data', chunk => body += chunk);
+        req.on('end', async () => {
+            try {
+                const data = JSON.parse(body);
+                const message = data.message || '';
+                const model = data.model || 'BigDaddyG:Latest';
+                const attachments = data.attachments || 0;
+                const images = data.images || [];
+                
+                console.log(`[Chat] 💬 Message from IDE (${attachments} attachments, ${images.length} images)`);
+                
+                // Use BigDaddyG's context-aware response
+                const response = await BigDaddyGTrained.chat(message);
+                
+                res.writeHead(200, corsHeaders);
+                res.end(JSON.stringify({
+                    success: true,
+                    response: response,
+                    model: model,
+                    attachments_processed: attachments,
+                    images_analyzed: images.length,
+                    timestamp: new Date().toISOString()
+                }));
+            } catch (error) {
+                console.error('[Chat] ❌ Error:', error.message);
+                res.writeHead(500, corsHeaders);
+                res.end(JSON.stringify({ 
+                    success: false,
+                    error: error.message,
+                    response: `I encountered an error: ${error.message}. Try connecting to Ollama or check the Orchestra server logs.`
+                }));
+            }
+        });
     } else if (pathname === '/api/generate' && req.method === 'POST') {
         // AI generation endpoint (Ollama-compatible)
         let body = '';

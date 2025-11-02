@@ -723,11 +723,63 @@ console.log('  • Alt+Left/Right - Navigate tabs');
 
 async function sendToAI() {
     const input = document.getElementById('ai-input');
-    const message = input.value.trim();
+    let message = input.value.trim();
     
     if (!message && attachedFiles.length === 0) return;
     
     input.value = '';
+    
+    // Process agentic commands (@search, @read, @list)
+    let agenticContext = '';
+    
+    // @search command - Search for files
+    const searchMatch = message.match(/@search\s+(.+)/);
+    if (searchMatch) {
+        const query = searchMatch[1];
+        console.log(`[BigDaddyG] 🔍 Searching for: ${query}`);
+        const result = await window.electron.searchFiles(query, { maxResults: 1001 });
+        if (result.success) {
+            agenticContext += `\n\n🔍 **Search Results for "${query}"** (${result.count} files):\n\n`;
+            result.results.slice(0, 50).forEach(r => {
+                agenticContext += `📄 ${r.name} - ${r.path} (${r.matchType})\n`;
+            });
+            if (result.count > 50) {
+                agenticContext += `\n... and ${result.count - 50} more files\n`;
+            }
+        }
+    }
+    
+    // @list command - List directory contents
+    const listMatch = message.match(/@list\s+(.+)/);
+    if (listMatch) {
+        const dirPath = listMatch[1].trim();
+        console.log(`[BigDaddyG] 📂 Listing directory: ${dirPath}`);
+        const result = await window.electron.readDirRecursive(dirPath, 5);
+        if (result.success) {
+            agenticContext += `\n\n📂 **Directory Listing for "${dirPath}"** (${result.count} items):\n\n`;
+            result.files.slice(0, 100).forEach(f => {
+                const indent = '  '.repeat(f.depth);
+                const icon = f.isDirectory ? '📁' : '📄';
+                agenticContext += `${indent}${icon} ${f.name}\n`;
+            });
+            if (result.count > 100) {
+                agenticContext += `\n... and ${result.count - 100} more items\n`;
+            }
+        }
+    }
+    
+    // @read command - Read specific file(s)
+    const readMatch = message.match(/@read\s+(.+)/);
+    if (readMatch) {
+        const filePath = readMatch[1].trim();
+        console.log(`[BigDaddyG] 📖 Reading file: ${filePath}`);
+        const result = await window.electron.readFile(filePath);
+        if (result.success) {
+            agenticContext += `\n\n📖 **File Content: ${filePath}**\n\n\`\`\`\n${result.content}\n\`\`\`\n\n`;
+        } else {
+            agenticContext += `\n\n❌ **Could not read ${filePath}**: ${result.error}\n`;
+        }
+    }
     
     // Build context from attached files
     let fileContext = '';
@@ -757,7 +809,7 @@ async function sendToAI() {
         }
     }
     
-    const fullMessage = message + fileContext;
+    const fullMessage = message + agenticContext + fileContext;
     
     // Add user message with attachment count
     const displayMessage = attachedFiles.length > 0 

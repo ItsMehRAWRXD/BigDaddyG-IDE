@@ -748,6 +748,227 @@ ipcMain.handle('get-app-path', () => {
   return app.getAppPath();
 });
 
+// ============================================================================
+// AGENTIC FILE SYSTEM OPERATIONS (UNLIMITED)
+// ============================================================================
+
+// Search files by content or name
+ipcMain.handle('search-files', async (event, query, options = {}) => {
+  const fs = require('fs').promises;
+  const results = [];
+  const searchPath = options.path || app.getAppPath();
+  const maxResults = options.maxResults || 1001;
+  const searchContent = options.searchContent !== false; // Default true
+  
+  async function searchDirectory(dirPath, depth = 0) {
+    if (depth > (options.maxDepth || 10)) return;
+    if (results.length >= maxResults) return;
+    
+    try {
+      const entries = await fs.readdir(dirPath, { withFileTypes: true });
+      
+      for (const entry of entries) {
+        if (results.length >= maxResults) break;
+        
+        const fullPath = path.join(dirPath, entry.name);
+        
+        // Skip node_modules, .git, etc.
+        if (entry.name.startsWith('.') || entry.name === 'node_modules') continue;
+        
+        if (entry.isFile()) {
+          // Search by filename
+          if (entry.name.toLowerCase().includes(query.toLowerCase())) {
+            results.push({
+              path: fullPath,
+              name: entry.name,
+              type: 'file',
+              matchType: 'filename'
+            });
+          } else if (searchContent) {
+            // Search file content (for text files only)
+            try {
+              const stats = await fs.stat(fullPath);
+              if (stats.size < 10 * 1024 * 1024) { // Only search files under 10MB for content
+                const content = await fs.readFile(fullPath, 'utf-8');
+                if (content.toLowerCase().includes(query.toLowerCase())) {
+                  results.push({
+                    path: fullPath,
+                    name: entry.name,
+                    type: 'file',
+                    matchType: 'content'
+                  });
+                }
+              }
+            } catch (err) {
+              // Skip binary or unreadable files
+            }
+          }
+        } else if (entry.isDirectory()) {
+          await searchDirectory(fullPath, depth + 1);
+        }
+      }
+    } catch (error) {
+      // Skip inaccessible directories
+    }
+  }
+  
+  try {
+    await searchDirectory(searchPath);
+    return { success: true, results, query, count: results.length };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Read directory recursively (unlimited depth)
+ipcMain.handle('read-dir-recursive', async (event, dirPath, maxDepth = 100) => {
+  const fs = require('fs').promises;
+  const results = [];
+  
+  async function traverse(currentPath, depth = 0) {
+    if (depth > maxDepth) return;
+    
+    try {
+      const entries = await fs.readdir(currentPath, { withFileTypes: true });
+      
+      for (const entry of entries) {
+        const fullPath = path.join(currentPath, entry.name);
+        
+        // Skip hidden files and node_modules
+        if (entry.name.startsWith('.') || entry.name === 'node_modules') continue;
+        
+        results.push({
+          name: entry.name,
+          path: fullPath,
+          isDirectory: entry.isDirectory(),
+          isFile: entry.isFile(),
+          depth: depth
+        });
+        
+        if (entry.isDirectory()) {
+          await traverse(fullPath, depth + 1);
+        }
+      }
+    } catch (error) {
+      // Skip inaccessible directories
+    }
+  }
+  
+  try {
+    await traverse(dirPath);
+    return { success: true, files: results, count: results.length };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Read file in chunks (for massive files)
+ipcMain.handle('read-file-chunked', async (event, filePath, chunkSize = 1024 * 1024) => {
+  const fs = require('fs');
+  const chunks = [];
+  
+  try {
+    const stats = await fs.promises.stat(filePath);
+    const stream = fs.createReadStream(filePath, { encoding: 'utf-8', highWaterMark: chunkSize });
+    
+    return new Promise((resolve, reject) => {
+      stream.on('data', (chunk) => {
+        chunks.push(chunk);
+      });
+      
+      stream.on('end', () => {
+        resolve({
+          success: true,
+          content: chunks.join(''),
+          size: stats.size,
+          chunks: chunks.length
+        });
+      });
+      
+      stream.on('error', (error) => {
+        reject({ success: false, error: error.message });
+      });
+    });
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Read multiple files at once
+ipcMain.handle('read-multiple-files', async (event, filePaths) => {
+  const fs = require('fs').promises;
+  const results = [];
+  
+  for (const filePath of filePaths) {
+    try {
+      const content = await fs.readFile(filePath, 'utf-8');
+      const stats = await fs.stat(filePath);
+      results.push({
+        path: filePath,
+        name: path.basename(filePath),
+        content: content,
+        size: stats.size,
+        success: true
+      });
+    } catch (error) {
+      results.push({
+        path: filePath,
+        name: path.basename(filePath),
+        error: error.message,
+        success: false
+      });
+    }
+  }
+  
+  return { success: true, files: results, count: results.length };
+});
+
+// Find files by glob pattern
+ipcMain.handle('find-by-pattern', async (event, pattern, startPath) => {
+  const fs = require('fs').promises;
+  const results = [];
+  const searchPath = startPath || app.getAppPath();
+  
+  // Simple glob matching (*.js, *.txt, etc.)
+  function matchesPattern(filename, pattern) {
+    const regex = new RegExp('^' + pattern.replace(/\*/g, '.*').replace(/\?/g, '.') + '$', 'i');
+    return regex.test(filename);
+  }
+  
+  async function findFiles(dirPath, depth = 0) {
+    if (depth > 20) return; // Prevent infinite loops
+    
+    try {
+      const entries = await fs.readdir(dirPath, { withFileTypes: true });
+      
+      for (const entry of entries) {
+        if (entry.name.startsWith('.') || entry.name === 'node_modules') continue;
+        
+        const fullPath = path.join(dirPath, entry.name);
+        
+        if (entry.isFile() && matchesPattern(entry.name, pattern)) {
+          results.push({
+            path: fullPath,
+            name: entry.name,
+            directory: dirPath
+          });
+        } else if (entry.isDirectory()) {
+          await findFiles(fullPath, depth + 1);
+        }
+      }
+    } catch (error) {
+      // Skip inaccessible directories
+    }
+  }
+  
+  try {
+    await findFiles(searchPath);
+    return { success: true, results, pattern, count: results.length };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
 // Orchestra server control
 ipcMain.handle('orchestra:start', () => {
   startOrchestraServer();

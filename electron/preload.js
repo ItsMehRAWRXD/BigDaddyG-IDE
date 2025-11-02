@@ -22,6 +22,13 @@ contextBridge.exposeInMainWorld('electron', {
   getFileStats: (filePath) => ipcRenderer.invoke('get-file-stats', filePath),
   fileExists: (filePath) => ipcRenderer.invoke('file-exists', filePath),
   
+  // Agentic file system operations (unlimited)
+  searchFiles: (query, options) => ipcRenderer.invoke('search-files', query, options),
+  readDirRecursive: (dirPath, maxDepth) => ipcRenderer.invoke('read-dir-recursive', dirPath, maxDepth),
+  readFileChunked: (filePath, chunkSize) => ipcRenderer.invoke('read-file-chunked', filePath, chunkSize),
+  readMultipleFiles: (filePaths) => ipcRenderer.invoke('read-multiple-files', filePaths),
+  findByPattern: (pattern, startPath) => ipcRenderer.invoke('find-by-pattern', pattern, startPath),
+  
   // App info
   getAppVersion: () => ipcRenderer.invoke('get-app-version'),
   getAppPath: () => ipcRenderer.invoke('get-app-path'),
