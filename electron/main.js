@@ -1273,9 +1273,3 @@ ipcMain.on('window-close', () => {
 
 console.log('[BigDaddyG] 🌌 Main process initialized');
 
-
-  if (mainWindow) mainWindow.close();
-});
-
-console.log('[BigDaddyG] 🌌 Main process initialized');
-
