@@ -952,8 +952,8 @@ function addUserMessage(message, attachments = null) {
         container.appendChild(msgEl);
     } else {
         // Fallback if chat history not loaded yet
-        const msgEl = document.createElement('div');
-        msgEl.className = 'ai-message user-message';
+    const msgEl = document.createElement('div');
+    msgEl.className = 'ai-message user-message';
         msgEl.style.cssText = `
             margin-bottom: 15px;
             padding: 15px;
@@ -964,7 +964,7 @@ function addUserMessage(message, attachments = null) {
             line-height: 1.6;
         `;
         msgEl.innerHTML = `<strong style="color: var(--orange); font-size: 13px;">You:</strong><br><br><div style="white-space: pre-wrap;">${escapeHtml(message)}</div>`;
-        container.appendChild(msgEl);
+    container.appendChild(msgEl);
     }
     
     container.scrollTop = container.scrollHeight;
@@ -994,10 +994,10 @@ function addAIMessage(message, isError = false, isThinking = false) {
     } else {
         // Fallback or thinking indicator
         const msgEl = document.createElement('div');
-        msgEl.id = id;
-        msgEl.className = 'ai-message';
-        
-        if (isError) {
+    msgEl.id = id;
+    msgEl.className = 'ai-message';
+    
+    if (isError) {
             msgEl.style.cssText = `
                 margin-bottom: 15px;
                 padding: 15px;
@@ -1008,7 +1008,7 @@ function addAIMessage(message, isError = false, isThinking = false) {
                 line-height: 1.6;
             `;
             msgEl.innerHTML = `<strong style="color: var(--red); font-size: 13px;">❌ Error:</strong><br><br><div style="white-space: pre-wrap;">${message}</div>`;
-        } else if (isThinking) {
+    } else if (isThinking) {
             msgEl.style.cssText = `
                 margin-bottom: 15px;
                 padding: 15px;
@@ -1020,7 +1020,7 @@ function addAIMessage(message, isError = false, isThinking = false) {
                 animation: pulse 1.5s ease-in-out infinite;
             `;
             msgEl.innerHTML = `<strong style="color: var(--cyan); font-size: 13px;">🤔 BigDaddyG:</strong><br><br><em style="opacity: 0.7;">${message}</em>`;
-        } else {
+    } else {
             msgEl.style.cssText = `
                 margin-bottom: 15px;
                 padding: 15px;
@@ -1031,9 +1031,9 @@ function addAIMessage(message, isError = false, isThinking = false) {
                 line-height: 1.6;
             `;
             msgEl.innerHTML = `<strong style="color: var(--cyan); font-size: 13px;">💎 BigDaddyG:</strong><br><br><div style="white-space: pre-wrap;">${escapeHtml(message)}</div>`;
-        }
-        
-        container.appendChild(msgEl);
+    }
+    
+    container.appendChild(msgEl);
     }
     
     container.scrollTop = container.scrollHeight;
