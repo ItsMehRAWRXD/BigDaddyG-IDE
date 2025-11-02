@@ -633,6 +633,18 @@
                     
                     <!-- CHAT TAB (Active by default) -->
                     <div id="chat-tab-content" class="tab-content" style="flex: 1; display: flex; flex-direction: column;">
+                        <!-- Floating Chat Button -->
+                        <div style="padding: 12px 16px; background: linear-gradient(135deg, rgba(119, 221, 190, 0.1), rgba(77, 192, 181, 0.1)); border-bottom: 1px solid var(--cursor-border);">
+                            <button onclick="if(window.floatingChat) window.floatingChat.open();" style="width: 100%; background: linear-gradient(135deg, var(--cursor-jade-dark), var(--cursor-accent)); border: none; color: white; padding: 12px 16px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 12px rgba(119, 221, 190, 0.3); transition: all 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(119, 221, 190, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(119, 221, 190, 0.3)'">
+                                <span style="font-size: 18px;">💬</span>
+                                <span>Open AI Chat</span>
+                                <span style="font-size: 11px; background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 12px;">Ctrl+L</span>
+                            </button>
+                            <div style="margin-top: 8px; text-align: center; font-size: 11px; color: var(--cursor-text-secondary);">
+                                Opens centered floating panel
+                            </div>
+                        </div>
+                        
                         <!-- Past Chats Section -->
                         <div id="past-chats-section" style="border-bottom: 2px solid var(--cursor-border); background: var(--cursor-bg-secondary);">
                             <div style="padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="document.getElementById('past-chats-list').style.display = document.getElementById('past-chats-list').style.display === 'none' ? 'block' : 'none'">
@@ -933,6 +945,7 @@
     <script src="file-explorer.js"></script>
     <script src="chat-history.js"></script>
     <script src="ai-response-handler.js"></script>
+    <script src="floating-chat.js"></script>
     <script src="voice-coding.js"></script>
     
     <!-- REVOLUTIONARY NEW FEATURES -->
