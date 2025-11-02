@@ -485,9 +485,10 @@ body {
     flex: 1;
     border: 1px solid var(--cursor-border);
     border-radius: 8px;
-    overflow: hidden;
+    overflow: auto;
     margin: 20px;
     box-shadow: 0 2px 8px var(--cursor-shadow);
+    height: 100%;
 }
 
 /* File Attachments */
