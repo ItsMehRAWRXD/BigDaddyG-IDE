@@ -1102,25 +1102,52 @@ ipcMain.handle('list-drives', async () => {
   
   try {
     if (process.platform === 'win32') {
-      // Windows: Use wmic to list all drives
-      const output = execSync('wmic logicaldisk get name,description,volumename,size,freespace', { 
+      // Windows: Use simple wmic command to get drive letters
+      const output = execSync('wmic logicaldisk get name', { 
         encoding: 'utf-8' 
       });
       
-      const lines = output.split('\n').filter(line => line.trim());
-      for (let i = 1; i < lines.length; i++) {
-        const parts = lines[i].trim().split(/\s{2,}/);
-        if (parts[0] && parts[0].includes(':')) {
-          const driveLetter = parts[0];
-          drives.push({
-            name: driveLetter,
-            path: driveLetter + '\\',
-            label: parts[2] || driveLetter,
-            type: parts[1] || 'Local Disk',
-            size: parseInt(parts[3]) || 0,
-            free: parseInt(parts[4]) || 0,
-            icon: getWindowsDriveIcon(parts[1])
-          });
+      const lines = output.split('\n').slice(1).filter(line => line.trim());
+      
+      for (const line of lines) {
+        const driveLetter = line.trim();
+        if (driveLetter && driveLetter.match(/^[A-Z]:$/)) {
+          // Get detailed info for this drive
+          try {
+            const detailOutput = execSync(
+              `wmic logicaldisk where "DeviceID='${driveLetter}'" get Description,VolumeName,Size,FreeSpace /format:list`,
+              { encoding: 'utf-8' }
+            );
+            
+            const details = {};
+            detailOutput.split('\n').forEach(line => {
+              const [key, value] = line.split('=');
+              if (key && value) {
+                details[key.trim()] = value.trim();
+              }
+            });
+            
+            drives.push({
+              name: driveLetter,
+              path: driveLetter + '\\',
+              label: details.VolumeName || driveLetter,
+              type: details.Description || 'Local Disk',
+              size: parseInt(details.Size) || 0,
+              free: parseInt(details.FreeSpace) || 0,
+              icon: getWindowsDriveIcon(details.Description)
+            });
+          } catch (err) {
+            // If details fail, add basic drive info
+            drives.push({
+              name: driveLetter,
+              path: driveLetter + '\\',
+              label: driveLetter,
+              type: 'Local Disk',
+              size: 0,
+              free: 0,
+              icon: '💾'
+            });
+          }
         }
       }
     } else if (process.platform === 'darwin') {
