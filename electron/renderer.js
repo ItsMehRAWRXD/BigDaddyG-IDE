@@ -756,6 +756,15 @@ async function sendToAI() {
     
     input.value = '';
     
+    // Use new AI response handler if available
+    if (window.aiResponseHandler) {
+        const attachments = [...attachedFiles];
+        attachedFiles = [];
+        updateAttachmentsDisplay();
+        await window.aiResponseHandler.processMessage(message, attachments);
+        return;
+    }
+    
     // Process agentic commands (@search, @read, @list)
     let agenticContext = '';
     
