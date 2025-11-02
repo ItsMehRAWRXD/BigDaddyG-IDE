@@ -18,13 +18,8 @@ class AIResponseHandler {
     init() {
         console.log('[AIResponse] 🎬 Initializing AI response handler...');
         
-        // Register Ctrl+Shift+X to stop
-        document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.shiftKey && e.key === 'X') {
-                e.preventDefault();
-                this.stopCurrentExecution();
-            }
-        });
+        // Ctrl+Shift+X handled by hotkey-manager.js
+        // The hotkey-manager will call this.stopCurrentExecution()
         
         console.log('[AIResponse] ✅ AI response handler ready');
     }

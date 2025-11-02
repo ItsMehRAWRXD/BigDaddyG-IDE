@@ -25,43 +25,9 @@ class TabSystem {
     }
     
     registerHotkeys() {
-        document.addEventListener('keydown', (e) => {
-            // Ctrl+Shift+C → Chat tab
-            if (e.ctrlKey && e.shiftKey && e.key === 'C') {
-                e.preventDefault();
-                this.openChatTab();
-            }
-            
-            // Ctrl+Shift+E → Explorer tab
-            if (e.ctrlKey && e.shiftKey && e.key === 'E') {
-                e.preventDefault();
-                this.openExplorerTab();
-            }
-            
-            // Ctrl+Shift+G → GitHub tab
-            if (e.ctrlKey && e.shiftKey && e.key === 'G') {
-                e.preventDefault();
-                this.openGitHubTab();
-            }
-            
-            // Ctrl+Shift+A → Agents tab
-            if (e.ctrlKey && e.shiftKey && e.key === 'A') {
-                e.preventDefault();
-                this.openAgentsTab();
-            }
-            
-            // Ctrl+Shift+T → Team tab
-            if (e.ctrlKey && e.shiftKey && e.key === 'T') {
-                e.preventDefault();
-                this.openTeamTab();
-            }
-            
-            // Ctrl+, → Settings tab
-            if (e.ctrlKey && e.key === ',') {
-                e.preventDefault();
-                this.openSettingsTab();
-            }
-        });
+        // Hotkeys now handled by hotkey-manager.js
+        // This method kept for backwards compatibility
+        console.log('[TabSystem] ✅ Hotkeys registered via HotkeyManager');
     }
     
     createTab(title, icon, content, type = 'special') {
@@ -124,8 +90,11 @@ class TabSystem {
     }
     
     addContentPanel(tabId, content, type) {
-        const container = document.getElementById('editor-content');
-        if (!container) return;
+        const container = document.getElementById('editor-container');
+        if (!container) {
+            console.error('[TabSystem] ❌ Editor container not found!');
+            return;
+        }
         
         const panel = document.createElement('div');
         panel.id = `content-${tabId}`;
@@ -133,7 +102,7 @@ class TabSystem {
         panel.style.cssText = `
             display: none;
             width: 100%;
-            height: 100%;
+            height: calc(100% - 40px);
             overflow-y: auto;
             background: var(--cursor-bg);
             padding: 20px;
@@ -141,7 +110,15 @@ class TabSystem {
         
         panel.innerHTML = content;
         
-        container.appendChild(panel);
+        // Insert after tab bar
+        const tabBar = document.getElementById('tab-bar') || document.getElementById('editor-tabs');
+        if (tabBar && tabBar.nextSibling) {
+            container.insertBefore(panel, tabBar.nextSibling);
+        } else {
+            container.appendChild(panel);
+        }
+        
+        console.log(`[TabSystem] ✅ Added content panel for ${tabId}`);
     }
     
     switchToTab(tabId) {

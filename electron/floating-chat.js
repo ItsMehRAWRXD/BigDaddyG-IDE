@@ -146,14 +146,10 @@ class FloatingChat {
     }
     
     registerHotkeys() {
+        // Ctrl+L now handled by hotkey-manager.js
+        // Keep Escape handler for modal closing
         document.addEventListener('keydown', (e) => {
-            // Ctrl+L to toggle
-            if (e.ctrlKey && e.key === 'l') {
-                e.preventDefault();
-                this.toggle();
-            }
-            
-            // Escape to close
+            // Escape to close (specific to this modal)
             if (e.key === 'Escape' && this.isOpen) {
                 e.preventDefault();
                 this.close();

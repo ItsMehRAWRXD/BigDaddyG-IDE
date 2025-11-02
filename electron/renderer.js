@@ -700,50 +700,53 @@ function escapeHtml(text) {
 // KEYBOARD SHORTCUTS
 // ============================================================================
 
+// NOTE: Most shortcuts now handled by hotkey-manager.js
+// These are kept as fallbacks if hotkey-manager isn't loaded yet
 document.addEventListener('keydown', (e) => {
-    // Ctrl+Tab / Ctrl+Shift+Tab for tab navigation
+    // Defer to hotkey-manager if it exists
+    if (window.hotkeyManager) {
+        return; // Let hotkey-manager handle it
+    }
+    
+    // Fallback handlers (only if hotkey-manager not loaded)
     if (e.ctrlKey && e.key === 'Tab') {
         e.preventDefault();
         if (e.shiftKey) {
-            previousTab();
+            if (typeof previousTab === 'function') previousTab();
         } else {
-            nextTab();
+            if (typeof nextTab === 'function') nextTab();
         }
     }
     
-    // Ctrl+W to close current tab
     if (e.ctrlKey && e.key === 'w') {
         e.preventDefault();
-        const tabs = Object.keys(openTabs);
-        if (tabs.length > 1) {
-            closeTab({ stopPropagation: () => {} }, activeTab);
+        const tabs = Object.keys(openTabs || {});
+        if (tabs.length > 1 && typeof closeTab === 'function' && window.activeTab) {
+            closeTab({ stopPropagation: () => {} }, window.activeTab);
         }
     }
     
-    // Ctrl+Shift+W to close all tabs
     if (e.ctrlKey && e.shiftKey && e.key === 'W') {
         e.preventDefault();
-        closeAllTabs();
+        if (typeof closeAllTabs === 'function') closeAllTabs();
     }
     
-    // Ctrl+1 through Ctrl+9 for direct tab access
     if (e.ctrlKey && e.key >= '1' && e.key <= '9') {
         e.preventDefault();
         const index = parseInt(e.key) - 1;
-        const tabs = Object.keys(openTabs);
-        if (tabs[index]) {
+        const tabs = Object.keys(openTabs || {});
+        if (tabs[index] && typeof switchTab === 'function') {
             switchTab(tabs[index]);
         }
     }
     
-    // Alt+Left/Right for tab navigation (browser-style)
     if (e.altKey) {
         if (e.key === 'ArrowLeft') {
             e.preventDefault();
-            previousTab();
+            if (typeof previousTab === 'function') previousTab();
         } else if (e.key === 'ArrowRight') {
             e.preventDefault();
-            nextTab();
+            if (typeof nextTab === 'function') nextTab();
         }
     }
 });
