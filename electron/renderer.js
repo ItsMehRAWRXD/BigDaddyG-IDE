@@ -57,11 +57,22 @@ function initMonacoEditor() {
         fontFamily: 'Consolas, "Courier New", monospace',
         lineNumbers: 'on',
         roundedSelection: true,
-        scrollBeyondLastLine: false,
+        scrollBeyondLastLine: true, // CHANGED: Allow scrolling past last line
         minimap: {
             enabled: true
         },
         automaticLayout: true,
+        
+        // CRITICAL: Enable scrolling
+        scrollbar: {
+            vertical: 'visible',
+            horizontal: 'visible',
+            useShadows: true,
+            verticalHasArrows: false,
+            horizontalHasArrows: false,
+            verticalScrollbarSize: 14,
+            horizontalScrollbarSize: 14
+        },
         
         // Advanced features
         suggestOnTriggerCharacters: true,
