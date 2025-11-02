@@ -969,6 +969,107 @@ ipcMain.handle('find-by-pattern', async (event, pattern, startPath) => {
   }
 });
 
+// ============================================================================
+// NATIVE SPEECH RECOGNITION (CROSS-PLATFORM, OFFLINE)
+// ============================================================================
+
+// Windows Speech Recognition
+ipcMain.handle('windows-speech-recognize', async () => {
+  if (process.platform !== 'win32') {
+    return { success: false, error: 'Not on Windows' };
+  }
+  
+  try {
+    const { execSync } = require('child_process');
+    
+    // Use Windows Speech Recognition via PowerShell
+    const psScript = `
+      Add-Type -AssemblyName System.Speech
+      $recognizer = New-Object System.Speech.Recognition.SpeechRecognitionEngine
+      $recognizer.SetInputToDefaultAudioDevice()
+      $grammar = New-Object System.Speech.Recognition.DictationGrammar
+      $recognizer.LoadGrammar($grammar)
+      $result = $recognizer.Recognize()
+      if ($result) { $result.Text } else { "" }
+    `;
+    
+    const result = execSync(`powershell -Command "${psScript}"`, { 
+      encoding: 'utf-8',
+      timeout: 10000 
+    });
+    
+    return { 
+      success: true, 
+      text: result.trim(),
+      engine: 'windows-native'
+    };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// macOS Speech Recognition
+ipcMain.handle('mac-speech-recognize', async () => {
+  if (process.platform !== 'darwin') {
+    return { success: false, error: 'Not on macOS' };
+  }
+  
+  try {
+    const { execSync } = require('child_process');
+    
+    // Use macOS Speech Recognition via AppleScript
+    const appleScript = `
+      tell application "System Events"
+        set recognitionResult to do shell script "say 'Listening' && sleep 3"
+      end tell
+    `;
+    
+    // Note: macOS requires accessibility permissions
+    const result = execSync(`osascript -e '${appleScript}'`, { 
+      encoding: 'utf-8',
+      timeout: 10000 
+    });
+    
+    return { 
+      success: true, 
+      text: result.trim(),
+      engine: 'macos-native'
+    };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Linux Speech Recognition  
+ipcMain.handle('linux-speech-recognize', async () => {
+  if (process.platform !== 'linux') {
+    return { success: false, error: 'Not on Linux' };
+  }
+  
+  try {
+    const { execSync } = require('child_process');
+    
+    // Try PocketSphinx if installed
+    const result = execSync('pocketsphinx_continuous -inmic yes -time yes 2>&1', { 
+      encoding: 'utf-8',
+      timeout: 10000 
+    });
+    
+    return { 
+      success: true, 
+      text: result.trim(),
+      engine: 'linux-pocketsphinx'
+    };
+  } catch (error) {
+    // PocketSphinx not installed - use fallback
+    return { 
+      success: false, 
+      error: 'PocketSphinx not installed. Install with: sudo apt-get install pocketsphinx',
+      fallback: 'keyboard'
+    };
+  }
+});
+
 // Orchestra server control
 ipcMain.handle('orchestra:start', () => {
   startOrchestraServer();

@@ -38,6 +38,11 @@ contextBridge.exposeInMainWorld('electron', {
   stopOrchestra: () => ipcRenderer.invoke('orchestra:stop'),
   getOrchestraStatus: () => ipcRenderer.invoke('orchestra:status'),
   
+  // Native speech recognition (offline, cross-platform)
+  windowsSpeechRecognize: () => ipcRenderer.invoke('windows-speech-recognize'),
+  macSpeechRecognize: () => ipcRenderer.invoke('mac-speech-recognize'),
+  linuxSpeechRecognize: () => ipcRenderer.invoke('linux-speech-recognize'),
+  
   // Browser operations
   browser: {
     navigate: (url) => ipcRenderer.invoke('browser:navigate', url),

@@ -220,9 +220,34 @@ class VoiceCodingEngine {
     }
     
     init() {
-        // Check browser support
+        // Use offline speech engine if available
+        if (typeof OfflineSpeechEngine !== 'undefined') {
+            console.log('[Voice] 🎤 Using OFFLINE speech engine (cross-platform)');
+            this.offlineEngine = new OfflineSpeechEngine();
+            
+            // Hook up offline engine callbacks
+            this.offlineEngine.onResult = (result) => this.handleOfflineResult(result);
+            this.offlineEngine.onStart = () => this.updateUI('listening');
+            this.offlineEngine.onEnd = () => this.updateUI('stopped');
+            this.offlineEngine.onError = (error) => {
+                // Only log errors, don't spam
+                if (error !== 'network') {
+                    console.error('[Voice] ❌ Offline engine error:', error);
+                }
+            };
+            
+            this.recognition = this.offlineEngine;
+            this.synthesis = window.speechSynthesis;
+            
+            console.log('[Voice] ✅ Offline voice coding ready');
+            console.log('[Voice] 💡 Press Ctrl+Shift+V or Ctrl+Shift+P for commands');
+            return;
+        }
+        
+        // Fallback to Web Speech API (requires internet)
         if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
             console.error('[Voice] ❌ Speech recognition not supported');
+            console.log('[Voice] 💡 Use Ctrl+Shift+P for keyboard command palette');
             return;
         }
         
@@ -240,8 +265,9 @@ class VoiceCodingEngine {
         // Set up event listeners
         this.setupRecognitionEvents();
         
-        console.log('[Voice] 🎤 Voice coding engine initialized');
+        console.log('[Voice] 🎤 Voice coding engine initialized (requires internet)');
         console.log(`[Voice] 💡 Say "${VoiceConfig.wakeWord}" to activate`);
+        console.log('[Voice] 💡 Or use Ctrl+Shift+P for offline commands');
     }
     
     setupRecognitionEvents() {
@@ -459,9 +485,59 @@ class VoiceCodingEngine {
         console.log('[Voice] 😴 ASLEEP');
     }
     
+    handleOfflineResult(result) {
+        console.log('[Voice] 🎤 Offline result:', result);
+        
+        if (result.isWakeWord) {
+            this.isAwake = true;
+            this.updateUI('awake');
+            return;
+        }
+        
+        if (result.command && result.command !== 'ai-query') {
+            this.executeVoiceCommand(result.command, result.parameter);
+            return;
+        }
+        
+        if (result.isNaturalLanguage) {
+            const aiInput = document.getElementById('ai-input');
+            if (aiInput && typeof sendToAI === 'function') {
+                aiInput.value = result.transcript;
+                sendToAI();
+            }
+            return;
+        }
+        
+        const code = this.convertToCode(result.transcript);
+        this.insertCode(code);
+    }
+    
+    executeVoiceCommand(action, parameter) {
+        console.log('[Voice] ⚡ Executing:', action, parameter);
+        
+        const actions = {
+            'format': () => this.editor.getAction('editor.action.formatDocument').run(),
+            'comment': () => this.editor.getAction('editor.action.commentLine').run(),
+            'save-file': () => typeof saveCurrentFile === 'function' && saveCurrentFile(),
+            'new-file': () => typeof createNewTab === 'function' && createNewTab('Untitled.txt', 'plaintext'),
+            'select-all': () => this.editor.setSelection(this.editor.getModel().getFullModelRange())
+        };
+        
+        if (actions[action]) {
+            actions[action]();
+        }
+    }
+    
     startListening() {
         if (this.isListening) return;
         
+        // Use offline engine if available
+        if (this.offlineEngine) {
+            this.offlineEngine.startListening();
+            return;
+        }
+        
+        // Fallback to Web Speech API
         try {
             this.recognition.start();
         } catch (error) {
@@ -472,6 +548,13 @@ class VoiceCodingEngine {
     stopListening() {
         if (!this.isListening) return;
         
+        // Use offline engine if available
+        if (this.offlineEngine) {
+            this.offlineEngine.stopListening();
+            return;
+        }
+        
+        // Fallback
         this.recognition.stop();
         this.isAwake = false;
     }
