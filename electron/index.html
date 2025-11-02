@@ -331,6 +331,117 @@
             border-left: 3px solid var(--orange);
         }
         
+        /* Drag & Drop Zone */
+        #ai-chat-messages.drag-over {
+            border: 3px dashed var(--cyan);
+            background: rgba(0, 212, 255, 0.05);
+        }
+        
+        .drop-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 212, 255, 0.1);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 15px;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        
+        .drop-overlay-icon {
+            font-size: 64px;
+            animation: bounce 1s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        /* File Attachments */
+        #file-attachments {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .file-attachment {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid var(--cyan);
+            border-radius: 6px;
+            font-size: 11px;
+            color: var(--cyan);
+            max-width: 100%;
+            cursor: default;
+        }
+        
+        .file-attachment-image {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid var(--cyan);
+            border-radius: 6px;
+            max-width: 150px;
+        }
+        
+        .file-attachment-image img {
+            max-width: 130px;
+            max-height: 130px;
+            border-radius: 4px;
+            margin-bottom: 6px;
+        }
+        
+        .file-attachment-name {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .file-attachment-size {
+            color: rgba(0, 212, 255, 0.7);
+            font-size: 10px;
+        }
+        
+        .file-attachment-remove {
+            background: rgba(255, 71, 87, 0.2);
+            color: var(--red);
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .file-attachment-remove:hover {
+            background: rgba(255, 71, 87, 0.4);
+        }
+        
+        .attachment-counter {
+            background: var(--cyan);
+            color: var(--void);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
         #ai-input-container {
             padding: 15px;
             border-top: 1px solid rgba(0, 212, 255, 0.2);
@@ -602,7 +713,10 @@
                     </div>
                 </div>
                 <div id="ai-input-container">
-                    <textarea id="ai-input" placeholder="Ask BigDaddyG anything... (or press 🎤 for voice)"></textarea>
+                    <!-- File Attachments Display -->
+                    <div id="file-attachments" style="display: none;"></div>
+                    
+                    <textarea id="ai-input" placeholder="Ask BigDaddyG anything... (or press 🎤 for voice, or drag files here 📎)"></textarea>
                     <div style="display: flex; gap: 8px; margin-top: 10px;">
                         <button id="ai-send-btn" onclick="sendToAI()" style="flex: 1; padding: 10px; background: var(--cyan); color: var(--void); border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">💬 Send</button>
                         <button id="voice-btn" onclick="startVoiceInput()" style="padding: 10px 15px; background: rgba(255, 107, 53, 0.2); color: var(--orange); border: 1px solid var(--orange); border-radius: 5px; font-weight: bold; cursor: pointer;">🎤</button>

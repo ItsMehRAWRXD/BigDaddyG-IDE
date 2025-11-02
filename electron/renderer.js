@@ -725,24 +725,61 @@ async function sendToAI() {
     const input = document.getElementById('ai-input');
     const message = input.value.trim();
     
-    if (!message) return;
+    if (!message && attachedFiles.length === 0) return;
     
     input.value = '';
     
-    // Add user message
-    addUserMessage(message);
+    // Build context from attached files
+    let fileContext = '';
+    let imageContext = [];
+    
+    if (attachedFiles.length > 0) {
+        console.log(`[BigDaddyG] 📎 Including ${attachedFiles.length} attached files in context...`);
+        
+        fileContext += `\n\n📎 **Attached Files (${attachedFiles.length}):**\n\n`;
+        
+        for (const fileData of attachedFiles) {
+            if (fileData.isImage && fileData.preview) {
+                // Images sent separately for AI to analyze
+                imageContext.push({
+                    name: fileData.name,
+                    data: fileData.preview,
+                    size: fileData.size
+                });
+                fileContext += `🖼️ **${fileData.name}** (Image, ${formatFileSize(fileData.size)})\n`;
+            } else if (fileData.content) {
+                // Text files included in context
+                fileContext += `📄 **${fileData.name}** (${formatFileSize(fileData.size)}):\n\`\`\`\n${fileData.content}\n\`\`\`\n\n`;
+            } else {
+                // Binary or large files - just metadata
+                fileContext += `📦 **${fileData.name}** (${formatFileSize(fileData.size)}) - Binary file\n`;
+            }
+        }
+    }
+    
+    const fullMessage = message + fileContext;
+    
+    // Add user message with attachment count
+    const displayMessage = attachedFiles.length > 0 
+        ? `${message}\n\n<span class="attachment-counter">📎 ${attachedFiles.length} file${attachedFiles.length > 1 ? 's' : ''} attached</span>`
+        : message;
+    addUserMessage(displayMessage);
     
     // Add thinking indicator
     const thinkingId = addAIMessage('Thinking...', false, true);
     
     try {
+        const requestBody = {
+            message: fullMessage,
+            model: 'BigDaddyG:Latest',
+            attachments: attachedFiles.length,
+            images: imageContext
+        };
+        
         const response = await fetch('http://localhost:11441/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                message: message,
-                model: 'BigDaddyG:Latest'
-            })
+            body: JSON.stringify(requestBody)
         });
         
         const data = await response.json();
@@ -752,6 +789,11 @@ async function sendToAI() {
         
         // Add AI response
         addAIMessage(data.response);
+        
+        // Clear attachments after sending
+        attachedFiles = [];
+        updateAttachmentsDisplay();
+        console.log('[BigDaddyG] ✅ Message sent with file context');
         
     } catch (error) {
         document.getElementById(thinkingId).remove();
@@ -983,6 +1025,284 @@ async function saveFileAs() {
         console.error('[BigDaddyG] ❌ Error in Save As:', error);
         alert(`Error saving file: ${error.message}`);
     }
+}
+
+// ============================================================================
+// FILE ATTACHMENTS & DRAG & DROP
+// ============================================================================
+
+let attachedFiles = [];
+const MAX_ATTACHED_FILES = 1001; // Up to 1,001 files!
+
+function initDragAndDrop() {
+    const chatMessages = document.getElementById('ai-chat-messages');
+    const inputContainer = document.getElementById('ai-input-container');
+    
+    // Prevent default drag behaviors on entire document
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        document.body.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
+    // Highlight drop zone when dragging over
+    ['dragenter', 'dragover'].forEach(eventName => {
+        chatMessages.addEventListener(eventName, () => {
+            chatMessages.classList.add('drag-over');
+            showDropOverlay();
+        }, false);
+        
+        inputContainer.addEventListener(eventName, () => {
+            chatMessages.classList.add('drag-over');
+            showDropOverlay();
+        }, false);
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+        chatMessages.addEventListener(eventName, () => {
+            chatMessages.classList.remove('drag-over');
+            hideDropOverlay();
+        }, false);
+        
+        inputContainer.addEventListener(eventName, () => {
+            chatMessages.classList.remove('drag-over');
+            hideDropOverlay();
+        }, false);
+    });
+    
+    // Handle dropped files
+    chatMessages.addEventListener('drop', handleDrop, false);
+    inputContainer.addEventListener('drop', handleDrop, false);
+    
+    console.log('[BigDaddyG] 📎 Drag & drop initialized - Drop files anywhere in chat!');
+}
+
+function showDropOverlay() {
+    let overlay = document.getElementById('drop-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'drop-overlay';
+        overlay.className = 'drop-overlay';
+        overlay.innerHTML = `
+            <div class="drop-overlay-icon">📎</div>
+            <div style="color: var(--cyan); font-size: 24px; font-weight: bold;">Drop Files Here</div>
+            <div style="color: rgba(0, 212, 255, 0.7); font-size: 14px;">Up to 1,001 files • No size limits • Images, code, projects</div>
+        `;
+        document.getElementById('right-sidebar').style.position = 'relative';
+        document.getElementById('right-sidebar').appendChild(overlay);
+    }
+    overlay.style.display = 'flex';
+}
+
+function hideDropOverlay() {
+    const overlay = document.getElementById('drop-overlay');
+    if (overlay) {
+        overlay.style.display = 'none';
+    }
+}
+
+async function handleDrop(e) {
+    const dt = e.dataTransfer;
+    const items = dt.items || [];
+    
+    console.log(`[BigDaddyG] 📎 Processing ${items.length} dropped items...`);
+    
+    // Process all dropped items (files and directories)
+    for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        
+        if (item.kind === 'file') {
+            const entry = item.webkitGetAsEntry ? item.webkitGetAsEntry() : null;
+            
+            if (entry) {
+                if (entry.isFile) {
+                    await processFileEntry(entry);
+                } else if (entry.isDirectory) {
+                    await processDirectoryEntry(entry);
+                }
+            } else {
+                // Fallback for browsers without webkitGetAsEntry
+                const file = item.getAsFile();
+                if (file) {
+                    await addFileAttachment(file);
+                }
+            }
+        }
+    }
+    
+    updateAttachmentsDisplay();
+}
+
+async function processFileEntry(fileEntry) {
+    return new Promise((resolve) => {
+        fileEntry.file(async (file) => {
+            await addFileAttachment(file);
+            resolve();
+        });
+    });
+}
+
+async function processDirectoryEntry(directoryEntry, path = '') {
+    const reader = directoryEntry.createReader();
+    
+    return new Promise((resolve) => {
+        reader.readEntries(async (entries) => {
+            for (const entry of entries) {
+                if (entry.isFile) {
+                    await processFileEntry(entry);
+                } else if (entry.isDirectory) {
+                    await processDirectoryEntry(entry, path + directoryEntry.name + '/');
+                }
+            }
+            resolve();
+        });
+    });
+}
+
+async function addFileAttachment(file) {
+    if (attachedFiles.length >= MAX_ATTACHED_FILES) {
+        console.log(`[BigDaddyG] ⚠️ Maximum ${MAX_ATTACHED_FILES} files reached`);
+        alert(`Maximum ${MAX_ATTACHED_FILES} files reached. Remove some to add more.`);
+        return;
+    }
+    
+    const fileData = {
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        file: file,
+        isImage: file.type.startsWith('image/'),
+        content: null,
+        preview: null
+    };
+    
+    // Read file content (NO SIZE LIMIT!)
+    console.log(`[BigDaddyG] 📄 Reading file: ${file.name} (${formatFileSize(file.size)})`);
+    
+    try {
+        if (fileData.isImage) {
+            // For images, create preview
+            fileData.preview = await readFileAsDataURL(file);
+        }
+        
+        // Read text content for text files
+        if (file.type.startsWith('text/') || isTextFile(file.name) || file.size < 10 * 1024 * 1024) {
+            // Try to read as text for files under 10MB or known text types
+            try {
+                fileData.content = await readFileAsText(file);
+            } catch (err) {
+                console.log(`[BigDaddyG] ℹ️ Could not read ${file.name} as text, will use binary`);
+            }
+        }
+        
+        attachedFiles.push(fileData);
+        console.log(`[BigDaddyG] ✅ Attached: ${file.name} (${attachedFiles.length}/${MAX_ATTACHED_FILES})`);
+    } catch (error) {
+        console.error(`[BigDaddyG] ❌ Error reading file ${file.name}:`, error);
+    }
+}
+
+function isTextFile(filename) {
+    const textExtensions = [
+        'txt', 'md', 'js', 'ts', 'jsx', 'tsx', 'json', 'xml', 'html', 'css', 'scss', 'sass',
+        'py', 'java', 'cpp', 'c', 'h', 'hpp', 'cs', 'go', 'rs', 'php', 'rb', 'swift',
+        'kt', 'sql', 'sh', 'bash', 'ps1', 'yaml', 'yml', 'toml', 'ini', 'cfg', 'conf',
+        'log', 'csv', 'asm', 's', 'vue', 'svelte', 'r', 'dart', 'lua', 'pl', 'pm'
+    ];
+    const ext = filename.split('.').pop().toLowerCase();
+    return textExtensions.includes(ext);
+}
+
+function readFileAsText(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.onerror = reject;
+        reader.readAsText(file);
+    });
+}
+
+function readFileAsDataURL(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+}
+
+function updateAttachmentsDisplay() {
+    const container = document.getElementById('file-attachments');
+    
+    if (attachedFiles.length === 0) {
+        container.style.display = 'none';
+        return;
+    }
+    
+    container.style.display = 'flex';
+    container.innerHTML = '';
+    
+    // Add counter
+    const counter = document.createElement('div');
+    counter.className = 'attachment-counter';
+    counter.textContent = `📎 ${attachedFiles.length} file${attachedFiles.length > 1 ? 's' : ''} attached`;
+    container.appendChild(counter);
+    
+    // Add file attachments
+    attachedFiles.forEach((fileData, index) => {
+        if (fileData.isImage && fileData.preview) {
+            // Image preview
+            const attachment = document.createElement('div');
+            attachment.className = 'file-attachment-image';
+            attachment.innerHTML = `
+                <img src="${fileData.preview}" alt="${fileData.name}">
+                <div class="file-attachment-name" title="${fileData.name}">${fileData.name}</div>
+                <div class="file-attachment-size">${formatFileSize(fileData.size)}</div>
+                <button class="file-attachment-remove" onclick="removeAttachment(${index})">×</button>
+            `;
+            container.appendChild(attachment);
+        } else {
+            // Regular file
+            const attachment = document.createElement('div');
+            attachment.className = 'file-attachment';
+            attachment.innerHTML = `
+                <span>📄</span>
+                <span class="file-attachment-name" title="${fileData.name}">${fileData.name}</span>
+                <span class="file-attachment-size">${formatFileSize(fileData.size)}</span>
+                <button class="file-attachment-remove" onclick="removeAttachment(${index})">×</button>
+            `;
+            container.appendChild(attachment);
+        }
+    });
+    
+    console.log(`[BigDaddyG] 📎 Displaying ${attachedFiles.length} attachments`);
+}
+
+function removeAttachment(index) {
+    const removed = attachedFiles.splice(index, 1)[0];
+    console.log(`[BigDaddyG] 🗑️ Removed attachment: ${removed.name}`);
+    updateAttachmentsDisplay();
+}
+
+// Make removeAttachment globally available
+window.removeAttachment = removeAttachment;
+
+// Initialize drag and drop when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDragAndDrop);
+} else {
+    initDragAndDrop();
 }
 
 // Allow Enter key to send message
