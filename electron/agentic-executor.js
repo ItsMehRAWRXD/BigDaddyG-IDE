@@ -11,7 +11,8 @@
 const spawn = typeof require !== 'undefined' ? require('child_process').spawn : null;
 const fs = typeof require !== 'undefined' ? require('fs').promises : null;
 const path = typeof require !== 'undefined' ? require('path') : null;
-const AgenticSecurityHardening = typeof require !== 'undefined' ? require('./agentic-security-hardening').AgenticSecurityHardening : null;
+// Note: agentic-security-hardening module optional - safety features work without it
+const AgenticSecurityHardening = null; // Removed - not available in browser context
 
 // ============================================================================
 // AGENTIC EXECUTOR CONFIGURATION
