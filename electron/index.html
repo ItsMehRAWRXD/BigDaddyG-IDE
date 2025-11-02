@@ -606,26 +606,26 @@
             
             <!-- Right Sidebar - Tabbed Interface -->
             <div id="right-sidebar">
-                <!-- Sidebar Tabs -->
-                <div id="sidebar-tabs" style="display: flex; background: var(--cursor-bg-secondary); border-bottom: 2px solid var(--cursor-border); overflow-x: auto;">
-                    <div class="sidebar-tab active" onclick="switchSidebarTab('chat')" data-tab="chat" style="flex: 1; padding: 12px; text-align: center; cursor: pointer; font-size: 13px; font-weight: 500; border-bottom: 3px solid var(--cursor-accent); color: var(--cursor-accent); min-width: 80px;">
-                        💬 Chat
-                    </div>
-                    <div class="sidebar-tab" onclick="switchSidebarTab('explorer')" data-tab="explorer" style="flex: 1; padding: 12px; text-align: center; cursor: pointer; font-size: 13px; color: var(--cursor-text-secondary); border-bottom: 3px solid transparent; min-width: 80px;">
-                        📁 Explorer
-                    </div>
-                    <div class="sidebar-tab" onclick="switchSidebarTab('github')" data-tab="github" style="flex: 1; padding: 12px; text-align: center; cursor: pointer; font-size: 13px; color: var(--cursor-text-secondary); border-bottom: 3px solid transparent; min-width: 80px;">
-                        🐙 GitHub
-                    </div>
-                    <div class="sidebar-tab" onclick="switchSidebarTab('agents')" data-tab="agents" style="flex: 1; padding: 12px; text-align: center; cursor: pointer; font-size: 13px; color: var(--cursor-text-secondary); border-bottom: 3px solid transparent; min-width: 80px;">
-                        🤖 Agents
-                    </div>
-                    <div class="sidebar-tab" onclick="switchSidebarTab('team')" data-tab="team" style="flex: 1; padding: 12px; text-align: center; cursor: pointer; font-size: 13px; color: var(--cursor-text-secondary); border-bottom: 3px solid transparent; min-width: 80px;">
-                        👥 Team
-                    </div>
-                    <div class="sidebar-tab" onclick="switchSidebarTab('settings')" data-tab="settings" style="flex: 1; padding: 12px; text-align: center; cursor: pointer; font-size: 13px; color: var(--cursor-text-secondary); border-bottom: 3px solid transparent; min-width: 80px;">
-                        ⚙️ Settings
-                    </div>
+                <!-- Sidebar - Quick Launch Buttons -->
+                <div id="sidebar-buttons" style="display: flex; flex-direction: column; background: var(--cursor-bg-secondary); border-bottom: 2px solid var(--cursor-border); padding: 12px; gap: 8px;">
+                    <button onclick="if(window.tabSystem) window.tabSystem.openChatTab()" style="width: 100%; background: linear-gradient(135deg, rgba(119, 221, 190, 0.2), rgba(77, 192, 181, 0.2)); border: 1px solid var(--cursor-jade-light); color: var(--cursor-jade-dark); padding: 12px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; text-align: left; transition: all 0.2s;" onmouseover="this.style.background='linear-gradient(135deg, rgba(119, 221, 190, 0.3), rgba(77, 192, 181, 0.3))';" onmouseout="this.style.background='linear-gradient(135deg, rgba(119, 221, 190, 0.2), rgba(77, 192, 181, 0.2))';">
+                        💬 Open Chat Tab <span style="float: right; font-size: 10px; opacity: 0.7;">Ctrl+Shift+C</span>
+                    </button>
+                    <button onclick="if(window.tabSystem) window.tabSystem.openExplorerTab()" style="width: 100%; background: none; border: 1px solid var(--cursor-border); color: var(--cursor-text); padding: 12px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; text-align: left; transition: all 0.2s;" onmouseover="this.style.background='var(--cursor-bg-tertiary)';" onmouseout="this.style.background='none';">
+                        📁 Open Explorer <span style="float: right; font-size: 10px; opacity: 0.7;">Ctrl+Shift+E</span>
+                    </button>
+                    <button onclick="if(window.tabSystem) window.tabSystem.openGitHubTab()" style="width: 100%; background: none; border: 1px solid var(--cursor-border); color: var(--cursor-text); padding: 12px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; text-align: left; transition: all 0.2s;" onmouseover="this.style.background='var(--cursor-bg-tertiary)';" onmouseout="this.style.background='none';">
+                        🐙 Open GitHub <span style="float: right; font-size: 10px; opacity: 0.7;">Ctrl+Shift+G</span>
+                    </button>
+                    <button onclick="if(window.tabSystem) window.tabSystem.openAgentsTab()" style="width: 100%; background: none; border: 1px solid var(--cursor-border); color: var(--cursor-text); padding: 12px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; text-align: left; transition: all 0.2s;" onmouseover="this.style.background='var(--cursor-bg-tertiary)';" onmouseout="this.style.background='none';">
+                        🤖 Open Agents <span style="float: right; font-size: 10px; opacity: 0.7;">Ctrl+Shift+A</span>
+                    </button>
+                    <button onclick="if(window.tabSystem) window.tabSystem.openTeamTab()" style="width: 100%; background: none; border: 1px solid var(--cursor-border); color: var(--cursor-text); padding: 12px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; text-align: left; transition: all 0.2s;" onmouseover="this.style.background='var(--cursor-bg-tertiary)';" onmouseout="this.style.background='none';">
+                        👥 Open Team <span style="float: right; font-size: 10px; opacity: 0.7;">Ctrl+Shift+T</span>
+                    </button>
+                    <button onclick="if(window.tabSystem) window.tabSystem.openSettingsTab()" style="width: 100%; background: none; border: 1px solid var(--cursor-border); color: var(--cursor-text); padding: 12px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; text-align: left; transition: all 0.2s;" onmouseover="this.style.background='var(--cursor-bg-tertiary)';" onmouseout="this.style.background='none';">
+                        ⚙️ Open Settings <span style="float: right; font-size: 10px; opacity: 0.7;">Ctrl+,</span>
+                    </button>
                 </div>
                 
                 <!-- Tab Content Areas -->
@@ -946,6 +946,7 @@
     <script src="chat-history.js"></script>
     <script src="ai-response-handler.js"></script>
     <script src="floating-chat.js"></script>
+    <script src="tab-system.js"></script>
     <script src="voice-coding.js"></script>
     
     <!-- REVOLUTIONARY NEW FEATURES -->
