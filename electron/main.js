@@ -278,8 +278,8 @@ function createMainWindow() {
     backgroundColor: '#0a0a1e',
     
     webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: true,
+      nodeIntegration: true,  // Enable Node.js integration for Monaco Editor
+      contextIsolation: false, // Disable context isolation so Monaco can access Node modules
       preload: path.join(__dirname, 'preload.js'),
       webSecurity: true,
       allowRunningInsecureContent: false
