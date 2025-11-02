@@ -1366,12 +1366,16 @@ if (document.readyState === 'loading') {
     initDragAndDrop();
 }
 
-// Allow Enter key to send message
+// Allow Ctrl+Enter to send message
 document.getElementById('ai-input').addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && e.ctrlKey) {
+        e.preventDefault(); // Prevent newline
         sendToAI();
     }
 });
+
+console.log('[BigDaddyG] ⌨️ Keyboard shortcuts ready:');
+console.log('  • Ctrl+Enter - Send AI message');
 
 console.log('[BigDaddyG] ✅ Renderer initialized');
 

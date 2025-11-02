@@ -1529,6 +1529,7 @@ const server = http.createServer((req, res) => {
                 <p><strong>Context Window:</strong> 1,000,000 tokens - Remembers entire conversations</p>
                 <h2>API Endpoints:</h2>
                 <ul>
+                    <li>/api/chat - Chat with file attachments (IDE)</li>
                     <li>/api/generate - Generate responses</li>
                     <li>/api/context - View conversation history</li>
                     <li>/api/context/clear - Clear history</li>
