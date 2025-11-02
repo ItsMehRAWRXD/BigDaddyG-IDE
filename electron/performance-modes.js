@@ -522,10 +522,14 @@ function updatePerformanceOverlay() {
     const fpsColor = performanceMonitor.fps >= targetFPS * 0.9 ? 'var(--green)' : 
                      performanceMonitor.fps >= targetFPS * 0.6 ? 'var(--orange)' : 'var(--red)';
     
+    const isMinimized = overlay.dataset.minimized === 'true';
+    
     overlay.innerHTML = `
-        <div style="color: var(--cyan); font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid var(--cyan); padding-bottom: 5px;">
-            ${mode.name} MODE
+        <div style="color: var(--cyan); font-weight: bold; display: flex; justify-content: space-between; align-items: center; margin-bottom: ${isMinimized ? '0' : '8px'}; border-bottom: ${isMinimized ? 'none' : '1px solid var(--cyan)'}; padding-bottom: ${isMinimized ? '0' : '5px'};">
+            <span>${isMinimized ? '📊' : mode.name + ' MODE'}</span>
+            <button onclick="document.getElementById('performance-overlay').dataset.minimized = '${!isMinimized}'; updatePerformanceOverlay();" style="background: none; border: none; color: var(--cyan); cursor: pointer; font-size: 16px; padding: 0; pointer-events: auto;">${isMinimized ? '📈' : '➖'}</button>
         </div>
+        ${!isMinimized ? `
         <div style="color: ${fpsColor};">FPS: ${performanceMonitor.fps} / ${targetFPS}</div>
         <div>Frame: ${performanceMonitor.frame_time.toFixed(2)}ms</div>
         <div>Memory: ${(performanceMonitor.memory_usage * 100).toFixed(1)}%</div>
@@ -534,6 +538,7 @@ function updatePerformanceOverlay() {
         <div style="margin-top: 8px; padding-top: 5px; border-top: 1px solid rgba(0,212,255,0.3);">
             <small>AI: ${mode.ai.temperature}T ${mode.ai.max_tokens}tk</small>
         </div>
+        ` : ''}
     `;
 }
 
