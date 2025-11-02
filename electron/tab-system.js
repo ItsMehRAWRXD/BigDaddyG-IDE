@@ -174,9 +174,18 @@ class TabSystem {
             if (remainingTabs.length > 0) {
                 this.switchToTab(remainingTabs[0]);
             } else {
-                // Show Monaco if no tabs left
+                // Show Monaco if no center tabs left
+                // Check if there are file tabs open - if so, always show Monaco
+                const hasFileTabs = window.openTabs && Object.keys(window.openTabs).length > 0;
                 const monaco = document.getElementById('monaco-container');
-                if (monaco) monaco.style.display = 'block';
+                if (monaco) {
+                    if (hasFileTabs) {
+                        monaco.style.display = 'flex'; // Show Monaco with file tabs
+                        console.log('[TabSystem] 📂 Showing Monaco - file tabs are open');
+                    } else {
+                        monaco.style.display = 'block'; // Show empty Monaco
+                    }
+                }
             }
         }
         
