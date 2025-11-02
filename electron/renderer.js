@@ -13,6 +13,9 @@ let activeTab = 'welcome';
 let tabCounter = 0; // For generating unique tab IDs
 const MAX_TABS = 100; // Configurable limit (can be changed in settings)
 
+// Expose openTabs globally for tab-system.js to check file tabs
+window.openTabs = openTabs;
+
 // Monaco Editor initialization - Called when Monaco loads from index.html
 window.onMonacoLoad = function() {
     console.log('[BigDaddyG] 🎨 Monaco loaded, initializing editor...');
