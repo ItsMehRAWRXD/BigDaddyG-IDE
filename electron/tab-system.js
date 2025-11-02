@@ -223,27 +223,28 @@ class TabSystem {
                 </div>
                 
                 <!-- Input Area -->
-                <div style="background: var(--cursor-bg-secondary); border-radius: 12px; padding: 16px;">
+                <div style="background: rgba(245, 245, 220, 0.05); border-radius: 12px; padding: 16px; border: 1px solid rgba(119, 221, 190, 0.2);">
                     <textarea 
                         id="center-chat-input" 
-                        placeholder="@ for context, / for commands, or drag files here 📎"
+                        placeholder="Type your message here... @ for context, / for commands 📎"
                         style="
                             width: 100%;
-                            min-height: 100px;
-                            padding: 12px;
-                            background: var(--cursor-bg);
-                            border: 2px solid var(--cursor-jade-light);
+                            min-height: 120px;
+                            padding: 15px;
+                            background: #1e1e1e;
+                            border: 3px solid #77ddbe;
                             border-radius: 8px;
-                            color: var(--cursor-text);
-                            font-size: 14px;
-                            font-family: 'Segoe UI', sans-serif;
+                            color: #ffffff;
+                            font-size: 15px;
+                            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                             resize: vertical;
                             outline: none;
                             transition: all 0.2s;
+                            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
                         "
                         onkeydown="if (event.ctrlKey && event.key === 'Enter') { event.preventDefault(); tabSystem.sendChatMessage(); }"
-                        onfocus="this.style.borderColor='var(--cursor-jade-dark)'; this.style.boxShadow='0 0 0 4px rgba(119, 221, 190, 0.1)'"
-                        onblur="this.style.borderColor='var(--cursor-jade-light)'; this.style.boxShadow='none'"
+                        onfocus="this.style.borderColor='#5fbaa0'; this.style.boxShadow='0 0 0 4px rgba(119, 221, 190, 0.2), 0 4px 12px rgba(0,0,0,0.3)'"
+                        onblur="this.style.borderColor='#77ddbe'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.2)'"
                     ></textarea>
                     <div style="margin-top: 12px; display: flex; justify-content: space-between; align-items: center;">
                         <span style="font-size: 12px; color: var(--cursor-text-secondary);">💡 Press Ctrl+Enter to send</span>
