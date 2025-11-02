@@ -85,7 +85,7 @@
 | **Works Offline** | ❌ | ✅ | **BigDaddyG** |
 | **Embedded AI** | ❌ | ✅ | **BigDaddyG** |
 | **No Backend Server** | ❌ | ✅ | **BigDaddyG** |
-| **Cost** | $20-40/mo | **FREE** | **BigDaddyG** |
+| **Cost** | $20-60+/mo | **FREE** | **BigDaddyG** |
 | **Request Limits** | Yes (50/mo free) | **None** | **BigDaddyG** |
 | **Account Required** | Yes | Optional | **BigDaddyG** |
 
@@ -345,7 +345,7 @@ Ask questions: https://github.com/ItsMehRAWRXD/BigDaddyG-IDE/discussions
 - ✅ Professional GitHub integration
 - ✅ Autonomous background agents
 - ✅ Real-time team collaboration
-- ✅ All features of Cursor Web App ($40/mo)
+- ✅ All features of Cursor + other AI services ($20-60+/mo)
 - ✅ **100% FREE forever**
 - ✅ Works offline with embedded AI
 - ✅ No subscriptions, no limits
