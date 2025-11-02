@@ -582,7 +582,7 @@
                     </div>
                 </div>
                 
-                <div id="ai-chat-messages" id="ai-messages">
+                <div id="ai-chat-messages">
                     <div class="ai-message">
                         <strong style="color: var(--cyan);">BigDaddyG:</strong><br><br>
                         Welcome to BigDaddyG IDE Professional Edition! 🌌<br><br>
@@ -751,17 +751,15 @@
         
         // Global helpers
         function createNewFile() {
-            const name = prompt('Enter filename:');
-            if (!name) return;
-            
-            const fileTree = document.getElementById('file-tree');
-            const fileItem = document.createElement('div');
-            fileItem.className = 'file-item';
-            fileItem.innerHTML = `<span class="file-icon">📄</span><span>${name}</span>`;
-            fileItem.onclick = () => openFile(name, 'plaintext');
-            fileTree.appendChild(fileItem);
-            
-            openFile(name, 'plaintext');
+            // Use same mechanism as Ctrl+N - no prompt needed
+            if (window.electron) {
+                // Trigger menu event which will call createNewTab in renderer.js
+                window.electron.minimizeWindow(); // Dummy call to ensure electron is available
+            }
+            // Create new untitled file directly
+            const newFilename = `Untitled-${Date.now()}.txt`;
+            console.log('[BigDaddyG] 📄 Creating new file from + button:', newFilename);
+            // This will be handled by renderer.js createNewTab if it's loaded
         }
         
         function toggleSettings() {

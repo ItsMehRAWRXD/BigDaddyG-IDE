@@ -760,7 +760,11 @@ async function sendToAI() {
 }
 
 function addUserMessage(message) {
-    const container = document.getElementById('ai-messages');
+    const container = document.getElementById('ai-chat-messages');
+    if (!container) {
+        console.error('[BigDaddyG] ❌ AI chat messages container not found');
+        return;
+    }
     const msgEl = document.createElement('div');
     msgEl.className = 'ai-message user-message';
     msgEl.innerHTML = `<strong style="color: var(--orange);">You:</strong><br><br>${escapeHtml(message)}`;
@@ -769,7 +773,11 @@ function addUserMessage(message) {
 }
 
 function addAIMessage(message, isError = false, isThinking = false) {
-    const container = document.getElementById('ai-messages');
+    const container = document.getElementById('ai-chat-messages');
+    if (!container) {
+        console.error('[BigDaddyG] ❌ AI chat messages container not found');
+        return '';
+    }
     const msgEl = document.createElement('div');
     const id = `ai-msg-${Date.now()}`;
     msgEl.id = id;
