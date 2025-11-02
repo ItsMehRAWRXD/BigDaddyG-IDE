@@ -84,6 +84,15 @@ function initMonacoEditor() {
         console.log('[BigDaddyG] ⚡ Autocomplete engine initialized');
     }
     
+    // Initialize voice coding
+    if (typeof VoiceCodingEngine !== 'undefined') {
+        window.voiceCoding = new VoiceCodingEngine(editor);
+        console.log('[BigDaddyG] 🎤 Voice coding engine initialized');
+        console.log('[BigDaddyG] 💡 Say "Hey BigDaddy" to start or press Ctrl+Shift+V');
+    } else {
+        console.warn('[BigDaddyG] ⚠️ Voice coding not available yet - module still loading');
+    }
+    
     // Listen for content changes
     editor.onDidChangeModelContent(() => {
         if (openTabs[activeTab]) {
