@@ -28,11 +28,29 @@ if (typeof monaco !== 'undefined') {
 function initMonacoEditor() {
     console.log('[BigDaddyG] 🎨 Initializing Monaco Editor...');
     
+    // Define custom theme with jade/cyan selection
+    monaco.editor.defineTheme('bigdaddyg-dark', {
+        base: 'vs-dark',
+        inherit: true,
+        rules: [],
+        colors: {
+            'editor.selectionBackground': '#00d4ff40', // Jade/Cyan with transparency
+            'editor.selectionHighlightBackground': '#00d4ff20',
+            'editor.inactiveSelectionBackground': '#00d4ff15',
+            'editor.lineHighlightBackground': '#00d4ff08',
+            'editorCursor.foreground': '#00d4ff',
+            'editor.findMatchBackground': '#00d4ff30',
+            'editor.findMatchHighlightBackground': '#00d4ff20',
+            'editor.wordHighlightBackground': '#00d4ff15',
+            'editor.wordHighlightStrongBackground': '#00d4ff25'
+        }
+    });
+    
     // Create Monaco Editor instance
     editor = monaco.editor.create(document.getElementById('monaco-container'), {
         value: getWelcomeMessage(),
         language: 'markdown',
-        theme: 'vs-dark',
+        theme: 'bigdaddyg-dark', // Use custom theme
         
         // Editor options
         fontSize: 14,
