@@ -4,9 +4,10 @@
  * Toggle with Ctrl+J (like Cursor)
  */
 
-const { spawn } = require('child_process');
-const fs = require('fs');
-const path = require('path');
+// Browser/Node compatibility
+const spawn_term = typeof require !== 'undefined' ? require('child_process').spawn : null;
+const fs_term = typeof require !== 'undefined' ? require('fs') : null;
+const path_term = typeof require !== 'undefined' ? require('path') : null;
 
 // ============================================================================
 // TERMINAL PANEL CONFIGURATION
