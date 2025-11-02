@@ -7,6 +7,11 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 // Expose protected methods to renderer process
 contextBridge.exposeInMainWorld('electron', {
+  // Window controls
+  minimizeWindow: () => ipcRenderer.send('window-minimize'),
+  maximizeWindow: () => ipcRenderer.send('window-maximize'),
+  closeWindow: () => ipcRenderer.send('window-close'),
+  
   // File system operations
   readFile: (filePath) => ipcRenderer.invoke('read-file', filePath),
   writeFile: (filePath, content) => ipcRenderer.invoke('write-file', filePath, content),

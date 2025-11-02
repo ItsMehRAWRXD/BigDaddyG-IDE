@@ -43,13 +43,14 @@
             width: 100vw;
         }
         
-        /* Title Bar (optional custom) */
+        /* Title Bar (custom with window controls) */
         #title-bar {
             height: 35px;
             background: var(--void);
             border-bottom: 1px solid rgba(0, 212, 255, 0.2);
             display: flex;
             align-items: center;
+            justify-content: space-between;
             padding: 0 15px;
             -webkit-app-region: drag;
         }
@@ -58,6 +59,36 @@
             font-size: 12px;
             color: var(--cyan);
             font-weight: bold;
+        }
+        
+        #window-controls {
+            display: flex;
+            gap: 10px;
+            -webkit-app-region: no-drag;
+        }
+        
+        .window-btn {
+            background: none;
+            border: 1px solid var(--cyan);
+            color: var(--cyan);
+            width: 30px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 3px;
+            transition: all 0.2s;
+        }
+        
+        .window-btn:hover {
+            background: rgba(0, 212, 255, 0.2);
+        }
+        
+        .window-btn.close:hover {
+            background: var(--red);
+            border-color: var(--red);
         }
         
         /* Main Container */
@@ -417,6 +448,11 @@
         <!-- Title Bar -->
         <div id="title-bar">
             <div class="title">🌌 BigDaddyG IDE - Professional Edition</div>
+            <div id="window-controls">
+                <button class="window-btn" onclick="minimizeWindow()" title="Minimize">─</button>
+                <button class="window-btn" onclick="maximizeWindow()" title="Maximize">□</button>
+                <button class="window-btn close" onclick="closeWindow()" title="Close">×</button>
+            </div>
         </div>
         
         <!-- Main Container -->
@@ -730,6 +766,25 @@
         document.getElementById('tokens-slider')?.addEventListener('input', (e) => {
             document.getElementById('tokens-value').textContent = e.target.value;
         });
+        
+        // Window control functions
+        function minimizeWindow() {
+            if (window.electron && window.electron.minimizeWindow) {
+                window.electron.minimizeWindow();
+            }
+        }
+        
+        function maximizeWindow() {
+            if (window.electron && window.electron.maximizeWindow) {
+                window.electron.maximizeWindow();
+            }
+        }
+        
+        function closeWindow() {
+            if (window.electron && window.electron.closeWindow) {
+                window.electron.closeWindow();
+            }
+        }
         
         console.log('[BigDaddyG] ✨ Everything ready! Start coding!');
     </script>

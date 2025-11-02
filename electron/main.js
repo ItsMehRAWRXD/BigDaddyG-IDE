@@ -285,8 +285,8 @@ function createMainWindow() {
       allowRunningInsecureContent: false
     },
     
-    frame: true,
-    titleBarStyle: 'default',
+    frame: false,  // No default frame - we'll use custom title bar
+    titleBarStyle: 'hidden',
     icon: path.join(__dirname, '../assets/icon.png')
   });
   
@@ -642,6 +642,25 @@ ipcMain.handle('orchestra:stop', () => {
 ipcMain.handle('orchestra:status', async () => {
   const isRunning = await checkOrchestraHealth();
   return { running: isRunning };
+});
+
+// Window controls
+ipcMain.on('window-minimize', () => {
+  if (mainWindow) mainWindow.minimize();
+});
+
+ipcMain.on('window-maximize', () => {
+  if (mainWindow) {
+    if (mainWindow.isMaximized()) {
+      mainWindow.unmaximize();
+    } else {
+      mainWindow.maximize();
+    }
+  }
+});
+
+ipcMain.on('window-close', () => {
+  if (mainWindow) mainWindow.close();
 });
 
 console.log('[BigDaddyG] 🌌 Main process initialized');
