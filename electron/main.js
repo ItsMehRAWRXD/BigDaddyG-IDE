@@ -113,7 +113,7 @@ function startOrchestraServer() {
   }
   
   // FIX: Quote the path to handle spaces in directory names
-  orchestraServer = spawn('node', [`"${serverPath}"`], {
+  orchestraServer = spawn('node', [serverPath], {
     cwd: serverCwd,
     stdio: 'pipe',
     shell: true, // ALWAYS use shell for proper path quoting
@@ -1217,7 +1217,7 @@ function getWindowsDriveIcon(type) {
 if (process.platform === 'win32') {
   const { exec } = require('child_process');
   
-  // Poll for drive changes every 5 seconds
+  // Poll for drive changes every 30 seconds (not too aggressive)
   setInterval(() => {
     if (mainWindow && !mainWindow.isDestroyed()) {
       exec('wmic logicaldisk get name', (error, stdout) => {
@@ -1227,7 +1227,7 @@ if (process.platform === 'win32') {
         }
       });
     }
-  }, 5000);
+  }, 30000); // Changed from 5000ms to 30000ms (30 seconds)
 }
 
 // Orchestra server control

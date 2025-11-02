@@ -125,11 +125,13 @@ class ErrorTracker {
             }
         }, true);
         
+        // Store original console.error to prevent infinite loop
+        this.originalError = console.error;
+        
         // Override console.error
-        const originalError = console.error;
         console.error = (...args) => {
             this.logError('console.error', args.join(' '));
-            originalError.apply(console, args);
+            this.originalError.apply(console, args);
         };
         
         // Catch all unhandled errors
@@ -154,7 +156,7 @@ class ErrorTracker {
         // Add error button to UI
         this.createErrorButton();
         
-        console.log('[ErrorTracker] ✅ Error tracking active');
+        this.originalError.call(console, '[ErrorTracker] ✅ Error tracking active');
     }
     
     logAction(type, data) {
@@ -172,7 +174,7 @@ class ErrorTracker {
             this.logs.shift();
         }
         
-        // Log to console for debugging
+        // Log to console for debugging (safe - console.log not overridden)
         console.log(`[Action] ${type}:`, data);
     }
     
@@ -191,7 +193,8 @@ class ErrorTracker {
             this.logs.shift();
         }
         
-        console.error(`[Error] ${type}:`, data);
+        // Use original console.error to prevent infinite loop!
+        this.originalError.call(console, `[Error] ${type}:`, data);
         
         // Show error notification
         this.showErrorNotification(type, data);
