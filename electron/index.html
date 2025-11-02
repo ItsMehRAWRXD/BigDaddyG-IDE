@@ -604,14 +604,36 @@
                 <div id="monaco-container"></div>
             </div>
             
-            <!-- Right Sidebar - AI Chat & Controls -->
+            <!-- Right Sidebar - Tabbed Interface -->
             <div id="right-sidebar">
-                <!-- Model & Settings Header -->
-                <div id="ai-chat-header" style="flex-direction: column; align-items: stretch; gap: 8px; padding: 12px; border-bottom: 1px solid rgba(0, 212, 255, 0.2);">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h3 style="margin: 0; font-size: 14px; color: var(--cyan);">🤖 BigDaddyG AI</h3>
-                        <button id="settings-toggle" onclick="toggleSettings()" style="background: none; border: 1px solid var(--cyan); color: var(--cyan); padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 11px;">⚙️ Settings</button>
+                <!-- Sidebar Tabs -->
+                <div id="sidebar-tabs" style="display: flex; background: var(--cursor-bg-secondary); border-bottom: 2px solid var(--cursor-border); overflow-x: auto;">
+                    <div class="sidebar-tab active" onclick="switchSidebarTab('chat')" data-tab="chat" style="flex: 1; padding: 12px; text-align: center; cursor: pointer; font-size: 13px; font-weight: 500; border-bottom: 3px solid var(--cursor-accent); color: var(--cursor-accent); min-width: 80px;">
+                        💬 Chat
                     </div>
+                    <div class="sidebar-tab" onclick="switchSidebarTab('explorer')" data-tab="explorer" style="flex: 1; padding: 12px; text-align: center; cursor: pointer; font-size: 13px; color: var(--cursor-text-secondary); border-bottom: 3px solid transparent; min-width: 80px;">
+                        📁 Explorer
+                    </div>
+                    <div class="sidebar-tab" onclick="switchSidebarTab('github')" data-tab="github" style="flex: 1; padding: 12px; text-align: center; cursor: pointer; font-size: 13px; color: var(--cursor-text-secondary); border-bottom: 3px solid transparent; min-width: 80px;">
+                        🐙 GitHub
+                    </div>
+                    <div class="sidebar-tab" onclick="switchSidebarTab('agents')" data-tab="agents" style="flex: 1; padding: 12px; text-align: center; cursor: pointer; font-size: 13px; color: var(--cursor-text-secondary); border-bottom: 3px solid transparent; min-width: 80px;">
+                        🤖 Agents
+                    </div>
+                    <div class="sidebar-tab" onclick="switchSidebarTab('team')" data-tab="team" style="flex: 1; padding: 12px; text-align: center; cursor: pointer; font-size: 13px; color: var(--cursor-text-secondary); border-bottom: 3px solid transparent; min-width: 80px;">
+                        👥 Team
+                    </div>
+                    <div class="sidebar-tab" onclick="switchSidebarTab('settings')" data-tab="settings" style="flex: 1; padding: 12px; text-align: center; cursor: pointer; font-size: 13px; color: var(--cursor-text-secondary); border-bottom: 3px solid transparent; min-width: 80px;">
+                        ⚙️ Settings
+                    </div>
+                </div>
+                
+                <!-- Tab Content Areas -->
+                <div id="sidebar-tab-content" style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+                    
+                    <!-- CHAT TAB (Active by default) -->
+                    <div id="chat-tab-content" class="tab-content" style="flex: 1; display: flex; flex-direction: column;">
+                        <!-- AI Chat Header -->
                     
                     <!-- Advanced Settings Panel (Hidden by default) -->
                     <div id="advanced-settings" style="display: none; flex-direction: column; gap: 8px; padding: 10px; background: rgba(0, 0, 0, 0.3); border-radius: 4px; max-height: 400px; overflow-y: auto;">
@@ -727,7 +749,53 @@
                         <button onclick="clearChat()" style="padding: 10px 15px; background: rgba(255, 71, 87, 0.2); color: var(--red); border: 1px solid var(--red); border-radius: 5px; font-weight: bold; cursor: pointer;">🗑️</button>
                     </div>
                 </div>
+                    </div>
+                    <!-- END CHAT TAB -->
+                    
+                    <!-- EXPLORER TAB (Hidden by default) -->
+                    <div id="explorer-tab-content" class="tab-content" style="display: none; flex-direction: column; flex: 1; overflow: hidden;">
+                        <div style="padding: 12px; background: var(--cursor-bg-secondary); border-bottom: 1px solid var(--cursor-border); display: flex; justify-content: space-between; align-items: center;">
+                            <h3 style="margin: 0; font-size: 13px; font-weight: 600; color: var(--cursor-jade-dark);">📁 File Explorer</h3>
+                            <button onclick="fileExplorer && fileExplorer.loadDrives()" style="background: var(--cursor-accent); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600;">🔄 Refresh</button>
+                        </div>
+                        
+                        <!-- Drives List -->
+                        <div id="drives-list" style="flex: 1; overflow-y: auto; padding: 8px;">
+                            <div style="padding: 20px; text-align: center; color: var(--cursor-text-muted);">Loading drives...</div>
+                        </div>
+                        
+                        <!-- File Browser (shown when browsing a drive) -->
+                        <div id="file-browser" style="display: none; flex: 1; flex-direction: column; overflow: hidden;">
+                            <!-- Populated dynamically by file-explorer.js -->
+                        </div>
+                    </div>
+                    <!-- END EXPLORER TAB -->
+                    
+                    <!-- GITHUB TAB (Placeholder - already exists) -->
+                    <div id="github-tab-content" class="tab-content" style="display: none; flex: 1; overflow-y: auto;">
+                        <!-- GitHub integration content will be injected here by github-integration.js -->
+                    </div>
+                    
+                    <!-- AGENTS TAB (Placeholder - already exists) -->
+                    <div id="agents-tab-content" class="tab-content" style="display: none; flex: 1; overflow-y: auto;">
+                        <!-- Background agents content will be injected here by background-agent-manager.js -->
+                    </div>
+                    
+                    <!-- TEAM TAB (Placeholder - already exists) -->
+                    <div id="team-tab-content" class="tab-content" style="display: none; flex: 1; overflow-y: auto;">
+                        <!-- Team collaboration content will be injected here by team-collaboration.js -->
+                    </div>
+                    
+                    <!-- SETTINGS TAB (Placeholder) -->
+                    <div id="settings-tab-content" class="tab-content" style="display: none; flex: 1; overflow-y: auto; padding: 20px;">
+                        <h3 style="color: var(--cursor-jade-dark); margin-bottom: 20px;">⚙️ Settings</h3>
+                        <p style="color: var(--cursor-text-secondary);">Settings panel - coming soon!</p>
+                    </div>
+                    
+                </div>
+                <!-- END Tab Content Areas -->
             </div>
+            <!-- END Right Sidebar -->
         </div>
         
         <!-- Bottom Panel - Terminal/Output -->
@@ -841,6 +909,7 @@
     <script src="autocomplete-engine.js"></script>
     <script src="agentic-executor.js"></script>
     <script src="offline-speech-engine.js"></script>
+    <script src="file-explorer.js"></script>
     <script src="voice-coding.js"></script>
     
     <!-- REVOLUTIONARY NEW FEATURES -->
@@ -884,6 +953,33 @@
         function toggleSettings() {
             const settings = document.getElementById('advanced-settings');
             settings.style.display = settings.style.display === 'none' ? 'flex' : 'none';
+        }
+        
+        function switchSidebarTab(tabName) {
+            console.log('[BigDaddyG] 🔄 Switching to tab:', tabName);
+            
+            // Update tab styling
+            document.querySelectorAll('.sidebar-tab').forEach(tab => {
+                const isActive = tab.dataset.tab === tabName;
+                tab.style.borderBottom = isActive ? '3px solid var(--cursor-accent)' : '3px solid transparent';
+                tab.style.color = isActive ? 'var(--cursor-accent)' : 'var(--cursor-text-secondary)';
+                tab.style.fontWeight = isActive ? '600' : 'normal';
+                tab.classList.toggle('active', isActive);
+            });
+            
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.style.display = 'none';
+            });
+            
+            // Show selected tab content
+            const activeContent = document.getElementById(`${tabName}-tab-content`);
+            if (activeContent) {
+                activeContent.style.display = 'flex';
+                console.log('[BigDaddyG] ✅ Tab switched to:', tabName);
+            } else {
+                console.error('[BigDaddyG] ❌ Tab content not found:', tabName);
+            }
         }
         
         function clearChat() {

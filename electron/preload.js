@@ -43,6 +43,10 @@ contextBridge.exposeInMainWorld('electron', {
   macSpeechRecognize: () => ipcRenderer.invoke('mac-speech-recognize'),
   linuxSpeechRecognize: () => ipcRenderer.invoke('linux-speech-recognize'),
   
+  // Drive & file system browsing
+  listDrives: () => ipcRenderer.invoke('list-drives'),
+  onDrivesChanged: (callback) => ipcRenderer.on('drives-changed', (_, drives) => callback(drives)),
+  
   // Browser operations
   browser: {
     navigate: (url) => ipcRenderer.invoke('browser:navigate', url),

@@ -1070,6 +1070,119 @@ ipcMain.handle('linux-speech-recognize', async () => {
   }
 });
 
+// ============================================================================
+// DRIVE & FILE SYSTEM BROWSING
+// ============================================================================
+
+// List all drives (C:, D:, USB, external, etc.)
+ipcMain.handle('list-drives', async () => {
+  const os = require('os');
+  const { execSync } = require('child_process');
+  const drives = [];
+  
+  try {
+    if (process.platform === 'win32') {
+      // Windows: Use wmic to list all drives
+      const output = execSync('wmic logicaldisk get name,description,volumename,size,freespace', { 
+        encoding: 'utf-8' 
+      });
+      
+      const lines = output.split('\n').filter(line => line.trim());
+      for (let i = 1; i < lines.length; i++) {
+        const parts = lines[i].trim().split(/\s{2,}/);
+        if (parts[0] && parts[0].includes(':')) {
+          const driveLetter = parts[0];
+          drives.push({
+            name: driveLetter,
+            path: driveLetter + '\\',
+            label: parts[2] || driveLetter,
+            type: parts[1] || 'Local Disk',
+            size: parseInt(parts[3]) || 0,
+            free: parseInt(parts[4]) || 0,
+            icon: getWindowsDriveIcon(parts[1])
+          });
+        }
+      }
+    } else if (process.platform === 'darwin') {
+      // macOS: List volumes
+      const volumesPath = '/Volumes';
+      const volumes = await fs.promises.readdir(volumesPath);
+      
+      for (const volume of volumes) {
+        const volumePath = path.join(volumesPath, volume);
+        drives.push({
+          name: volume,
+          path: volumePath,
+          label: volume,
+          type: 'Volume',
+          icon: '💾'
+        });
+      }
+      
+      // Add root
+      drives.unshift({
+        name: 'Macintosh HD',
+        path: '/',
+        label: 'Macintosh HD',
+        type: 'System',
+        icon: '🖥️'
+      });
+    } else {
+      // Linux: List mounted drives
+      const output = execSync('df -h', { encoding: 'utf-8' });
+      const lines = output.split('\n').filter(line => line.trim());
+      
+      for (let i = 1; i < lines.length; i++) {
+        const parts = lines[i].split(/\s+/);
+        if (parts[5] && parts[5].startsWith('/')) {
+          drives.push({
+            name: path.basename(parts[5]) || parts[5],
+            path: parts[5],
+            label: parts[5],
+            type: 'Mount',
+            size: parts[1],
+            free: parts[3],
+            icon: '💿'
+          });
+        }
+      }
+    }
+    
+    console.log(`[BigDaddyG] 💾 Found ${drives.length} drives`);
+    return { success: true, drives };
+  } catch (error) {
+    console.error('[BigDaddyG] ❌ Error listing drives:', error);
+    return { success: false, error: error.message, drives: [] };
+  }
+});
+
+function getWindowsDriveIcon(type) {
+  if (!type) return '💾';
+  const lowerType = type.toLowerCase();
+  if (lowerType.includes('local')) return '💽';
+  if (lowerType.includes('removable')) return '📀'; // USB
+  if (lowerType.includes('network')) return '🌐';
+  if (lowerType.includes('cd')) return '📀';
+  return '💾';
+}
+
+// Watch for USB drive changes (Windows)
+if (process.platform === 'win32') {
+  const { exec } = require('child_process');
+  
+  // Poll for drive changes every 5 seconds
+  setInterval(() => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      exec('wmic logicaldisk get name', (error, stdout) => {
+        if (!error && stdout) {
+          const currentDrives = stdout.match(/[A-Z]:/g) || [];
+          mainWindow.webContents.send('drives-changed', currentDrives);
+        }
+      });
+    }
+  }, 5000);
+}
+
 // Orchestra server control
 ipcMain.handle('orchestra:start', () => {
   startOrchestraServer();
