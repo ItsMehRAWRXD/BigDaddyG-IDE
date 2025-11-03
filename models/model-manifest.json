@@ -1,0 +1,30 @@
+{
+  "models": [
+    {
+      "name": "bigdaddyg:latest",
+      "displayName": "BigDaddyG Latest (Fast & Smart)",
+      "size": "4.7 GB",
+      "parameters": "7B",
+      "blob": "sha256-ef311de6af9db043d51ca4b1e766c28e0a1ac41d60420fed5e001dc470c64b77",
+      "type": "coding",
+      "speed": "fast",
+      "description": "Optimized for code generation, debugging, and software development"
+    },
+    {
+      "name": "llama2:70b",
+      "displayName": "Llama2 70B (Genius Mode)",
+      "size": "36.2 GB",
+      "parameters": "70B",
+      "blob": "sha256-68bbe6dc9cf42eb783f4de17629973c6e03b5f311b50e58d9e6dc5e4586db577",
+      "type": "general",
+      "speed": "slow",
+      "description": "Extremely intelligent, best for complex reasoning and advanced tasks"
+    }
+  ],
+  "default": "bigdaddyg:latest",
+  "fallback": "bigdaddyg:latest",
+  "autoLoad": true,
+  "totalSize": "40.9 GB",
+  "lastUpdated": "2025-01-03T00:00:00Z"
+}
+
