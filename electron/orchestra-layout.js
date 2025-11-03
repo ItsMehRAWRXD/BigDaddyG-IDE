@@ -1399,36 +1399,46 @@ Upload a file or describe an issue you're facing!`}`,
     }
     
     async scanProjectForBugs() {
-        // Simulated bug scan - in real implementation, this would call backend
-        // TODO: Integrate with actual linter/error detection
-        
-        const mockIssues = [
-            {
-                severity: '🔴 Error',
-                file: 'main.js',
-                line: 42,
-                message: 'Uncaught TypeError: Cannot read property of undefined',
-                suggestion: 'Add null check before accessing property'
-            },
-            {
-                severity: '🟡 Warning',
-                file: 'utils.js',
-                line: 15,
-                message: 'Unused variable "tempData"',
-                suggestion: 'Remove unused variable or add // eslint-disable-line'
-            },
-            {
-                severity: '🟢 Info',
-                file: 'config.js',
-                line: 8,
-                message: 'Consider using const instead of let for non-reassigned variables',
-                suggestion: 'Change let to const for better code safety'
+        try {
+            // Call backend to scan project for bugs using file-explorer data
+            const response = await fetch('http://localhost:11441/api/scan-bugs', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    projectPath: window.currentProjectPath || process.cwd(),
+                    scanTypes: ['syntax', 'runtime', 'logic', 'security', 'performance']
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Bug scan failed');
             }
-        ];
-        
-        return {
-            issues: mockIssues.slice(0, Math.floor(Math.random() * 4)) // Random 0-3 issues
-        };
+            
+            const data = await response.json();
+            return {
+                issues: data.issues || []
+            };
+            
+        } catch (error) {
+            console.log('[Orchestra] ℹ️ Backend scan not available, using diagnostic analysis');
+            
+            // Fallback: Use browser's error tracker if available
+            if (window.errorTracker && window.errorTracker.getErrors) {
+                const errors = window.errorTracker.getErrors();
+                return {
+                    issues: errors.map(err => ({
+                        severity: '🔴 Error',
+                        file: err.file || 'Unknown',
+                        line: err.line || 0,
+                        message: err.message,
+                        suggestion: 'Check error details and fix syntax or runtime issues'
+                    }))
+                };
+            }
+            
+            // Final fallback: Empty scan
+            return { issues: [] };
+        }
     }
     
     async exploreProject() {
@@ -1490,24 +1500,60 @@ ${analysis.tree}
     }
     
     async analyzeProjectStructure() {
-        // Simulated analysis - in real implementation, call backend to scan filesystem
-        // TODO: Integrate with file-explorer and call actual filesystem API
-        
-        return {
-            tree: `project/
-├── src/
-│   ├── components/
-│   ├── utils/
-│   └── index.js
-├── tests/
-├── package.json
-└── README.md`,
-            dependencies: ['react', 'express', 'axios', 'lodash', 'moment'],
-            type: 'Full-Stack JavaScript Application',
-            languages: ['JavaScript', 'TypeScript', 'CSS', 'HTML'],
-            fileCount: 47,
-            lineCount: 8543
-        };
+        try {
+            // Call backend to analyze project structure
+            const response = await fetch('http://localhost:11441/api/analyze-project', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    projectPath: window.currentProjectPath || process.cwd()
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Project analysis failed');
+            }
+            
+            const data = await response.json();
+            return data;
+            
+        } catch (error) {
+            console.log('[Orchestra] ℹ️ Backend analysis not available, using file-explorer data');
+            
+            // Fallback: Use file-explorer data if available
+            if (window.fileExplorer && window.fileExplorer.getProjectInfo) {
+                return window.fileExplorer.getProjectInfo();
+            }
+            
+            // Second fallback: Try to read package.json from current workspace
+            try {
+                if (window.electron && window.electron.readFile) {
+                    const packageJson = await window.electron.readFile('package.json');
+                    const pkg = JSON.parse(packageJson);
+                    
+                    return {
+                        tree: `${pkg.name || 'project'}/\n├── package.json\n└── ...(files detected)`,
+                        dependencies: Object.keys(pkg.dependencies || {}),
+                        type: pkg.description || 'Node.js Project',
+                        languages: ['JavaScript'],
+                        fileCount: 'Unknown',
+                        lineCount: 'Unknown'
+                    };
+                }
+            } catch (e) {
+                console.log('[Orchestra] Could not read package.json');
+            }
+            
+            // Final fallback: Generic response
+            return {
+                tree: `project/\n├── (files not scanned)\n└── ...(open folder to scan)`,
+                dependencies: [],
+                type: 'Unknown Project Type',
+                languages: ['Unknown'],
+                fileCount: 0,
+                lineCount: 0
+            };
+        }
     }
     
     async refactorCode() {

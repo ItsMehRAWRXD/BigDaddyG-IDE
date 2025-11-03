@@ -1698,6 +1698,248 @@ const server = http.createServer((req, res) => {
                 res.end(JSON.stringify({ error: error.message }));
             }
         });
+    } else if (pathname === '/api/models/list') {
+        // List all discovered models (Ollama blobs, GGUF files, etc.)
+        res.writeHead(200, corsHeaders);
+        
+        const discoveredModels = [];
+        
+        // Get models from AI Inference Engine if available
+        if (aiEngine && aiEngine.discoveredModels) {
+            discoveredModels.push(...aiEngine.discoveredModels);
+        }
+        
+        // Get Ollama models if available
+        exec('ollama list', (error, stdout, stderr) => {
+            const ollamaModels = [];
+            if (!error && stdout) {
+                const lines = stdout.split('\n').slice(1); // Skip header
+                lines.forEach(line => {
+                    const match = line.match(/^(\S+)\s+(\S+)\s+(\S+)/);
+                    if (match) {
+                        ollamaModels.push({
+                            name: match[1],
+                            id: match[2],
+                            size: match[3],
+                            source: 'ollama',
+                            available: true
+                        });
+                    }
+                });
+            }
+            
+            res.end(JSON.stringify({
+                discovered: discoveredModels,
+                ollama: ollamaModels,
+                total: discoveredModels.length + ollamaModels.length
+            }));
+        });
+    } else if (pathname === '/api/models/pull' && method === 'POST') {
+        // Pull a model from Ollama
+        let body = '';
+        req.on('data', chunk => body += chunk);
+        req.on('end', () => {
+            try {
+                const { model } = JSON.parse(body);
+                
+                res.writeHead(200, {
+                    ...corsHeaders,
+                    'Content-Type': 'text/event-stream',
+                    'Cache-Control': 'no-cache',
+                    'Connection': 'keep-alive'
+                });
+                
+                const pullProcess = exec(`ollama pull ${model}`, (error, stdout, stderr) => {
+                    if (error) {
+                        res.write(`data: ${JSON.stringify({ error: error.message })}\n\n`);
+                    } else {
+                        res.write(`data: ${JSON.stringify({ status: 'complete', model })}\n\n`);
+                    }
+                    res.end();
+                });
+                
+                pullProcess.stdout.on('data', (data) => {
+                    res.write(`data: ${JSON.stringify({ status: 'downloading', message: data.toString() })}\n\n`);
+                });
+                
+            } catch (error) {
+                res.writeHead(500, corsHeaders);
+                res.end(JSON.stringify({ error: error.message }));
+            }
+        });
+    } else if (pathname === '/api/models/reload') {
+        // Rescan for models
+        res.writeHead(200, corsHeaders);
+        
+        if (aiEngine && aiEngine.scanForModels) {
+            aiEngine.scanForModels().then(() => {
+                res.end(JSON.stringify({
+                    status: 'success',
+                    message: 'Models rescanned',
+                    count: aiEngine.discoveredModels ? aiEngine.discoveredModels.length : 0
+                }));
+            });
+        } else {
+            res.end(JSON.stringify({
+                status: 'info',
+                message: 'AI Engine not available'
+            }));
+        }
+    } else if (pathname === '/api/scan-bugs' && method === 'POST') {
+        // Scan project for bugs
+        let body = '';
+        req.on('data', chunk => body += chunk);
+        req.on('end', () => {
+            try {
+                const { projectPath, scanTypes } = JSON.parse(body);
+                
+                // Scan project directory for common issues
+                const issues = [];
+                
+                // Check for common Node.js issues
+                try {
+                    if (fs.existsSync(path.join(projectPath, 'package.json'))) {
+                        const pkg = JSON.parse(fs.readFileSync(path.join(projectPath, 'package.json'), 'utf8'));
+                        
+                        // Check for outdated dependencies
+                        if (pkg.dependencies && Object.keys(pkg.dependencies).length > 50) {
+                            issues.push({
+                                severity: '🟡 Warning',
+                                file: 'package.json',
+                                line: 1,
+                                message: 'Large number of dependencies detected',
+                                suggestion: 'Consider auditing and removing unused dependencies'
+                            });
+                        }
+                        
+                        // Check for missing scripts
+                        if (!pkg.scripts || !pkg.scripts.test) {
+                            issues.push({
+                                severity: '🟢 Info',
+                                file: 'package.json',
+                                line: 1,
+                                message: 'No test script defined',
+                                suggestion: 'Add "test" script to package.json'
+                            });
+                        }
+                    }
+                } catch (e) {
+                    console.log('[Orchestra] Could not analyze package.json:', e.message);
+                }
+                
+                res.writeHead(200, corsHeaders);
+                res.end(JSON.stringify({
+                    issues: issues,
+                    scannedPath: projectPath,
+                    scanTypes: scanTypes
+                }));
+            } catch (error) {
+                res.writeHead(500, corsHeaders);
+                res.end(JSON.stringify({ error: error.message }));
+            }
+        });
+    } else if (pathname === '/api/analyze-project' && method === 'POST') {
+        // Analyze project structure
+        let body = '';
+        req.on('data', chunk => body += chunk);
+        req.on('end', () => {
+            try {
+                const { projectPath } = JSON.parse(body);
+                
+                const analysis = {
+                    tree: '',
+                    dependencies: [],
+                    type: 'Unknown',
+                    languages: [],
+                    fileCount: 0,
+                    lineCount: 0
+                };
+                
+                // Count files and detect languages
+                const countFiles = (dir, depth = 0) => {
+                    if (depth > 3) return; // Limit recursion
+                    
+                    try {
+                        const items = fs.readdirSync(dir);
+                        items.forEach(item => {
+                            if (item.startsWith('.') || item === 'node_modules') return;
+                            
+                            const fullPath = path.join(dir, item);
+                            const stat = fs.statSync(fullPath);
+                            
+                            if (stat.isDirectory()) {
+                                countFiles(fullPath, depth + 1);
+                            } else if (stat.isFile()) {
+                                analysis.fileCount++;
+                                
+                                // Detect language by extension
+                                const ext = path.extname(item);
+                                const langMap = {
+                                    '.js': 'JavaScript',
+                                    '.ts': 'TypeScript',
+                                    '.jsx': 'React',
+                                    '.tsx': 'React TypeScript',
+                                    '.py': 'Python',
+                                    '.java': 'Java',
+                                    '.cpp': 'C++',
+                                    '.c': 'C',
+                                    '.cs': 'C#',
+                                    '.go': 'Go',
+                                    '.rs': 'Rust',
+                                    '.php': 'PHP',
+                                    '.rb': 'Ruby',
+                                    '.css': 'CSS',
+                                    '.html': 'HTML'
+                                };
+                                
+                                if (langMap[ext] && !analysis.languages.includes(langMap[ext])) {
+                                    analysis.languages.push(langMap[ext]);
+                                }
+                            }
+                        });
+                    } catch (e) {
+                        // Skip inaccessible directories
+                    }
+                };
+                
+                countFiles(projectPath);
+                
+                // Read package.json if exists
+                try {
+                    if (fs.existsSync(path.join(projectPath, 'package.json'))) {
+                        const pkg = JSON.parse(fs.readFileSync(path.join(projectPath, 'package.json'), 'utf8'));
+                        analysis.dependencies = Object.keys(pkg.dependencies || {});
+                        analysis.type = pkg.description || 'Node.js Project';
+                        
+                        analysis.tree = `${pkg.name || 'project'}/\n`;
+                        analysis.tree += `├── package.json\n`;
+                        analysis.tree += `├── node_modules/ (${analysis.dependencies.length} packages)\n`;
+                        
+                        // Add common directories
+                        ['src', 'dist', 'build', 'public', 'test', 'tests'].forEach(dir => {
+                            if (fs.existsSync(path.join(projectPath, dir))) {
+                                analysis.tree += `├── ${dir}/\n`;
+                            }
+                        });
+                        
+                        analysis.tree += `└── ... (${analysis.fileCount} files total)`;
+                    } else {
+                        analysis.tree = `project/\n└── ${analysis.fileCount} files detected`;
+                    }
+                } catch (e) {
+                    analysis.tree = `project/\n└── ${analysis.fileCount} files detected`;
+                }
+                
+                // Estimate line count (rough estimate: 30 lines per file average)
+                analysis.lineCount = analysis.fileCount * 30;
+                
+                res.writeHead(200, corsHeaders);
+                res.end(JSON.stringify(analysis));
+            } catch (error) {
+                res.writeHead(500, corsHeaders);
+                res.end(JSON.stringify({ error: error.message }));
+            }
+        });
     } else if (pathname === '/') {
         res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
         res.end(`
@@ -1720,6 +1962,9 @@ const server = http.createServer((req, res) => {
                 <ul>
                     <li>/api/chat - Chat with file attachments (IDE)</li>
                     <li>/api/generate - Generate responses</li>
+                    <li>/api/models/list - List all discovered models</li>
+                    <li>/api/models/pull - Download new models</li>
+                    <li>/api/models/reload - Rescan for models</li>
                     <li>/api/context - View conversation history</li>
                     <li>/api/context/clear - Clear history</li>
                     <li>/api/tags - List available models</li>
