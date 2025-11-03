@@ -53,10 +53,10 @@
       "package.json",
       "node_modules/**/*"
     ],
+    "asar": false,
     "win": {
       "target": [
-        "nsis",
-        "portable"
+        "nsis"
       ]
     },
     "nsis": {
