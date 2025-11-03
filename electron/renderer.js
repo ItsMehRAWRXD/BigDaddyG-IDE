@@ -16,6 +16,14 @@ const MAX_TABS = 100; // Configurable limit (can be changed in settings)
 // Expose openTabs globally for tab-system.js to check file tabs
 window.openTabs = openTabs;
 
+// Expose file operations globally for AI agentic features
+window.agenticFileOps = {
+    createNewTab: createNewTab,
+    createFile: null, // Will be set when background-agent-manager loads
+    openFile: null,   // Will be set when file-explorer loads
+    saveFile: null    // Will be set below
+};
+
 // Monaco Editor initialization - Called when Monaco loads from index.html
 window.onMonacoLoad = function() {
     console.log('[BigDaddyG] 🎨 Monaco loaded, initializing editor...');

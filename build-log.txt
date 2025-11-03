@@ -1,0 +1,12 @@
+
+> bigdaddyg-ide@2.0.0 build:portable
+> electron-builder --win portable
+
+  • electron-builder  version=24.13.3 os=10.0.26100
+  • loaded configuration  file=package.json ("build" field)
+  • packaging       platform=win32 arch=x64 electron=39.0.0 appOutDir=dist\win-unpacked
+  • asar usage is disabled — this is strongly not recommended  solution=enable asar and use asarUnpack to unpack files that must be externally available
+  • asar usage is disabled — this is strongly not recommended  solution=enable asar and use asarUnpack to unpack files that must be externally available
+  • default Electron icon is used  reason=application icon is not set
+  • building        target=portable file=dist\BigDaddyG-Portable-2.0.0.exe archs=x64
+  • output file is locked for writing (maybe by virus scanner) => waiting for unlock...  

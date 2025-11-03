@@ -12,6 +12,7 @@ class FloatingChat {
         this.panel = null;
         this.deepResearchEnabled = false;
         this.selectedModel = 'auto'; // Default to auto-selection
+        this.useNeuralNetwork = false; // Default to fast pattern matching
         this.init();
     }
     
@@ -112,7 +113,20 @@ class FloatingChat {
                             <option value="bigdaddyg:latest">💎 BigDaddyG Latest (4.7GB, Built-in)</option>
                         </optgroup>
                     </select>
-                    <span id="model-mode-indicator" style="font-size: 11px; color: var(--cursor-text-secondary); background: rgba(119, 221, 190, 0.1); padding: 3px 8px; border-radius: 12px; white-space: nowrap;">⚡ Fast Mode</span>
+                    <button onclick="floatingChat.toggleAIMode()" id="ai-mode-toggle" style="
+                        background: rgba(119, 221, 190, 0.1);
+                        border: 1px solid var(--cursor-jade-light);
+                        color: var(--cursor-jade-dark);
+                        padding: 6px 12px;
+                        border-radius: 6px;
+                        cursor: pointer;
+                        font-size: 11px;
+                        font-weight: 600;
+                        white-space: nowrap;
+                        transition: all 0.2s;
+                    " title="Toggle between Pattern Matching (⚡ Fast 0.1s) and Neural Network (🤖 Smart 2-10s)" onmouseover="this.style.background='rgba(119, 221, 190, 0.2)'" onmouseout="this.style.background='rgba(119, 221, 190, 0.1)'">
+                        <span id="mode-toggle-text">⚡ Pattern Mode</span>
+                    </button>
                 </div>
             </div>
             
@@ -245,7 +259,15 @@ class FloatingChat {
             </div>
             
             <!-- Chat Messages -->
-            <div id="floating-chat-messages" style="height: calc(100% - 180px); overflow-y: auto; padding: 20px; scroll-behavior: smooth;">
+            <div id="floating-chat-messages" style="
+                height: calc(100% - 180px); 
+                overflow-y: auto; 
+                overflow-x: hidden;
+                padding: 20px; 
+                scroll-behavior: smooth;
+                display: flex;
+                flex-direction: column;
+            ">
                 <div style="text-align: center; color: var(--cursor-text-secondary); padding: 40px 20px;">
                     <div style="font-size: 48px; margin-bottom: 16px;">💬</div>
                     <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Start a conversation</div>

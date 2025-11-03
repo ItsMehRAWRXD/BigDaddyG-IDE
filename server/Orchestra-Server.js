@@ -749,6 +749,152 @@ Time complexity: O(n)
 Space complexity: O(1) for iterative, O(n) for memoization`;
         }
         
+        // Project creation requests
+        if (promptLower.includes('make') && (promptLower.includes('project') || promptLower.includes('app'))) {
+            return `🏗️ **Project Builder Activated!**
+
+I can help you create a complete project! Let me guide you through it:
+
+**🎯 What type of project do you want to build?**
+
+**Popular Options:**
+1. **Web Application**
+   - React + TypeScript (modern SPA)
+   - Vue.js (progressive framework)
+   - Next.js (full-stack React)
+   - Express.js API (backend)
+
+2. **Desktop Application**
+   - Electron (cross-platform)
+   - Tauri (Rust + web)
+
+3. **Mobile App**
+   - React Native (iOS/Android)
+   - Flutter concept
+
+4. **CLI Tool**
+   - Node.js CLI
+   - Python CLI
+
+5. **Backend API**
+   - REST API (Express/FastAPI)
+   - GraphQL API
+   - WebSocket server
+
+6. **Library/Package**
+   - npm package
+   - Python pip package
+
+**💬 Tell me:**
+- What type? (e.g., "React app", "Express API", "Python CLI")
+- What features? (e.g., "authentication, database, API")
+- Any requirements? (e.g., "TypeScript", "MongoDB", "JWT auth")
+
+**Example:** "Create a React app with TypeScript, authentication, and dark mode"
+
+I'll create the entire project structure with:
+✅ All necessary files
+✅ Package.json with dependencies
+✅ Configuration files
+✅ Boilerplate code
+✅ Setup instructions
+
+**What would you like to build?**`;
+        }
+        
+        if (promptLower.includes('create') && (promptLower.includes('project') || promptLower.includes('app'))) {
+            return `🏗️ **Project Creation Assistant Ready!**
+
+I'll help you build a complete project from scratch!
+
+**📋 Quick Start Templates:**
+
+**1. React App (Modern)**
+\`\`\`bash
+npx create-react-app my-app --template typescript
+cd my-app
+npm start
+\`\`\`
+
+**2. Express API (Backend)**
+\`\`\`bash
+mkdir my-api && cd my-api
+npm init -y
+npm install express cors dotenv
+\`\`\`
+
+**3. Full-Stack (MERN)**
+\`\`\`bash
+# MongoDB + Express + React + Node
+# I can set up the entire stack!
+\`\`\`
+
+**💬 Or describe what you want:**
+- "Blog with authentication"
+- "E-commerce site"  
+- "REST API for todo app"
+- "Chat application"
+- "Dashboard with charts"
+
+**I'll provide:**
+✅ Complete file structure
+✅ All source code
+✅ Dependencies
+✅ Configuration
+✅ Setup instructions
+✅ Best practices
+
+**What project would you like to create?**`;
+        }
+        
+        if (promptLower.includes('build') && (promptLower.includes('project') || promptLower.includes('app'))) {
+            return `🏗️ **Let's Build Something Amazing!**
+
+**🎯 Project Types I Can Build:**
+
+**🌐 Web Applications:**
+- Single Page Apps (React, Vue, Angular)
+- Multi-Page Apps (Next.js, Nuxt)
+- Static Sites (HTML/CSS/JS)
+- Progressive Web Apps (PWA)
+
+**⚙️ Backend Services:**
+- REST APIs (Express, FastAPI, Django)
+- GraphQL APIs
+- WebSocket Servers
+- Microservices
+
+**💻 Desktop Apps:**
+- Electron apps (like this IDE!)
+- Cross-platform tools
+
+**📱 Mobile:**
+- React Native concepts
+- Hybrid app architectures
+
+**🔧 CLI Tools:**
+- Node.js CLI apps
+- Python command-line tools
+- Bash scripts
+
+**💬 Just tell me what you need:**
+
+Examples:
+- "Build a todo app with React and Express"
+- "Create a Discord bot in Python"
+- "Make a file converter CLI tool"
+- "Build a REST API for a blog"
+
+**I'll give you:**
+✅ Complete source code
+✅ File structure
+✅ Dependencies (package.json)
+✅ Setup instructions
+✅ Best practices
+
+**What would you like to build today?**`;
+        }
+        
         // Default: Acknowledge the request and offer help
         return `🧠 **BigDaddyG AI** - Understanding your request...
 

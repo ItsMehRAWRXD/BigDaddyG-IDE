@@ -1,0 +1,7 @@
+
+> bigdaddyg-ide@2.0.0 build
+> electron-builder --win --mac --linux
+
+  • electron-builder  version=24.13.3 os=10.0.26100
+  • loaded configuration  file=package.json ("build" field)
+  ⨯ Build for macOS is supported only on macOS, please see https://electron.build/multi-platform-build
