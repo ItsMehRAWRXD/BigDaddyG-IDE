@@ -83,3 +83,9 @@ desktop.ini
 !*.md
 !package.json
 !LICENSE
+
+# Allow model manifest
+
+!models/model-manifest.json
+
+!models/*.modelfile
