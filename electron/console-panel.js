@@ -180,15 +180,19 @@ class ConsolePanel {
             this.checkOrchestraStatus();
         }, 2000);
         
-        // Initial check
-        this.checkOrchestraStatus();
+        // Initial check - wait 5 seconds for server to start
+        // (Orchestra takes 5-10s to scan models and initialize)
+        this.setOrchestraRunning(null); // Show "Starting..." initially
+        setTimeout(() => {
+            this.checkOrchestraStatus();
+        }, 5000);
     }
     
     async checkOrchestraStatus() {
         try {
             const response = await fetch('http://localhost:11441/health', {
                 method: 'GET',
-                signal: AbortSignal.timeout(1000)
+                signal: AbortSignal.timeout(3000) // Increased to 3s for model scanning
             });
             
             if (response.ok) {
@@ -212,15 +216,29 @@ class ConsolePanel {
         // Null checks - these elements might not exist
         if (!indicator || !startBtn) return;
         
-        if (running) {
+        if (running === null) {
+            // Starting/initializing state
+            indicator.style.background = 'var(--cursor-jade)';
+            indicator.style.boxShadow = '0 0 10px var(--cursor-jade)';
+            indicator.style.animation = 'pulse 1.5s infinite';
+            if (statusText) {
+                statusText.textContent = 'Starting...';
+                statusText.style.color = 'var(--cursor-jade)';
+            }
+            startBtn.textContent = '⏳ Starting';
+            startBtn.style.background = 'var(--cursor-jade)';
+            startBtn.disabled = true;
+        } else if (running) {
             indicator.style.background = 'var(--green)';
             indicator.style.boxShadow = '0 0 10px var(--green)';
+            indicator.style.animation = 'none';
             if (statusText) {
                 statusText.textContent = 'Running';
                 statusText.style.color = 'var(--green)';
             }
             startBtn.textContent = '⏸ Stop';
             startBtn.style.background = 'var(--orange)';
+            startBtn.disabled = false;
             startBtn.onclick = () => this.stopOrchestraServer();
             
             if (data) {
@@ -229,27 +247,30 @@ class ConsolePanel {
         } else {
             indicator.style.background = 'var(--red)';
             indicator.style.boxShadow = '0 0 10px var(--red)';
+            indicator.style.animation = 'none';
             if (statusText) {
                 statusText.textContent = 'Stopped';
                 statusText.style.color = 'var(--red)';
             }
             startBtn.textContent = '▶ Start';
             startBtn.style.background = 'var(--green)';
+            startBtn.disabled = false;
             startBtn.onclick = () => this.startOrchestraServer();
         }
     }
     
     async startOrchestraServer() {
         this.addLog('info', '🎼 Starting Orchestra Server...');
+        this.setOrchestraRunning(null); // Show "Starting..." status
         
         try {
             if (window.electron && window.electron.startOrchestra) {
                 const result = await window.electron.startOrchestra();
                 if (result && result.success) {
-                    this.addLog('success', '✅ Orchestra Server starting...');
+                    this.addLog('success', '✅ Orchestra Server starting (scanning models, this takes 5-10s)...');
                     
-                    // Wait a moment, then check status
-                    setTimeout(() => this.checkOrchestraStatus(), 3000);
+                    // Wait for server to initialize (model scanning takes time)
+                    setTimeout(() => this.checkOrchestraStatus(), 10000);
                 } else {
                     throw new Error('Start command failed');
                 }
