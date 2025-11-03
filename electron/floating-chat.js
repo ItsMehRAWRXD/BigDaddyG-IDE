@@ -261,12 +261,13 @@ class FloatingChat {
             <!-- Chat Messages -->
             <div id="floating-chat-messages" style="
                 height: calc(100% - 180px); 
-                overflow-y: auto; 
+                overflow-y: auto !important; 
                 overflow-x: hidden;
                 padding: 20px; 
                 scroll-behavior: smooth;
                 display: flex;
                 flex-direction: column;
+                max-height: calc(100% - 180px);
             ">
                 <div style="text-align: center; color: var(--cursor-text-secondary); padding: 40px 20px;">
                     <div style="font-size: 48px; margin-bottom: 16px;">💬</div>
@@ -861,7 +862,9 @@ class FloatingChat {
         `;
         
         container.appendChild(messageDiv);
-        container.scrollTop = container.scrollHeight;
+        
+        // CRITICAL: Use triple-retry scroll to show full content
+        this.scrollToBottom();
     }
     
     escapeHtml(text) {
@@ -877,15 +880,19 @@ class FloatingChat {
         
         const doScroll = () => {
             container.scrollTop = container.scrollHeight;
+            console.log(`[FloatingChat] 📜 Scrolled to: ${container.scrollTop} / ${container.scrollHeight}`);
         };
         
         if (immediate) {
             doScroll();
         } else {
-            // Triple-check to handle slow content rendering
-            setTimeout(doScroll, 10);
-            setTimeout(doScroll, 100);
-            setTimeout(doScroll, 300);
+            // Aggressive multi-retry to handle slow content rendering
+            doScroll(); // Immediate
+            setTimeout(doScroll, 10);   // Fast retry
+            setTimeout(doScroll, 50);   // Medium retry
+            setTimeout(doScroll, 150);  // Slow retry
+            setTimeout(doScroll, 300);  // Final retry
+            setTimeout(doScroll, 500);  // Extra insurance
         }
     }
     
