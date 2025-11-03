@@ -124,13 +124,26 @@ function startOrchestraServer() {
     return;
   }
   
-  // FIX: Quote the path to handle spaces in directory names
-  orchestraServer = spawn('node', [serverPath], {
+  // FIX: Run server directly in main process instead of spawning
+  // Spawning with Electron executable causes it to load as Electron app
+  try {
+    // Require and run the server directly
+    console.log('[BigDaddyG] 🎼 Loading Orchestra server module...');
+    require(serverPath);
+    console.log('[BigDaddyG] ✅ Orchestra server loaded and running!');
+    return; // Don't set up spawn handlers
+  } catch (error) {
+    console.error('[BigDaddyG] ❌ Failed to load Orchestra:', error);
+    return;
+  }
+  
+  /* OLD SPAWN CODE - Causes infinite loop with Electron
+  orchestraServer = spawn(process.execPath, [serverPath], {
     cwd: serverCwd,
     stdio: 'pipe',
-    shell: true, // ALWAYS use shell for proper path quoting
-    windowsVerbatimArguments: false // Let shell handle quoting
+    env: { ...process.env, NODE_ENV: 'production' }
   });
+  */
   
   orchestraServer.stdout.on('data', (data) => {
     const message = data.toString().trim();
@@ -318,11 +331,24 @@ function startRemoteLogServer() {
     return;
   }
   
-  remoteLogServer = spawn('node', [serverPath], {
+  // FIX: Run server directly in main process
+  try {
+    console.log('[BigDaddyG] 📡 Loading Remote Log Server module...');
+    require(serverPath);
+    console.log('[BigDaddyG] ✅ Remote Log Server loaded and running!');
+    return; // Don't set up spawn handlers
+  } catch (error) {
+    console.error('[BigDaddyG] ❌ Failed to load Remote Log Server:', error);
+    return;
+  }
+  
+  /* OLD SPAWN CODE
+  remoteLogServer = spawn(process.execPath, [serverPath], {
     cwd: path.dirname(serverPath),
     stdio: 'pipe',
-    shell: true
+    env: { ...process.env, NODE_ENV: 'production' }
   });
+  */
   
   remoteLogServer.stdout.on('data', (data) => {
     console.log(`[RemoteLogServer] ${data.toString().trim()}`);
