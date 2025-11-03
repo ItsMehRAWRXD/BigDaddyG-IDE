@@ -18,11 +18,37 @@ window.openTabs = openTabs;
 
 // Expose file operations globally for AI agentic features
 window.agenticFileOps = {
-    createNewTab: createNewTab,
+    createNewTab: null, // Will be set after function is defined
     createFile: null, // Will be set when background-agent-manager loads
     openFile: null,   // Will be set when file-explorer loads
-    saveFile: null    // Will be set below
+    saveFile: null,    // Will be set below
+    closeTab: null,    // Will be set after function is defined
+    switchTab: null    // Will be set after function is defined
 };
+
+// Set the functions after they're defined
+setTimeout(() => {
+    if (typeof createNewTab !== 'undefined') {
+        window.agenticFileOps.createNewTab = createNewTab;
+        console.log('[BigDaddyG] ✅ createNewTab exposed to agentic API');
+    }
+    if (typeof closeTab !== 'undefined') {
+        window.agenticFileOps.closeTab = closeTab;
+        console.log('[BigDaddyG] ✅ closeTab exposed to agentic API');
+    }
+    if (typeof switchTab !== 'undefined') {
+        window.agenticFileOps.switchTab = switchTab;
+        console.log('[BigDaddyG] ✅ switchTab exposed to agentic API');
+    }
+    if (typeof renderTabs !== 'undefined') {
+        window.renderTabs = renderTabs;
+        console.log('[BigDaddyG] ✅ renderTabs exposed globally');
+    }
+    if (typeof switchTab !== 'undefined') {
+        window.switchTab = switchTab;
+        console.log('[BigDaddyG] ✅ switchTab exposed globally');
+    }
+}, 100);
 
 // Monaco Editor initialization - Called when Monaco loads from index.html
 window.onMonacoLoad = function() {
