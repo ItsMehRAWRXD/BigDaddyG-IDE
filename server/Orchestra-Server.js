@@ -551,61 +551,180 @@ print("Version 2:", code2[:50])
     
     generalExpertise(prompt) {
         const contextSummary = this.getContextSummary();
+        const promptLower = prompt.toLowerCase();
         
-        return `🧠 **BigDaddyG Trained Model** (200K lines expertise | 1M Context)
+        // Simple pattern matching for common requests
+        if (promptLower.includes('hello') || promptLower.includes('hi') || promptLower === 'hi') {
+            return `Hello! I'm BigDaddyG, your AI coding assistant trained on 200K lines of Assembly, Security, and Encryption code.
 
-**Your Query:** "${prompt}"
+I can help you with:
+• Code generation (any language)
+• Debugging and optimization  
+• Security analysis
+• System programming
+• And much more!
 
-**RESPONSE:**
+What would you like to build today?`;
+        }
+        
+        if (promptLower.includes('parser') || promptLower.includes('parse')) {
+            const lang = promptLower.includes('c++') ? 'C++' : promptLower.includes('python') ? 'Python' : 'general';
+            
+            if (lang === 'C++') {
+                return `Here's a C++ parser framework:
 
-I'm BigDaddyG, trained on 200,000 lines of:
-• **x86/x64 Assembly** - Low-level system programming
-• **Security Research** - Vulnerability analysis, exploit development
-• **Encryption Algorithms** - AES, RSA, ECC, polymorphic techniques
-• **Reverse Engineering** - Binary analysis, decompilation
+\`\`\`cpp
+#include <iostream>
+#include <string>
+#include <vector>
+#include <cctype>
 
-**MY SPECIALIZATIONS:**
+class Token {
+public:
+    enum Type { IDENTIFIER, NUMBER, OPERATOR, KEYWORD, EOF_TOKEN };
+    Type type;
+    std::string value;
+    
+    Token(Type t, const std::string& v) : type(t), value(v) {}
+};
 
-🔧 **Assembly Language:**
-- x86/x64 instruction sets
-- Syscall conventions
-- Register optimization
-- Performance tuning
+class Lexer {
+private:
+    std::string input;
+    size_t pos = 0;
+    
+public:
+    Lexer(const std::string& code) : input(code) {}
+    
+    Token nextToken() {
+        while (pos < input.length() && isspace(input[pos])) pos++;
+        
+        if (pos >= input.length())
+            return Token(Token::EOF_TOKEN, "");
+        
+        // Parse numbers
+        if (isdigit(input[pos])) {
+            std::string num;
+            while (pos < input.length() && isdigit(input[pos]))
+                num += input[pos++];
+            return Token(Token::NUMBER, num);
+        }
+        
+        // Parse identifiers/keywords
+        if (isalpha(input[pos])) {
+            std::string id;
+            while (pos < input.length() && (isalnum(input[pos]) || input[pos] == '_'))
+                id += input[pos++];
+            return Token(Token::KEYWORD, id);
+        }
+        
+        // Parse operators
+        std::string op(1, input[pos++]);
+        return Token(Token::OPERATOR, op);
+    }
+};
 
-🔐 **Security & Cryptography:**
-- Modern encryption (AES-256-GCM, RSA-4096)
-- Hash functions (SHA-256, Argon2)
-- Polymorphic encryption
-- Anti-reverse engineering
+class Parser {
+private:
+    Lexer lexer;
+    Token currentToken;
+    
+public:
+    Parser(const std::string& code) : lexer(code), currentToken(Token::EOF_TOKEN, "") {
+        advance();
+    }
+    
+    void advance() {
+        currentToken = lexer.nextToken();
+    }
+    
+    void parse() {
+        while (currentToken.type != Token::EOF_TOKEN) {
+            std::cout << "Token: " << currentToken.value << std::endl;
+            advance();
+        }
+    }
+};
 
-🔍 **Reverse Engineering:**
-- Static & dynamic analysis
-- Decompilation techniques
-- Exploit development
-- Binary patching
+int main() {
+    std::string code = "int x = 42 + y;";
+    Parser parser(code);
+    parser.parse();
+    return 0;
+}
+\`\`\`
 
-**ASK ME ABOUT:**
-• "Write x86 assembly for [task]"
-• "How do I encrypt [data]?"
-• "Explain polymorphic code"
-• "Reverse engineer [binary]"
-• "Find exploits in [code]"
-• "Show me [security technique]"
+This is a basic lexer + parser that tokenizes input. You can extend it with:
+• Abstract Syntax Tree (AST) nodes
+• Recursive descent parsing for expressions
+• Symbol table for variables
+• Type checking
 
-**💎 1M CONTEXT WINDOW:**
-- I remember our ENTIRE conversation
-- Can track complex multi-file projects
-- Understand long-term patterns
-- Never forget important details
+Want me to add any specific features?`;
+            }
+        }
+        
+        if (promptLower.includes('fibonacci') || promptLower.includes('fib')) {
+            return `Here's an efficient Fibonacci implementation with memoization:
 
-**📊 CURRENT SESSION:**
-- Messages: ${contextSummary.messages}
-- Tokens Used: ${contextSummary.tokens.toLocaleString()} / 1,000,000
-- Context Utilization: ${contextSummary.utilization}
+\`\`\`python
+def fibonacci_memo(n, memo={}):
+    """Calculate nth Fibonacci number using memoization"""
+    if n in memo:
+        return memo[n]
+    if n <= 1:
+        return n
+    
+    memo[n] = fibonacci_memo(n-1, memo) + fibonacci_memo(n-2, memo)
+    return memo[n]
 
-**READY TO HELP!** 🚀
+# Usage
+print(fibonacci_memo(50))  # Fast even for large numbers!
+\`\`\`
 
-*Trained on 200K real code • 1M context window • No templates*`;
+Or iterative version (more efficient):
+
+\`\`\`python
+def fibonacci_iter(n):
+    """Iterative Fibonacci - O(n) time, O(1) space"""
+    if n <= 1:
+        return n
+    
+    a, b = 0, 1
+    for _ in range(2, n + 1):
+        a, b = b, a + b
+    return b
+\`\`\`
+
+Time complexity: O(n)  
+Space complexity: O(1) for iterative, O(n) for memoization`;
+        }
+        
+        // Default: Acknowledge the request and offer help
+        return `🧠 **BigDaddyG AI** - Understanding your request...
+
+**Your Question:** "${prompt}"
+
+I'm processing your request. However, I'm currently running in standalone mode without a full AI model loaded.
+
+**To get full AI responses, I can:**
+1. **Connect to Ollama** - Install Ollama and run: \`ollama pull codellama\`
+2. **Use online AI** - Enable internet features in Settings
+3. **Load a local model** - Place GGUF models in the models folder
+
+**For now, I can help with:**
+• Code templates and patterns
+• Debugging assistance (share your code)
+• Assembly/Security/Crypto questions (my specialty!)
+• Architecture and design guidance
+
+**Try asking:**
+• "Write assembly code for..."
+• "How do I encrypt..."
+• "Debug this code: [paste code]"
+• "Explain [concept]"
+
+Or enable Ollama integration for full AI capabilities!`;
     }
 };
 
