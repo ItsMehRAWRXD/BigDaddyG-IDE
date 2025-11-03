@@ -109,8 +109,7 @@ class FloatingChat {
                             <option value="code-supernova">⭐ Code Supernova (Multi-lang)</option>
                         </optgroup>
                         <optgroup label="🤖 Neural Network Models (Built-in)" id="neural-models-group">
-                            <option value="bigdaddyg:latest">💎 BigDaddyG Latest (4.7GB, Fast)</option>
-                            <option value="llama2:70b">🧠 Llama2 70B (36GB, Genius)</option>
+                            <option value="bigdaddyg:latest">💎 BigDaddyG Latest (4.7GB, Built-in)</option>
                         </optgroup>
                     </select>
                     <span id="model-mode-indicator" style="font-size: 11px; color: var(--cursor-text-secondary); background: rgba(119, 221, 190, 0.1); padding: 3px 8px; border-radius: 12px; white-space: nowrap;">⚡ Fast Mode</span>
@@ -279,6 +278,30 @@ class FloatingChat {
                         onfocus="this.style.borderColor='var(--cursor-jade-dark)'; this.style.boxShadow='0 0 0 3px rgba(119, 221, 190, 0.1)'"
                         onblur="this.style.borderColor='var(--cursor-jade-light)'; this.style.boxShadow='none'"
                     ></textarea>
+                    <!-- File Upload Button -->
+                    <input type="file" id="floating-file-input" multiple style="display: none;" onchange="floatingChat.handleFileSelect(event)">
+                    <button 
+                        onclick="document.getElementById('floating-file-input').click()" 
+                        style="
+                            position: absolute;
+                            right: 120px;
+                            bottom: 12px;
+                            background: rgba(119, 221, 190, 0.1);
+                            border: 1px solid var(--cursor-jade-light);
+                            color: var(--cursor-jade-dark);
+                            padding: 10px 14px;
+                            border-radius: 6px;
+                            cursor: pointer;
+                            font-size: 16px;
+                            font-weight: 600;
+                            transition: all 0.2s;
+                        "
+                        onmouseover="this.style.background='rgba(119, 221, 190, 0.2)'; this.style.transform='translateY(-1px)'"
+                        onmouseout="this.style.background='rgba(119, 221, 190, 0.1)'; this.style.transform='translateY(0)'"
+                        title="Attach files (or drag & drop)"
+                    >
+                        📎
+                    </button>
                     <button 
                         onclick="floatingChat.send()" 
                         style="
@@ -302,8 +325,9 @@ class FloatingChat {
                         ↑ Send
                     </button>
                 </div>
+                <div id="floating-attached-files" style="margin-top: 8px; display: none; flex-wrap: wrap; gap: 8px;"></div>
                 <div style="margin-top: 8px; font-size: 11px; color: var(--cursor-text-secondary); display: flex; justify-content: space-between;">
-                    <span>💡 Press Ctrl+Enter to send</span>
+                    <span>💡 Press Ctrl+Enter to send • 📎 Drag files or click attach</span>
                     <span id="floating-chat-counter">0 / 10,000</span>
                 </div>
             </div>
