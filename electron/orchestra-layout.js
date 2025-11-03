@@ -757,7 +757,14 @@ class OrchestraLayout {
             container.appendChild(msgDiv);
         });
         
-        container.scrollTop = container.scrollHeight;
+        // CRITICAL: Scroll to bottom after all messages rendered
+        setTimeout(() => {
+            container.scrollTop = container.scrollHeight;
+            // Double-check after render completes
+            setTimeout(() => {
+                container.scrollTop = container.scrollHeight;
+            }, 100);
+        }, 50);
     }
     
     clearMessages() {

@@ -773,6 +773,9 @@ class FloatingChat {
             const contentDiv = document.getElementById(`${responseId}-content`);
             if (contentDiv) {
                 contentDiv.innerHTML = this.formatResponse(data.response || data.message || 'No response');
+                
+                // CRITICAL: Scroll to show full response after content is rendered
+                this.scrollToBottom();
             }
             
             console.log(`[FloatingChat] ✅ AI response rendered successfully in ${finalTime}s`);
@@ -865,6 +868,25 @@ class FloatingChat {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+    
+    // Force scroll to bottom of chat (with retry for slow renders)
+    scrollToBottom(immediate = false) {
+        const container = document.getElementById('floating-chat-messages');
+        if (!container) return;
+        
+        const doScroll = () => {
+            container.scrollTop = container.scrollHeight;
+        };
+        
+        if (immediate) {
+            doScroll();
+        } else {
+            // Triple-check to handle slow content rendering
+            setTimeout(doScroll, 10);
+            setTimeout(doScroll, 100);
+            setTimeout(doScroll, 300);
+        }
     }
     
     // ========================================================================
