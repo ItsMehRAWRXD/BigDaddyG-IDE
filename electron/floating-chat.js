@@ -108,8 +108,9 @@ class FloatingChat {
                             <option value="cheetah-stealth">🔐 Cheetah Stealth (Security)</option>
                             <option value="code-supernova">⭐ Code Supernova (Multi-lang)</option>
                         </optgroup>
-                        <optgroup label="🤖 Neural Network Models" id="neural-models-group" style="display: none;">
-                            <!-- Will be populated dynamically from available GGUF/Ollama models -->
+                        <optgroup label="🤖 Neural Network Models (Built-in)" id="neural-models-group">
+                            <option value="bigdaddyg:latest">💎 BigDaddyG Latest (4.7GB, Fast)</option>
+                            <option value="llama2:70b">🧠 Llama2 70B (36GB, Genius)</option>
                         </optgroup>
                     </select>
                     <span id="model-mode-indicator" style="font-size: 11px; color: var(--cursor-text-secondary); background: rgba(119, 221, 190, 0.1); padding: 3px 8px; border-radius: 12px; white-space: nowrap;">⚡ Fast Mode</span>
