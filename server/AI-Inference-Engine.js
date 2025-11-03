@@ -32,10 +32,11 @@ class AIInferenceEngine {
     }
     
     /**
-     * Scan for GGUF model files
+     * Scan for GGUF and Ollama blob model files
      */
     async scanForModels() {
         const searchPaths = [
+            path.join(__dirname, '../models/blobs'),
             path.join(__dirname, '../models'),
             path.join(process.env.USERPROFILE || process.env.HOME, '.ollama/models/blobs'),
             'D:\\AI-Models',
@@ -50,21 +51,34 @@ class AIInferenceEngine {
             try {
                 const files = fs.readdirSync(searchPath);
                 for (const file of files) {
-                    if (file.endsWith('.gguf')) {
-                        const fullPath = path.join(searchPath, file);
+                    const fullPath = path.join(searchPath, file);
+                    
+                    // Check for .gguf files OR Ollama blobs (sha256-*)
+                    const isGguf = file.endsWith('.gguf');
+                    const isOllamaBlob = file.startsWith('sha256-') && file.length === 71; // sha256- + 64 hex chars
+                    
+                    if (isGguf || isOllamaBlob) {
                         const stats = fs.statSync(fullPath);
-                        foundModels.push({
-                            name: file.replace('.gguf', ''),
-                            path: fullPath,
-                            size: stats.size,
-                            sizeGB: (stats.size / 1024 / 1024 / 1024).toFixed(2)
-                        });
+                        
+                        // Only include files > 100MB (actual models, not metadata)
+                        if (stats.size > 100 * 1024 * 1024) {
+                            foundModels.push({
+                                name: isGguf ? file.replace('.gguf', '') : file,
+                                path: fullPath,
+                                size: stats.size,
+                                sizeGB: (stats.size / 1024 / 1024 / 1024).toFixed(2),
+                                format: isGguf ? 'gguf' : 'ollama_blob'
+                            });
+                        }
                     }
                 }
             } catch (e) {
                 // Skip inaccessible directories
             }
         }
+        
+        // Sort by size (prefer smaller models for faster loading)
+        foundModels.sort((a, b) => a.size - b.size);
         
         return foundModels;
     }
@@ -137,25 +151,40 @@ Respond concisely but thoroughly. Always provide working code when requested.`
             return false;
         }
         
-        console.log('🔍 Scanning for AI models...');
+        console.log('🔍 Scanning for AI models (GGUF and Ollama blobs)...');
         const models = await this.scanForModels();
         
         if (models.length === 0) {
-            console.log('ℹ️ No GGUF models found');
-            console.log('   Download models from: https://huggingface.co/models');
-            console.log('   Or install Ollama: https://ollama.ai');
+            console.log('ℹ️ No AI model files found');
+            console.log('   Searched:');
+            console.log('   - models/blobs/ (Ollama format)');
+            console.log('   - models/ (.gguf format)');
+            console.log('   - C:\\Users\\.ollama\\models\\blobs\\');
+            console.log('   Download from: https://huggingface.co/models');
             return false;
         }
         
-        console.log(`📦 Found ${models.length} model(s):`);
-        models.forEach(m => {
-            console.log(`   - ${m.name} (${m.sizeGB} GB)`);
-        });
+        console.log(`\n📦 Found ${models.length} AI model file(s):`);
+        const totalSize = models.reduce((sum, m) => sum + parseFloat(m.sizeGB), 0);
+        console.log(`💾 Total size: ${totalSize.toFixed(2)} GB\n`);
         
-        // Prefer smaller models for faster loading (phi, mistral, etc.)
-        const preferredOrder = ['phi', 'mistral', 'codellama', 'llama'];
-        let selectedModel = models[0];
+        // Show first 10 models
+        const displayCount = Math.min(models.length, 10);
+        for (let i = 0; i < displayCount; i++) {
+            const m = models[i];
+            const format = m.format === 'ollama_blob' ? '(Ollama)' : '(GGUF)';
+            console.log(`   ${i+1}. ${m.sizeGB} GB ${format} - ${m.name.substring(0, 50)}`);
+        }
         
+        if (models.length > 10) {
+            console.log(`   ... and ${models.length - 10} more models`);
+        }
+        
+        // Select best model (prefer smaller ones for faster loading)
+        let selectedModel = models[0]; // Smallest by default
+        
+        // But prefer common coding models if available
+        const preferredOrder = ['phi', 'codellama', 'deepseek', 'mistral', 'llama'];
         for (const pref of preferredOrder) {
             const found = models.find(m => m.name.toLowerCase().includes(pref));
             if (found) {
@@ -164,7 +193,10 @@ Respond concisely but thoroughly. Always provide working code when requested.`
             }
         }
         
-        console.log(`🎯 Auto-loading: ${selectedModel.name}`);
+        console.log(`\n🎯 Auto-selecting: ${selectedModel.name.substring(0, 60)}`);
+        console.log(`   Size: ${selectedModel.sizeGB} GB (${selectedModel.format})`);
+        console.log(`   Loading into memory...`);
+        
         return await this.loadModel(selectedModel.path);
     }
     

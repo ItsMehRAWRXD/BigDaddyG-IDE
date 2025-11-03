@@ -11,6 +11,7 @@ class FloatingChat {
         this.isOpen = false;
         this.panel = null;
         this.deepResearchEnabled = false;
+        this.selectedModel = 'auto'; // Default to auto-selection
         this.init();
     }
     
@@ -52,25 +53,66 @@ class FloatingChat {
         
         this.panel.innerHTML = `
             <!-- Header -->
-            <div style="padding: 16px 20px; background: linear-gradient(135deg, var(--cursor-bg-secondary), var(--cursor-bg-tertiary)); border-bottom: 1px solid var(--cursor-border); display: flex; justify-content: space-between; align-items: center;">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <span style="font-size: 20px;">🤖</span>
-                    <span style="font-weight: 600; font-size: 15px; color: var(--cursor-jade-dark);">BigDaddyG AI</span>
-                    <span style="font-size: 11px; color: var(--cursor-text-secondary); background: rgba(119, 221, 190, 0.1); padding: 3px 8px; border-radius: 12px;">Ctrl+L</span>
+            <div style="padding: 16px 20px; background: linear-gradient(135deg, var(--cursor-bg-secondary), var(--cursor-bg-tertiary)); border-bottom: 1px solid var(--cursor-border);">
+                <!-- Title Row -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 20px;">🤖</span>
+                        <span style="font-weight: 600; font-size: 15px; color: var(--cursor-jade-dark);">BigDaddyG AI</span>
+                        <span style="font-size: 11px; color: var(--cursor-text-secondary); background: rgba(119, 221, 190, 0.1); padding: 3px 8px; border-radius: 12px;">Ctrl+L</span>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button id="toggle-research-btn" onclick="floatingChat.toggleDeepResearch()" style="background: rgba(119, 221, 190, 0.1); border: 1px solid var(--cursor-jade-light); color: var(--cursor-jade-dark); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.2s;" onmouseover="this.style.background='rgba(119, 221, 190, 0.2)'" onmouseout="this.style.background='rgba(119, 221, 190, 0.1)'">
+                            🔬 Deep Research: OFF
+                        </button>
+                        <button onclick="floatingChat.toggleSettings()" style="background: none; border: 1px solid var(--cursor-border); color: var(--cursor-text-secondary); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.2s;" onmouseover="this.style.background='var(--cursor-bg-tertiary)'" onmouseout="this.style.background='none'">
+                            ⚙️ Settings
+                        </button>
+                        <button onclick="floatingChat.minimize()" style="background: none; border: 1px solid var(--cursor-border); color: var(--cursor-text-secondary); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.2s;" onmouseover="this.style.background='var(--cursor-bg-tertiary)'" onmouseout="this.style.background='none'">
+                            ➖ Minimize
+                        </button>
+                        <button onclick="floatingChat.close()" style="background: none; border: 1px solid var(--cursor-border); color: var(--cursor-text-secondary); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,71,87,0.1)'; this.style.borderColor='#ff4757'" onmouseout="this.style.background='none'; this.style.borderColor='var(--cursor-border)'">
+                            ✕ Close
+                        </button>
+                    </div>
                 </div>
-                <div style="display: flex; gap: 8px;">
-                    <button id="toggle-research-btn" onclick="floatingChat.toggleDeepResearch()" style="background: rgba(119, 221, 190, 0.1); border: 1px solid var(--cursor-jade-light); color: var(--cursor-jade-dark); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.2s;" onmouseover="this.style.background='rgba(119, 221, 190, 0.2)'" onmouseout="this.style.background='rgba(119, 221, 190, 0.1)'">
-                        🔬 Deep Research: OFF
-                    </button>
-                    <button onclick="floatingChat.toggleSettings()" style="background: none; border: 1px solid var(--cursor-border); color: var(--cursor-text-secondary); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.2s;" onmouseover="this.style.background='var(--cursor-bg-tertiary)'" onmouseout="this.style.background='none'">
-                        ⚙️ Settings
-                    </button>
-                    <button onclick="floatingChat.minimize()" style="background: none; border: 1px solid var(--cursor-border); color: var(--cursor-text-secondary); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.2s;" onmouseover="this.style.background='var(--cursor-bg-tertiary)'" onmouseout="this.style.background='none'">
-                        ➖ Minimize
-                    </button>
-                    <button onclick="floatingChat.close()" style="background: none; border: 1px solid var(--cursor-border); color: var(--cursor-text-secondary); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,71,87,0.1)'; this.style.borderColor='#ff4757'" onmouseout="this.style.background='none'; this.style.borderColor='var(--cursor-border)'">
-                        ✕ Close
-                    </button>
+                
+                <!-- Model Selector Row -->
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <label style="font-size: 12px; color: var(--cursor-text-secondary); font-weight: 600;">🎯 Model:</label>
+                    <select id="floating-model-selector" onchange="floatingChat.selectModel(this.value)" style="
+                        flex: 1;
+                        background: var(--cursor-bg);
+                        border: 1px solid var(--cursor-jade-light);
+                        color: var(--cursor-text);
+                        padding: 6px 12px;
+                        border-radius: 6px;
+                        cursor: pointer;
+                        font-size: 12px;
+                        font-family: inherit;
+                        outline: none;
+                        transition: all 0.2s;
+                    " onfocus="this.style.borderColor='var(--cursor-jade-dark)'; this.style.boxShadow='0 0 0 2px rgba(119, 221, 190, 0.2)'" onblur="this.style.borderColor='var(--cursor-jade-light)'; this.style.boxShadow='none'">
+                        <option value="auto">🤖 Auto (Smart Selection)</option>
+                        <option value="BigDaddyG:Latest">💎 BigDaddyG Latest (200K ASM/Security)</option>
+                        <optgroup label="🎨 Language Specialists">
+                            <option value="bigdaddyg-c">⚙️ C/C++ Specialist</option>
+                            <option value="bigdaddyg-csharp">🎮 C# Specialist</option>
+                            <option value="bigdaddyg-visualbasic">📊 Visual Basic Specialist</option>
+                            <option value="bigdaddyg-python">🐍 Python Specialist</option>
+                            <option value="bigdaddyg-javascript">🌐 JavaScript Specialist</option>
+                            <option value="bigdaddyg-asm">🔧 Assembly Specialist</option>
+                        </optgroup>
+                        <optgroup label="🎭 Special Purpose">
+                            <option value="bigdaddyg-image">🖼️ Image Generation</option>
+                            <option value="cheetah-stealth">🔐 Cheetah Stealth (Security)</option>
+                            <option value="code-supernova">⭐ Code Supernova (Multi-lang)</option>
+                        </optgroup>
+                        <optgroup label="🤖 Neural Network Models" id="neural-models-group" style="display: none;">
+                            <!-- Will be populated dynamically from available GGUF/Ollama models -->
+                        </optgroup>
+                    </select>
+                    <span id="model-mode-indicator" style="font-size: 11px; color: var(--cursor-text-secondary); background: rgba(119, 221, 190, 0.1); padding: 3px 8px; border-radius: 12px; white-space: nowrap;">⚡ Fast Mode</span>
                 </div>
             </div>
             
@@ -310,6 +352,9 @@ class FloatingChat {
             if (input) input.focus();
         }, 300);
         
+        // Load available models (neural networks, Ollama blobs, etc.)
+        this.loadAvailableModels();
+        
         console.log('[FloatingChat] ✨ Opened');
     }
     
@@ -357,6 +402,106 @@ class FloatingChat {
         } else {
             this.open();
         }
+    }
+    
+    async selectModel(modelName) {
+        try {
+            console.log(`[FloatingChat] 🎯 Switching to model: ${modelName}`);
+            
+            this.selectedModel = modelName;
+            
+            // Update mode indicator
+            const indicator = document.getElementById('model-mode-indicator');
+            if (indicator) {
+                if (modelName === 'auto') {
+                    indicator.textContent = '⚡ Auto Mode';
+                    indicator.style.background = 'rgba(119, 221, 190, 0.1)';
+                } else if (modelName.includes('sha256-')) {
+                    indicator.textContent = '🤖 Neural Network';
+                    indicator.style.background = 'rgba(0, 150, 255, 0.1)';
+                } else {
+                    indicator.textContent = '⚡ Fast Mode';
+                    indicator.style.background = 'rgba(119, 221, 190, 0.1)';
+                }
+            }
+            
+            // Show notification
+            this.addSystemMessage(`✅ Switched to: ${this.getModelDisplayName(modelName)}`);
+            
+        } catch (error) {
+            console.error('[FloatingChat] ❌ Error selecting model:', error);
+        }
+    }
+    
+    getModelDisplayName(modelName) {
+        const displayNames = {
+            'auto': '🤖 Auto (Smart Selection)',
+            'BigDaddyG:Latest': '💎 BigDaddyG Latest',
+            'bigdaddyg-c': '⚙️ C/C++ Specialist',
+            'bigdaddyg-csharp': '🎮 C# Specialist',
+            'bigdaddyg-visualbasic': '📊 Visual Basic Specialist',
+            'bigdaddyg-python': '🐍 Python Specialist',
+            'bigdaddyg-javascript': '🌐 JavaScript Specialist',
+            'bigdaddyg-asm': '🔧 Assembly Specialist',
+            'bigdaddyg-image': '🖼️ Image Generation',
+            'cheetah-stealth': '🔐 Cheetah Stealth',
+            'code-supernova': '⭐ Code Supernova'
+        };
+        return displayNames[modelName] || modelName;
+    }
+    
+    async loadAvailableModels() {
+        try {
+            // Query Orchestra for available neural network models
+            const response = await fetch('http://localhost:11441/api/ai-mode');
+            if (!response.ok) return;
+            
+            const data = await response.json();
+            
+            // Check if neural network models are available
+            if (data.loaded && data.mode === 'neural_network') {
+                const neuralGroup = document.getElementById('neural-models-group');
+                if (neuralGroup) {
+                    neuralGroup.style.display = 'block';
+                    
+                    // Add the loaded model
+                    const option = document.createElement('option');
+                    option.value = 'neural_network_active';
+                    option.textContent = `🤖 ${data.model || 'Neural Network'} (${data.mode})`;
+                    neuralGroup.appendChild(option);
+                }
+                
+                // Update mode indicator
+                const indicator = document.getElementById('model-mode-indicator');
+                if (indicator) {
+                    indicator.textContent = '🤖 Neural Network';
+                    indicator.style.background = 'rgba(0, 150, 255, 0.1)';
+                }
+            }
+            
+            console.log('[FloatingChat] ✅ Available models loaded');
+        } catch (error) {
+            console.log('[FloatingChat] ℹ️ Could not load neural network models (using pattern matching)');
+        }
+    }
+    
+    addSystemMessage(text) {
+        const messagesContainer = document.getElementById('floating-chat-messages');
+        if (!messagesContainer) return;
+        
+        const messageDiv = document.createElement('div');
+        messageDiv.style.cssText = `
+            padding: 8px 12px;
+            margin: 8px 0;
+            background: rgba(119, 221, 190, 0.1);
+            border-left: 3px solid var(--cursor-jade-dark);
+            border-radius: 4px;
+            font-size: 12px;
+            color: var(--cursor-text-secondary);
+        `;
+        messageDiv.textContent = text;
+        messagesContainer.appendChild(messageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
     
     async send() {
@@ -515,7 +660,7 @@ class FloatingChat {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     message,
-                    model: 'BigDaddyG:Latest',
+                    model: this.selectedModel || 'auto',
                     parameters: params,
                     deep_research: this.deepResearchEnabled,
                     include_thinking: this.deepResearchEnabled,
