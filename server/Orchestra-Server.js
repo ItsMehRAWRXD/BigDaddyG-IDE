@@ -4,10 +4,12 @@ const path = require('path');
 const { exec } = require('child_process');
 
 // ============================================================================
-// BIGDADDYG ORCHESTRA SERVER - ENHANCED WITH INI CONFIG
+// BIGDADDYG ORCHESTRA SERVER - ENHANCED WITH REAL AI INFERENCE
 // ============================================================================
-// YOUR server that finds and loads ALL your models from C:\\ and D:\\
-// Saves settings to settings.ini for persistence
+// 🤖 Real neural networks - actual AI model inference
+// 🧠 Generates responses - creates unique answers for ANY question
+// 🐢 Slower (2-10s) but truly intelligent
+// True AI orchestration with llama.cpp
 // ============================================================================
 
 const PORT = process.env.MODEL_PORT_ASSEMBLY || 11441;
@@ -16,6 +18,28 @@ const HOST = 'localhost';
 console.log('🎼 Starting BigDaddyG Orchestra Server (Enhanced)...');
 console.log(`📍 Port: ${PORT}`);
 console.log('🔍 Scanning for models on C:\\ and D:\\...\n');
+
+// Load AI Inference Engine
+let aiEngine = null;
+try {
+    const AIEngine = require('./AI-Inference-Engine.js');
+    aiEngine = AIEngine.aiEngine;
+    console.log('🤖 AI Inference Engine loaded!');
+    
+    // Auto-load best available model
+    (async () => {
+        const loaded = await aiEngine.autoLoadModel();
+        if (loaded) {
+            console.log('✅ REAL AI MODE ACTIVE - Neural network inference ready!');
+        } else {
+            console.log('ℹ️ Pattern matching mode (fast but limited)');
+            console.log('   Install Ollama or place GGUF models in models/ folder for full AI');
+        }
+    })();
+} catch (e) {
+    console.log('ℹ️ AI Inference Engine not available - using pattern matching');
+    console.log('   Run: npm install node-llama-cpp');
+}
 
 // ============================================================================
 // INI CONFIGURATION SYSTEM
@@ -184,7 +208,7 @@ const BigDaddyGTrained = {
         return this.query(prompt, useContext);
     },
     
-    query(prompt, useContext = true) {
+    async query(prompt, useContext = true) {
         // Add to conversation history (1M context)
         this.conversationHistory.push({
             role: 'user',
@@ -198,26 +222,51 @@ const BigDaddyGTrained = {
         
         const promptLower = prompt.toLowerCase();
         let response = '';
+        let mode = 'pattern_matching';
         
-        // Route to specialized expertise
-        if (promptLower.includes('asm') || promptLower.includes('assembly') || promptLower.includes('x86') || promptLower.includes('x64')) {
-            response = this.asmExpertise(prompt);
-        } else if (promptLower.includes('encrypt') || promptLower.includes('decrypt') || promptLower.includes('security') || promptLower.includes('crypto')) {
-            response = this.securityExpertise(prompt);
-        } else if (promptLower.includes('reverse') || promptLower.includes('disassembl') || promptLower.includes('decompile') || promptLower.includes('exploit')) {
-            response = this.reverseEngineeringExpertise(prompt);
-        } else if (promptLower.includes('polymorph') || promptLower.includes('metamorph') || promptLower.includes('obfuscat')) {
-            response = this.polymorphicExpertise(prompt);
-        } else {
-            response = this.generalExpertise(prompt);
+        // PRIORITY 1: Try REAL AI inference (if available)
+        if (aiEngine && aiEngine.isAvailable()) {
+            console.log('🤖 Using REAL AI (neural network inference)...');
+            const aiResult = await aiEngine.generate(prompt, {
+                temperature: this.parameters.temperature,
+                maxTokens: this.parameters.max_tokens
+            });
+            
+            if (aiResult.success) {
+                response = aiResult.response;
+                mode = 'neural_network';
+                console.log(`✅ AI generated ${response.length} chars in ${aiResult.duration}s`);
+            } else {
+                console.log(`⚠️ AI inference failed: ${aiResult.error}`);
+                console.log('   Falling back to pattern matching...');
+            }
         }
         
-        // Apply parameter modifiers
-        response = this.applyParameterModifiers(response);
+        // FALLBACK: Pattern matching (fast but limited)
+        if (!response) {
+            console.log('📝 Using pattern matching (fast mode)...');
+            
+            // Route to specialized expertise
+            if (promptLower.includes('asm') || promptLower.includes('assembly') || promptLower.includes('x86') || promptLower.includes('x64')) {
+                response = this.asmExpertise(prompt);
+            } else if (promptLower.includes('encrypt') || promptLower.includes('decrypt') || promptLower.includes('security') || promptLower.includes('crypto')) {
+                response = this.securityExpertise(prompt);
+            } else if (promptLower.includes('reverse') || promptLower.includes('disassembl') || promptLower.includes('decompile') || promptLower.includes('exploit')) {
+                response = this.reverseEngineeringExpertise(prompt);
+            } else if (promptLower.includes('polymorph') || promptLower.includes('metamorph') || promptLower.includes('obfuscat')) {
+                response = this.polymorphicExpertise(prompt);
+            } else {
+                response = this.generalExpertise(prompt);
+            }
+            
+            // Apply parameter modifiers
+            response = this.applyParameterModifiers(response);
+        }
         
         // Add context awareness if enabled
         if (useContext && this.conversationHistory.length > 1) {
-            const contextInfo = `\n\n*[Context: ${this.conversationHistory.length - 1} previous messages • ${this.parameters.temperature} temp • ${this.parameters.response_style} style • 1M window]*`;
+            const modeLabel = mode === 'neural_network' ? '🤖 AI Mode' : '⚡ Fast Mode';
+            const contextInfo = `\n\n*[${modeLabel} • ${this.conversationHistory.length - 1} previous messages • ${this.parameters.temperature} temp • ${this.parameters.response_style} style • 1M window]*`;
             response += contextInfo;
         }
         
@@ -1608,6 +1657,22 @@ const server = http.createServer((req, res) => {
                 }));
             }
         });
+    } else if (pathname === '/api/ai-mode' && req.method === 'GET') {
+        // AI Mode Status Endpoint
+        res.writeHead(200, corsHeaders);
+        const info = aiEngine ? aiEngine.getInfo() : { 
+            available: false, 
+            loaded: false, 
+            mode: 'pattern_matching' 
+        };
+        res.end(JSON.stringify({
+            ...info,
+            message: info.mode === 'neural_network' 
+                ? '🤖 Real AI active - Neural network inference'
+                : '⚡ Pattern matching mode (fast but limited)',
+            ollama_available: false, // Will check Ollama separately
+            total_models: modelRegistry.models.length
+        }));
     } else if (pathname === '/api/generate' && req.method === 'POST') {
         // AI generation endpoint (Ollama-compatible)
         let body = '';
