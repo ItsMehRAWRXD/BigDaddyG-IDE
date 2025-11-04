@@ -28,11 +28,22 @@ out/
 *.rar
 
 # AI Models (too large - document how to download instead)
-models/
-*.gguf
+# BUT INCLUDE DOCUMENTATION FILES
+models/*.gguf
+models/blobs/
+models/*/model.gguf
 OllamaModels/
 D:\OllamaModels/
 BigDaddyG-AI-Bundle/
+
+# BUT ALLOW MODEL DOCUMENTATION
+!models/*.md
+!models/*.txt
+!models/*.json
+!models/*.modelfile
+!models/README.md
+!models/MODEL-SUMMARY.txt
+!models/MODEL-VARIANTS.md
 
 # IDE settings (user-specific)
 .vscode/
@@ -48,6 +59,13 @@ settings.ini
 bigdaddyg.ini
 *.log
 logs/
+
+# BUT INCLUDE EXAMPLE/TEMPLATE FILES
+!*.example
+!*.template
+!*.sample
+!bigdaddyg.ini.example
+!server/settings.ini.example
 
 # Temporary files
 tmp/
