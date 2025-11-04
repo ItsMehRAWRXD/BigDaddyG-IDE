@@ -8,9 +8,8 @@
  * - Persistent sessions
  */
 
-const { ipcRenderer } = require('electron');
-const os = require('os');
-const path = require('path');
+// Note: In renderer process, use window.electron (from preload)
+// const { ipcRenderer } = require('electron'); // NOT NEEDED - use window.electron instead
 
 (function() {
 'use strict';
