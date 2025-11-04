@@ -124,7 +124,10 @@ class UniversalDragSystem {
             onDragEnd
         });
         
-        console.log(`[DragSystem] ✅ Made draggable:`, element.id || element.className);
+        const elementName = element.id || element.className || element.tagName.toLowerCase();
+        if (elementName && elementName.trim()) {
+            console.log(`[DragSystem] ✅ Made draggable: ${elementName}`);
+        }
     }
     
     findDragHandle(element) {
