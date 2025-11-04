@@ -13,19 +13,28 @@ class FloatingChat {
         this.deepResearchEnabled = false;
         this.selectedModel = 'auto'; // Default to auto-selection
         this.useNeuralNetwork = false; // Default to fast pattern matching
+        this.attachedFiles = []; // Files attached to next message
+        this.isDragging = false; // For draggable functionality
+        this.dragOffset = { x: 0, y: 0 }; // Mouse offset during drag
         this.init();
     }
     
     init() {
         console.log('[FloatingChat] 🎯 Initializing floating chat...');
         
-        // Create floating panel
-        this.createPanel();
-        
-        // Register keyboard shortcuts
-        this.registerHotkeys();
-        
-        console.log('[FloatingChat] ✅ Floating chat ready (Ctrl+L to open)');
+        // Wait for DOM to be ready before creating panel
+        if (document.body) {
+            this.createPanel();
+            this.registerHotkeys();
+            console.log('[FloatingChat] ✅ Floating chat ready (Ctrl+L to open)');
+        } else {
+            // DOM not ready yet, wait for it
+            document.addEventListener('DOMContentLoaded', () => {
+                this.createPanel();
+                this.registerHotkeys();
+                console.log('[FloatingChat] ✅ Floating chat ready (Ctrl+L to open)');
+            });
+        }
     }
     
     createPanel() {
@@ -54,13 +63,13 @@ class FloatingChat {
         
         this.panel.innerHTML = `
             <!-- Header -->
-            <div style="padding: 16px 20px; background: linear-gradient(135deg, var(--cursor-bg-secondary), var(--cursor-bg-tertiary)); border-bottom: 1px solid var(--cursor-border);">
+            <div id="floating-chat-header" style="padding: 16px 20px; background: linear-gradient(135deg, var(--cursor-bg-secondary), var(--cursor-bg-tertiary)); border-bottom: 1px solid var(--cursor-border); cursor: move;">
                 <!-- Title Row -->
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                     <div style="display: flex; align-items: center; gap: 12px;">
                         <span style="font-size: 20px;">🤖</span>
                         <span style="font-weight: 600; font-size: 15px; color: var(--cursor-jade-dark);">BigDaddyG AI</span>
-                        <span style="font-size: 11px; color: var(--cursor-text-secondary); background: rgba(119, 221, 190, 0.1); padding: 3px 8px; border-radius: 12px;">Ctrl+L</span>
+                        <span style="font-size: 11px; color: var(--cursor-text-secondary); background: rgba(119, 221, 190, 0.1); padding: 3px 8px; border-radius: 12px;">Ctrl+L • Drag to move</span>
                     </div>
                     <div style="display: flex; gap: 8px;">
                         <button id="toggle-research-btn" onclick="floatingChat.toggleDeepResearch()" style="background: rgba(119, 221, 190, 0.1); border: 1px solid var(--cursor-jade-light); color: var(--cursor-jade-dark); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.2s;" onmouseover="this.style.background='rgba(119, 221, 190, 0.2)'" onmouseout="this.style.background='rgba(119, 221, 190, 0.1)'">
@@ -358,6 +367,9 @@ class FloatingChat {
         
         document.body.appendChild(this.panel);
         
+        // Make draggable
+        this.makeDraggable();
+        
         // Add character counter
         const input = document.getElementById('floating-chat-input');
         if (input) {
@@ -368,6 +380,78 @@ class FloatingChat {
                 }
             });
         }
+    }
+    
+    makeDraggable() {
+        const header = document.getElementById('floating-chat-header');
+        if (!header) {
+            console.error('[FloatingChat] ❌ Header not found for dragging');
+            return;
+        }
+        
+        let isDragging = false;
+        let currentX = 0;
+        let currentY = 0;
+        let initialX = 0;
+        let initialY = 0;
+        
+        header.addEventListener('mousedown', (e) => {
+            // Don't drag if clicking buttons or select elements
+            if (e.target.tagName === 'BUTTON' || 
+                e.target.tagName === 'SELECT' || 
+                e.target.tagName === 'INPUT' ||
+                e.target.closest('button') ||
+                e.target.closest('select')) {
+                return;
+            }
+            
+            isDragging = true;
+            
+            // Get panel's current position
+            const rect = this.panel.getBoundingClientRect();
+            
+            // Calculate offset from click to panel edge
+            initialX = e.clientX - rect.left;
+            initialY = e.clientY - rect.top;
+            
+            // Change cursor
+            document.body.style.cursor = 'grabbing';
+            header.style.cursor = 'grabbing';
+            
+            e.preventDefault();
+        });
+        
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            
+            e.preventDefault();
+            
+            // Calculate new position
+            currentX = e.clientX - initialX;
+            currentY = e.clientY - initialY;
+            
+            // Constrain to viewport
+            const maxX = window.innerWidth - this.panel.offsetWidth;
+            const maxY = window.innerHeight - this.panel.offsetHeight;
+            
+            currentX = Math.max(0, Math.min(currentX, maxX));
+            currentY = Math.max(0, Math.min(currentY, maxY));
+            
+            // Update panel position
+            this.panel.style.transform = 'none';
+            this.panel.style.left = currentX + 'px';
+            this.panel.style.top = currentY + 'px';
+        });
+        
+        document.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false;
+                document.body.style.cursor = '';
+                header.style.cursor = 'move';
+            }
+        });
+        
+        console.log('[FloatingChat] ✅ Draggable functionality enabled');
     }
     
     registerHotkeys() {
@@ -496,6 +580,53 @@ class FloatingChat {
             'code-supernova': '⭐ Code Supernova'
         };
         return displayNames[modelName] || modelName;
+    }
+    
+    // Toggle AI Mode (Pattern Matching vs Neural Network)
+    toggleAIMode() {
+        this.useNeuralNetwork = !this.useNeuralNetwork;
+        const mode = this.useNeuralNetwork ? 'Neural Network' : 'Pattern Matching';
+        console.log(`[FloatingChat] 🔄 AI Mode: ${mode}`);
+        this.addSystemMessage(`🔄 Switched to ${mode} mode`);
+        
+        // Update UI indicator if present
+        const indicator = document.querySelector('[data-ai-mode]');
+        if (indicator) {
+            indicator.textContent = this.useNeuralNetwork ? '🤖 Neural' : '⚡ Pattern';
+        }
+    }
+    
+    // Handle file selection from file input
+    handleFileSelect(event) {
+        const files = event.target.files;
+        if (!files || files.length === 0) return;
+        
+        console.log(`[FloatingChat] 📎 Selected ${files.length} file(s)`);
+        
+        // Read files and attach to next message
+        const filePromises = Array.from(files).map(file => {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    resolve({
+                        name: file.name,
+                        size: file.size,
+                        type: file.type,
+                        content: e.target.result
+                    });
+                };
+                reader.onerror = reject;
+                reader.readAsText(file);
+            });
+        });
+        
+        Promise.all(filePromises).then(fileContents => {
+            this.attachedFiles = fileContents;
+            this.addSystemMessage(`📎 Attached ${fileContents.length} file(s): ${fileContents.map(f => f.name).join(', ')}`);
+        }).catch(error => {
+            console.error('[FloatingChat] ❌ Error reading files:', error);
+            this.addSystemMessage(`❌ Error reading files: ${error.message}`);
+        });
     }
     
     async loadAvailableModels() {
@@ -1353,16 +1484,10 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// Initialize
-window.floatingChat = null;
+// Initialize immediately (don't wait for DOMContentLoaded)
+window.floatingChat = new FloatingChat();
 
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        window.floatingChat = new FloatingChat();
-    });
-} else {
-    window.floatingChat = new FloatingChat();
-}
+console.log('[FloatingChat] ✅ FloatingChat instance created and attached to window.floatingChat');
 
 // Export
 window.FloatingChat = FloatingChat;

@@ -1775,20 +1775,41 @@ const server = http.createServer((req, res) => {
             try {
                 const data = JSON.parse(body);
                 const message = data.message || '';
-                const model = data.model || 'BigDaddyG:Latest';
+                const model = data.model || 'auto';
                 const attachments = data.attachments || 0;
                 const images = data.images || [];
                 
-                console.log(`[Chat] 💬 Message from IDE (${attachments} attachments, ${images.length} images)`);
+                console.log(`[Chat] 💬 Message from IDE (Model: ${model}, ${attachments} attachments, ${images.length} images)`);
                 
-                // Use BigDaddyG's context-aware response
-                const response = await BigDaddyGTrained.chat(message);
+                let response = '';
+                let actualModel = model;
+                
+                // SMART MODEL ROUTING
+                if (model === 'auto' || model === 'BigDaddyG:Latest' || model.includes('bigdaddyg')) {
+                    // Use built-in BigDaddyG (pattern matching or neural if available)
+                    console.log('[Chat] 🎯 Using BigDaddyG (built-in trained model)');
+                    response = await BigDaddyGTrained.chat(message);
+                    actualModel = 'BigDaddyG:Latest';
+                } else {
+                    // Try to use Ollama for the selected model
+                    console.log(`[Chat] 🦙 Attempting Ollama with model: ${model}`);
+                    try {
+                        response = await queryOllama(model, message);
+                        actualModel = model;
+                        console.log('[Chat] ✅ Ollama response received');
+                    } catch (ollamaError) {
+                        console.error('[Chat] ❌ Ollama failed:', ollamaError.message);
+                        console.log('[Chat] 🔄 Falling back to BigDaddyG...');
+                        response = await BigDaddyGTrained.chat(message);
+                        actualModel = 'BigDaddyG:Latest (fallback from ' + model + ')';
+                    }
+                }
                 
                 res.writeHead(200, corsHeaders);
                 res.end(JSON.stringify({
                     success: true,
                     response: response,
-                    model: model,
+                    model: actualModel,
                     attachments_processed: attachments,
                     images_analyzed: images.length,
                     timestamp: new Date().toISOString()

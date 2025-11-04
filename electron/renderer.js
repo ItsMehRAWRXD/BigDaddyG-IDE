@@ -329,15 +329,17 @@ function switchTab(tabId) {
 function closeTab(event, tabId) {
     event.stopPropagation();
     
-    if (Object.keys(openTabs).length === 1) {
-        console.log('[BigDaddyG] ⚠️ Cannot close last tab');
-        return;
-    }
-    
     const tab = openTabs[tabId];
     console.log(`[BigDaddyG] 🗑️ Closing tab: ${tab?.filename || tabId}`);
     
     delete openTabs[tabId];
+    
+    // If this was the last tab, create a new Welcome tab
+    if (Object.keys(openTabs).length === 0) {
+        console.log('[BigDaddyG] 📄 Last tab closed, creating new Welcome tab...');
+        createNewTab('Welcome.md', 'markdown', getWelcomeMessage(), null);
+        return;
+    }
     
     // Switch to another tab if this was active
     if (activeTab === tabId) {
