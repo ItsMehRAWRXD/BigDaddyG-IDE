@@ -1,0 +1,306 @@
+/**
+ * BigDaddyG IDE - Collapsible Agent Sidebar Styles
+ */
+
+/* Agent Panel Container */
+#agent-panel-enhanced {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Settings Panel (Left Sidebar) */
+.agent-settings {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 300px;
+    min-width: 250px;
+    max-width: 400px;
+    background: var(--cursor-bg-secondary);
+    border-right: 1px solid var(--cursor-border);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 16px;
+    z-index: 10;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* When collapsed */
+.agent-settings.collapsed {
+    width: 0 !important;
+    min-width: 0 !important;
+    opacity: 0;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+
+/* Main Content Area */
+.agent-conversation,
+.agent-input-area {
+    margin-left: 300px;
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.agent-settings.collapsed ~ .agent-conversation,
+.agent-settings.collapsed ~ .agent-input-area {
+    margin-left: 0;
+}
+
+/* Quality Selector */
+.quality-selector {
+    margin-bottom: 16px;
+    padding: 12px;
+    background: var(--cursor-bg-tertiary);
+    border-radius: 8px;
+}
+
+.quality-selector label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--cursor-text-secondary);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.quality-options {
+    display: flex;
+    gap: 6px;
+}
+
+.quality-btn {
+    flex: 1;
+    padding: 8px;
+    background: var(--cursor-bg);
+    border: 1px solid var(--cursor-border);
+    color: var(--cursor-text);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.quality-btn:hover {
+    background: var(--cursor-bg-tertiary);
+    border-color: var(--cursor-jade-light);
+}
+
+.quality-btn.active {
+    background: linear-gradient(135deg, var(--cursor-jade-dark), var(--cursor-accent));
+    border-color: var(--cursor-jade-dark);
+    color: white;
+}
+
+/* Model Selector */
+.model-selector {
+    margin-bottom: 16px;
+    padding: 12px;
+    background: var(--cursor-bg-tertiary);
+    border-radius: 8px;
+}
+
+.model-selector label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--cursor-text-secondary);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+#model-select {
+    width: 100%;
+    padding: 10px;
+    background: var(--cursor-bg);
+    border: 1px solid var(--cursor-jade-light);
+    color: var(--cursor-text);
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+#model-select:hover {
+    border-color: var(--cursor-jade-dark);
+}
+
+#model-select:focus {
+    outline: none;
+    border-color: var(--cursor-jade-dark);
+    box-shadow: 0 0 0 3px rgba(119, 221, 190, 0.1);
+}
+
+/* Feature Toggles */
+.feature-toggles {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    background: var(--cursor-bg-tertiary);
+    border-radius: 8px;
+}
+
+.toggle-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: var(--cursor-bg);
+    border: 1px solid var(--cursor-border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+}
+
+.toggle-item:hover {
+    background: var(--cursor-bg-secondary);
+    border-color: var(--cursor-jade-light);
+}
+
+.toggle-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--cursor-jade-dark);
+}
+
+.toggle-icon {
+    font-size: 16px;
+}
+
+.toggle-label {
+    flex: 1;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--cursor-text);
+}
+
+/* Collapse Button Styles */
+#collapse-left-panel-btn,
+#collapse-right-panel-btn {
+    background: linear-gradient(135deg, var(--cursor-jade-dark), var(--cursor-accent));
+    border: none;
+    color: white;
+    box-shadow: 0 2px 8px rgba(119, 221, 190, 0.3);
+}
+
+#collapse-left-panel-btn:hover,
+#collapse-right-panel-btn:hover {
+    transform: translateY(-50%) scale(1.05);
+    box-shadow: 0 4px 12px rgba(119, 221, 190, 0.4);
+}
+
+/* Scrollbar for Settings Panel */
+.agent-settings::-webkit-scrollbar {
+    width: 8px;
+}
+
+.agent-settings::-webkit-scrollbar-track {
+    background: var(--cursor-bg);
+    border-radius: 4px;
+}
+
+.agent-settings::-webkit-scrollbar-thumb {
+    background: var(--cursor-jade-dark);
+    border-radius: 4px;
+}
+
+.agent-settings::-webkit-scrollbar-thumb:hover {
+    background: var(--cursor-accent);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .agent-settings {
+        width: 250px;
+        min-width: 200px;
+    }
+    
+    .agent-conversation,
+    .agent-input-area {
+        margin-left: 250px;
+    }
+    
+    #collapse-left-panel-btn {
+        left: 230px !important;
+    }
+}
+
+/* Animation for collapse/expand */
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutLeft {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+}
+
+.agent-settings.animating-in {
+    animation: slideInLeft 0.3s ease-out;
+}
+
+.agent-settings.animating-out {
+    animation: slideOutLeft 0.3s ease-out;
+}
+
+/* Hotkey Hint Badge */
+.hotkey-hint {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.hotkey-hint kbd {
+    display: inline-block;
+    padding: 2px 6px;
+    background: var(--cursor-bg-tertiary);
+    border: 1px solid var(--cursor-border);
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 10px;
+    margin: 0 2px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(10px); }
+}
+

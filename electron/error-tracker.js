@@ -157,6 +157,34 @@ class ErrorTracker {
         this.createErrorButton();
         
         this.originalError.call(console, '[ErrorTracker] ✅ Error tracking active');
+        
+        // Track resource loading errors
+        this.trackResourceErrors();
+    }
+    
+    trackResourceErrors() {
+        // Listen for resource errors on window
+        window.addEventListener('error', (e) => {
+            if (e.target !== window && (e.target.tagName === 'SCRIPT' || e.target.tagName === 'LINK')) {
+                const resourceError = {
+                    type: 'resource',
+                    file: e.target.src || e.target.href,
+                    element: e.target.tagName,
+                    timestamp: new Date().toISOString()
+                };
+                
+                this.originalError.call(console, `[ErrorTracker] ❌ Failed to load ${resourceError.element}: ${resourceError.file}`);
+                
+                // Add to error list
+                this.logError('Resource Error', {
+                    message: `Failed to load ${resourceError.element}: ${resourceError.file}`,
+                    severity: 'warning',
+                    file: resourceError.file
+                });
+            }
+        }, true);
+        
+        this.originalLog.call(console, '[ErrorTracker] 👀 Watching for resource loading errors');
     }
     
     logAction(type, data) {
