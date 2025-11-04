@@ -1342,6 +1342,77 @@ ipcMain.handle('orchestra:status', async () => {
   return { running: isRunning };
 });
 
+// ============================================================================
+// TERMINAL EXECUTION
+// ============================================================================
+
+ipcMain.handle('execute-command', async (event, { command, shell = 'powershell', cwd = process.cwd() }) => {
+  const { spawn } = require('child_process');
+  
+  console.log(`[Terminal] Executing: ${command} (shell: ${shell}, cwd: ${cwd})`);
+  
+  return new Promise((resolve) => {
+    let output = '';
+    let error = '';
+    
+    // Select shell command
+    let shellCmd, shellArgs;
+    switch (shell) {
+      case 'powershell':
+        shellCmd = 'powershell.exe';
+        shellArgs = ['-NoProfile', '-NonInteractive', '-Command', command];
+        break;
+      case 'cmd':
+        shellCmd = 'cmd.exe';
+        shellArgs = ['/c', command];
+        break;
+      case 'bash':
+        shellCmd = 'bash';
+        shellArgs = ['-c', command];
+        break;
+      case 'wsl':
+        shellCmd = 'wsl.exe';
+        shellArgs = ['-e', 'bash', '-c', command];
+        break;
+      default:
+        shellCmd = 'powershell.exe';
+        shellArgs = ['-NoProfile', '-NonInteractive', '-Command', command];
+    }
+    
+    const proc = spawn(shellCmd, shellArgs, { cwd, shell: false });
+    
+    proc.stdout.on('data', (data) => {
+      output += data.toString();
+      event.sender.send('terminal-output', { output: data.toString(), isError: false });
+    });
+    
+    proc.stderr.on('data', (data) => {
+      error += data.toString();
+      event.sender.send('terminal-output', { output: data.toString(), isError: true });
+    });
+    
+    proc.on('close', (code) => {
+      event.sender.send('terminal-exit', { code });
+      resolve({
+        output,
+        error,
+        code,
+        cwd: proc.spawnargs.cwd || cwd
+      });
+    });
+    
+    proc.on('error', (err) => {
+      error = err.message;
+      resolve({
+        output,
+        error,
+        code: 1,
+        cwd
+      });
+    });
+  });
+});
+
 // Window controls
 ipcMain.on('window-minimize', () => {
   if (mainWindow) mainWindow.minimize();

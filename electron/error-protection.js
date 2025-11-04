@@ -89,17 +89,9 @@ class ErrorProtectionSystem {
     }
     
     protectConsoleMethods() {
-        // Ensure console methods never throw
-        ['log', 'warn', 'error', 'info', 'debug'].forEach(method => {
-            const original = console[method];
-            console[method] = function(...args) {
-                try {
-                    original.apply(console, args);
-                } catch (e) {
-                    // Silent fail for console errors
-                }
-            };
-        });
+        // DON'T override console methods - let error-tracker.js handle it
+        // This prevents conflicts between error protection and error tracking
+        console.log('[ErrorProtection] ℹ️ Console methods handled by error-tracker.js');
     }
     
     addGlobalRecovery() {
