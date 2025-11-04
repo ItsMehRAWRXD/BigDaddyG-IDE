@@ -173,7 +173,7 @@ class ErrorTracker {
                     timestamp: new Date().toISOString()
                 };
                 
-                this.originalError.call(console, `[ErrorTracker] ❌ Failed to load ${resourceError.element}: ${resourceError.file}`);
+                console.error(`[ErrorTracker] ❌ Failed to load ${resourceError.element}: ${resourceError.file}`);
                 
                 // Add to error list
                 this.logError('Resource Error', {
@@ -184,7 +184,7 @@ class ErrorTracker {
             }
         }, true);
         
-        this.originalLog.call(console, '[ErrorTracker] 👀 Watching for resource loading errors');
+        console.log('[ErrorTracker] 👀 Watching for resource loading errors');
     }
     
     logAction(type, data) {
