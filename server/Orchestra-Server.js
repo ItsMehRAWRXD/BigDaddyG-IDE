@@ -348,7 +348,7 @@ const BigDaddyGTrained = {
 
 **ASSEMBLY ANALYSIS:**
 
-\`\`\`asm
+\`\`\`asm xor_encrypt.asm
 ; Example: XOR encryption in x86_64 ASM
 section .data
     key db 0x42, 0x13, 0x37, 0xAA  ; Encryption key
@@ -422,7 +422,7 @@ _start:
    - Store in HSM when possible
 
 3. **Implementation**
-\`\`\`python
+\`\`\`python encryption_aes.py
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 import os
 
@@ -469,7 +469,7 @@ plaintext = aesgcm.decrypt(nonce, ciphertext, None)
 **REVERSE ENGINEERING WORKFLOW:**
 
 **1. RECONNAISSANCE**
-\`\`\`bash
+\`\`\`bash recon.sh
 # Gather information
 file target.exe               # File type, arch, packing
 strings target.exe | less     # Readable strings
@@ -488,7 +488,7 @@ readelf -h target.exe         # ELF headers (Linux)
 \`\`\`
 
 **3. DYNAMIC ANALYSIS**
-\`\`\`bash
+\`\`\`bash dynamic_analysis.sh
 # Runtime analysis
 ltrace ./target              # Library calls
 strace ./target              # System calls
@@ -531,7 +531,7 @@ gdb ./target                 # Interactive debugging
 
 **POLYMORPHIC ENGINE ACTIVATED:**
 
-\`\`\`python
+\`\`\`python polymorphic_engine.py
 import random, string, hashlib, os
 
 class PolymorphicEngine:
@@ -622,7 +622,7 @@ What would you like to build today?`;
             if (lang === 'C++') {
                 return `Here's a C++ parser framework:
 
-\`\`\`cpp
+\`\`\`cpp parser.cpp
 #include <iostream>
 #include <string>
 #include <vector>
@@ -716,7 +716,7 @@ Want me to add any specific features?`;
         if (promptLower.includes('fibonacci') || promptLower.includes('fib')) {
             return `Here's an efficient Fibonacci implementation with memoization:
 
-\`\`\`python
+\`\`\`python fibonacci.py
 def fibonacci_memo(n, memo={}):
     """Calculate nth Fibonacci number using memoization"""
     if n in memo:
@@ -733,7 +733,7 @@ print(fibonacci_memo(50))  # Fast even for large numbers!
 
 Or iterative version (more efficient):
 
-\`\`\`python
+\`\`\`python fibonacci_iterative.py
 def fibonacci_iter(n):
     """Iterative Fibonacci - O(n) time, O(1) space"""
     if n <= 1:
