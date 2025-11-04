@@ -1,0 +1,15 @@
+REAL AI MODEL #10
+
+Name: sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463
+Size: 4.36 GB (4466.13 MB)
+Extension: no extension
+Original Path: C:\Users\HiH8e\.ollama\models\blobs\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463
+
+This is a REAL trained AI model file.
+
+To use:
+1. Keep it in original location (Orchestra will reference it)
+2. Or copy to ProjectIDEAI/models/ (warning: large file!)
+3. Load via Ollama: ollama load C:\Users\HiH8e\.ollama\models\blobs\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463
+
+Discovered: 2025-10-29T11:46:22.914Z

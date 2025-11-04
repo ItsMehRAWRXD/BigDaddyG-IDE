@@ -13,11 +13,13 @@
   "scripts": {
     "start": "electron .",
     "dev": "electron . --dev",
-    "build": "electron-builder --win --mac --linux",
+    "build": "electron-builder --win",
+    "build:all": "electron-builder --win --mac --linux",
     "build:win": "electron-builder --win nsis portable",
     "build:mac": "electron-builder --mac dmg zip",
     "build:linux": "electron-builder --linux AppImage deb rpm",
     "build:portable": "electron-builder --win portable",
+    "build:installer": "electron-builder --win nsis",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "postinstall": "electron-builder install-app-deps"

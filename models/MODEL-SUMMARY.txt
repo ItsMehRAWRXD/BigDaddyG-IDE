@@ -1,0 +1,23 @@
+COMPLETE MODEL REGISTRY
+Generated: 2025-10-29T11:53:45.179Z
+
+Total Models Found: 14878
+Total Size: 6.75 GB
+
+Breakdown:
+- Model directories: 1412
+- Model files: 13466
+
+Top 10 Largest Files:
+1. FileCache000.bin (1.00 GB)
+2. FileCache000.bin (1.00 GB)
+3. FileCache000.bin (1.00 GB)
+4. ShaderCache.bin (0.23 GB)
+5. ShaderCache.bin (0.23 GB)
+6. ShaderCache.bin (0.23 GB)
+7. asm-parser-model.json (0.14 GB)
+8. asm-parser-model.json (0.14 GB)
+9. encoder.onnx (0.10 GB)
+10. encoder.onnx (0.10 GB)
+
+Full list in: configs/complete-registry.json
