@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenMemory - Agentic Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0f;
+            color: #fff;
+            padding: 20px;
+        }
+        h1 { color: #00d4ff; margin-bottom: 20px; }
+        h2 { color: #00ff88; margin: 20px 0 10px; font-size: 18px; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .panel {
+            background: rgba(26, 26, 34, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+        .tuning-control {
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .tuning-control label {
+            flex: 0 0 150px;
+            color: #a0a0b0;
+        }
+        .tuning-control input[type="range"] {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255,255,255,0.1);
+            outline: none;
+        }
+        .tuning-control input[type="range"]::-webkit-slider-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #00d4ff;
+            cursor: pointer;
+        }
+        .tuning-control select {
+            flex: 1;
+            padding: 8px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #fff;
+            border-radius: 6px;
+        }
+        .value-display {
+            flex: 0 0 60px;
+            text-align: right;
+            color: #00d4ff;
+            font-weight: bold;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            background: #00d4ff;
+            color: #0a0a0f;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        button:hover { background: #00ff88; transform: translateY(-2px); }
+        button.secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+        button.secondary:hover { background: rgba(255,255,255,0.2); }
+        .memory-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .memory-item {
+            background: rgba(255,255,255,0.05);
+            border-left: 3px solid #00d4ff;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+        }
+        .memory-item.Episodic { border-left-color: #a855f7; }
+        .memory-item.Procedural { border-left-color: #ff6b35; }
+        .memory-item.Emotional { border-left-color: #ff4757; }
+        .memory-item.Reflective { border-left-color: #00ff88; }
+        .memory-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: #a0a0b0;
+        }
+        .memory-content { color: #fff; }
+        .sector-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background: rgba(0,212,255,0.2);
+            border-radius: 4px;
+            font-size: 11px;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .stat-box {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-value { font-size: 24px; color: #00d4ff; font-weight: bold; }
+        .stat-label { font-size: 12px; color: #a0a0b0; margin-top: 5px; }
+        input[type="file"] { display: none; }
+        .file-btn {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border-radius: 6px;
+            cursor: pointer;
+            display: inline-block;
+            margin: 5px;
+        }
+        .file-btn:hover { background: rgba(255,255,255,0.2); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 OpenMemory - Agentic Dashboard</h1>
+        
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-value" id="statMemories">0</div>
+                <div class="stat-label">Memories</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="statUsers">0</div>
+                <div class="stat-label">Users</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="statEmbeddings">0</div>
+                <div class="stat-label">Embeddings</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="statAvgDecay">1.0</div>
+                <div class="stat-label">Avg Decay</div>
+            </div>
+        </div>
+        
+        <div class="grid">
+            <!-- Tuning Station -->
+            <div class="panel">
+                <h2>🎛️ Memory Tuning Station</h2>
+                
+                <div class="tuning-control">
+                    <label>Memory Length:</label>
+                    <input type="range" id="memoryLength" min="1" max="20" value="5">
+                    <span class="value-display" id="valMemoryLength">5</span>
+                </div>
+                
+                <div class="tuning-control">
+                    <label>Decay Rate:</label>
+                    <input type="range" id="decayRate" min="0.5" max="1.0" step="0.01" value="0.95">
+                    <span class="value-display" id="valDecayRate">0.95</span>
+                </div>
+                
+                <div class="tuning-control">
+                    <label>Salience Boost:</label>
+                    <input type="range" id="salienceBoost" min="0" max="1" step="0.05" value="0.2">
+                    <span class="value-display" id="valSalienceBoost">0.2</span>
+                </div>
+                
+                <div class="tuning-control">
+                    <label>Recency Boost:</label>
+                    <input type="range" id="recencyBoost" min="0" max="1" step="0.05" value="0.2">
+                    <span class="value-display" id="valRecencyBoost">0.2</span>
+                </div>
+                
+                <div class="tuning-control">
+                    <label>Embedding Model:</label>
+                    <select id="embeddingModel">
+                        <option value="nomic-embed-text">nomic-embed-text</option>
+                        <option value="openai-ada">openai-ada</option>
+                        <option value="synthetic">Synthetic (SHA256)</option>
+                    </select>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <button onclick="saveSettings()">💾 Save Settings</button>
+                    <button class="secondary" onclick="resetSettings()">🔄 Reset</button>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <button onclick="exportSettings()">📤 Export</button>
+                    <label class="file-btn" for="importFile">📥 Import</label>
+                    <input type="file" id="importFile" accept=".json" onchange="importSettings(this)">
+                </div>
+            </div>
+            
+            <!-- Query Panel -->
+            <div class="panel">
+                <h2>🔍 Memory Query</h2>
+                <input type="text" id="queryInput" placeholder="Search memories..." style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 6px; margin: 10px 0;">
+                <button onclick="queryMemories()">Search</button>
+                <div id="queryResults" class="memory-list" style="margin-top: 15px;"></div>
+            </div>
+        </div>
+        
+        <!-- Memory List -->
+        <div class="panel" style="margin-top: 20px;">
+            <h2>📚 All Memories</h2>
+            <div id="memoryList" class="memory-list"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8765';
+        
+        // Update value displays
+        document.querySelectorAll('input[type="range"]').forEach(slider => {
+            slider.addEventListener('input', (e) => {
+                const displayId = 'val' + e.target.id.charAt(0).toUpperCase() + e.target.id.slice(1);
+                document.getElementById(displayId).textContent = e.target.value;
+            });
+        });
+        
+        // Save settings
+        async function saveSettings() {
+            const settings = {
+                memoryLength: parseInt(document.getElementById('memoryLength').value),
+                decayRate: parseFloat(document.getElementById('decayRate').value),
+                salienceBoost: parseFloat(document.getElementById('salienceBoost').value),
+                recencyBoost: parseFloat(document.getElementById('recencyBoost').value),
+                embeddingModel: document.getElementById('embeddingModel').value
+            };
+            
+            try {
+                const res = await fetch(`${API_BASE}/config/update`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(settings)
+                });
+                alert('✅ Settings saved!');
+            } catch (e) {
+                alert('❌ Failed to save settings: ' + e.message);
+            }
+        }
+        
+        // Reset settings
+        function resetSettings() {
+            document.getElementById('memoryLength').value = 5;
+            document.getElementById('decayRate').value = 0.95;
+            document.getElementById('salienceBoost').value = 0.2;
+            document.getElementById('recencyBoost').value = 0.2;
+            document.getElementById('embeddingModel').value = 'nomic-embed-text';
+            
+            document.querySelectorAll('input[type="range"]').forEach(slider => slider.dispatchEvent(new Event('input')));
+            saveSettings();
+        }
+        
+        // Export settings
+        function exportSettings() {
+            const settings = {
+                memoryLength: parseInt(document.getElementById('memoryLength').value),
+                decayRate: parseFloat(document.getElementById('decayRate').value),
+                salienceBoost: parseFloat(document.getElementById('salienceBoost').value),
+                recencyBoost: parseFloat(document.getElementById('recencyBoost').value),
+                embeddingModel: document.getElementById('embeddingModel').value
+            };
+            
+            const blob = new Blob([JSON.stringify(settings, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'openmemory-settings.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        // Import settings
+        function importSettings(input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = () => {
+                try {
+                    const settings = JSON.parse(reader.result);
+                    document.getElementById('memoryLength').value = settings.memoryLength ?? 5;
+                    document.getElementById('decayRate').value = settings.decayRate ?? 0.95;
+                    document.getElementById('salienceBoost').value = settings.salienceBoost ?? 0.2;
+                    document.getElementById('recencyBoost').value = settings.recencyBoost ?? 0.2;
+                    document.getElementById('embeddingModel').value = settings.embeddingModel ?? 'nomic-embed-text';
+                    
+                    document.querySelectorAll('input[type="range"]').forEach(slider => slider.dispatchEvent(new Event('input')));
+                    saveSettings();
+                } catch (e) {
+                    alert('❌ Invalid settings file');
+                }
+            };
+            reader.readAsText(file);
+        }
+        
+        // Query memories
+        async function queryMemories() {
+            const query = document.getElementById('queryInput').value;
+            if (!query) return;
+            
+            try {
+                const res = await fetch(`${API_BASE}/memory/query`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query, k: 5 })
+                });
+                const results = await res.json();
+                
+                const html = results.map(r => `
+                    <div class="memory-item ${r.Memory.sector}">
+                        <div class="memory-header">
+                            <span class="sector-badge">${r.Memory.sector}</span>
+                            <span>Score: ${r.Score}</span>
+                        </div>
+                        <div class="memory-content">${r.Memory.content}</div>
+                    </div>
+                `).join('');
+                
+                document.getElementById('queryResults').innerHTML = html;
+            } catch (e) {
+                document.getElementById('queryResults').innerHTML = '<p style="color: #ff4757;">Error: ' + e.message + '</p>';
+            }
+        }
+        
+        // Load memories
+        async function loadMemories() {
+            try {
+                const res = await fetch(`${API_BASE}/memory/list`);
+                const memories = await res.json();
+                
+                document.getElementById('statMemories').textContent = memories.length;
+                
+                const html = memories.map(m => `
+                    <div class="memory-item ${m.sector}">
+                        <div class="memory-header">
+                            <span class="sector-badge">${m.sector}</span>
+                            <span>Decay: ${m.decay.toFixed(2)} | Salience: ${m.salience}</span>
+                        </div>
+                        <div class="memory-content">${m.content}</div>
+                    </div>
+                `).join('');
+                
+                document.getElementById('memoryList').innerHTML = html;
+            } catch (e) {
+                document.getElementById('memoryList').innerHTML = '<p style="color: #ff4757;">Failed to load memories</p>';
+            }
+        }
+        
+        // Initialize
+        loadMemories();
+        setInterval(loadMemories, 5000); // Refresh every 5 seconds
+    </script>
+</body>
+</html>
+
