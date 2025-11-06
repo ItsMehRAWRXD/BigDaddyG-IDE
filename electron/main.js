@@ -396,6 +396,7 @@ function createMainWindow() {
       nodeIntegration: false,  // Disable - causes conflicts with Monaco AMD
       contextIsolation: true,  // Enable - Monaco needs this for __$__isRecorded
       sandbox: false,  // CRITICAL: Disable sandbox to prevent bootstrap realm error
+      webviewTag: true,  // Enable webview for integrated browser
       preload: path.join(__dirname, 'preload.js'),
       webSecurity: true,
       allowRunningInsecureContent: false,
