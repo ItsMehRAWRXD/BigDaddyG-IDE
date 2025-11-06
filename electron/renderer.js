@@ -133,7 +133,7 @@ function initMonacoEditor() {
         }
     });
     
-    // Create Monaco Editor instance
+    // Create Monaco Editor instance with performance optimizations
     editor = monaco.editor.create(document.getElementById('monaco-container'), {
         value: getWelcomeMessage(),
         language: 'markdown',
@@ -144,9 +144,11 @@ function initMonacoEditor() {
         fontFamily: 'Consolas, "Courier New", monospace',
         lineNumbers: 'on',
         roundedSelection: true,
-        scrollBeyondLastLine: true, // CHANGED: Allow scrolling past last line
+        scrollBeyondLastLine: false, // OPTIMIZED: Reduce render area
         minimap: {
-            enabled: true
+            enabled: true,
+            maxColumn: 120, // Limit minimap width for performance
+            renderCharacters: false // Faster minimap rendering
         },
         automaticLayout: true,
         
@@ -154,7 +156,7 @@ function initMonacoEditor() {
         scrollbar: {
             vertical: 'visible',
             horizontal: 'visible',
-            useShadows: true,
+            useShadows: false, // Disable shadows for performance
             verticalHasArrows: false,
             horizontalHasArrows: false,
             verticalScrollbarSize: 14,
@@ -170,16 +172,43 @@ function initMonacoEditor() {
         
         // Copilot-like features
         quickSuggestions: true,
-        quickSuggestionsDelay: 100,
+        quickSuggestionsDelay: 150, // Slightly slower for performance
         parameterHints: {
-            enabled: true
+            enabled: true,
+            cycle: false // Reduce complexity
         },
         
         // Bracket matching
         matchBrackets: 'always',
         bracketPairColorization: {
             enabled: true
-        }
+        },
+        
+        // PERFORMANCE OPTIMIZATIONS
+        folding: true, // Enable code folding
+        foldingStrategy: 'indentation', // Faster than 'auto'
+        showFoldingControls: 'mouseover', // Only show when needed
+        occurrencesHighlight: false, // Disable for large files
+        renderValidationDecorations: 'on', // But keep validation
+        renderLineHighlight: 'line', // Simple line highlight
+        renderWhitespace: 'selection', // Only show in selection
+        smoothScrolling: true,
+        cursorBlinking: 'smooth',
+        cursorSmoothCaretAnimation: true,
+        
+        // Large file optimizations
+        largeFileOptimizations: true,
+        maxTokenizationLineLength: 20000,
+        
+        // Disable expensive features
+        codeLens: false,
+        colorDecorators: false,
+        links: false, // Disable link detection for speed
+        
+        // Memory management
+        domReadOnly: false,
+        readOnly: false,
+        renderValidationDecorations: 'editable'
     });
     
     // Store initial tab

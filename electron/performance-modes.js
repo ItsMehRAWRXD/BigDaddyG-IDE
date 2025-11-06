@@ -297,11 +297,20 @@ function applyRenderingSettings(settings) {
     
     // Animations
     if (!settings.animations) {
-        document.body.style.animation = 'none';
-        document.querySelectorAll('*').forEach(el => {
-            el.style.animation = 'none';
-            el.style.transition = 'none';
-        });
+        // Add CSS rule instead of iterating all elements (MUCH faster!)
+        let disableAnimStyle = document.getElementById('disable-animations-style');
+        if (!disableAnimStyle) {
+            disableAnimStyle = document.createElement('style');
+            disableAnimStyle.id = 'disable-animations-style';
+            disableAnimStyle.textContent = '* { animation: none !important; transition: none !important; }';
+            document.head.appendChild(disableAnimStyle);
+        }
+    } else {
+        // Remove the style if animations are enabled
+        const disableAnimStyle = document.getElementById('disable-animations-style');
+        if (disableAnimStyle) {
+            disableAnimStyle.remove();
+        }
     }
     
     // Particles (cosmic background, token streams)

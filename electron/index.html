@@ -932,6 +932,18 @@
     <!-- TIMER MANAGER - Must load FIRST to prevent memory leaks -->
     <script src="timer-manager.js"></script>
     
+    <!-- REQUEST POOL - Load early for fetch deduplication -->
+    <script src="request-pool.js"></script>
+    
+    <!-- INDEXEDDB STORAGE - Large data storage (unlimited capacity) -->
+    <script src="indexeddb-storage.js"></script>
+    
+    <!-- LAZY LOADER - On-demand module loading for faster startup -->
+    <script src="lazy-loader.js"></script>
+    
+    <!-- VIRTUAL SCROLLER - Render only visible items for performance -->
+    <script src="virtual-scroller.js"></script>
+    
     <!-- ERROR CLEANUP - Must load early to intercept console -->
     <script src="error-cleanup.js"></script>
     
