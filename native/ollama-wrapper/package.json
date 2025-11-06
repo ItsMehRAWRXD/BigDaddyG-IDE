@@ -1,25 +1,28 @@
 {
   "name": "bigdaddyg-ollama-native",
-  "version": "0.1.0",
-  "description": "Native C bindings for Ollama in BigDaddyG IDE",
+  "version": "0.2.0",
+  "description": "Native C bindings for Ollama in BigDaddyG IDE - High-performance HTTP client",
   "main": "index.js",
   "scripts": {
-    "install": "node-gyp rebuild",
-    "build": "node-gyp rebuild",
-    "build:debug": "node-gyp rebuild --debug",
+    "install": "node-gyp rebuild --binding=binding-http.gyp || echo Build failed but continuing",
+    "build": "node-gyp rebuild --binding=binding-http.gyp",
+    "build:debug": "node-gyp rebuild --debug --binding=binding-http.gyp",
     "clean": "node-gyp clean",
-    "test": "node test.js"
+    "test": "node test.js",
+    "build-windows": "node-gyp rebuild --binding=binding-http.gyp --msvs_version=2022"
   },
   "keywords": [
     "ollama",
     "ai",
     "native",
     "bigdaddyg",
-    "napi"
+    "napi",
+    "http",
+    "performance"
   ],
   "author": "BigDaddyG Team",
   "license": "MIT",
-  "gypfile": true,
+  "gypfile": "binding-http.gyp",
   "dependencies": {
     "node-addon-api": "^7.0.0"
   },
