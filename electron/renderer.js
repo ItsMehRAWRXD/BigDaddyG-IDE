@@ -1570,13 +1570,23 @@ window.addEventListener('beforeunload', () => {
 });
 
 // Try to recover tabs on load
-function tryRecoverTabs() {
+async function tryRecoverTabs() {
     try {
-        const saved = localStorage.getItem('bigdaddyg-tab-recovery');
-        if (!saved) return false;
+        // Try IndexedDB first, fallback to localStorage
+        let tabState = null;
+        if (window.storage && window.storage.isReady()) {
+            tabState = await window.storage.loadTabs();
+        }
         
-        const tabState = JSON.parse(saved);
-        const age = Date.now() - tabState.timestamp;
+        if (!tabState) {
+            const saved = localStorage.getItem('bigdaddyg-tab-recovery');
+            if (!saved) return false;
+            tabState = JSON.parse(saved);
+        }
+        
+        if (!tabState || !tabState.openTabs) return false;
+        
+        const age = Date.now() - (tabState.timestamp || Date.now());
         
         // Only recover if less than 1 hour old
         if (age > 60 * 60 * 1000) {
