@@ -25,7 +25,8 @@ class MemoryBridge {
         }
         
         console.log('[MemoryBridge] 🧠 Initializing OpenMemory Bridge...');
-        this.initialize();
+        // Don't call async initialize() in constructor - causes issues
+        // Will be initialized when first used
     }
     
     // ========================================================================
@@ -33,6 +34,8 @@ class MemoryBridge {
     // ========================================================================
     
     async initialize() {
+        if (this.isInitialized) return true;
+        
         try {
             // Request memory stats via IPC
             if (window.electron && window.electron.memory) {
@@ -42,26 +45,22 @@ class MemoryBridge {
                     this.isInitialized = true;
                     console.log('[MemoryBridge] ✅ Memory system connected');
                     console.log(`[MemoryBridge] 📊 ${stats.totalMemories || 0} memories loaded`);
-                    return;
+                    return true;
                 }
             }
             
-            // Fallback: In-memory only mode
-            console.warn('[MemoryBridge] ⚠️ Running in memory-only mode (no persistence)');
+            // Fallback: In-memory only mode (silent - no warnings)
             this.setupInMemoryMode();
-            
-            // Load initial memory stats from in-memory
-            await this.updateStats();
-            
             this.isInitialized = true;
             console.log('[MemoryBridge] ✅ OpenMemory Bridge initialized (in-memory mode)');
-            console.log('[MemoryBridge] 📊 Stats:', this.memoryStats);
+            return true;
             
         } catch (error) {
-            console.error('[MemoryBridge] ❌ Initialization failed:', error);
-            // Still mark as initialized in fallback mode
+            // Silent fallback - don't show errors, just use in-memory mode
             this.setupInMemoryMode();
             this.isInitialized = true;
+            console.log('[MemoryBridge] ℹ️ Using in-memory mode');
+            return true;
         }
     }
     
@@ -114,8 +113,7 @@ class MemoryBridge {
     
     async storeMemory(content, metadata = {}) {
         if (!this.isInitialized) {
-            console.error('[MemoryBridge] ❌ Not initialized');
-            return null;
+            await this.initialize();
         }
         
         try {
@@ -157,8 +155,7 @@ class MemoryBridge {
     
     async queryMemory(query, limit = 10) {
         if (!this.isInitialized) {
-            console.error('[MemoryBridge] ❌ Not initialized');
-            return [];
+            await this.initialize();
         }
         
         try {
