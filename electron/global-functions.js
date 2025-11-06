@@ -217,6 +217,45 @@ setTimeout(() => {
     window.ollamaManager.autoConnect();
 }, 1000);
 
+// ============================================================================
+// NETWORK UTILITIES WITH TIMEOUT & RETRY
+// ============================================================================
+
+window.fetchWithTimeout = async (url, options = {}, timeout = 10000) => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+    
+    try {
+        const response = await fetch(url, {
+            ...options,
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        return response;
+    } catch (error) {
+        clearTimeout(timeoutId);
+        if (error.name === 'AbortError') {
+            throw new Error(`Request timeout after ${timeout}ms`);
+        }
+        throw error;
+    }
+};
+
+window.fetchWithRetry = async (url, options = {}, retries = 3, timeout = 10000) => {
+    for (let i = 0; i < retries; i++) {
+        try {
+            const response = await window.fetchWithTimeout(url, options, timeout);
+            return response;
+        } catch (error) {
+            console.warn(`[NetworkUtil] Attempt ${i + 1}/${retries} failed:`, error.message);
+            if (i === retries - 1) throw error;
+            
+            // Exponential backoff
+            await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000));
+        }
+    }
+};
+
 console.log('[GlobalFunctions] 📦 Global functions loaded');
 
 })();

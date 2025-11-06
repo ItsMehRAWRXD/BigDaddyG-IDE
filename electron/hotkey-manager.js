@@ -356,14 +356,15 @@ class HotkeyManager {
     
     listAllShortcuts() {
         console.log('[HotkeyManager] 📋 Registered shortcuts:');
+        console.log(`[HotkeyManager] 📊 Total: ${this.shortcuts.size} shortcuts`);
         const categories = {
-            'File': [],
-            'Tab': [],
+            'File Operations': [],
+            'Tab Management': [],
             'Center Tabs': [],
             'AI & Chat': [],
             'Terminal': [],
-            'Voice': [],
-            'Editor': [],
+            'Voice Coding': [],
+            'Code Editor': [],
             'Other': []
         };
         
@@ -371,20 +372,20 @@ class HotkeyManager {
             const combo = shortcut.combo;
             let category = 'Other';
             
-            if (combo.startsWith('Ctrl+N') || combo.startsWith('Ctrl+O') || combo.startsWith('Ctrl+S')) {
-                category = 'File';
-            } else if (combo.includes('Tab') || combo.startsWith('Ctrl+W') || combo.includes('Alt+Arrow')) {
-                category = 'Tab';
+            if (combo.startsWith('Ctrl+N') || combo.startsWith('Ctrl+O') || combo.startsWith('Ctrl+S') || combo.includes('Save')) {
+                category = 'File Operations';
+            } else if (combo.includes('Tab') || combo.startsWith('Ctrl+W') || combo.includes('Alt+Arrow') || combo.includes('Ctrl+1')) {
+                category = 'Tab Management';
             } else if (combo.startsWith('Ctrl+Shift+C') || combo.startsWith('Ctrl+Shift+E') || combo.startsWith('Ctrl+Shift+G') || combo.startsWith('Ctrl+Shift+A') || combo.startsWith('Ctrl+Shift+T') || combo === 'Ctrl+,') {
                 category = 'Center Tabs';
             } else if (combo.includes('Chat') || combo.includes('Enter') || combo.includes('AI') || combo.includes('Ctrl+L')) {
                 category = 'AI & Chat';
-            } else if (combo.includes('Terminal') || combo === 'Ctrl+J') {
+            } else if (combo.includes('Terminal') || combo === 'Ctrl+J' || combo === 'Ctrl+`') {
                 category = 'Terminal';
-            } else if (combo.includes('Voice') || combo.includes('Shift+V') || combo.includes('Shift+P')) {
-                category = 'Voice';
+            } else if (combo.includes('Voice') || combo.includes('Shift+V')) {
+                category = 'Voice Coding';
             } else if (combo.includes('Find') || combo.includes('Comment') || combo.includes('Ctrl+F') || combo.includes('Ctrl+H') || combo === 'Ctrl+/') {
-                category = 'Editor';
+                category = 'Code Editor';
             }
             
             categories[category].push(`  ${combo.padEnd(20)} → ${shortcut.description}`);
