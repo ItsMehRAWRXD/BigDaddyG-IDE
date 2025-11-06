@@ -4,11 +4,15 @@
  * Provides centralized fetch management with retry logic
  */
 
+// CRITICAL: Save original fetch BEFORE anything else!
+const originalFetch = typeof window !== 'undefined' ? window.fetch : (typeof global !== 'undefined' ? global.fetch : undefined);
+
 class FetchTimeoutWrapper {
     constructor() {
         this.activeRequests = new Map();
         this.requestId = 0;
         this.defaultTimeout = 30000; // 30 seconds
+        this.originalFetch = originalFetch; // Store reference to original
         this.stats = {
             total: 0,
             succeeded: 0,
