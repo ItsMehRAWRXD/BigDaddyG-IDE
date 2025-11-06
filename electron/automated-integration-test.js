@@ -5,6 +5,8 @@
  * Tests all features automatically without manual intervention
  */
 
+console.log('[AutoTest] 📦 Loading automated integration test module...');
+
 (function() {
 'use strict';
 
@@ -15,7 +17,7 @@ class AutomatedIntegrationTest {
         this.testStartTime = null;
         this.actionsCompleted = 0;
         
-        console.log('[AutoTest] 🤖 Automated integration test loaded');
+        console.log('[AutoTest] 🤖 Automated integration test class instantiated');
     }
     
     async runFullIntegrationTest() {
@@ -497,21 +499,29 @@ bigDaddyGTest();
     }
 }
 
-// Initialize and expose globally
-window.autoTest = new AutomatedIntegrationTest();
-
-console.log('[AutoTest] 🤖 Automated integration test ready!');
-console.log('[AutoTest] 💡 Usage:');
-console.log('  • autoTest.runFullIntegrationTest() - Full test (~30 seconds)');
-console.log('  • autoTest.quickTest() - Quick test (~10 seconds)');
-console.log('');
-console.log('[AutoTest] 🚀 AUTO-STARTING in 10 seconds...');
-
-// Auto-start after 10 seconds
-setTimeout(() => {
-    console.log('[AutoTest] 🎬 Auto-starting integration test...');
-    window.autoTest.runFullIntegrationTest();
-}, 10000);
+// Initialize and expose globally with error handling
+try {
+    window.autoTest = new AutomatedIntegrationTest();
+    
+    console.log('[AutoTest] 🤖 Automated integration test ready!');
+    console.log('[AutoTest] 💡 Usage:');
+    console.log('  • autoTest.runFullIntegrationTest() - Full test (~30 seconds)');
+    console.log('  • autoTest.quickTest() - Quick test (~10 seconds)');
+    console.log('');
+    console.log('[AutoTest] 🚀 AUTO-STARTING in 10 seconds...');
+    
+    // Auto-start after 10 seconds
+    setTimeout(() => {
+        console.log('[AutoTest] 🎬 Auto-starting integration test...');
+        try {
+            window.autoTest.runFullIntegrationTest();
+        } catch (error) {
+            console.error('[AutoTest] ❌ Failed to start test:', error);
+        }
+    }, 10000);
+} catch (error) {
+    console.error('[AutoTest] ❌ Failed to initialize automated test:', error);
+}
 
 })();
 
