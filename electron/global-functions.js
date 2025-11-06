@@ -50,16 +50,6 @@ window.handleCtrlL = () => {
 
 // Context Management (1M tokens)
 window.contextManager = {
-    maxTokens: 1000000,
-    currentTokens: 0,
-    addToContext: (text) => {
-        // Placeholder for context management
-        console.log('[ContextManager] Adding to context:', text.length, 'chars');
-    },
-    clearContext: () => {
-        console.log('[ContextManager] Context cleared');
-    }
-}; {
     maxTokens: 1000000, // 1M context window
     currentTokens: 0,
     

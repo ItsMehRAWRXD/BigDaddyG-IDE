@@ -1011,6 +1011,57 @@ ipcMain.handle('read-file-chunked', async (event, filePath, chunkSize = 1024 * 1
   }
 });
 
+// Scan workspace for file search (used by command palette)
+ipcMain.handle('scanWorkspace', async (event, options = {}) => {
+  const fs = require('fs').promises;
+  const workspacePath = options.path || process.cwd();
+  const maxFiles = options.maxFiles || 500;
+  const maxDepth = options.maxDepth || 5;
+  const files = [];
+  
+  async function scan(dirPath, depth = 0) {
+    if (depth > maxDepth || files.length >= maxFiles) return;
+    
+    try {
+      const entries = await fs.readdir(dirPath, { withFileTypes: true });
+      
+      for (const entry of entries) {
+        if (files.length >= maxFiles) break;
+        
+        // Skip common excluded directories
+        const skipDirs = ['node_modules', '.git', 'dist', 'build', '.next', '.cache', '__pycache__', 'vendor'];
+        if (skipDirs.includes(entry.name) || entry.name.startsWith('.')) continue;
+        
+        const fullPath = path.join(dirPath, entry.name);
+        
+        files.push({
+          name: entry.name,
+          path: fullPath,
+          isDirectory: entry.isDirectory(),
+          isFile: entry.isFile(),
+          depth: depth
+        });
+        
+        if (entry.isDirectory() && depth < maxDepth) {
+          await scan(fullPath, depth + 1);
+        }
+      }
+    } catch (error) {
+      // Skip inaccessible directories silently
+    }
+  }
+  
+  try {
+    console.log(`[FileSystem] 🔍 Scanning workspace: ${workspacePath}`);
+    await scan(workspacePath);
+    console.log(`[FileSystem] ✅ Found ${files.length} files`);
+    return files;
+  } catch (error) {
+    console.error('[FileSystem] ❌ Workspace scan error:', error);
+    return [];
+  }
+});
+
 // Read multiple files at once
 ipcMain.handle('read-multiple-files', async (event, filePaths) => {
   const fs = require('fs').promises;
@@ -1383,43 +1434,8 @@ ipcMain.handle('orchestra:status', async () => {
 // FILE SYSTEM OPERATIONS
 // ============================================================================
 
-// Launch external program
-ipcMain.handle('launchProgram', async (event, programPath) => {
-  try {
-    console.log('[FileSystem] Launching program:', programPath);
-    
-    const { exec } = require('child_process');
-    
-    return new Promise((resolve) => {
-      exec(`"${programPath}"`, (error, stdout, stderr) => {
-        if (error) {
-          console.error('[FileSystem] Launch error:', error);
-          resolve({ success: false, error: error.message });
-        } else {
-          resolve({ success: true });
-        }
-      });
-    });
-  } catch (error) {
-    console.error('[FileSystem] Launch exception:', error);
-    return { success: false, error: error.message };
-  }
-});
-
-// Open directory in system file explorer
-ipcMain.handle('openInExplorer', async (event, dirPath) => {
-  try {
-    console.log('[FileSystem] Opening in explorer:', dirPath);
-    
-    const { shell } = require('electron');
-    await shell.openPath(dirPath);
-    
-    return { success: true };
-  } catch (error) {
-    console.error('[FileSystem] Open explorer error:', error);
-    return { success: false, error: error.message };
-  }
-});
+// NOTE: launchProgram and openInExplorer handlers moved to line ~1640
+// to avoid duplicate IPC handler registration (which causes Electron crashes)
 
 // Create directory
 ipcMain.handle('createDirectory', async (event, dirPath) => {

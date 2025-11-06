@@ -23,6 +23,7 @@ contextBridge.exposeInMainWorld('electron', {
   fileExists: (filePath) => ipcRenderer.invoke('file-exists', filePath),
   
   // Agentic file system operations (unlimited)
+  scanWorkspace: (options) => ipcRenderer.invoke('scanWorkspace', options),
   searchFiles: (query, options) => ipcRenderer.invoke('search-files', query, options),
   readDirRecursive: (dirPath, maxDepth) => ipcRenderer.invoke('read-dir-recursive', dirPath, maxDepth),
   readFileChunked: (filePath, chunkSize) => ipcRenderer.invoke('read-file-chunked', filePath, chunkSize),

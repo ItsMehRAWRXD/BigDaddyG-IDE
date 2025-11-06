@@ -337,31 +337,72 @@ function createNewTab(filename, language, content = '', filePath = null) {
 }
 
 function switchTab(tabId) {
-    if (!openTabs[tabId]) return;
+    if (!openTabs[tabId]) {
+        console.warn(`[BigDaddyG] ⚠️ Tab ${tabId} not found`);
+        return;
+    }
+    
+    // Ensure editor exists
+    if (!editor) {
+        console.error('[BigDaddyG] ❌ Editor not initialized!');
+        return;
+    }
     
     // Save current tab content
-    if (openTabs[activeTab]) {
-        openTabs[activeTab].content = editor.getValue();
+    if (openTabs[activeTab] && editor) {
+        try {
+            openTabs[activeTab].content = editor.getValue();
+        } catch (error) {
+            console.warn('[BigDaddyG] ⚠️ Could not save current tab content:', error);
+        }
     }
     
     // Switch to new tab
     activeTab = tabId;
     const tab = openTabs[tabId];
     
-    // Update editor
-    const model = monaco.editor.createModel(tab.content, tab.language);
-    editor.setModel(model);
-    
-    // Update UI
-    renderTabs();
-    
-    console.log(`[BigDaddyG] 📝 Switched to: ${tab.filename}`);
+    try {
+        // Update editor
+        const model = monaco.editor.createModel(tab.content, tab.language);
+        editor.setModel(model);
+        
+        // Track changes for dirty state
+        model.onDidChangeContent(() => {
+            if (openTabs[activeTab]) {
+                openTabs[activeTab].isDirty = true;
+                // Debounce render for performance
+                clearTimeout(window.tabRenderTimeout);
+                window.tabRenderTimeout = setTimeout(() => {
+                    renderTabs();
+                }, 300);
+            }
+        });
+        
+        // Update UI
+        renderTabs();
+        
+        console.log(`[BigDaddyG] 📝 Switched to: ${tab.filename}`);
+    } catch (error) {
+        console.error('[BigDaddyG] ❌ Error switching tab:', error);
+    }
 }
 
 function closeTab(event, tabId) {
-    event.stopPropagation();
+    if (event && typeof event.stopPropagation === 'function') {
+        event.stopPropagation();
+    }
     
     const tab = openTabs[tabId];
+    
+    // Check if tab has unsaved changes
+    if (tab && tab.isDirty) {
+        const proceed = confirm(`"${tab.filename}" has unsaved changes. Close anyway?`);
+        if (!proceed) {
+            console.log(`[BigDaddyG] ℹ️ Tab close cancelled by user`);
+            return;
+        }
+    }
+    
     console.log(`[BigDaddyG] 🗑️ Closing tab: ${tab?.filename || tabId}`);
     
     delete openTabs[tabId];
@@ -385,6 +426,8 @@ function closeTab(event, tabId) {
 // Navigation helpers
 function nextTab() {
     const tabs = Object.keys(openTabs);
+    if (tabs.length === 0) return;
+    
     const currentIndex = tabs.indexOf(activeTab);
     const nextIndex = (currentIndex + 1) % tabs.length;
     switchTab(tabs[nextIndex]);
@@ -392,6 +435,8 @@ function nextTab() {
 
 function previousTab() {
     const tabs = Object.keys(openTabs);
+    if (tabs.length === 0) return;
+    
     const currentIndex = tabs.indexOf(activeTab);
     const prevIndex = (currentIndex - 1 + tabs.length) % tabs.length;
     switchTab(tabs[prevIndex]);
@@ -438,10 +483,15 @@ function renderTabs() {
         tabEl.onclick = () => switchTab(tab.id);
         
         // Show full filename on hover
-        tabEl.title = `${tab.filename}\nCreated: ${new Date(tab.created).toLocaleString()}`;
+        const dirtyStatus = tab.isDirty ? ' (unsaved)' : '';
+        tabEl.title = `${tab.filename}${dirtyStatus}\nCreated: ${new Date(tab.created).toLocaleString()}`;
+        
+        // Add dirty indicator (unsaved changes)
+        const dirtyIndicator = tab.isDirty ? '<span style="color: var(--orange); margin-right: 4px;">●</span>' : '';
         
         tabEl.innerHTML = `
             <span>${tab.icon}</span>
+            ${dirtyIndicator}
             <span style="flex: 1; overflow: hidden; text-overflow: ellipsis;">${tab.filename}</span>
             <span class="close-btn" onclick="closeTab(event, '${tab.id}')">×</span>
         `;
