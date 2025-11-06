@@ -932,6 +932,12 @@
     <!-- TIMER MANAGER - Must load FIRST to prevent memory leaks -->
     <script src="timer-manager.js"></script>
     
+    <!-- EVENT LISTENER MANAGER - Track and cleanup event listeners -->
+    <script src="event-listener-manager.js"></script>
+    
+    <!-- DEBUG MODE CONTROLLER - Load early to control console output -->
+    <script src="debug-mode.js"></script>
+    
     <!-- REQUEST POOL - Load early for fetch deduplication -->
     <script src="request-pool.js"></script>
     
@@ -949,6 +955,12 @@
     
     <!-- PERFORMANCE DASHBOARD - Real-time metrics (Ctrl+Shift+D) -->
     <script src="performance-dashboard.js"></script>
+    
+    <!-- DEBUG MODE CONTROLLER - Toggle console output (production/development) -->
+    <script src="debug-mode.js"></script>
+    
+    <!-- EVENT LISTENER MANAGER - Track and prevent listener memory leaks -->
+    <script src="event-listener-manager.js"></script>
     
     <!-- ERROR CLEANUP - Must load early to intercept console -->
     <script src="error-cleanup.js"></script>
@@ -1130,6 +1142,19 @@
                 console.log('[BigDaddyG] ✅ Tab switched to:', tabName);
             } else {
                 console.error('[BigDaddyG] ❌ Tab content not found:', tabName);
+            }
+            
+            // Optimization: Start/stop drive polling based on explorer tab visibility
+            if (window.electron && window.electron.drivePolling) {
+                if (tabName === 'explorer') {
+                    window.electron.drivePolling.start().then(() => {
+                        console.log('[BigDaddyG] 🔄 Drive polling started (explorer opened)');
+                    }).catch(err => console.error('Failed to start drive polling:', err));
+                } else {
+                    window.electron.drivePolling.stop().then(() => {
+                        console.log('[BigDaddyG] ⏹️ Drive polling stopped (explorer closed)');
+                    }).catch(err => console.error('Failed to stop drive polling:', err));
+                }
             }
         }
         
