@@ -22,7 +22,26 @@ class NativeOllamaBridge {
     async init() {
         console.log('[NativeOllama] 🔌 Initializing bridge...');
         
-        // Check if native module is available via Electron IPC
+        // Try pure C executable first (fastest, no dependencies!)
+        if (window.electron && window.electron.nativeOllamaCLI) {
+            try {
+                const stats = window.electron.nativeOllamaCLI.getStats();
+                
+                if (stats.available) {
+                    this.initialized = true;
+                    this.useNative = true;
+                    this.nativeMode = 'cli'; // Pure C executable
+                    console.log('[NativeOllama] ✅ Native CLI mode activated!');
+                    console.log('[NativeOllama] ⚡ Using pure C executable - maximum performance!');
+                    console.log('[NativeOllama] 📍 Path:', stats.path);
+                    return true;
+                }
+            } catch (error) {
+                console.warn('[NativeOllama] ⚠️ Native CLI not available:', error.message);
+            }
+        }
+        
+        // Try Node.js native module as fallback
         if (window.electron && window.electron.nativeOllama) {
             try {
                 this.isNativeAvailable = window.electron.nativeOllama.isAvailable();
@@ -33,13 +52,14 @@ class NativeOllamaBridge {
                     if (success) {
                         this.initialized = true;
                         this.useNative = true;
-                        console.log('[NativeOllama] ✅ Native mode activated!');
+                        this.nativeMode = 'module'; // Node.js native module
+                        console.log('[NativeOllama] ✅ Native module mode activated!');
                         console.log('[NativeOllama] ⚡ Performance: 90% lower latency, 60% higher throughput');
                         return true;
                     }
                 }
             } catch (error) {
-                console.warn('[NativeOllama] ⚠️ Native init failed:', error.message);
+                console.warn('[NativeOllama] ⚠️ Native module init failed:', error.message);
             }
         }
         
@@ -54,22 +74,31 @@ class NativeOllamaBridge {
     async generate(model, prompt, options = {}) {
         if (this.useNative && this.initialized) {
             try {
-                console.log('[NativeOllama] 🚀 Using native generation...');
+                console.log(`[NativeOllama] 🚀 Using native ${this.nativeMode} generation...`);
                 const startTime = performance.now();
                 
-                const response = await window.electron.nativeOllama.generate(model, prompt);
+                let response;
+                
+                // Use CLI if available (fastest!)
+                if (this.nativeMode === 'cli' && window.electron.nativeOllamaCLI) {
+                    response = await window.electron.nativeOllamaCLI.generate(model, prompt);
+                }
+                // Fallback to native module
+                else if (this.nativeMode === 'module' && window.electron.nativeOllama) {
+                    response = await window.electron.nativeOllama.generate(model, prompt);
+                }
                 
                 const endTime = performance.now();
                 const totalTime = ((endTime - startTime) / 1000).toFixed(2);
                 
-                console.log(`[NativeOllama] ✅ Native: ${response.tokens} tokens in ${totalTime}s (${response.tokensPerSecond} tok/s)`);
+                console.log(`[NativeOllama] ✅ Native (${this.nativeMode}): Response in ${totalTime}s`);
                 
                 return {
                     response: response.content,
-                    tokens: response.tokens,
-                    tokensPerSecond: response.tokensPerSecond,
+                    tokens: response.tokens || 0,
+                    tokensPerSecond: response.tokensPerSecond || 0,
                     time: totalTime,
-                    mode: 'native'
+                    mode: `native-${this.nativeMode}`
                 };
             } catch (error) {
                 console.error('[NativeOllama] ❌ Native generation failed:', error);
