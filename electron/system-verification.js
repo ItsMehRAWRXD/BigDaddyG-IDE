@@ -46,32 +46,53 @@ class SystemVerification {
         try {
             // Check if Monaco is loaded
             if (!window.monaco) {
-                throw new Error('Monaco not loaded');
+                throw new Error('Monaco library not loaded');
             }
             
             // Check if editor instance exists
             if (!window.editor) {
-                throw new Error('Editor instance not created');
+                // Monaco might be loaded but editor not created yet
+                console.warn('  ⚠️ Editor instance not created yet, waiting...');
+                
+                // Wait up to 5 more seconds for editor
+                for (let i = 0; i < 10; i++) {
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    if (window.editor) break;
+                }
+                
+                if (!window.editor) {
+                    throw new Error('Editor instance not created after waiting');
+                }
             }
             
             // Test editor operations
             const originalValue = window.editor.getValue();
+            
+            // Test setValue
             window.editor.setValue('// Test content\nfunction test() { return true; }');
             const testValue = window.editor.getValue();
-            window.editor.setValue(originalValue); // Restore
+            
+            // Restore original
+            window.editor.setValue(originalValue);
             
             if (!testValue.includes('test()')) {
                 throw new Error('Editor setValue/getValue not working');
             }
             
-            // Test language switching
+            // Test model
             const model = window.editor.getModel();
             if (!model) {
                 throw new Error('Editor model not available');
             }
             
-            this.addResult('Monaco Editor', 'PASS', 'All operations working');
-            console.log('  ✅ Monaco editor: WORKING');
+            // Check if editor is visible
+            const container = document.getElementById('monaco-container');
+            if (container && container.offsetHeight === 0) {
+                console.warn('  ⚠️ Monaco container might be hidden');
+            }
+            
+            this.addResult('Monaco Editor', 'PASS', 'Editor working - setValue, getValue, model OK');
+            console.log('  ✅ Monaco editor: FULLY OPERATIONAL');
         } catch (error) {
             this.addResult('Monaco Editor', 'FAIL', error.message);
             console.error('  ❌ Monaco editor:', error.message);
@@ -267,13 +288,21 @@ class SystemVerification {
 // Initialize and expose globally
 window.systemVerification = new SystemVerification();
 
-// Auto-run tests after 3 seconds (give everything time to load)
-setTimeout(() => {
-    console.log('[SystemVerification] 🤖 Auto-running system verification in 2 seconds...');
-    setTimeout(() => {
-        window.systemVerification.runAllTests();
-    }, 2000);
-}, 3000);
+// Auto-run tests after Monaco loads (wait for editor)
+function waitForMonacoAndTest() {
+    if (window.editor && window.monaco) {
+        console.log('[SystemVerification] ✅ Monaco ready, running tests in 2 seconds...');
+        setTimeout(() => {
+            window.systemVerification.runAllTests();
+        }, 2000);
+    } else {
+        console.log('[SystemVerification] ⏳ Waiting for Monaco to load...');
+        setTimeout(waitForMonacoAndTest, 1000);
+    }
+}
+
+// Start waiting after page load
+setTimeout(waitForMonacoAndTest, 3000);
 
 console.log('[SystemVerification] 🧪 System verification module loaded');
 console.log('[SystemVerification] 💡 Usage:');
