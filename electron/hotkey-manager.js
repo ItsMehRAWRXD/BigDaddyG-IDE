@@ -105,6 +105,12 @@ class HotkeyManager {
             }
         }, 'Save As');
         
+        this.register('Ctrl+K Ctrl+S', () => {
+            if (typeof saveAllFiles === 'function') {
+                saveAllFiles();
+            }
+        }, 'Save All Files');
+        
         // ========================================================================
         // TAB OPERATIONS
         // ========================================================================

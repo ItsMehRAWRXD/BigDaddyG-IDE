@@ -23,7 +23,25 @@ window.agenticFileOps = {
     openFile: null,   // Will be set when file-explorer loads
     saveFile: null,    // Will be set below
     closeTab: null,    // Will be set after function is defined
-    switchTab: null    // Will be set after function is defined
+    switchTab: null,    // Will be set after function is defined
+    
+    // Safe wrapper to call functions (prevents race condition crashes)
+    async safeCall(method, ...args) {
+        let attempts = 0;
+        const maxAttempts = 20; // 10 seconds max wait (20 * 500ms)
+        
+        while (!this[method] && attempts < maxAttempts) {
+            await new Promise(resolve => setTimeout(resolve, 500));
+            attempts++;
+        }
+        
+        if (!this[method]) {
+            console.error(`[BigDaddyG] ❌ Function ${method} not available after ${maxAttempts * 500}ms`);
+            throw new Error(`AgenticFileOps.${method} not available`);
+        }
+        
+        return this[method](...args);
+    }
 };
 
 // Set the functions after they're defined
@@ -1052,11 +1070,43 @@ async function sendToAI() {
 }
 
 function addUserMessage(message, attachments = null) {
-    const container = document.getElementById('ai-chat-messages');
+    let container = document.getElementById('ai-chat-messages');
     if (!container) {
-        console.error('[BigDaddyG] ❌ AI chat messages container not found');
-        alert('Error: Chat container not found! Cannot display messages.');
-        return;
+        console.warn('[BigDaddyG] ⚠️ AI chat container missing, creating fallback...');
+        
+        // Try to find right sidebar first
+        const rightSidebar = document.getElementById('right-sidebar');
+        if (rightSidebar) {
+            container = document.createElement('div');
+            container.id = 'ai-chat-messages';
+            container.style.cssText = `
+                flex: 1;
+                overflow-y: auto;
+                padding: 15px;
+                background: rgba(10, 10, 30, 0.5);
+            `;
+            rightSidebar.appendChild(container);
+        } else {
+            // Last resort: create floating container
+            container = document.createElement('div');
+            container.id = 'ai-chat-messages';
+            container.style.cssText = `
+                position: fixed;
+                bottom: 60px;
+                right: 10px;
+                width: 400px;
+                height: 500px;
+                background: rgba(10, 10, 30, 0.95);
+                border: 2px solid #00d4ff;
+                border-radius: 10px;
+                padding: 15px;
+                overflow-y: auto;
+                z-index: 10000;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+            `;
+            document.body.appendChild(container);
+            console.log('[BigDaddyG] ✅ Created floating chat container');
+        }
     }
     
     console.log('[BigDaddyG] 📝 Adding user message to chat');
@@ -1090,11 +1140,43 @@ function addUserMessage(message, attachments = null) {
 }
 
 function addAIMessage(message, isError = false, isThinking = false) {
-    const container = document.getElementById('ai-chat-messages');
+    let container = document.getElementById('ai-chat-messages');
     if (!container) {
-        console.error('[BigDaddyG] ❌ AI chat messages container not found');
-        alert('Error: Chat container not found! Cannot display AI response.');
-        return '';
+        console.warn('[BigDaddyG] ⚠️ AI chat container missing, creating fallback...');
+        
+        // Try to find right sidebar first
+        const rightSidebar = document.getElementById('right-sidebar');
+        if (rightSidebar) {
+            container = document.createElement('div');
+            container.id = 'ai-chat-messages';
+            container.style.cssText = `
+                flex: 1;
+                overflow-y: auto;
+                padding: 15px;
+                background: rgba(10, 10, 30, 0.5);
+            `;
+            rightSidebar.appendChild(container);
+        } else {
+            // Last resort: create floating container
+            container = document.createElement('div');
+            container.id = 'ai-chat-messages';
+            container.style.cssText = `
+                position: fixed;
+                bottom: 60px;
+                right: 10px;
+                width: 400px;
+                height: 500px;
+                background: rgba(10, 10, 30, 0.95);
+                border: 2px solid #00d4ff;
+                border-radius: 10px;
+                padding: 15px;
+                overflow-y: auto;
+                z-index: 10000;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+            `;
+            document.body.appendChild(container);
+            console.log('[BigDaddyG] ✅ Created floating chat container');
+        }
     }
     
     console.log('[BigDaddyG] 🤖 Adding AI message to chat');
@@ -1346,6 +1428,100 @@ async function saveFileAs() {
         alert(`Error saving file: ${error.message}`);
     }
 }
+
+// ============================================================================
+// AUTO-SAVE & RECOVERY
+// ============================================================================
+
+// Auto-save tab state every 30 seconds
+setInterval(() => {
+    try {
+        const tabState = {
+            openTabs: {},
+            activeTab: activeTab,
+            timestamp: Date.now()
+        };
+        
+        // Only save content for tabs with unsaved changes or no file path
+        Object.entries(openTabs).forEach(([id, tab]) => {
+            tabState.openTabs[id] = {
+                id: tab.id,
+                filename: tab.filename,
+                language: tab.language,
+                content: tab.isDirty || !tab.filePath ? tab.content : '', // Only save if dirty or new
+                filePath: tab.filePath,
+                created: tab.created,
+                modified: tab.modified,
+                isDirty: tab.isDirty,
+                icon: tab.icon
+            };
+        });
+        
+        localStorage.setItem('bigdaddyg-tab-recovery', JSON.stringify(tabState));
+        console.log('[BigDaddyG] 💾 Auto-saved tab state');
+    } catch (error) {
+        console.warn('[BigDaddyG] ⚠️ Auto-save failed:', error);
+    }
+}, 30000); // Every 30 seconds
+
+// Try to recover tabs on load
+function tryRecoverTabs() {
+    try {
+        const saved = localStorage.getItem('bigdaddyg-tab-recovery');
+        if (!saved) return false;
+        
+        const tabState = JSON.parse(saved);
+        const age = Date.now() - tabState.timestamp;
+        
+        // Only recover if less than 1 hour old
+        if (age > 60 * 60 * 1000) {
+            console.log('[BigDaddyG] ℹ️ Recovery data too old, skipping');
+            localStorage.removeItem('bigdaddyg-tab-recovery');
+            return false;
+        }
+        
+        // Ask user if they want to recover
+        if (Object.keys(tabState.openTabs).length > 1) {
+            const recover = confirm(
+                `Found ${Object.keys(tabState.openTabs).length} tabs from previous session.\n\n` +
+                `Last saved: ${new Date(tabState.timestamp).toLocaleString()}\n\n` +
+                `Recover these tabs?`
+            );
+            
+            if (recover) {
+                console.log('[BigDaddyG] 🔄 Recovering tabs...');
+                
+                // Clear current tabs except welcome
+                Object.keys(openTabs).forEach(id => delete openTabs[id]);
+                
+                // Restore tabs
+                openTabs = tabState.openTabs;
+                activeTab = tabState.activeTab;
+                
+                renderTabs();
+                switchTab(activeTab);
+                
+                console.log(`[BigDaddyG] ✅ Recovered ${Object.keys(openTabs).length} tabs`);
+                return true;
+            }
+        }
+        
+        // Clean up
+        localStorage.removeItem('bigdaddyg-tab-recovery');
+        return false;
+    } catch (error) {
+        console.error('[BigDaddyG] ❌ Tab recovery failed:', error);
+        localStorage.removeItem('bigdaddyg-tab-recovery');
+        return false;
+    }
+}
+
+// Call recovery after Monaco is initialized
+setTimeout(() => {
+    if (editor && monaco) {
+        tryRecoverTabs();
+    }
+}, 2000);
 
 // ============================================================================
 // FILE ATTACHMENTS & DRAG & DROP

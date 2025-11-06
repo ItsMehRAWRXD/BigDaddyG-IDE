@@ -314,8 +314,27 @@ class PluginSystem {
             return plugin;
             
         } catch (error) {
-            console.error('[PluginSystem] Failed to load plugin:', error);
-            throw error;
+            console.error('[PluginSystem] ❌ Failed to load plugin:', error);
+            
+            // Mark plugin as failed but don't crash the system
+            this.plugins.set(pluginId, {
+                ...plugin,
+                failed: true,
+                failureReason: error.message,
+                loadAttempts: (plugin.loadAttempts || 0) + 1
+            });
+            
+            // Show user-friendly notification
+            if (window.showNotification) {
+                window.showNotification(
+                    `Plugin "${manifest.name}" failed to load`,
+                    error.message.substring(0, 100),
+                    'error',
+                    5000
+                );
+            }
+            
+            return null;
         }
     }
     
@@ -404,13 +423,35 @@ class PluginSystem {
         }
         
         try {
-            // Call plugin's activate function
-            activateFn(plugin.apis);
+            // Call plugin's activate function with timeout
+            const timeout = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Plugin activation timeout (10s)')), 10000)
+            );
             
+            await Promise.race([
+                activateFn(plugin.apis),
+                timeout
+            ]);
+            
+            plugin.activated = true;
             console.log(`[PluginSystem] ✅ Activated plugin: ${plugin.name}`);
             
         } catch (error) {
-            console.error(`[PluginSystem] Failed to activate plugin ${pluginId}:`, error);
+            console.error(`[PluginSystem] ❌ Failed to activate plugin ${pluginId}:`, error);
+            plugin.failed = true;
+            plugin.failureReason = error.message;
+            
+            // Disable failed plugin
+            plugin.enabled = false;
+            
+            if (window.showNotification) {
+                window.showNotification(
+                    `Plugin "${plugin.name}" failed to activate`,
+                    'The plugin will be disabled. Check console for details.',
+                    'error',
+                    5000
+                );
+            }
         }
     }
     

@@ -427,6 +427,26 @@ function createMainWindow() {
   
   mainWindow.webContents.on('crashed', () => {
     console.error('[BigDaddyG] ❌ Renderer process crashed!');
+    
+    // Auto-recovery: Show dialog with options
+    const { dialog } = require('electron');
+    dialog.showMessageBox(mainWindow, {
+      type: 'error',
+      title: 'IDE Crashed',
+      message: 'The IDE renderer process has crashed.',
+      detail: 'This might be due to:\n• Out of memory\n• GPU driver issue\n• Corrupted file\n\nWould you like to reload?',
+      buttons: ['Reload', 'Quit'],
+      defaultId: 0
+    }).then((result) => {
+      if (result.response === 0) {
+        // Reload
+        console.log('[BigDaddyG] 🔄 Reloading after crash...');
+        mainWindow.reload();
+      } else {
+        // Quit
+        app.quit();
+      }
+    });
   });
   
   mainWindow.webContents.on('did-finish-load', () => {
