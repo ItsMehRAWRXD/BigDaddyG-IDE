@@ -637,8 +637,8 @@ class HotkeyManager {
     }
     
     showShortcuts() {
-        const shortcuts = Object.entries(this.hotkeys).map(([key, data]) => 
-            `<tr><td style="padding: 8px; border: 1px solid rgba(0, 212, 255, 0.2);">${key}</td><td style="padding: 8px; border: 1px solid rgba(0, 212, 255, 0.2);">${data.description || 'No description'}</td></tr>`
+        const shortcuts = Array.from(this.shortcuts.entries()).map(([key, data]) => 
+            `<tr><td style="padding: 8px; border: 1px solid rgba(0, 212, 255, 0.2);">${data.combo}</td><td style="padding: 8px; border: 1px solid rgba(0, 212, 255, 0.2);">${data.description || 'No description'}</td></tr>`
         ).join('');
         
         const modal = document.createElement('div');
@@ -681,6 +681,100 @@ class HotkeyManager {
         };
         
         document.body.appendChild(modal);
+    }
+    
+    // ========================================================================
+    // MISSING METHOD IMPLEMENTATIONS
+    // ========================================================================
+    
+    async getFileCommands() {
+        try {
+            // Scan workspace for files
+            if (window.electron && window.electron.scanWorkspace) {
+                const files = await window.electron.scanWorkspace();
+                return files.map(file => ({
+                    name: file.name,
+                    path: file.path,
+                    type: 'file',
+                    isDirectory: file.isDirectory,
+                    action: () => {
+                        if (window.electron && window.electron.openFile) {
+                            window.electron.openFile(file.path);
+                        }
+                    }
+                }));
+            }
+        } catch (error) {
+            console.warn('[HotkeyManager] File scan not available:', error);
+        }
+        return [];
+    }
+    
+    toggleTerminal() {
+        // Try enhanced terminal first
+        if (window.enhancedTerminal) {
+            window.enhancedTerminal.toggle();
+            return;
+        }
+        
+        // Fallback to bottom panel
+        const panel = document.getElementById('bottom-panel') || document.getElementById('enhanced-terminal');
+        if (panel) {
+            if (panel.style.display === 'none') {
+                panel.style.display = 'flex';
+            } else {
+                panel.style.display = 'none';
+            }
+        }
+    }
+    
+    openTerminal(shell = 'powershell') {
+        // Use enhanced terminal if available
+        if (window.enhancedTerminal) {
+            window.enhancedTerminal.open();
+            if (shell && window.enhancedTerminal.switchShell) {
+                window.enhancedTerminal.switchShell(shell);
+            }
+            return;
+        }
+        
+        // Fallback: just toggle terminal
+        this.toggleTerminal();
+    }
+    
+    clearTerminal() {
+        // Use enhanced terminal if available
+        if (window.enhancedTerminal && window.enhancedTerminal.clearTerminal) {
+            window.enhancedTerminal.clearTerminal();
+            return;
+        }
+        
+        // Fallback: clear output element
+        const output = document.getElementById('terminal-output');
+        if (output) {
+            output.innerHTML = '<div style="color: var(--cursor-jade-dark);">Terminal cleared</div>';
+        }
+    }
+    
+    runCommand(command) {
+        // Use enhanced terminal if available
+        if (window.enhancedTerminal && window.enhancedTerminal.run) {
+            window.enhancedTerminal.run(command);
+            return;
+        }
+        
+        // Fallback: log command
+        console.log(`[HotkeyManager] Command: ${command}`);
+        
+        // Try to open terminal and show command
+        this.toggleTerminal();
+        setTimeout(() => {
+            const input = document.getElementById('terminal-input');
+            if (input) {
+                input.value = command;
+                input.focus();
+            }
+        }, 100);
     }
 }
 
