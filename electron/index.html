@@ -111,11 +111,15 @@
             border-right: 1px solid rgba(0, 212, 255, 0.2);
             display: flex;
             flex-direction: column;
-            transition: width 0.3s;
+            transition: all 0.3s ease;
         }
         
         #sidebar.collapsed {
-            width: 50px;
+            width: 0;
+            min-width: 0;
+            overflow: hidden;
+            opacity: 0;
+            border: none;
         }
         
         #sidebar-header {
@@ -291,16 +295,19 @@
             border-left: 1px solid rgba(0, 212, 255, 0.2);
             display: flex;
             flex-direction: column;
-            transition: width 0.3s;
+            transition: all 0.3s ease;
             overflow-y: auto;
             overflow-x: hidden;
             padding-top: 10px;
-            padding-bottom: 20px; /* Normal padding - no need for extra since terminal resizes layout */
+            padding-bottom: 20px;
         }
         
         #right-sidebar.collapsed {
             width: 0;
+            min-width: 0;
             border: none;
+            opacity: 0;
+            overflow: hidden;
         }
         
         #ai-chat-header {
@@ -1261,6 +1268,9 @@
     
     <!-- WEB BROWSER - Integrated browser -->
     <script src="web-browser.js"></script>
+    
+    <!-- PANEL MANAGER - Universal panel control -->
+    <script src="panel-manager.js"></script>
     
     <!-- IDE INITIALIZER - Final validation and system check (MUST BE LAST) -->
     <script src="ide-initializer.js"></script>
