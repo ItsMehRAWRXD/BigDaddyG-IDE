@@ -162,8 +162,8 @@ try {
         $vec2 = Get-OMEmbedding -Text "user likes dark theme"
         $vec3 = Get-OMEmbedding -Text "completely unrelated topic about cats"
         
-        $sim1 = Get-OMCosineSimilarity -Vector1 $vec1 -Vector2 $vec2
-        $sim2 = Get-OMCosineSimilarity -Vector1 $vec1 -Vector2 $vec3
+        $sim1 = Get-OMCosineSimilarity -VectorA $vec1 -VectorB $vec2
+        $sim2 = Get-OMCosineSimilarity -VectorA $vec1 -VectorB $vec3
         
         # Similar texts should have higher similarity than unrelated texts
         $passed = ($sim1 -gt $sim2)
@@ -219,7 +219,7 @@ try {
     Write-Host "`n[TEST 9] Context Window Generation..." -ForegroundColor Yellow
     
     try {
-        $context = Get-OMContextWindow -UserId $testUserId -Query "preferences" -WindowSize 3
+        $context = Get-OMContextWindow -UserId $testUserId -Query "preferences" -MaxTokens 2000
         
         $hasContext = ($null -ne $context -and $context.Length -gt 0)
         Write-TestResult "Context Window Generation" $hasContext "Generated context window ($($context.Length) chars)"
@@ -241,7 +241,7 @@ try {
         Update-OMUserSummary -UserId $testUserId -Summary $summaryText
         
         $summary = Get-OMUserSummary -UserId $testUserId
-        $passed = ($summary -eq $summaryText)
+        $passed = ($summary.Summary -eq $summaryText)
         Write-TestResult "User Summary Management" $passed "Summary stored and retrieved successfully"
     } catch {
         Write-TestResult "User Summary Management" $false $_.Exception.Message

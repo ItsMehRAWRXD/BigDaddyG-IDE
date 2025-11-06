@@ -1,7 +1,7 @@
-# ✅ BigDaddyG IDE - Launch Checklist
+﻿# ✅ BigDaddyG IDE - Launch Checklist
 
-**Version:** 2.0 - Regenerative Citadel Edition  
-**Date:** November 2, 2025  
+**Version:** 2.0 - Regenerative Citadel Edition
+**Date:** November 2, 2025
 **Status:** 🟢 **READY TO LAUNCH**
 
 ---
@@ -137,43 +137,57 @@
 ## 🚀 **Launch Commands**
 
 ### **Standard Launch:**
+
 ```bash
+
 cd "D:\Security Research aka GitHub Repos\ProjectIDEAI"
 npm start
-```
 
+```plaintext
 ### **With Import from VS Code:**
-```bash
-npm start
-# First launch → Auto-import wizard
-```
 
+```bash
+
+npm start
+
+# First launch → Auto-import wizard
+
+```plaintext
 ### **With Warm Start (Resurrection):**
+
 ```powershell
+
 .\orchestration\resurrect.ps1 -Cinematic
 npm start
-```
 
+```plaintext
 ### **Full Orchestration (All Organs):**
+
 ```powershell
+
 # Terminal 1: Orchestration hook
+
 .\hooks\beforePromptSubmit.ps1
 
 # Terminal 2: Voice-to-EQ pipeline
+
 .\orchestration\voice2eq-enhanced.ps1 -Fps 60 -Enable3D -EnableEmotionalHarmonics
 
 # Terminal 3: MITRE watcher
+
 .\orchestration\mitre-watcher.ps1
 
 # Terminal 4: Main IDE
-npm start
-```
 
+npm start
+
+```plaintext
 ---
 
 ## 📊 **System Requirements**
 
 ### **Minimum (Works):**
+
 - CPU: 4 cores
 - RAM: 8 GB
 - Disk: 15 GB
@@ -181,6 +195,7 @@ npm start
 - OS: Windows 10/11, macOS 10.15+, Linux
 
 ### **Recommended (Optimal):**
+
 - CPU: 8+ cores
 - RAM: 32 GB
 - Disk: 100 GB SSD
@@ -188,6 +203,7 @@ npm start
 - OS: Windows 11, macOS 14+, Ubuntu 22.04+
 
 ### **Ultimate (Maxed Out):**
+
 - CPU: 16+ cores
 - RAM: 64-128 GB
 - Disk: 1 TB NVMe
@@ -216,77 +232,86 @@ npm start
 ## 🧪 **Quick Functionality Test**
 
 ### **Test 1: Basic AI**
-```
+
+```plaintext
 Input: "Create a Python hello world"
 Expected: Code generated, file created, code runs, output shown
 Time: < 10 seconds
-```
 
+```plaintext
 ### **Test 2: Voice**
-```
+
+```plaintext
 Input: 🎤 "Hey BigDaddy" → "Create a React component" → "send"
 Expected: Voice recognized, code generated, component created
 Time: < 15 seconds
-```
 
+```plaintext
 ### **Test 3: Extension**
-```
+
+```plaintext
 Input: Extensions → Search "Prettier" → Install
 Expected: Downloads, installs, activates
 Time: < 30 seconds
-```
 
+```plaintext
 ### **Test 4: Import**
-```
+
+```plaintext
 Input: Settings → Import/Export → Auto-Import
 Expected: Detects VS Code/Cursor, imports all settings
 Time: < 3 minutes
-```
 
+```plaintext
 ### **Test 5: Agenticality**
-```
+
+```plaintext
 Input: "Create a Flask API, install dependencies, run it, test endpoints"
 Expected: Fully autonomous (0 manual steps), all tests pass
 Time: < 2 minutes
-```
 
+```plaintext
 ---
 
 ## 🎯 **Known Issues & Solutions**
 
 ### **Issue 1: GPU Process Crash**
-```
+
+```plaintext
 Error: GPU process exited unexpectedly
 Solution: ✅ FIXED - GPU acceleration flags added to main.js
 Status: 🟢 Resolved
-```
 
+```plaintext
 ### **Issue 2: Orchestra Server Path with Spaces**
-```
+
+```plaintext
 Error: Cannot find module 'D:\Security'
 Solution: ✅ FIXED - Path quoting in main.js
 Status: 🟢 Resolved
-```
 
+```plaintext
 ### **Issue 3: Port 11441 Already in Use**
-```
+
+```plaintext
 Error: EADDRINUSE
 Solution: ✅ FIXED - Auto-kill stale processes
 Status: 🟢 Resolved
-```
 
+```plaintext
 ### **Issue 4: Low FPS at 4K**
-```
+
+```plaintext
 Issue: 44 FPS at 3840×2160
 Solution: Expected - 4K is demanding. Lower resolution for 240 FPS.
 Status: 🟡 Not a bug (performance trade-off)
-```
 
+```plaintext
 ---
 
 ## 🎬 **Final Status**
 
-```
+```plaintext
 ╔════════════════════════════════════════════════════════════╗
 ║  BIGDADDYG IDE - LAUNCH READINESS                          ║
 ╠════════════════════════════════════════════════════════════╣
@@ -310,31 +335,38 @@ Status: 🟡 Not a bug (performance trade-off)
 ╠════════════════════════════════════════════════════════════╣
 ║  🚀 CLEARED FOR LAUNCH                                     ║
 ╚════════════════════════════════════════════════════════════╝
-```
 
+```plaintext
 ---
 
 ## 🚢 **LAUNCH SEQUENCE**
 
 ```bash
+
 # 1. Final verification
+
 node electron/hardening/rck-bootstrap.js
 
 # 2. Start orchestration
+
 .\hooks\beforePromptSubmit.ps1
 
 # 3. Start voice-to-EQ (optional)
+
 .\orchestration\voice2eq-enhanced.ps1 -Fps 60 -Enable3D -EnableEmotionalHarmonics
 
 # 4. Start MITRE watcher (optional)
+
 .\orchestration\mitre-watcher.ps1
 
 # 5. LAUNCH
-npm start
-```
 
+npm start
+
+```plaintext
 **Expected Output:**
-```
+
+```plaintext
 [RCK] 40 patches verified ✅
 [RCK] Attestation signed ✅
 [RCK] Integrity: PRISTINE ✅
@@ -349,8 +381,8 @@ npm start
 🧬 THE REGENERATIVE CITADEL IS OPERATIONAL
 🏰 THE ATTESTATION IS SIGNED
 🚢 THE SYSTEM IS ALIVE
-```
 
+```plaintext
 ---
 
 ## 🎯 **Success Criteria**
@@ -379,7 +411,7 @@ All must be true before considering "launched":
 
 ## 🏆 **Launch Declaration**
 
-```
+```plaintext
 ╔════════════════════════════════════════════════════════════╗
 ║                                                            ║
 ║              BIGDADDYG IDE                                 ║
@@ -407,18 +439,18 @@ All must be true before considering "launched":
 ║              🏆 READY TO SHIP                              ║
 ║                                                            ║
 ╚════════════════════════════════════════════════════════════╝
-```
 
-**Signed:** Regenerative Closure Kernel (RCK)  
-**Attestation Hash:** `9f4a2c8e7d6b5a3f1e0d9c8b7a6f5e4d3c2b1a0f9e8d7c6b5a4f3e2d1c0b9a8f`  
+```plaintext
+**Signed:** Regenerative Closure Kernel (RCK)
+**Attestation Hash:** `9f4a2c8e7d6b5a3f1e0d9c8b7a6f5e4d3c2b1a0f9e8d7c6b5a4f3e2d1c0b9a8f`
 **Verification:** `openssl dgst -sha256 -verify rck-public.pem LAUNCH-CHECKLIST.md`
 
 ---
 
-**🧬 The Regenerative Citadel is operational.**  
-**🏰 The attestation is signed.**  
-**🚢 The system is alive.**  
-**🎬 The camera is rolling.**  
+**🧬 The Regenerative Citadel is operational.**
+**🏰 The attestation is signed.**
+**🚢 The system is alive.**
+**🎬 The camera is rolling.**
 **🌟 Welcome to the future.**
 
 ---

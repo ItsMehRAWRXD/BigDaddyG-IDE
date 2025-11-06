@@ -1,4 +1,4 @@
-# 🚀 BigDaddyG IDE: The FREE Cursor Alternative
+﻿# 🚀 BigDaddyG IDE: The FREE Cursor Alternative
 
 > **"Yes, it's basically Cursor IDE... but 100% FREE, OFFLINE, and UNLIMITED!"**
 
@@ -55,15 +55,16 @@ But with some **MAJOR** advantages:
 
 **Just like Cursor's Composer, but with superpowers!**
 
-✅ **Auto-scan projects** - Detects all languages, frameworks, entry points  
-✅ **AI code analysis** - Deep understanding of your codebase  
-✅ **Auto-fix bugs** - AI finds and fixes issues automatically  
-✅ **Run all entry points** - Execute your entire project  
-✅ **Agent mode** - Autonomous monitoring and improvement  
-✅ **Deep research** - Internet access for finding solutions  
-✅ **Self-improving** - Learns from your patterns and suggests improvements  
+✅ **Auto-scan projects** - Detects all languages, frameworks, entry points
+✅ **AI code analysis** - Deep understanding of your codebase
+✅ **Auto-fix bugs** - AI finds and fixes issues automatically
+✅ **Run all entry points** - Execute your entire project
+✅ **Agent mode** - Autonomous monitoring and improvement
+✅ **Deep research** - Internet access for finding solutions
+✅ **Self-improving** - Learns from your patterns and suggests improvements
 
 **How to use:**
+
 1. Open any project
 2. Click **Explorer** tab
 3. Enable **🤖 Agentic Mode**
@@ -82,12 +83,14 @@ But with some **MAJOR** advantages:
 **Integrates ALL your favorite tools:**
 
 #### **🔐 RawrZ Security Platform:**
+
 - Auto-starts on port 8080
-- API: `http://localhost:8080/api/rawrz/execute`
+- API: `<http://localhost:8080/api/rawrz/execute`>
 - Single airtight endpoint for security operations
 - No browser needed - works in IDE
 
 #### **🤖 Multi AI Aggregator:**
+
 - Claude 3 Opus
 - ChatGPT-4o
 - Kimi (Chinese AI)
@@ -98,9 +101,11 @@ But with some **MAJOR** advantages:
 **Query all 6 AIs at once and get combined results!**
 
 #### **🔧 Auto-Compiler System:**
+
 Automatically detects and downloads compilers for:
 
 **Compiled Languages:**
+
 - JavaScript (Node, Deno, Bun)
 - TypeScript (tsc, Deno, Bun)
 - Python (python, pypy)
@@ -121,14 +126,17 @@ Automatically detects and downloads compilers for:
 **And 20+ more languages!**
 
 **Self-compiling support:**
+
 - Can compile 36+ languages WITHOUT runtimes installed
 - Won't RUN without runtimes, but will COMPILE
 - Auto-offers to download missing compilers
 - One-click compiler installation
 
 #### **📡 E: Drive Base Station:**
+
 All extensions stored locally on E: drive:
-```
+
+```plaintext
 E:\BigDaddyG-Extensions\
 ├── rawrz\          (Security platform)
 ├── multi-ai\       (AI aggregator)
@@ -136,8 +144,8 @@ E:\BigDaddyG-Extensions\
 ├── extensions\     (VS Code extensions)
 ├── models\         (AI models)
 └── cache\          (Extension cache)
-```
 
+```plaintext
 ---
 
 ### **3. Plugin Marketplace** 🛒
@@ -147,29 +155,35 @@ E:\BigDaddyG-Extensions\
 **15+ plugins ready to install:**
 
 #### **🌐 Web Integration:**
+
 - **Web Search** - Stack Overflow, MDN, GitHub search
 - **Docs Fetcher** - DevDocs, Read the Docs offline cache
 - **Package Explorer** - npm, PyPI, crates.io with AI recommendations
 
 #### **🤖 AI Enhancements:**
+
 - **AI Code Reviewer** - Auto code review on save
 - **AI Refactoring** - Intelligent refactoring suggestions
 - **AI Test Generator** - Generate unit tests automatically
 
 #### **📝 Languages:**
+
 - **Rust Language Support** - Full Rust with cargo
 - **Go Language Support** - Complete Go environment
 
 #### **🎨 Themes:**
+
 - **Dracula Theme** - Dark theme for vampires 🧛
 - **Nord Theme** - Arctic, north-bluish palette
 
 #### **⚡ Productivity:**
+
 - **Code Time Tracker** - Track coding time
 - **TODO Tree** - Show TODO, FIXME in tree view
 - **Code Statistics** - Lines, chars, words counter
 
 #### **🧪 Testing:**
+
 - **Jest Test Runner** - Run Jest tests in IDE
 
 **Growing to 100+ plugins by Q2 2025!**
@@ -180,14 +194,14 @@ E:\BigDaddyG-Extensions\
 
 ### **BigDaddyG IDE is:**
 
-✅ **Cursor** (agentic AI editing + Composer)  
-✅ **VS Code** (extensions marketplace + UI)  
-✅ **GitHub Copilot** (AI code completion)  
-✅ **Windsurf** (multi-file AI editing)  
-✅ **Replit** (run code directly in IDE)  
-✅ **CodeSandbox** (live preview for web)  
-✅ **ChatGPT** (AI chat assistant)  
-✅ **Codeium** (free AI alternative)  
+✅ **Cursor** (agentic AI editing + Composer)
+✅ **VS Code** (extensions marketplace + UI)
+✅ **GitHub Copilot** (AI code completion)
+✅ **Windsurf** (multi-file AI editing)
+✅ **Replit** (run code directly in IDE)
+✅ **CodeSandbox** (live preview for web)
+✅ **ChatGPT** (AI chat assistant)
+✅ **Codeium** (free AI alternative)
 
 **ALL IN ONE. 100% FREE. 100% OFFLINE. NO LIMITS.**
 
@@ -196,7 +210,9 @@ E:\BigDaddyG-Extensions\
 ## 💎 **Unique Features Cursor Doesn't Have:**
 
 ### **1. Multi AI Aggregation** 🤖
+
 Query 6 AI providers simultaneously:
+
 - Claude 3 Opus (best for code)
 - ChatGPT-4o (best for explanations)
 - Kimi (best for Chinese docs)
@@ -207,7 +223,9 @@ Query 6 AI providers simultaneously:
 **Get the best answer from ALL of them!**
 
 ### **2. RawrZ Security Integration** 🔐
+
 Built-in security platform:
+
 - Vulnerability scanning
 - Code obfuscation
 - Secure code execution
@@ -215,7 +233,9 @@ Built-in security platform:
 - All local, no cloud
 
 ### **3. Extension Compatibility** 🔌
+
 Run extensions from:
+
 - VS Code (100,000+ extensions)
 - Cursor (agentic extensions)
 - Visual Studio 2022 (enterprise plugins)
@@ -224,14 +244,18 @@ Run extensions from:
 **Mix and match from all platforms!**
 
 ### **4. Auto-Compiler Downloads** 🔧
+
 Never worry about setup:
+
 - Detects missing compilers
 - Offers one-click download
 - Auto-configures build systems
 - Creates language-specific agents
 
 ### **5. Self-Improving AI** 🧠
+
 The AI learns and improves:
+
 - Analyzes your coding patterns
 - Suggests its own improvements
 - Learns from your project structure
@@ -240,7 +264,9 @@ The AI learns and improves:
 **It literally gets smarter the more you use it!**
 
 ### **6. E: Drive Base Station** 📡
+
 All extensions managed locally:
+
 - No cloud dependency
 - Full control over extensions
 - Offline extension updates
@@ -251,7 +277,8 @@ All extensions managed locally:
 ## 🎮 **Usage Examples:**
 
 ### **Example 1: Analyze New Project**
-```
+
+```plaintext
 1. Open any project folder
 2. Go to Explorer tab
 3. Enable "🤖 Agentic Mode"
@@ -265,20 +292,20 @@ All extensions managed locally:
    - Security issues
    - Performance tips
    - Next steps
-```
-
+```plaintext
 ### **Example 2: Auto-Fix Code**
-```
+
+```plaintext
 1. Open a file with bugs
 2. Click "🔧 Fix" in Explorer
 3. AI analyzes code
 4. AI fixes issues
 5. AI applies fixes automatically
 6. Done! No manual editing needed
-```
-
+```plaintext
 ### **Example 3: Run Entire Project**
-```
+
+```plaintext
 1. Click "▶️ Run" in Explorer
 2. AI finds all entry points:
    - main.js
@@ -288,10 +315,10 @@ All extensions managed locally:
 3. AI runs each file
 4. AI shows all outputs
 5. AI reports errors
-```
-
+```plaintext
 ### **Example 4: Deep Research**
-```
+
+```plaintext
 1. Ask AI: "How to optimize this React code?"
 2. AI enables deep research
 3. AI searches:
@@ -305,10 +332,10 @@ All extensions managed locally:
    - 📖 Files read
    - 🔗 Sources cited
 6. AI gives comprehensive answer
-```
-
+```plaintext
 ### **Example 5: Multi AI Query**
-```
+
+```plaintext
 1. Ask: "Best way to implement WebSockets?"
 2. AI queries all 6 providers:
    - Claude: "Use Socket.IO for ease..."
@@ -320,13 +347,13 @@ All extensions managed locally:
 3. AI shows individual responses
 4. AI combines into best answer
 5. AI highlights best provider for this question
-```
-
+```plaintext
 ---
 
 ## 🔥 **Why Choose BigDaddyG IDE?**
 
 ### **Save Money** 💰
+
 - **Cursor:** $240/year
 - **GitHub Copilot:** $100/year
 - **ChatGPT Plus:** $240/year
@@ -337,26 +364,32 @@ All extensions managed locally:
 **Save $580/year!**
 
 ### **No Limits** ∞
+
 - **Cursor:** 500 requests/month, then pay more
 - **BigDaddyG:** Unlimited requests, forever
 
 ### **Privacy** 🔐
+
 - **Cursor:** Your code goes to OpenAI/Anthropic servers
 - **BigDaddyG:** 100% local processing, your code never leaves your machine
 
 ### **Offline** 📴
+
 - **Cursor:** Requires constant internet
 - **BigDaddyG:** Works perfectly offline with 40GB local AI
 
 ### **Extensions** 🔌
+
 - **Cursor:** Limited extensions, mostly built-in
 - **BigDaddyG:** VS Code + Cursor + VS2022 extensions!
 
 ### **Multi AI** 🤖
+
 - **Cursor:** GPT-4 OR Claude (pick one)
 - **BigDaddyG:** ALL 6 major AIs at once!
 
 ### **Self-Improving** 🧠
+
 - **Cursor:** Static, doesn't learn
 - **BigDaddyG:** Learns from you, suggests improvements to itself
 
@@ -385,62 +418,65 @@ All extensions managed locally:
 
 ## 🎯 **Who Is This For?**
 
-✅ **Students** - Can't afford $20/month for Cursor  
-✅ **Indie Developers** - Need unlimited AI without breaking bank  
-✅ **Enterprise** - Require offline AI for security/compliance  
-✅ **Privacy-Conscious** - Don't want code sent to cloud  
-✅ **Power Users** - Want all AI providers, not just one  
-✅ **Open Source Developers** - Want fully customizable IDE  
-✅ **Freelancers** - Need professional tools for free  
-✅ **Anyone** - Who wants Cursor but doesn't want to pay!  
+✅ **Students** - Can't afford $20/month for Cursor
+✅ **Indie Developers** - Need unlimited AI without breaking bank
+✅ **Enterprise** - Require offline AI for security/compliance
+✅ **Privacy-Conscious** - Don't want code sent to cloud
+✅ **Power Users** - Want all AI providers, not just one
+✅ **Open Source Developers** - Want fully customizable IDE
+✅ **Freelancers** - Need professional tools for free
+✅ **Anyone** - Who wants Cursor but doesn't want to pay!
 
 ---
 
 ## 🚀 **Getting Started:**
 
 ### **1. Install BigDaddyG IDE:**
-```
+
+```plaintext
 Download: BigDaddyG-Portable-2.0.0.exe
 Size: 96.3 MB
 No installation needed - just run it!
-```
 
+```plaintext
 ### **2. Enable Agentic Mode:**
-```
+
+```plaintext
 1. Open any project
 2. Click Explorer tab
 3. Toggle "🤖 Agentic Mode"
 4. AI starts analyzing!
-```
-
+```plaintext
 ### **3. Install Plugins:**
-```
+
+```plaintext
 Press Ctrl+Shift+P
 Search for plugins
 Click Install
 Done!
-```
 
+```plaintext
 ### **4. Use AI:**
-```
+
+```plaintext
 Press Ctrl+L (floating chat)
 Or use right sidebar Chat
 Ask anything!
-```
 
+```plaintext
 ---
 
 ## 🎉 **The Bottom Line:**
 
 **BigDaddyG IDE is Cursor IDE...**
 
-✅ **But FREE** ($0 vs $240/year)  
-✅ **But OFFLINE** (40GB local AI)  
-✅ **But UNLIMITED** (no request limits)  
-✅ **But MORE POWERFUL** (6 AIs vs 1)  
-✅ **But MORE PRIVATE** (100% local)  
-✅ **But MORE EXTENSIBLE** (VS Code + Cursor + VS2022)  
-✅ **But SELF-IMPROVING** (learns from you)  
+✅ **But FREE** ($0 vs $240/year)
+✅ **But OFFLINE** (40GB local AI)
+✅ **But UNLIMITED** (no request limits)
+✅ **But MORE POWERFUL** (6 AIs vs 1)
+✅ **But MORE PRIVATE** (100% local)
+✅ **But MORE EXTENSIBLE** (VS Code + Cursor + VS2022)
+✅ **But SELF-IMPROVING** (learns from you)
 
 **It's Cursor IDE... but you OWN it.**
 
@@ -465,24 +501,28 @@ Ask anything!
 ## 🔮 **Roadmap:**
 
 ### **Q1 2025:**
+
 - [ ] 100+ plugins in marketplace
 - [ ] VS Code extension compatibility layer
 - [ ] Web preview panel (no browser needed!)
 - [ ] Live collaboration
 
 ### **Q2 2025:**
+
 - [ ] 1,000+ plugins
 - [ ] Mobile app (Android/iOS)
 - [ ] Cloud sync (optional)
 - [ ] Team workspaces
 
 ### **Q3 2025:**
+
 - [ ] AI model marketplace
 - [ ] Custom AI training
 - [ ] Plugin SDK
 - [ ] Public plugin marketplace
 
 ### **Q4 2025:**
+
 - [ ] VR/AR coding
 - [ ] Brain-computer interface experiments
 - [ ] Quantum computing support
@@ -492,7 +532,7 @@ Ask anything!
 
 ## 📞 **Support:**
 
-- **GitHub:** https://github.com/ItsMehRAWRXD/BigDaddyG-IDE
+- **GitHub:** <https://github.com/ItsMehRAWRXD/BigDaddyG-IDE>
 - **Discord:** Coming soon
 - **Docs:** `/docs` folder
 - **Email:** support@bigdaddyg.dev (coming soon)
@@ -508,6 +548,7 @@ Ask anything!
 ## 🙏 **Credits:**
 
 **Inspired by:**
+
 - Cursor (the paid version we're replacing!)
 - VS Code (the extension platform)
 - GitHub Copilot (the AI assistance)
@@ -515,6 +556,7 @@ Ask anything!
 - ChatGPT (the conversation interface)
 
 **But built to be:**
+
 - **FREE** (unlike Cursor)
 - **OFFLINE** (unlike all of them)
 - **UNLIMITED** (unlike Cursor & Copilot)
@@ -528,7 +570,7 @@ Ask anything!
 
 **But better. And free. And yours.**
 
-**Stop paying $20/month.**  
+**Stop paying $20/month.**
 **Start using BigDaddyG IDE.**
 
 **Download now:** `BigDaddyG-Portable-2.0.0.exe`
@@ -537,7 +579,7 @@ Ask anything!
 
 ---
 
-*Last Updated: November 2, 2025*  
-*Version: 2.0.0 (Cursor Alternative Edition)*  
+*Last Updated: November 2, 2025*
+*Version: 2.0.0 (Cursor Alternative Edition)*
 *Next Build: Final EXE with all features*
 

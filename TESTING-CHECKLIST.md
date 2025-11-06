@@ -1,7 +1,7 @@
-# 🧪 BigDaddyG IDE - Complete Testing Checklist
+﻿# 🧪 BigDaddyG IDE - Complete Testing Checklist
 
-**Date:** November 4, 2025  
-**Version:** Professional Edition v2.0  
+**Date:** November 4, 2025
+**Version:** Professional Edition v2.0
 **Status:** Ready for Testing
 
 ---
@@ -22,6 +22,7 @@
 ### **Phase 1: Basic Startup (0-30 seconds)**
 
 #### ✅ Window Loads
+
 - [ ] IDE window appears
 - [ ] No white screen
 - [ ] Title bar shows "BigDaddyG IDE"
@@ -29,6 +30,7 @@
 - [ ] No console errors
 
 #### ✅ UI Elements Visible
+
 - [ ] Monaco editor visible
 - [ ] File tree on left
 - [ ] Tab bar at top
@@ -40,6 +42,7 @@
 ### **Phase 2: Core Features (30 sec - 2 min)**
 
 #### ✅ File Operations
+
 - [ ] Click **+** button → Creates new file
 - [ ] Open file from tree → Opens in editor
 - [ ] Close tab → Tab closes
@@ -47,6 +50,7 @@
 - [ ] File tree shows all files
 
 #### ✅ Floating Chat (Ctrl+L)
+
 - [ ] Ctrl+L → Opens floating chat
 - [ ] Chat window is draggable
 - [ ] Model selector shows options
@@ -55,6 +59,7 @@
 - [ ] Escape → Closes chat
 
 #### ✅ Enhanced Terminal (Ctrl+`)
+
 - [ ] Ctrl+` → Opens terminal
 - [ ] Shows PowerShell prompt (PS>)
 - [ ] Can type commands
@@ -63,6 +68,7 @@
 - [ ] Ctrl+` → Closes terminal
 
 #### ✅ GitHub Authentication
+
 - [ ] 🔒 Login button visible (top-right)
 - [ ] Click → Opens auth modal
 - [ ] Can enter PAT token
@@ -74,6 +80,7 @@
 ### **Phase 3: New Features (2-5 min)**
 
 #### ✅ AI Code Response System
+
 - [ ] Ask AI to generate code
 - [ ] Code block appears with filename
 - [ ] Spinning icon (⚙️) shows while generating
@@ -90,6 +97,7 @@
 - [ ] Click "Accept" → Code inserted into editor
 
 #### ✅ Enhanced User Messages
+
 - [ ] User messages have controls
 - [ ] Can expand/collapse user messages
 - [ ] Edit button (✏️) works
@@ -98,6 +106,7 @@
 - [ ] @mentions highlighted
 
 #### ✅ AI Settings Panel
+
 - [ ] ⚙️ button visible (top-right)
 - [ ] Click → Opens settings panel
 - [ ] Quality selector (Auto/Fast/Balanced/Max)
@@ -109,6 +118,7 @@
 - [ ] Reset button works
 
 #### ✅ Resizable Panes
+
 - [ ] Hover over left divider → Shows resize cursor
 - [ ] Drag left divider → Resizes sidebar
 - [ ] Hover over right divider → Shows resize cursor
@@ -117,6 +127,7 @@
 - [ ] Sizes persist after restart
 
 #### ✅ Collapsible Sidebars
+
 - [ ] Ctrl+[ → Collapses left sidebar
 - [ ] Ctrl+[ again → Expands left sidebar
 - [ ] Ctrl+] → Collapses right sidebar
@@ -129,6 +140,7 @@
 ### **Phase 4: Advanced Features (5-10 min)**
 
 #### ✅ Orchestra 3-Pane Layout
+
 - [ ] Layout shows 3 panes (File | Chat | Editor)
 - [ ] Left pane: Conversation history
 - [ ] Center pane: AI chat
@@ -136,6 +148,7 @@
 - [ ] Can resize all panes
 
 #### ✅ Terminal AI Command Generator
+
 - [ ] Open terminal (Ctrl+`)
 - [ ] Press Ctrl+Shift+G
 - [ ] Describe command needed
@@ -143,6 +156,7 @@
 - [ ] Can execute or edit command
 
 #### ✅ Voice Coding
+
 - [ ] 🎤 button visible
 - [ ] Click → Starts listening
 - [ ] Speak command
@@ -150,6 +164,7 @@
 - [ ] Command executed
 
 #### ✅ System Optimizer
+
 - [ ] "System Optimizer" button works
 - [ ] Shows CPU/RAM/GPU info
 - [ ] Auto-detects 7800X3D (if applicable)
@@ -157,6 +172,7 @@
 - [ ] Can reset optimization
 
 #### ✅ Swarm Engine
+
 - [ ] "Swarm Engine" button works
 - [ ] Shows mini-agents panel
 - [ ] Can start swarm
@@ -168,6 +184,7 @@
 ### **Phase 5: Error Handling (10-15 min)**
 
 #### ✅ Error Protection
+
 - [ ] Trigger intentional error
 - [ ] Error caught gracefully
 - [ ] No crash
@@ -177,6 +194,7 @@
 - [ ] Can export error log
 
 #### ✅ Error Recovery
+
 - [ ] 🔧 Fix Errors button appears (if errors)
 - [ ] Click → System recovers
 - [ ] IDE continues working
@@ -187,6 +205,7 @@
 ### **Phase 6: Integration Tests (15-20 min)**
 
 #### ✅ GitHub Operations
+
 - [ ] Login to GitHub
 - [ ] View profile
 - [ ] Create test repo (via terminal)
@@ -194,17 +213,21 @@
 - [ ] Pull code (via terminal)
 
 #### ✅ Terminal Commands
+
 ```powershell
+
 # Test these commands:
+
 pwd                    # ✅ Shows current directory
 ls                     # ✅ Lists files
 cd electron            # ✅ Changes directory
 npm --version          # ✅ Shows npm version
 git status             # ✅ Shows git status
 node -v                # ✅ Shows node version
-```
 
+```plaintext
 #### ✅ AI Chat Full Flow
+
 - [ ] Open chat (Ctrl+L)
 - [ ] Ask: "What files are in this project?"
 - [ ] AI responds with file list
@@ -218,6 +241,7 @@ node -v                # ✅ Shows node version
 ## 📊 **SUCCESS CRITERIA**
 
 ### **✅ PASS = All Features Working**
+
 - 0 critical errors
 - All buttons clickable
 - All hotkeys working
@@ -227,12 +251,14 @@ node -v                # ✅ Shows node version
 - Code generation works
 
 ### **⚠️ MINOR ISSUES = Acceptable**
+
 - Styling glitches
 - Non-critical warnings
 - Slow model loading
 - Minor UI polish needed
 
 ### **❌ FAIL = Requires Fix**
+
 - White screen
 - Crash on startup
 - Missing critical features
@@ -244,53 +270,63 @@ node -v                # ✅ Shows node version
 ## 🎯 **TESTING WORKFLOW**
 
 ### **Quick Test (5 minutes):**
-```
+
+```plaintext
 1. Launch IDE
 2. Open chat (Ctrl+L)
 3. Open terminal (Ctrl+`)
 4. Type simple command
 5. Ask AI a question
 6. Check for errors
-✅ If all work → PASS!
-```
 
+✅ If all work → PASS!
+
+```plaintext
 ### **Full Test (20 minutes):**
-```
+
+```plaintext
 Go through ALL checklist items above
 Document any issues
 Test every hotkey
 Test every button
 Test every feature
-```
 
+```plaintext
 ---
 
 ## 📝 **TEST RESULTS**
 
 ### **Date:** _______
+
 ### **Tester:** _______
 
 **Startup:**
+
 - [ ] PASS
 - [ ] FAIL - Details: __________
 
 **Core Features:**
+
 - [ ] PASS
 - [ ] FAIL - Details: __________
 
 **New Features (Tonight):**
+
 - [ ] PASS
 - [ ] FAIL - Details: __________
 
 **Advanced Features:**
+
 - [ ] PASS
 - [ ] FAIL - Details: __________
 
 **Error Handling:**
+
 - [ ] PASS
 - [ ] FAIL - Details: __________
 
 **Integrations:**
+
 - [ ] PASS
 - [ ] FAIL - Details: __________
 

@@ -1,4 +1,4 @@
-# 🚀 BigDaddyG Copilot-Style CLI
+﻿# 🚀 BigDaddyG Copilot-Style CLI
 
 ## ✨ GitHub Copilot... but in Your Terminal!
 
@@ -9,21 +9,26 @@
 ## 🎯 Features
 
 ### 💬 Inline Ghost Text
+
 ```bash
+
 $ bigdaddyg> console.█
               ╰─ log()  ← Grey ghost text appears!
-                        
-# Press TAB to accept
-$ bigdaddyg> console.log()█
-```
 
+# Press TAB to accept
+
+$ bigdaddyg> console.log()█
+
+```plaintext
 ### ⌨️ Keyboard Shortcuts
+
 - **TAB** - Accept ghost text suggestion
 - **ESC** - Toggle ghost text on/off
 - **Ctrl-C** - Exit
 - **Backspace** - Delete and update suggestions
 
 ### 🤖 AI-Powered Commands
+
 - `suggest <prompt>` - Get AI code suggestion
 - `explain <file>` - AI explains code
 - `chat <text>` - Chat with BigDaddyG AI
@@ -38,33 +43,42 @@ $ bigdaddyg> console.log()█
 ### From BigDaddyG IDE Repository
 
 ```bash
+
 # Clone the repo
-git clone https://github.com/ItsMehRAWRXD/BigDaddyG-IDE.git
+
+git clone <https://github.com/ItsMehRAWRXD/BigDaddyG-IDE.git>
 cd BigDaddyG-IDE
 
 # Make executable
+
 chmod +x copilot-cli.js
 
 # Run it!
-./copilot-cli.js
-```
 
+./copilot-cli.js
+
+```plaintext
 ### Standalone Installation
 
 ```bash
+
 # Just download the file
-curl -O https://raw.githubusercontent.com/ItsMehRAWRXD/BigDaddyG-IDE/main/copilot-cli.js
+
+curl -O <https://raw.githubusercontent.com/ItsMehRAWRXD/BigDaddyG-IDE/main/copilot-cli.js>
 
 # Make executable
+
 chmod +x copilot-cli.js
 
 # Install dependencies
+
 npm install node-fetch
 
 # Run!
-./copilot-cli.js
-```
 
+./copilot-cli.js
+
+```plaintext
 ---
 
 ## ⚙️ Configuration
@@ -72,16 +86,18 @@ npm install node-fetch
 **Config file:** `~/.bigdaddyg_cli/config.json`
 
 ```json
+
 {
   "model": "bigdaddyg:40gb",
-  "ollamaUrl": "http://localhost:11434",
+  "ollamaUrl": "<http://localhost:11434",>
   "temperature": 0.4,
   "debounceMs": 250,
   "maxTokens": 100
 }
-```
 
+```plaintext
 **Options:**
+
 - `model` - AI model to use (Ollama model name)
 - `ollamaUrl` - Ollama server URL
 - `temperature` - Creativity (0.0 = deterministic, 1.0 = creative)
@@ -93,31 +109,45 @@ npm install node-fetch
 ## 🔌 AI Backend Options
 
 ### Option 1: Embedded Model (Offline)
+
 Uses BigDaddyG's embedded 40GB model:
+
 ```bash
+
 # Start embedded model engine
+
 node engine/embedded-model-engine.js
 
 # Run CLI
-./copilot-cli.js
-# Ghost text powered by local 40GB model!
-```
 
+./copilot-cli.js
+
+# Ghost text powered by local 40GB model!
+
+```plaintext
 ### Option 2: Ollama (Local)
+
 ```bash
+
 # Install Ollama
-curl https://ollama.ai/install.sh | sh
+
+curl <https://ollama.ai/install.sh> | sh
 
 # Pull a model
+
 ollama pull codellama
+
 # or: ollama pull bigdaddyg:40gb
 
 # Run CLI
-./copilot-cli.js
-```
 
+./copilot-cli.js
+
+```plaintext
 ### Option 3: Cloud APIs
+
 Modify `BigDaddyGAI.queryModel()` to use:
+
 - OpenAI API
 - Anthropic Claude
 - Azure OpenAI
@@ -128,33 +158,37 @@ Modify `BigDaddyGAI.queryModel()` to use:
 ## 📸 Demo
 
 ```bash
+
 $ bigdaddyg> const rev█
               ╰─ erse = str => str.split('').reverse().join('');
-              
+
 # Press TAB
+
 $ bigdaddyg> const reverse = str => str.split('').reverse().join('');█
 
 # Press ENTER to execute
+
 ✅ Code suggestion accepted!
 
 $ bigdaddyg> explain reverse.js█
 🤖 AI Explanation:
 
 This function reverses a string by:
+
 1. Splitting into array of characters
 2. Reversing the array
 3. Joining back into string
 
 Time complexity: O(n)
-```
 
+```plaintext
 ---
 
 ## 🎓 How It Works
 
 ### Architecture
 
-```
+```plaintext
 User Types
     ↓
 Debounce (250ms)
@@ -168,8 +202,8 @@ Display Grey Ghost Text
 User Presses TAB
     ↓
 Accept & Insert
-```
 
+```plaintext
 ### Key Components
 
 1. **Raw Terminal Mode**
@@ -177,12 +211,12 @@ Accept & Insert
    - No line buffering
    - Real-time ghost text
 
-2. **StreamCompleter**
+  1. **StreamCompleter**
    - Debounces typing
    - Queries AI
    - Manages ghost text display
 
-3. **BigDaddyGAI**
+  1. **BigDaddyGAI**
    - Connects to Ollama/embedded model
    - Fallback heuristics when offline
    - Smart completion logic
@@ -194,27 +228,30 @@ Accept & Insert
 ### Chaining Commands
 
 ```bash
-bigdaddyg> suggest create a web server | write server.js
-```
 
+bigdaddyg> suggest create a web server | write server.js
+
+```plaintext
 ### Piping to Files
 
 ```bash
-bigdaddyg> explain mycode.js > explanation.txt
-```
 
+bigdaddyg> explain mycode.js > explanation.txt
+
+```plaintext
 ### Configuration
 
 ```bash
+
 bigdaddyg> config
 ⚙️  BigDaddyG CLI Configuration:
 {
   "model": "bigdaddyg:40gb",
-  "ollamaUrl": "http://localhost:11434",
+  "ollamaUrl": "<http://localhost:11434",>
   "temperature": 0.4
 }
-```
 
+```plaintext
 ---
 
 ## 🆚 Comparison
@@ -233,30 +270,39 @@ bigdaddyg> config
 ## 🎯 Use Cases
 
 ### 1. **Quick Prototyping**
-```bash
-$ bigdaddyg> const api = axios.get█
-              ╰─ ('https://api.example.com')
-# TAB → Code inserted!
-```
 
-### 2. **Learning**
 ```bash
+
+$ bigdaddyg> const api = axios.get█
+              ╰─ ('<https://api.example.com'>)
+
+# TAB → Code inserted!
+
+```plaintext
+### 2. **Learning**
+
+```bash
+
 $ bigdaddyg> explain react-component.jsx
 🤖 This component uses hooks for state management...
-```
 
+```plaintext
 ### 3. **Code Review**
+
 ```bash
+
 $ bigdaddyg> chat review my authentication code
 🤖 Looking at your code, I notice...
-```
 
+```plaintext
 ### 4. **Refactoring**
+
 ```bash
+
 $ bigdaddyg> suggest refactor this to async/await
 🤖 Here's the refactored version...
-```
 
+```plaintext
 ---
 
 ## 🛠️ Customization
@@ -266,44 +312,51 @@ $ bigdaddyg> suggest refactor this to async/await
 Edit `copilot-cli.js`:
 
 ```javascript
+
 commands.mycommand = async args => {
   // Your custom logic
   console.log('Custom command executed!');
 };
-```
 
+```plaintext
 ### Change Ghost Text Color
 
 ```javascript
+
 const grey = s => `\x1b[90m${s}\x1b[0m`;  // Grey
 // or
 const blue = s => `\x1b[34m${s}\x1b[0m`;  // Blue
-```
 
+```plaintext
 ### Adjust Debounce
 
 ```json
+
 {
   "debounceMs": 100  // Faster suggestions (more API calls)
   // or
   "debounceMs": 500  // Slower (fewer API calls)
 }
-```
 
+```plaintext
 ---
 
 ## 🚀 Integration with BigDaddyG IDE
 
 ### Run from IDE
+
 ```javascript
+
 // In BigDaddyG IDE terminal:
 ./copilot-cli.js
 
 // Ghost text uses same AI backend!
-```
 
+```plaintext
 ### Shared Configuration
+
 Both BigDaddyG IDE and CLI share:
+
 - Same AI models
 - Same Ollama instance
 - Same embedded model
@@ -314,6 +367,7 @@ Both BigDaddyG IDE and CLI share:
 ## 🎓 Educational Value
 
 **Learn from this code:**
+
 - Terminal raw mode manipulation
 - VT100 escape sequences
 - Async AI integration
@@ -322,6 +376,7 @@ Both BigDaddyG IDE and CLI share:
 - Event-driven architecture
 
 **Perfect for:**
+
 - Understanding how Copilot works
 - Building CLI tools
 - Learning terminal programming
@@ -332,12 +387,14 @@ Both BigDaddyG IDE and CLI share:
 ## 📈 Performance
 
 ### With Local Model (Ollama/Embedded):
+
 - Latency: 50-300ms
 - No internet required
 - Privacy: 100%
 - Cost: $0
 
 ### With Cloud API:
+
 - Latency: 200-1000ms
 - Internet required
 - Privacy: Data sent to cloud
@@ -373,6 +430,7 @@ Both BigDaddyG IDE and CLI share:
 ## 🎊 Summary
 
 **BigDaddyG Copilot CLI:**
+
 - ✅ GitHub Copilot experience in terminal
 - ✅ Works with BigDaddyG 40GB model
 - ✅ 100% offline capable
@@ -383,6 +441,6 @@ Both BigDaddyG IDE and CLI share:
 
 ---
 
-*Part of the BigDaddyG IDE ecosystem*  
-*https://github.com/ItsMehRAWRXD/BigDaddyG-IDE*
+*Part of the BigDaddyG IDE ecosystem*
+*<https://github.com/ItsMehRAWRXD/BigDaddyG-IDE*>
 

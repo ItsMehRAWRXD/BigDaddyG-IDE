@@ -1,7 +1,7 @@
-# 🎯 BigDaddyG IDE - Master README
+﻿# 🎯 BigDaddyG IDE - Master README
 
-**Version:** 2.0 - Regenerative Citadel Edition  
-**Build Date:** November 2, 2025  
+**Version:** 2.0 - Regenerative Citadel Edition
+**Build Date:** November 2, 2025
 **Status:** 🟢 **PRODUCTION READY**
 
 ---
@@ -24,31 +24,39 @@ BigDaddyG IDE is the **world's first 100% agentic, self-healing, voice-enabled d
 ## ⚡ **Quick Start**
 
 ### **1. Install BigDaddyG:**
+
 ```bash
-git clone https://github.com/ItsMehRAWRXD/BigDaddyG-IDE
+
+git clone <https://github.com/ItsMehRAWRXD/BigDaddyG-IDE>
 cd BigDaddyG-IDE
 npm install
-```
 
+```plaintext
 ### **2. Import Your VS Code/Cursor Settings:**
-```bash
-npm start
-# Click: "Import from VS Code/Cursor" → "Auto-Import Everything"
-# Wait 3 minutes → Done!
-```
 
+```bash
+
+npm start
+
+# Click: "Import from VS Code/Cursor" → "Auto-Import Everything"
+
+# Wait 3 minutes → Done!
+
+```plaintext
 ### **3. Start Coding:**
-```
+
+```plaintext
 Voice: "Hey BigDaddy, create a React app with authentication"
 BigDaddyG: (generates, installs deps, runs tests, deploys)
 You: ☕ Drink coffee while it works
-```
 
+```plaintext
 ---
 
 ## 📦 **What You Get**
 
 ### **🎯 Core IDE (100% VS Code Compatible)**
+
 - ✅ Monaco Editor (same as VS Code)
 - ✅ 50,000+ Extensions (Prettier, ESLint, Amazon Q, Copilot, etc.)
 - ✅ Integrated Terminal (PowerShell/Bash)
@@ -58,6 +66,7 @@ You: ☕ Drink coffee while it works
 - ✅ Search & Replace
 
 ### **🤖 AI Features (Better than Cursor)**
+
 - ✅ **5 Built-In Agents** (Agent, Composer, Coder, Chat, Plan)
 - ✅ **Custom Agents** (Create unlimited specialized agents)
 - ✅ **Model Tuning** (6 parameters: temp, top-p, top-k, penalties)
@@ -68,6 +77,7 @@ You: ☕ Drink coffee while it works
 - ✅ **Offline AI** (100% local with Ollama/GGUF models)
 
 ### **🎤 Voice Features (Unique to BigDaddyG)**
+
 - ✅ **Voice-to-Text** (50+ languages)
 - ✅ **Voice Commands** ("send", "clear", "run code", etc.)
 - ✅ **Custom Wake Word** ("Hey BigDaddy")
@@ -76,6 +86,7 @@ You: ☕ Drink coffee while it works
 - ✅ **Voice-to-EQ Pipeline** (Visualize AI activity)
 
 ### **🧠 Memory & Rules (Enhanced from Cursor)**
+
 - ✅ **Memory System** (Full UI, categories, search)
 - ✅ **Rule Engine** (Priority-based, conditional)
 - ✅ **.cursorrules Compatible** (Imports existing)
@@ -83,6 +94,7 @@ You: ☕ Drink coffee while it works
 - ✅ **Context Auto-Injection** (@files, errors, structure)
 
 ### **🔥 Agentic Execution (Beyond Cursor)**
+
 - ✅ **Auto-Execute** (No approval needed)
 - ✅ **Install Dependencies** (npm, pip, cargo, etc.)
 - ✅ **Compile Code** (C, C++, Rust, Go)
@@ -94,6 +106,7 @@ You: ☕ Drink coffee while it works
 - ✅ **Multi-Service Orchestration** (3+ services)
 
 ### **🔐 Security (Self-Healing)**
+
 - ✅ **RCK 2.0** (Predictive healing, quantum verification)
 - ✅ **40 Security Patches** (Auto-applied, self-evolving)
 - ✅ **Live Threat Intelligence** (CVE feed integration)
@@ -103,6 +116,7 @@ You: ☕ Drink coffee while it works
 - ✅ **SBOM Generation** (SPDX 2.3 compliant)
 
 ### **📊 Diagnostics (Self-Aware)**
+
 - ✅ **Agenticality Test** (Benchmark your AI)
 - ✅ **Self-Diagnostic Dashboard** (Live health monitoring)
 - ✅ **Decision Logging** (Why AI chose each action)
@@ -110,6 +124,7 @@ You: ☕ Drink coffee while it works
 - ✅ **TODO System** (Track progress across sessions)
 
 ### **📦 Import/Export (Seamless Migration)**
+
 - ✅ **One-Click Import** (VS Code/Cursor settings)
 - ✅ **All Extensions** (Auto-download from marketplace)
 - ✅ **Layouts** (5 built-in + custom)
@@ -126,6 +141,7 @@ You: ☕ Drink coffee while it works
 | **BigDaddyG IDE** | **$0** | Everything below |
 
 **Compare to:**
+
 - Cursor Pro: $20/month
 - Cursor Business: $60/month
 - GitHub Copilot: $10/month
@@ -143,7 +159,8 @@ You: ☕ Drink coffee while it works
 ## 🎯 **Why Switch to BigDaddyG?**
 
 ### **1. True Autonomy**
-```
+
+```plaintext
 Task: "Create a secure payment API with Stripe and deploy"
 
 Cursor $60:
@@ -162,24 +179,28 @@ BigDaddyG:
   → Deploys ✅
   → Verifies ✅
   Time: 3 minutes, 0 manual steps
-```
 
+```plaintext
 ### **2. Complete Offline Operation**
-```
+
+```plaintext
 Cursor: Requires internet for AI
-BigDaddyG: 
+BigDaddyG:
+
   - Works 100% offline with Ollama
   - 1M context window (local)
   - Zero cloud dependency
   - Perfect for:
+
     • Air-gapped environments
     • Secure facilities
     • Remote locations
     • Privacy-focused development
-```
 
+```plaintext
 ### **3. Voice Coding**
-```
+
+```plaintext
 You: 🎤 "Hey BigDaddy, create a REST API"
 BigDaddyG: "Yes, I'm listening"
 You: 🎤 "With user authentication and rate limiting"
@@ -190,38 +211,43 @@ BigDaddyG: 🔊 "API created and verified"
 
 Total time: 30 seconds of speaking
 Manual typing: 0 characters
-```
 
+```plaintext
 ### **4. Full Extension Compatibility**
-```
+
+```plaintext
 Install Amazon Q in BigDaddyG:
+
   1. Extensions → Search "Amazon Q"
   2. Click "Install"
   3. Use Amazon Q inside BigDaddyG
-  
+
 You can run:
+
   - Amazon Q ($40/month plan)
   - GitHub Copilot ($10/month plan)
   - Cursor AI ($60/month plan)
-  
-ALL inside BigDaddyG for $0/month!
-```
 
+ALL inside BigDaddyG for $0/month!
+
+```plaintext
 ### **5. Seamless Migration**
-```
+
+```plaintext
 Import your entire Cursor/VS Code setup:
+
   - 3 minutes
   - 0 manual steps
   - 100% compatibility
   - Feels identical
   - Get superpowers on top
-```
-
+```plaintext
 ---
 
 ## 📚 **Documentation**
 
 ### **Essential Guides:**
+
 1. [🚀 Quick Start Guide](./QUICK-START.md)
 2. [📦 Import/Export Guide](./📦-IMPORT-EXPORT-GUIDE-📦.md)
 3. [🎤 Voice & Emoji System](./🎤-VOICE-AND-EMOJI-SYSTEM-🎤.md)
@@ -230,17 +256,19 @@ Import your entire Cursor/VS Code setup:
 6. [📚 Cursor vs BigDaddyG](./📚-CURSOR-VS-BIGDADDYG-FEATURES-📚.md)
 
 ### **Technical Docs:**
-7. [🧬 RCK 2.0 Architecture](./FINAL-SECURITY-ARCHITECTURE.md)
-8. [🔄 Regenerative Orchestration](./REGENERATIVE-ORCHESTRATION.md)
-9. [🎮 Game Development Integration](./🎮-GAME-DEV-INTEGRATION-🎮.md)
-10. [📖 VS Code Extension Support](./VSCODE-EXTENSION-SUPPORT.md)
+
+  1. [🧬 RCK 2.0 Architecture](./FINAL-SECURITY-ARCHITECTURE.md)
+  2. [🔄 Regenerative Orchestration](./REGENERATIVE-ORCHESTRATION.md)
+  3. [🎮 Game Development Integration](./🎮-GAME-DEV-INTEGRATION-🎮.md)
+  4. [📖 VS Code Extension Support](./VSCODE-EXTENSION-SUPPORT.md)
 
 ---
 
 ## 🎬 **See It In Action**
 
 ### **Example 1: Full-Stack App (0 manual steps)**
-```
+
+```plaintext
 You: "Create a full-stack todo app with React, Express, MongoDB"
 
 BigDaddyG:
@@ -261,10 +289,11 @@ BigDaddyG:
 Time: 110 seconds
 Manual steps: 0
 Your involvement: One sentence
-```
 
+```plaintext
 ### **Example 2: Voice Coding**
-```
+
+```plaintext
 🎤 "Hey BigDaddy"
 🔊 "Yes, I'm listening"
 
@@ -283,8 +312,8 @@ Your involvement: One sentence
 🔊 "Creating cron job..."
   [Creates cron entry]
 🔊 "Scheduled to run every hour"
-```
 
+```plaintext
 ---
 
 ## 🏆 **Feature Highlights**
@@ -329,28 +358,36 @@ Your involvement: One sentence
 ## 🎯 **Getting Started**
 
 ### **Option 1: Fresh Install**
+
 ```bash
+
 npm install
 npm start
-```
 
+```plaintext
 ### **Option 2: Import from VS Code**
+
 ```bash
+
 npm start
+
 # Auto-import wizard will guide you
-```
 
+```plaintext
 ### **Option 3: Import from Cursor**
-```bash
-npm start
-# Click "Import from Cursor" → Imports everything automatically
-```
 
+```bash
+
+npm start
+
+# Click "Import from Cursor" → Imports everything automatically
+
+```plaintext
 ---
 
 ## 🎤 **Voice Coding Quickstart**
 
-```
+```plaintext
 1. Click 🎤 in agent panel
 2. Say: "Hey BigDaddy"
 3. AI: "Yes, I'm listening"
@@ -359,13 +396,13 @@ npm start
 6. Say: "send"
 7. AI: (speaks) "Reddit scraper created and tested"
 8. Done! ✅
-```
-
+```plaintext
 ---
 
 ## 📦 **Import Your Existing Setup**
 
 ### **What Gets Imported:**
+
 - ✅ **ALL Settings** (editor, terminal, git, etc.)
 - ✅ **ALL Keybindings** (custom shortcuts)
 - ✅ **ALL Snippets** (code snippets for all languages)
@@ -376,6 +413,7 @@ npm start
 - ✅ **Layouts** (window positions, panel sizes)
 
 ### **Import Time:**
+
 - Settings: < 1 second
 - Extensions (50 exts): ~2 minutes
 - Total: ~3 minutes
@@ -385,7 +423,8 @@ npm start
 ## 🚀 **Key Workflows**
 
 ### **1. Full-Stack Development:**
-```
+
+```plaintext
 You: "Create a full-stack e-commerce app"
 BigDaddyG:
   → Creates React frontend (15 components)
@@ -398,20 +437,22 @@ BigDaddyG:
   → Deploys to staging
   → Verifies all endpoints
   Time: 5 minutes, fully autonomous
-```
 
+```plaintext
 ### **2. Voice-Driven Debugging:**
-```
+
+```plaintext
 🎤 "Hey BigDaddy, why is this function failing?"
 🔊 "Analyzing error... Found null pointer on line 42"
 🎤 "Fix it"
 🔊 "Adding null check and validation"
   [Fixes code, runs tests]
 🔊 "Fixed and verified. All tests pass."
-```
 
+```plaintext
 ### **3. Learning New Technology:**
-```
+
+```plaintext
 You: "I've never used GraphQL. Create a GraphQL API with Apollo"
 BigDaddyG:
   → Fetches GraphQL docs
@@ -423,8 +464,8 @@ BigDaddyG:
   → Tests all operations
   → Creates README with examples
   → "✅ GraphQL API ready. Check README for usage examples."
-```
 
+```plaintext
 ---
 
 ## 🎨 **Layouts**
@@ -438,13 +479,13 @@ BigDaddyG:
 5. **Presentation** - Large fonts, clean UI
 
 ### **Create Custom Layouts:**
-```
+
+```plaintext
 1. Arrange windows how you like
 2. Settings → Layouts → "Save Current"
 3. Name it: "My Perfect Setup"
 4. Load anytime with one click
-```
-
+```plaintext
 ---
 
 ## 🔐 **Security & Privacy**
@@ -502,26 +543,33 @@ BigDaddyG:
 ## 🚀 **Get Started Now**
 
 ```bash
+
 # Clone repository
-git clone https://github.com/ItsMehRAWRXD/BigDaddyG-IDE
+
+git clone <https://github.com/ItsMehRAWRXD/BigDaddyG-IDE>
 cd BigDaddyG-IDE
 
 # Install dependencies
+
 npm install
 
 # Import your VS Code/Cursor setup (optional)
+
 # Will auto-detect on first launch
 
 # Start BigDaddyG
+
 npm start
 
 # Enable voice (optional)
+
 🎤 Click mic button → Grant permission → Start speaking
 
 # Install Amazon Q or any extension (optional)
-Extensions panel → Search → Install
-```
 
+Extensions panel → Search → Install
+
+```plaintext
 ---
 
 ## 📜 **License**
@@ -544,7 +592,7 @@ MIT License - See [LICENSE](./LICENSE)
 
 ## 🎯 **Summary**
 
-```
+```plaintext
 ╔════════════════════════════════════════════════════════════╗
 ║  BIGDADDYG IDE - THE COMPLETE PACKAGE                      ║
 ╠════════════════════════════════════════════════════════════╣
@@ -565,8 +613,8 @@ MIT License - See [LICENSE](./LICENSE)
 ║  Rating:   🚀 REVOLUTIONARY                                ║
 ║  Verdict:  🏆 THE ULTIMATE IDE                             ║
 ╚════════════════════════════════════════════════════════════╝
-```
 
+```plaintext
 **The first IDE that's truly intelligent, autonomous, and alive.**
 
 🧬 **Welcome to the Regenerative Citadel.**

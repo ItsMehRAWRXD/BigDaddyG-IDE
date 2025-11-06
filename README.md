@@ -1,11 +1,11 @@
-# 🚀 BigDaddyG IDE - Regenerative Citadel Edition
+﻿# 🚀 BigDaddyG IDE - Regenerative Citadel Edition
 
 **The World's First 100% Agentic IDE with Self-Healing Security**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/ItsMehRAWRXD/BigDaddyG-IDE/releases)
+[![License: MIT](<https://img.shields.io/badge/License-MIT-yellow.svg>)](<https://opensource.org/licenses/MIT>)
+[![Version](<https://img.shields.io/badge/version-2.0.0-blue.svg>)](<https://github.com/ItsMehRAWRXD/BigDaddyG-IDE/releases>)
 
-> **⚡ This repo contains SOURCE CODE ONLY (~6.8 MB)**  
+> **⚡ This repo contains SOURCE CODE ONLY (~6.8 MB)**
 > All dependencies can be recreated in minutes!
 
 ---
@@ -13,7 +13,7 @@
 ## 📦 Quick Start (3 Commands)
 
 \\\ash
-git clone https://github.com/ItsMehRAWRXD/BigDaddyG-IDE.git
+git clone <https://github.com/ItsMehRAWRXD/BigDaddyG-IDE.git>
 cd BigDaddyG-IDE
 npm install    # Downloads dependencies (~430 MB)
 npm start      # Launches BigDaddyG IDE!
@@ -28,20 +28,23 @@ That's it! ✨
 **This is part of a complete development ecosystem!**
 
 ### 🏠 Main IDE
-- **[BigDaddyG-IDE](https://github.com/ItsMehRAWRXD/BigDaddyG-IDE)** ⭐ You are here
+
+- **[BigDaddyG-IDE](<https://github.com/ItsMehRAWRXD/BigDaddyG-IDE>)** ⭐ You are here
 
 ### 🔧 Extensions
-- **[BigDaddyG-ASM-IDE](https://github.com/ItsMehRAWRXD/BigDaddyG-ASM-IDE)** - Assembly Development Extension
-- **[RawrZ-Extensions](https://github.com/ItsMehRAWRXD/RawrZ-Extensions)** - Security-Focused Extensions
-- **[VSCode-AI-Chat-Extension](https://github.com/ItsMehRAWRXD/VSCode-AI-Chat-Extension)** - AI Chat Interface
-- **[BigDaddyG-Cursor-Extension](https://github.com/ItsMehRAWRXD/BigDaddyG-Cursor-Extension)** - Cursor IDE Integration
-- **[bigdaddyg-extension](https://github.com/ItsMehRAWRXD/bigdaddyg-extension)** - General Extension Tools
-- **[UnifiedAI-Extension](https://github.com/ItsMehRAWRXD/UnifiedAI-Extension)** - Multi-Model AI Interface
-- **[ai-assistant-extension](https://github.com/ItsMehRAWRXD/ai-assistant-extension)** - AI Coding Assistant
+
+- **[BigDaddyG-ASM-IDE](<https://github.com/ItsMehRAWRXD/BigDaddyG-ASM-IDE>)** - Assembly Development Extension
+- **[RawrZ-Extensions](<https://github.com/ItsMehRAWRXD/RawrZ-Extensions>)** - Security-Focused Extensions
+- **[VSCode-AI-Chat-Extension](<https://github.com/ItsMehRAWRXD/VSCode-AI-Chat-Extension>)** - AI Chat Interface
+- **[BigDaddyG-Cursor-Extension](<https://github.com/ItsMehRAWRXD/BigDaddyG-Cursor-Extension>)** - Cursor IDE Integration
+- **[bigdaddyg-extension](<https://github.com/ItsMehRAWRXD/bigdaddyg-extension>)** - General Extension Tools
+- **[UnifiedAI-Extension](<https://github.com/ItsMehRAWRXD/UnifiedAI-Extension>)** - Multi-Model AI Interface
+- **[ai-assistant-extension](<https://github.com/ItsMehRAWRXD/ai-assistant-extension>)** - AI Coding Assistant
 
 ### 🏆 Compiler Ecosystem (Revolutionary!)
-- **[Pure-PowerShell-Compilers](https://github.com/ItsMehRAWRXD/Pure-PowerShell-Compilers)** ⭐ 38 Languages!
-- **[Compiler-Framework](https://github.com/ItsMehRAWRXD/Compiler-Framework)** - Self-Hosting Compiler
+
+- **[Pure-PowerShell-Compilers](<https://github.com/ItsMehRAWRXD/Pure-PowerShell-Compilers>)** ⭐ 38 Languages!
+- **[Compiler-Framework](<https://github.com/ItsMehRAWRXD/Compiler-Framework>)** - Self-Hosting Compiler
 
 **Total: 10 repositories in the ecosystem**
 
@@ -50,6 +53,7 @@ That's it! ✨
 ## 🎯 What's Included in This Repo
 
 ✅ **All Source Code** (6.8 MB)
+
 - \lectron/\ - Frontend IDE code (Monaco Editor, UI)
 - \server/\ - Orchestra AI server
 - \hooks/\ - Prompt preprocessor hooks
@@ -58,11 +62,16 @@ That's it! ✨
 - \package.json\ - Dependency manifest
 
 ❌ **NOT Included** (Can be recreated)
+
 - \
+
 ode_modules/\ - Run \
 pm install\ (430 MB)
+
 - \dist/\ - Run \
+
 pm run build\ (486 MB)
+
 - AI Models - See instructions below (optional)
 
 ---
@@ -72,6 +81,7 @@ pm run build\ (486 MB)
 BigDaddyG works with **any** AI model:
 
 ### Option 1: Use Cloud Models (Recommended)
+
 - OpenAI (GPT-4, GPT-3.5)
 - Anthropic (Claude Sonnet, Opus)
 - Google (Gemini)
@@ -79,14 +89,18 @@ BigDaddyG works with **any** AI model:
 
 ### Option 2: Install Local Models (Offline)
 
-1. **Install Ollama**: https://ollama.ai/download
+1. **Install Ollama**: <https://ollama.ai/download>
 2. **Pull a model**:
+
 \\\ash
+
 # Coding-focused (recommended)
+
 ollama pull qwen2.5-coder:3b   # 3 GB
 ollama pull deepseek-coder:6b  # 6 GB
 
 # General purpose
+
 ollama pull llama2:7b           # 7 GB
 ollama pull mistral:7b          # 7 GB
 \\\
@@ -98,11 +112,13 @@ BigDaddyG will auto-detect and use them!
 ## 🏗️ Build Options
 
 ### Development Mode
+
 \\\ash
 npm start              # Run in development
 \\\
 
 ### Build Executables
+
 \\\ash
 npm run build:win      # Windows .exe
 npm run build:mac      # macOS .dmg
@@ -110,9 +126,12 @@ npm run build:linux    # Linux .AppImage
 \\\
 
 ### Build with AI Model Bundled
+
 \\\powershell
 .\create-bundled-installer.ps1
+
 # Creates: BigDaddyG-AI-Bundle/ (~10.5 GB, fully offline)
+
 \\\
 
 ---
@@ -135,25 +154,30 @@ npm run build:linux    # Linux .AppImage
 ## ✨ Core Features
 
 ### 🤖 Agentic Capabilities
+
 - ✅ **Autonomous Execution** - Runs, debugs, fixes code automatically
 - ✅ **Self-Healing RCK** - 40-layer security, auto-repairs itself
 - ✅ **Multi-Agent Swarm** - 6 specialized AI agents
 - ✅ **Voice Coding** - Hands-free development
 
 ### 🎯 IDE Features
+
 - ✅ **Monaco Editor** - Same as VS Code
 - ✅ **Ultra-Fast Autocomplete** - AI-powered suggestions
 - ✅ **Unlimited Tabs** - Smart management
 - ✅ **Terminal Integration** - PowerShell, CMD, Bash
 
 ### 🔄 Cross-IDE Compatible
+
 Import/Export from:
+
 - ✅ VS Code (settings, extensions, keybindings)
 - ✅ Cursor (memories, rules)
 - ✅ JetBrains (IntelliJ, PyCharm, WebStorm)
 - ✅ Visual Studio (.sln projects)
 
 ### 🎮 Game Development
+
 - ✅ Godot 4.2+
 - ✅ Unreal Engine 5.3+
 - ✅ Unity 2022 LTS
@@ -174,16 +198,19 @@ Import/Export from:
 ## 🔧 Troubleshooting
 
 ### "White screen" on launch?
+
 - Safe Mode will auto-activate after 3 failures
 - Or manually load: \index-ultra-simple.html\
 
 ### Dependencies not installing?
+
 \\\ash
 rm -rf node_modules package-lock.json
 npm install --force
 \\\
 
 ### Models not detected?
+
 \\\ash
 ollama list    # Check installed models
 \\\
@@ -214,6 +241,7 @@ ollama list    # Check installed models
 MIT License - See [LICENSE](LICENSE)
 
 **Third-party:**
+
 - Electron: MIT
 - Monaco: MIT
 - Express: MIT
@@ -231,8 +259,8 @@ MIT License - See [LICENSE](LICENSE)
 
 ## 📞 Contact
 
-- GitHub: [@ItsMehRAWRXD](https://github.com/ItsMehRAWRXD)
-- Issues: [Report Bug](https://github.com/ItsMehRAWRXD/BigDaddyG-IDE/issues)
+- GitHub: [@ItsMehRAWRXD](<https://github.com/ItsMehRAWRXD>)
+- Issues: [Report Bug](<https://github.com/ItsMehRAWRXD/BigDaddyG-IDE/issues>)
 
 ---
 

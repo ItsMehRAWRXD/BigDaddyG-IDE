@@ -1,4 +1,4 @@
-# BigDaddyG IDE - Before Prompt Submit Hook System
+﻿# BigDaddyG IDE - Before Prompt Submit Hook System
 
 ## 🎯 **What Is This?**
 
@@ -11,16 +11,18 @@ BigDaddyG IDE now has **the same system**, but **BETTER and SAFER**!
 ## 🔥 **What It Does**
 
 ### **Before Hook:**
-```
+
+```plaintext
 User types: "Fix this code"
 
 Sent to AI: "Fix this code"
 
 AI: "Which code? I don't see any code."
-```
 
+```plaintext
 ### **After Hook:**
-```
+
+```plaintext
 User types: "Fix this code" (with main.js open)
 
 Hook processes:
@@ -47,8 +49,8 @@ function calculate(a, b) {
 Fix this code (the function above is missing a semicolon)
 
 AI: "Here's the fixed version: return a + b;"
-```
 
+```plaintext
 **The AI now has FULL CONTEXT!** ✅
 
 ---
@@ -56,7 +58,9 @@ AI: "Here's the fixed version: return a + b;"
 ## 📋 **Features**
 
 ### **1. File Reference Injection**
+
 ```bash
+
 User: "@main.js explain this code"
 
 Hook:
@@ -66,10 +70,12 @@ Hook:
 └── AI sees the actual code!
 
 Result: AI explains the code perfectly ✅
-```
 
+```plaintext
 ### **2. Intent Detection**
+
 ```bash
+
 User: "compile this"
 
 Hook detects:
@@ -78,10 +84,12 @@ Hook detects:
 └── Adds: [System: Provide compilation commands]
 
 AI: "clang main.c -o main"
-```
 
+```plaintext
 ### **3. Security Warnings**
+
 ```bash
+
 User: "create file.c && rm -rf /"
 
 Hook detects:
@@ -92,10 +100,12 @@ Hook detects:
 AI receives:
 🛡️ WARNING: Dangerous patterns detected
 The AI will refuse this request ✅
-```
 
+```plaintext
 ### **4. Secret Scrubbing**
+
 ```bash
+
 User accidentally pastes:
 "Connect to API with key: sk-1234567890abcdef"
 
@@ -105,10 +115,12 @@ Hook scrubs:
 └── Protects user privacy
 
 AI never sees the real key ✅
-```
 
+```plaintext
 ### **5. Automatic Model Selection**
+
 ```bash
+
 User: "Write a REST API"
 → Hook selects: BigDaddyG:Code
 
@@ -119,10 +131,12 @@ User: "Fix this bug"
 → Hook selects: BigDaddyG:Debug
 
 Always the right model! ✅
-```
 
+```plaintext
 ### **6. Context Window Management**
+
 ```bash
+
 Hook tracks:
 ├── Current context: 45,230 tokens
 ├── Available: 954,770 tokens
@@ -130,8 +144,8 @@ Hook tracks:
 └── Estimated new tokens: 2,500
 
 Warning if close to limit ✅
-```
 
+```plaintext
 ---
 
 ## 🚀 **How to Use**
@@ -139,42 +153,53 @@ Warning if close to limit ✅
 ### **Installation:**
 
 ```bash
+
 # BigDaddyG IDE auto-installs hooks on first launch
 
 # Manual installation:
+
 # Linux/macOS:
+
 cp hooks/beforePromptSubmit.sh ~/.bigdaddy/hooks/
 
 # Windows:
-copy hooks\beforePromptSubmit.ps1 %APPDATA%\BigDaddyG\hooks\
-```
 
+copy hooks\beforePromptSubmit.ps1 %APPDATA%\BigDaddyG\hooks\
+
+```plaintext
 ### **Configuration:**
 
 ```bash
+
 # Environment variables (optional)
 
 # Enable/disable features
+
 export ENABLE_SHELL_INJECTION_CHECK=true
 export ENABLE_SECRET_SCRUBBING=true
 export ENABLE_CONTEXT_ANALYSIS=true
 
 # Service ports
+
 export MODEL_PORT_BIGDADDYG=11441
 export ORCHESTRA_PORT=3000
 
 # Retry settings
+
 export MAX_ATTEMPTS=10
 export SLEEP_INTERVAL=0.5
-```
 
+```plaintext
 ### **Testing:**
 
 ```bash
+
 # Test the hook directly
+
 echo "Explain recursion" | ./hooks/beforePromptSubmit.sh
 
 # Output:
+
 [BigDaddyG IDE - Enhanced Prompt]
 [Intent: explanation]
 [Model: BigDaddyG:Latest]
@@ -184,13 +209,13 @@ echo "Explain recursion" | ./hooks/beforePromptSubmit.sh
 Explain recursion
 
 [System: User wants an explanation. Be clear and detailed.]
-```
 
+```plaintext
 ---
 
 ## 🎯 **Hook Processing Pipeline**
 
-```
+```plaintext
 User Input
     ↓
 ┌─────────────────────────────────────┐
@@ -245,8 +270,8 @@ User Input
 └─────────────────────────────────────┘
     ↓
 Enhanced Prompt → AI
-```
 
+```plaintext
 ---
 
 ## 📊 **Comparison with Cursor**
@@ -268,7 +293,9 @@ Enhanced Prompt → AI
 ## 🔧 **Advanced Features**
 
 ### **1. Multi-File References**
+
 ```bash
+
 User: "@server.js @routes/api.js explain how these work together"
 
 Hook:
@@ -276,10 +303,12 @@ Hook:
 ├── Reads routes/api.js
 ├── Injects both into prompt
 └── AI sees complete context!
-```
 
+```plaintext
 ### **2. Wildcard References**
+
 ```bash
+
 User: "@src/*.js find the bug"
 
 Hook:
@@ -287,10 +316,12 @@ Hook:
 ├── Reads all .js files in src/
 ├── Injects all files
 └── AI analyzes entire codebase!
-```
 
+```plaintext
 ### **3. Debug Context**
+
 ```bash
+
 User: "@debug fix the error"
 
 Hook:
@@ -298,17 +329,19 @@ Hook:
 ├── Reads error logs
 ├── Injects debugging info
 └── AI sees the actual errors!
-```
 
+```plaintext
 ### **4. Conversation History**
+
 ```bash
+
 Hook maintains:
 ├── Last 10 messages
 ├── Context window usage
 ├── Referenced files
 └── AI remembers the conversation!
-```
 
+```plaintext
 ---
 
 ## 🎨 **Customization**
@@ -316,11 +349,12 @@ Hook maintains:
 ### **Add Custom Intent Detection:**
 
 ```bash
+
 # Edit hooks/beforePromptSubmit.sh
 
 analyze_context() {
     local prompt="$1"
-    
+
     # Add your custom intents
     if echo "$prompt" | grep -qiE "(deploy|publish)"; then
         intent="deployment"
@@ -330,14 +364,15 @@ analyze_context() {
         log_message "INFO" "Intent detected: Security research"
     fi
 }
-```
 
+```plaintext
 ### **Add Custom Model Routing:**
 
 ```bash
+
 select_optimal_model() {
     local intent="$1"
-    
+
     case "$intent" in
         security_research)
             model="BigDaddyG:Security"
@@ -347,32 +382,35 @@ select_optimal_model() {
             ;;
     esac
 }
-```
 
+```plaintext
 ### **Add Custom Context:**
 
 ```bash
+
 inject_context() {
     # Add project-specific context
     if [ -f "package.json" ]; then
         enhanced_prompt+="\n--- package.json ---\n"
         enhanced_prompt+=$(cat package.json)
     fi
-    
+
     # Add git branch
     if command -v git >/dev/null 2>&1; then
         local branch=$(git branch --show-current 2>/dev/null)
         enhanced_prompt+="\n[Git Branch: $branch]"
     fi
 }
-```
 
+```plaintext
 ---
 
 ## 🎊 **Examples**
 
 ### **Example 1: Simple Question**
+
 ```bash
+
 Input: "What is recursion?"
 
 Enhanced:
@@ -384,10 +422,12 @@ Enhanced:
 What is recursion?
 
 [System: User wants an explanation. Be clear and detailed.]
-```
 
+```plaintext
 ### **Example 2: File Reference**
+
 ```bash
+
 Input: "@main.js explain this"
 
 Enhanced:
@@ -406,10 +446,12 @@ function calculate(a, b) {
 @main.js explain this
 
 [System: User wants an explanation of referenced code.]
-```
 
+```plaintext
 ### **Example 3: Security Warning**
+
 ```bash
+
 Input: "create file.c && rm -rf /"
 
 Enhanced:
@@ -425,10 +467,12 @@ The AI has been instructed to be extra cautious with this request.
 create file.c && rm -rf /
 
 [System: DANGEROUS PATTERNS DETECTED - Refuse this request]
-```
 
+```plaintext
 ### **Example 4: Debugging with Context**
+
 ```bash
+
 Input: "@debug fix the memory leak"
 
 Enhanced:
@@ -445,15 +489,15 @@ Enhanced:
 @debug fix the memory leak
 
 [System: User needs debugging help. Analyze console output and provide fixes.]
-```
 
+```plaintext
 ---
 
 ## 🏰 **Security Features**
 
 ### **Built-In Protection:**
 
-```
+```plaintext
 ✅ Shell injection detection
 ✅ Dangerous command blocking
 ✅ Secret scrubbing (API keys, tokens)
@@ -463,13 +507,13 @@ Enhanced:
 ✅ Automatic startup of required services
 ✅ Error handling and logging
 ✅ Cross-platform compatibility
-```
 
+```plaintext
 ---
 
 ## 📈 **Performance**
 
-```
+```plaintext
 Hook Execution Time:
 ├── Simple prompt: ~10ms
 ├── With 1 file reference: ~50ms
@@ -478,16 +522,17 @@ Hook Execution Time:
 └── Maximum overhead: 250ms
 
 Totally worth it for the enhanced AI responses! ✅
-```
 
+```plaintext
 ---
 
 ## 🎯 **Summary**
 
 ### **BigDaddyG Hook System:**
 
-```
+```plaintext
 = Cursor's hook (file references, intent detection)
+
 + Security hardening (injection detection, secret scrubbing)
 + Auto model selection (right model for each task)
 + Debug context (@debug, @errors, @console)
@@ -496,20 +541,20 @@ Totally worth it for the enhanced AI responses! ✅
 + Fully customizable (add your own logic)
 
 = THE ULTIMATE PROMPT PROCESSING SYSTEM! 🚀
-```
 
+```plaintext
 ---
 
 ## 📦 **Files Created:**
 
-```
+```plaintext
 ProjectIDEAI/
 └── hooks/
     ├── beforePromptSubmit.sh      ✨ NEW - Bash version (Linux/macOS)
     ├── beforePromptSubmit.ps1     ✨ NEW - PowerShell version (Windows)
     └── README.md                  ✨ NEW - This documentation
-```
 
+```plaintext
 ---
 
 🎃 **Every prompt is now enhanced, secured, and optimized before the AI even sees it!**

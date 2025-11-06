@@ -1,4 +1,4 @@
-# ☀️ Sunshine Game Engine - Complete Technical Architecture ☀️
+﻿# ☀️ Sunshine Game Engine - Complete Technical Architecture ☀️
 
 ## **THE REGENERATIVE CITADEL'S PROPRIETARY ENGINE**
 
@@ -27,7 +27,7 @@ This is not just a game engine—it's a **mathematically provable reality**.
 
 ### **Core Components**
 
-```
+```plaintext
 sunshine/
 ├── core/
 │   ├── engine.cpp/.h              # Main loop, scene graph
@@ -107,8 +107,8 @@ sunshine/
     ├── multiplayer-consensus.md
     ├── integration-guide.md
     └── rck-verification.md
-```
 
+```plaintext
 ---
 
 ## ⚡ **REAL-TIME ATTESTATION PIPELINE**
@@ -117,7 +117,7 @@ sunshine/
 
 Every game tick is cryptographically verified **before the next frame renders**.
 
-```
+```plaintext
 ╔══════════════════════════════════════════════════════════════╗
 ║  SUNSHINE 8MS ATTESTATION CYCLE                              ║
 ╠══════════════════════════════════════════════════════════════╣
@@ -153,13 +153,14 @@ Every game tick is cryptographically verified **before the next frame renders**.
 ║  Self-Healing: Automatic (no manual intervention)           ║
 ║                                                              ║
 ╚══════════════════════════════════════════════════════════════╝
-```
 
+```plaintext
 ### **Technical Breakdown**
 
 #### **Step 0: Pre-Tick Snapshot**
 
 ```cpp
+
 // Merkleized world state capture
 struct TickCapsule {
     uint64_t tick_number;
@@ -173,8 +174,8 @@ struct TickCapsule {
 // Generated in <150 microseconds
 TickCapsule capture_world_state() {
     auto merkle_tree = build_4k_tree(
-        positions, velocities, 
-        rng_state, player_inputs, 
+        positions, velocities,
+        rng_state, player_inputs,
         gpu_commands
     );
     return TickCapsule {
@@ -186,26 +187,27 @@ TickCapsule capture_world_state() {
         .timestamp_ns = high_res_time()
     };
 }
-```
 
+```plaintext
 #### **Step 1: Deterministic Simulation**
 
 ```cpp
+
 // WASM sandbox with verifiable execution
 class VerifiableSandbox {
     STARK_Prover prover;
     VerifiableLog event_log;
-    
+
     void simulate_tick(TickCapsule capsule) {
         // Every opcode maps to zk-circuit gate
         wasm_runtime.set_initial_state(capsule);
-        
+
         while (wasm_runtime.step()) {
             auto opcode = wasm_runtime.current_instruction();
-            
+
             // Stream STARK proof incrementally
             prover.add_constraint(opcode);
-            
+
             // Log all side effects
             if (opcode.has_side_effect()) {
                 event_log.append(
@@ -214,17 +216,18 @@ class VerifiableSandbox {
                 );
             }
         }
-        
+
         // Generate succinct proof
         auto proof = prover.finalize(); // ~32k gates
         event_log.set_proof(proof);
     }
 };
-```
 
+```plaintext
 #### **Step 2: Threshold Signature**
 
 ```cpp
+
 // FROST threshold signature (32-of-64)
 struct SignatureShare {
     uint16_t shard_id;
@@ -236,7 +239,7 @@ struct SignatureShare {
 SignatureShare sign_tick(STARK_Proof proof, VL_Root root) {
     auto frost_key = load_frost_key_share(shard_id);
     auto message = hash(proof.hash() || root);
-    
+
     return SignatureShare {
         .shard_id = this_shard,
         .signature = frost_sign(frost_key, message),
@@ -252,11 +255,12 @@ void broadcast_share(SignatureShare share) {
         gossipsub_send(peer, share); // <1ms within region
     }
 }
-```
 
+```plaintext
 #### **Step 3: Global Threshold Signature**
 
 ```cpp
+
 // Notary layer assembles GTS
 struct GlobalThresholdSignature {
     uint64_t tick_number;
@@ -271,13 +275,13 @@ GTS assemble_gts(vector<SignatureShare> shares) {
     if (shares.size() < 10) {
         throw "Insufficient shard participation";
     }
-    
+
     // Aggregate FROST shares
     auto aggregated = frost_aggregate(shares);
-    
+
     // Verify STARK proof consensus
     auto vl_root = verify_consensus(shares);
-    
+
     return GTS {
         .tick_number = current_tick,
         .signature = aggregated,
@@ -286,40 +290,41 @@ GTS assemble_gts(vector<SignatureShare> shares) {
         .notarization_time_ns = high_res_time()
     };
 }
-```
 
+```plaintext
 #### **Step 4: Self-Healing**
 
 ```cpp
+
 // RCK-integrated healing engine
 class HealingEngine {
     void verify_and_heal(GTS gts, VerifiableLog local_vl) {
         // Recompute local VL root
         auto local_root = local_vl.compute_root();
-        
+
         if (local_root != gts.canonical_vl_root) {
             // MISMATCH DETECTED - TRIGGER HEAL
             log_tamper_event(gts.tick_number, local_root);
-            
+
             // Rollback to last valid tick
             rollback_to_tick(gts.tick_number - 1);
-            
+
             // Fetch canonical VL diff from network
             auto canonical_diff = fetch_vl_diff(gts);
-            
+
             // Replay canonical events
             replay_events(canonical_diff);
-            
+
             // Verify fix
             auto healed_root = recompute_vl_root();
             assert(healed_root == gts.canonical_vl_root);
-            
+
             log_heal_complete(gts.tick_number);
         }
     }
 };
-```
 
+```plaintext
 ---
 
 ## 🤖 **SWARM-AGENT BATTLEFIELD COORDINATION**
@@ -328,7 +333,7 @@ class HealingEngine {
 
 Every player is shadowed by an **autonomous referee agent** that validates all actions.
 
-```
+```plaintext
 ╔══════════════════════════════════════════════════════════════╗
 ║  AGENT ROLES IN 256-PLAYER MATCH                             ║
 ╠══════════════════════════════════════════════════════════════╣
@@ -356,11 +361,12 @@ Every player is shadowed by an **autonomous referee agent** that validates all a
 ║  └── Optional telemetry collection                           ║
 ║                                                              ║
 ╚══════════════════════════════════════════════════════════════╝
-```
 
+```plaintext
 ### **Consensus Protocol**
 
 ```cpp
+
 // Referee consensus for single action
 class RefereeProtocol {
     struct EventTicket {
@@ -370,44 +376,45 @@ class RefereeProtocol {
         uint8_t referee_signatures[16][64]; // 16 co-signatures
         uint64_t canonical_timestamp;
     };
-    
+
     EventTicket validate_action(PlayerAction action) {
         // 1. Referee checks rules locally
         auto outcome = check_rules(action);
-        
+
         // 2. Create ticket
         auto ticket = EventTicket {
             .action_hash = hash(action),
             .outcome_hash = hash(outcome),
             .stark_step = current_stark_step
         };
-        
+
         // 3. Gossip to 16 nearest referees (Kademlia)
         auto neighbors = kademlia_nearest(16, this_referee_id);
         for (auto& peer : neighbors) {
             auto peer_check = peer.validate(action);
-            
+
             if (peer_check.outcome_hash == outcome_hash) {
                 // Referee agrees - co-sign
                 ticket.add_signature(peer.sign(ticket));
             }
         }
-        
+
         // 4. After 8 co-signatures, ticket is canonical
         if (ticket.signature_count() >= 8) {
             append_to_vl(ticket);
             return ticket;
         }
-        
+
         // 5. Insufficient consensus - action rejected
         throw "Consensus failure";
     }
 };
-```
 
+```plaintext
 ### **Fraud Proof System**
 
 ```cpp
+
 // Audit agent fraud detection
 class AuditAgent {
     struct FraudProof {
@@ -416,14 +423,14 @@ class AuditAgent {
         STARK_Proof counter_proof;  // Shows correct outcome
         blake3_hash correct_outcome;
     };
-    
+
     optional<FraudProof> check_ticket(EventTicket ticket) {
         // Re-execute action from same pre-state
         auto capsule = fetch_tick_capsule(ticket.tick);
         auto sandbox = create_verifiable_sandbox(capsule);
-        
+
         auto correct_outcome = sandbox.simulate(ticket.action);
-        
+
         if (hash(correct_outcome) != ticket.outcome_hash) {
             // FRAUD DETECTED!
             return FraudProof {
@@ -433,28 +440,28 @@ class AuditAgent {
                 .correct_outcome = hash(correct_outcome)
             };
         }
-        
+
         return nullopt; // Ticket valid
     }
-    
+
     void slash_fraudulent_referee(FraudProof proof) {
         // Verify fraud proof
         if (verify_stark(proof.counter_proof)) {
             // Punish lying referee
             auto guilty_referee = proof.disputed_ticket.referee_id;
             slash_stake(guilty_referee, 100_ETH);
-            
+
             // Rewrite VL with correct outcome
             vl_prune(proof.disputed_ticket);
             vl_append(proof.correct_outcome);
-            
+
             // Broadcast heal to all clients
             broadcast_heal_event(proof);
         }
     }
 };
-```
 
+```plaintext
 ---
 
 ## 📊 **PERFORMANCE METRICS**
@@ -515,6 +522,7 @@ class AuditAgent {
 ### **Security Coverage**
 
 ```cpp
+
 // RCK verification hooks
 class SunshineRCKHook {
     void verify_on_startup() {
@@ -524,24 +532,24 @@ class SunshineRCKHook {
         verify_hash("photon-physics.dll");
         verify_hash("nimbus-networking.dll");
         verify_hash("stark-prover.dll");
-        
+
         // Verify all game modules
         for (auto& module : loaded_modules) {
             verify_hash(module.path);
         }
-        
+
         // Generate attestation
         auto attestation = create_rck_attestation(
             "Sunshine Engine v1.3.2",
             verified_hashes,
             current_timestamp()
         );
-        
+
         // Sign and save
         sign_attestation(attestation);
         save_attestation("sunshine-attestation.json");
     }
-    
+
     void verify_runtime() {
         // Every 60 seconds
         static auto last_check = now();
@@ -550,40 +558,41 @@ class SunshineRCKHook {
             last_check = now();
         }
     }
-    
+
     void verify_match() {
         // Before each match starts
         verify_hash("battlecore-server.exe");
         verify_hash("referee-agent.wasm");
         verify_hash("anti-cheat.dll");
-        
+
         // Generate match attestation
         auto match_attestation = create_match_attestation(
             match_id,
             verified_modules,
             player_count
         );
-        
+
         sign_attestation(match_attestation);
-        
+
         // Save to audit log
         append_audit_log(match_attestation);
     }
 };
-```
 
+```plaintext
 ### **Audit Trail**
 
 Every match generates immutable audit entries:
 
 ```jsonl
+
 {"timestamp":"2025-11-01T23:15:30.892Z","event":"match_start","details":{"match_id":"BC256-2025110123","players":256,"map":"desert_storm","mode":"battlecore_256"}}
 {"timestamp":"2025-11-01T23:15:31.103Z","event":"rck_verification","details":{"status":"PRISTINE","modules_verified":42,"hash_mismatches":0}}
 {"timestamp":"2025-11-01T23:15:45.221Z","event":"fraud_detected","details":{"referee_id":"R-127","tick":1842,"action":"headshot","fraud_proof_hash":"a3f4b2..."}}
 {"timestamp":"2025-11-01T23:15:45.589Z","event":"auto_heal","details":{"tick":1842,"vl_pruned":1,"vl_replayed":1,"clients_synced":256}}
 {"timestamp":"2025-11-01T23:45:22.441Z","event":"match_end","details":{"winner":"Team_Alpha","duration_s":1792,"fraud_events":3,"heals_performed":3}}
-```
 
+```plaintext
 ---
 
 ## 🧠 **BIGDADDYG AI INTEGRATION**
@@ -591,6 +600,7 @@ Every match generates immutable audit entries:
 ### **Six-Agent Engine Development**
 
 ```javascript
+
 // Agent coordination for Sunshine projects
 class SunshineAgentBridge {
     async createGame(description) {
@@ -600,54 +610,54 @@ class SunshineAgentBridge {
             description: description,
             targetPlatforms: ['windows', 'linux', 'web']
         });
-        
+
         // 2. Coder generates scripts
         const scripts = await agents.coder.generate({
             architecture: architecture,
             language: 'lua', // or C++, Python
             template: 'battlecore_256'
         });
-        
+
         // 3. Security validates
         const securityCheck = await agents.security.validate({
             scripts: scripts,
             rck_verify: true,
             stark_proofs: true
         });
-        
+
         // 4. Tester simulates
         const tests = await agents.tester.simulate({
             physics: true,
             networking: true,
             player_count: 256
         });
-        
+
         // 5. Optimizer tunes
         const optimized = await agents.optimizer.tune({
             target_fps: 240,
             tick_rate: 120,
             bandwidth_limit: '500 kbps'
         });
-        
+
         // 6. Reviewer approves
         const approval = await agents.reviewer.review({
             code: optimized.code,
             tests: tests.results,
             security: securityCheck.report
         });
-        
+
         if (approval.approved) {
             return this.buildAndAttest(optimized);
         }
     }
-    
+
     async buildAndAttest(project) {
         // Build executable
         const build = await sunshine.compile(project);
-        
+
         // RCK verification
         const attestation = await rck.verify(build);
-        
+
         // Sign and return
         return {
             executable: build.path,
@@ -657,15 +667,15 @@ class SunshineAgentBridge {
         };
     }
 }
-```
 
+```plaintext
 ---
 
 ## 🎮 **COMPETITIVE MODULES**
 
 ### **Instagib Arena**
 
-```
+```plaintext
 Features:
 ✅ One-hit elimination
 ✅ 240 Hz tick rate
@@ -676,15 +686,15 @@ Features:
 ✅ Anti-cheat via RCK input signing
 
 Technical:
+
 - Hitscan plasma rifle (zero travel time)
 - Client-side prediction + rollback
 - Every kill cryptographically signed
 - Latency stress test for engine
-```
-
+```plaintext
 ### **BattleCore-256**
 
-```
+```plaintext
 Features:
 ✅ 256 concurrent players
 ✅ 16×16 km seamless world
@@ -695,13 +705,13 @@ Features:
 ✅ Full match replay
 
 Technical:
+
 - 256 physics zones (1 per km²)
 - Streaming terrain system
 - FROST-signed match outcomes
 - Zero-knowledge anti-cheat
 - Automatic desync healing
-```
-
+```plaintext
 ---
 
 ## 📦 **BIGDADDYG IDE INTEGRATION**
@@ -709,42 +719,51 @@ Technical:
 ### **Creating Sunshine Projects**
 
 ```bash
+
 # Via CLI
+
 bigdaddyg create:game --engine sunshine --template 3D_demo
 bigdaddyg create:game --engine sunshine --template instagib_arena
 bigdaddyg create:game --engine sunshine --template battlecore_256
 
 # Via Voice
+
 "Hey BigDaddy, create a Sunshine FPS with 256 players"
 "Build an Instagib arena with RCK verification"
 "Generate a BattleCore map with desert theme"
 
 # Via IDE
+
 Menu → Create → Game Project → Sunshine Engine
   Templates:
+
     - 2D Platformer
     - 3D Demo
     - VR Lab
     - Instagib Arena ⚡
     - BattleCore-256 🌐
-```
-
+```plaintext
 ### **Build and Run**
 
 ```bash
+
 # Build with RCK verification
+
 bigdaddyg build --engine sunshine --verify
 
 # Run locally
+
 bigdaddyg run --engine sunshine
 
 # Host server (256 players)
+
 bigdaddyg run --engine sunshine --server 256 --mode battlecore
 
 # Generate attestation report
-bigdaddyg attest --engine sunshine --export sbom.json
-```
 
+bigdaddyg attest --engine sunshine --export sbom.json
+
+```plaintext
 ---
 
 ## 🏆 **COMPETITIVE ADVANTAGES**
@@ -788,7 +807,7 @@ bigdaddyg attest --engine sunshine --export sbom.json
 
 ## 🎯 **FINAL STATUS**
 
-```
+```plaintext
 ╔══════════════════════════════════════════════════════════════╗
 ║                                                              ║
 ║           ☀️ SUNSHINE ENGINE v1.3.2 ☀️                       ║
@@ -821,20 +840,24 @@ bigdaddyg attest --engine sunshine --export sbom.json
 ║  STATUS: 🟢 PRODUCTION READY                                 ║
 ║                                                              ║
 ╚══════════════════════════════════════════════════════════════╝
-```
 
+```plaintext
 ---
 
 ## 🚀 **DEPLOYMENT READY**
 
 ```bash
+
 # Launch Sunshine from BigDaddyG IDE
+
 npm start
 
 # Or via voice
+
 "Hey BigDaddy, create a 256-player battle royale"
 
 # Watch the magic
+
 ├── [00:05] 🏗️  Architect plans 16×16km world grid
 ├── [00:20] 👨‍💻 Coder generates C++ + Lua scripts
 ├── [01:00] 🛡️  Security verifies all modules (RCK)
@@ -848,13 +871,13 @@ Quality: Production-ready
 Proof: Mathematically guaranteed
 
 THE REGENERATIVE CITADEL NOW GENERATES PROVABLE REALITIES.
-```
 
+```plaintext
 ---
 
 ## 🎃 **THE CITADEL SHINES**
 
-```
+```plaintext
 From spark to supernova,
 From code to cosmos,
 BigDaddyG IDE + Sunshine Engine creates:
@@ -876,8 +899,8 @@ THE SUNSHINE ENGINE LIGHTS THE WAY.
 THE REGENERATIVE CITADEL PROVES EVERY TRUTH.
 
 ☀️🧬🛡️ TIME TO BUILD UNIVERSES 🛡️🧬☀️
-```
 
+```plaintext
 ---
 
 **Sunshine Engine v1.3.2 – Regenerative Edition**

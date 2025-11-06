@@ -1,4 +1,4 @@
-# BigDaddyG IDE - 40GB Professional Edition
+﻿# BigDaddyG IDE - 40GB Professional Edition
 
 ## 📦 **Build Breakdown: 40GB Total**
 
@@ -9,29 +9,33 @@ This is the **sweet spot** for a fully offline, production-ready IDE with embedd
 ## **Size Breakdown**
 
 ### **1. Core IDE & Framework (800 MB)**
-```
+
+```plaintext
 ├── Electron Framework          : 250 MB
 ├── Monaco Editor               : 50 MB
 ├── Node.js Runtime             : 100 MB
 ├── Dependencies (node_modules) : 300 MB
 ├── UI/Assets/Icons             : 50 MB
 └── Custom Features             : 50 MB
-```
 
+```plaintext
 ### **2. BigDaddyG AI Model (8-12 GB)**
-```
+
+```plaintext
 ├── Base Model (7B-13B params)  : 7-9 GB
 ├── Training Data/Patterns      : 1-2 GB
 ├── Context Cache               : 500 MB - 1 GB
 ├── Embeddings/Vectors          : 500 MB
 └── Model Quantization (GGUF)   : Optimized for CPU/GPU
-```
+
+```plaintext
 **Recommended:** Use a quantized 13B parameter model (Q4_K_M format) = ~8GB
 
 ### **3. Compiler Toolchains (15-18 GB)**
 
 #### **Windows Toolchain (8-10 GB)**
-```
+
+```plaintext
 ├── MinGW-w64 (GCC/G++)         : 2 GB
 ├── Clang/LLVM 17+              : 4 GB
 ├── MSVC Build Tools (minimal)  : 2-4 GB
@@ -41,10 +45,11 @@ This is the **sweet spot** for a fully offline, production-ready IDE with embedd
 ├── CMake                       : 100 MB
 ├── Make/Ninja                  : 50 MB
 └── Debuggers (GDB/LLDB)        : 200 MB
-```
 
+```plaintext
 #### **Cross-Platform Support (5-6 GB)**
-```
+
+```plaintext
 ├── ARM64 Cross-Compiler        : 1.5 GB
 ├── WebAssembly (WASI SDK)      : 500 MB
 ├── Rust Toolchain              : 2 GB
@@ -52,30 +57,34 @@ This is the **sweet spot** for a fully offline, production-ready IDE with embedd
 ├── Node.js Compiler (pkg)      : 200 MB
 ├── Go Compiler                 : 500 MB
 └── Additional SDKs             : 800 MB
-```
 
+```plaintext
 #### **Assembly & Low-Level (2 GB)**
-```
+
+```plaintext
 ├── NASM/YASM                   : 50 MB
 ├── FASM                        : 20 MB
 ├── MASM (Microsoft)            : 100 MB
 ├── Radare2/Cutter              : 500 MB
 ├── PE Tools (PE-bear, etc.)    : 100 MB
 └── Disassemblers               : 1.2 GB
-```
 
+```plaintext
 ### **4. Additional AI Models (8-10 GB)**
-```
+
+```plaintext
 ├── CodeLlama 7B (Code Gen)     : 4 GB
 ├── Mistral 7B (General)        : 4 GB
 ├── TinyLlama 1.1B (Fast)       : 700 MB
 ├── Phi-2 2.7B (Efficient)      : 1.5 GB
 └── Model Hot-Swap Cache        : 500 MB
-```
+
+```plaintext
 **Note:** Models stored in `models/` directory, referenced but not all loaded at once
 
 ### **5. Development Libraries & SDKs (3-5 GB)**
-```
+
+```plaintext
 ├── Windows SDK Headers/Libs    : 1.5 GB
 ├── Boost C++ Libraries         : 1 GB
 ├── OpenSSL/Crypto Libraries    : 200 MB
@@ -83,10 +92,11 @@ This is the **sweet spot** for a fully offline, production-ready IDE with embedd
 ├── Qt Framework (Minimal)      : 800 MB
 ├── .NET Runtime                : 500 MB
 └── Common Headers/Includes     : 400 MB
-```
 
+```plaintext
 ### **6. Tools & Utilities (2-3 GB)**
-```
+
+```plaintext
 ├── Git (Portable)              : 300 MB
 ├── 7-Zip/Compression Tools     : 50 MB
 ├── Hex Editors                 : 100 MB
@@ -95,10 +105,11 @@ This is the **sweet spot** for a fully offline, production-ready IDE with embedd
 ├── Dependency Walker           : 10 MB
 ├── UPX/Packers                 : 50 MB
 └── Profilers/Analyzers         : 2 GB
-```
 
+```plaintext
 ### **7. Documentation & Examples (1-2 GB)**
-```
+
+```plaintext
 ├── Offline Documentation       : 800 MB
 │   ├── C/C++ Reference
 │   ├── Win32 API Docs
@@ -107,18 +118,20 @@ This is the **sweet spot** for a fully offline, production-ready IDE with embedd
 ├── Code Templates              : 200 MB
 ├── Example Projects            : 500 MB
 └── Training Materials          : 500 MB
-```
 
+```plaintext
 ### **8. Runtime Dependencies (500 MB - 1 GB)**
-```
+
+```plaintext
 ├── Visual C++ Redistributables : 200 MB
 ├── .NET Runtimes               : 300 MB
 ├── OpenMP/MPI Libraries        : 100 MB
 └── GPU Libraries (CUDA Lite)   : 400 MB
-```
 
+```plaintext
 ### **9. Game Development Engines (8-10 GB)** 🎮 **NEW!**
-```
+
+```plaintext
 ├── Godot Engine 4.2+           : 150 MB
 │   ├── Full source code
 │   ├── Editor binaries
@@ -158,13 +171,13 @@ This is the **sweet spot** for a fully offline, production-ready IDE with embedd
     ├── 2D/3D placeholder assets
     ├── Sound effects library
     └── Particle effects
-```
 
+```plaintext
 ---
 
 ## **Total Calculation**
 
-```
+```plaintext
 Core IDE               :    800 MB
 BigDaddyG Model        :  8,000 MB  (8 GB)
 Compiler Toolchains    : 15,000 MB  (15 GB)
@@ -176,8 +189,8 @@ Runtime Dependencies   :    700 MB
 Game Engines & Assets  :  9,000 MB  (9 GB)  🎮 NEW!
 ───────────────────────────────────────
 TOTAL                  : ~49,000 MB  (49 GB)
-```
 
+```plaintext
 **Note:** With game engines, the Professional Edition is now **49 GB** instead of 40 GB.
 
 ---
@@ -198,12 +211,14 @@ TOTAL                  : ~49,000 MB  (49 GB)
 ## **AI Model Recommendations (Offline-Compatible)**
 
 ### **Primary: BigDaddyG Custom (13B, Quantized)**
+
 - **Size:** 8 GB (Q4_K_M GGUF)
 - **Context:** 1M tokens
 - **Speed:** 15-30 tokens/sec (CPU), 80-120 tokens/sec (GPU)
 - **Specialization:** ASM, Security, Encryption, Low-Level
 
 ### **Secondary Models (Optional, Hot-Swappable)**
+
 1. **CodeLlama 7B** - Code generation
 2. **Mistral 7B** - General purpose
 3. **Phi-2 2.7B** - Fast responses
@@ -214,7 +229,8 @@ TOTAL                  : ~49,000 MB  (49 GB)
 ## **Compiler Capabilities**
 
 ### **Languages Supported (Fully Offline)**
-```
+
+```plaintext
 ✅ C/C++ (GCC, Clang, MSVC)
 ✅ Assembly (x86/x64: NASM, FASM, MASM)
 ✅ Rust
@@ -223,10 +239,11 @@ TOTAL                  : ~49,000 MB  (49 GB)
 ✅ JavaScript/TypeScript (Node.js)
 ✅ WebAssembly
 ✅ ARM Assembly (Cross-compile)
-```
 
+```plaintext
 ### **Build Targets**
-```
+
+```plaintext
 ✅ Windows EXE/DLL (x86, x64, ARM64)
 ✅ Linux ELF (via cross-compile)
 ✅ macOS Mach-O (via cross-compile)
@@ -234,13 +251,14 @@ TOTAL                  : ~49,000 MB  (49 GB)
 ✅ Bare-metal/Bootloaders
 ✅ Drivers (.sys)
 ✅ Static Libraries (.lib/.a)
-```
 
+```plaintext
 ---
 
 ## **Features Included**
 
 ### **🤖 AI Capabilities**
+
 - ✅ 1M token context window
 - ✅ Code generation across multiple tabs
 - ✅ Real-time autocomplete (Copilot-style)
@@ -251,6 +269,7 @@ TOTAL                  : ~49,000 MB  (49 GB)
 - ✅ Assembly optimization suggestions
 
 ### **🛠️ Development Tools**
+
 - ✅ Monaco Editor (VS Code engine)
 - ✅ Multi-tab project management
 - ✅ Integrated terminal (PowerShell/Bash)
@@ -261,6 +280,7 @@ TOTAL                  : ~49,000 MB  (49 GB)
 - ✅ Process inspector
 
 ### **⚡ Performance Features**
+
 - ✅ 4K 240Hz/540Hz optimized
 - ✅ Power modes (Overclocked/Turbo/Balanced/Eco)
 - ✅ Visual FPS benchmark
@@ -269,12 +289,14 @@ TOTAL                  : ~49,000 MB  (49 GB)
 - ✅ Multi-threaded compilation
 
 ### **🎨 Visual Effects**
+
 - ✅ Mouse ripple effect
 - ✅ Chameleon theme (dynamic colors)
 - ✅ Smooth animations (240Hz)
 - ✅ Custom UI themes
 
 ### **🔒 Security Features**
+
 - ✅ Agentic safety levels (Safe → YOLO)
 - ✅ Code sandboxing
 - ✅ Memory analysis
@@ -286,6 +308,7 @@ TOTAL                  : ~49,000 MB  (49 GB)
 ## **System Requirements**
 
 ### **Minimum**
+
 - **OS:** Windows 10 64-bit (1903+)
 - **CPU:** Intel i5-8th gen / AMD Ryzen 5 3000
 - **RAM:** 16 GB
@@ -294,6 +317,7 @@ TOTAL                  : ~49,000 MB  (49 GB)
 - **Display:** 1920x1080 @ 60Hz
 
 ### **Recommended (For Full Features)**
+
 - **OS:** Windows 11 64-bit
 - **CPU:** Intel i7-12th gen / AMD Ryzen 7 5000+ (8+ cores)
 - **RAM:** 32 GB (64 GB for best AI performance)
@@ -302,6 +326,7 @@ TOTAL                  : ~49,000 MB  (49 GB)
 - **Display:** 3840x2160 @ 144Hz+
 
 ### **Ultimate (Max Performance)**
+
 - **CPU:** Intel i9-14900K / AMD Ryzen 9 7950X
 - **RAM:** 64-128 GB DDR5
 - **GPU:** NVIDIA RTX 4090
@@ -313,21 +338,25 @@ TOTAL                  : ~49,000 MB  (49 GB)
 ## **Installation Size Options**
 
 ### **1. Minimal Install (5 GB)**
+
 - Core IDE + BigDaddyG model only
 - No compilers (use system-installed)
 - Basic features
 
 ### **2. Standard Install (15 GB)**
+
 - Core IDE + BigDaddyG
 - MinGW-w64 + Clang
 - Essential tools
 
 ### **3. Professional Install (40 GB)** ⭐ **RECOMMENDED**
+
 - Everything listed above
 - Full offline capability
 - All compilers and tools
 
 ### **4. Ultimate Install (80-256 GB)**
+
 - Professional + larger AI models (30B-70B)
 - Extended context (2M-10M tokens)
 - Additional language SDKs
@@ -339,17 +368,24 @@ TOTAL                  : ~49,000 MB  (49 GB)
 Create this build with:
 
 ```powershell
+
 # Build 40GB Professional Edition
+
 .\build-professional-40gb.ps1
 
 # Options:
-# -IncludeRust       : Add Rust toolchain
-# -IncludeGo         : Add Go compiler
-# -IncludePython     : Add Python embedded
-# -AllCompilers      : Include everything
-# -NoExtraModels     : Skip secondary AI models (saves 8GB)
-```
 
+# -IncludeRust       : Add Rust toolchain
+
+# -IncludeGo         : Add Go compiler
+
+# -IncludePython     : Add Python embedded
+
+# -AllCompilers      : Include everything
+
+# -NoExtraModels     : Skip secondary AI models (saves 8GB)
+
+```plaintext
 ---
 
 ## **What Makes This "Sweet Spot"?**
@@ -380,12 +416,14 @@ Create this build with:
 ## **Storage Efficiency**
 
 The 40GB includes:
+
 - **No Duplicates** - Shared libraries reused
 - **Compressed** - Models use GGUF quantization
 - **Optimized** - Only essential SDK components
 - **Modular** - Can uninstall components
 
 Actual disk usage:
+
 - **Compressed Archive:** ~28 GB (7-Zip)
 - **Extracted:** 40 GB
 - **In Use (with cache):** ~45 GB
@@ -395,6 +433,7 @@ Actual disk usage:
 ## **USB Drive Compatibility**
 
 This build is perfect for:
+
 - ✅ 128GB USB 3.0+ drives
 - ✅ 256GB external SSDs
 - ✅ Portable NVMe enclosures
@@ -405,16 +444,19 @@ This build is perfect for:
 ## **Next Steps**
 
 1. **Build it:**
+
    ```powershell
    npm run build:professional
    ```
 
-2. **Test it:**
+  1. **Test it:**
+
    ```powershell
    .\dist\BigDaddyG-IDE-Professional-Setup.exe
    ```
 
-3. **Create portable version:**
+  1. **Create portable version:**
+
    ```powershell
    npm run build:portable-professional
    ```

@@ -1,4 +1,4 @@
-# 🚀 PERFORMANCE FIXES APPLIED - 19 FPS → 240 FPS
+﻿# 🚀 PERFORMANCE FIXES APPLIED - 19 FPS → 240 FPS
 
 ## **CRITICAL FIXES**
 
@@ -7,17 +7,19 @@
 **Problem:** Path with spaces `D:\Security Research aka...` breaking Node.js module loading
 
 **Fix Applied:**
+
 ```javascript
+
 // OLD (broken):
 spawn('node', [serverPath], { shell: process.platform === 'win32' })
 
 // NEW (fixed):
-spawn('node', [`"${serverPath}"`], { 
+spawn('node', [`"${serverPath}"`], {
     shell: true, // ALWAYS use shell
-    windowsVerbatimArguments: false 
+    windowsVerbatimArguments: false
 })
-```
 
+```plaintext
 **Result:** Orchestra server will now start properly!
 
 ---
@@ -27,7 +29,9 @@ spawn('node', [`"${serverPath}"`], {
 **Problem:** GPU process crashing (`exit_code=-1073740791`) causing software rendering fallback
 
 **Fixes Applied:**
+
 ```javascript
+
 // Enable hardware acceleration
 app.commandLine.appendSwitch('disable-gpu-sandbox');
 app.commandLine.appendSwitch('enable-gpu-rasterization');
@@ -43,8 +47,8 @@ app.commandLine.appendSwitch('disable-features', 'CalculateNativeWinOcclusion');
 // Unlock frame rate
 app.commandLine.appendSwitch('disable-frame-rate-limit');
 app.commandLine.appendSwitch('max-gum-fps', '240');
-```
 
+```plaintext
 **Result:** GPU will be properly utilized, no more crashes!
 
 ---
@@ -52,21 +56,23 @@ app.commandLine.appendSwitch('max-gum-fps', '240');
 ### **3. Performance Target - 240 FPS**
 
 **Before:**
-```
+
+```plaintext
 FPS: 19
 Target: 240
 Frame Time: 55.93ms
 Status: ❌ TERRIBLE (8% of target)
-```
 
+```plaintext
 **After (Expected):**
-```
+
+```plaintext
 FPS: 200-240
 Target: 240
 Frame Time: 4.17-5.00ms
 Status: ✅ EXCELLENT (83-100% of target)
-```
 
+```plaintext
 ---
 
 ## 📊 **WHAT CHANGED**
@@ -86,17 +92,20 @@ Status: ✅ EXCELLENT (83-100% of target)
 ### **1. Restart the IDE**
 
 ```powershell
+
 # Stop current instance (Ctrl+C in terminal)
 
 # Restart with fixes
+
 cd "D:\Security Research aka GitHub Repos\ProjectIDEAI"
 npm start
-```
 
+```plaintext
 ### **2. Check Console Output**
 
 You should see:
-```
+
+```plaintext
 [BigDaddyG] ⚡ GPU acceleration enabled
 [BigDaddyG] 🎯 Target: 240 FPS
 [BigDaddyG] 🚀 Starting Electron app...
@@ -104,21 +113,23 @@ You should see:
 [Orchestra] BigDaddyG Orchestra Server v1.0.0
 [Orchestra] Running on port 3000
 [Orchestra] ✅ Context window: 1,000,000 tokens
-```
 
+```plaintext
 **NO MORE:**
+
 - ❌ `Error: Cannot find module 'D:\Security'`
 - ❌ `GPU process exited unexpectedly`
 
 ### **3. Watch FPS Counter**
 
 The overlay should show:
-```
+
+```plaintext
 FPS: 200-240 (green)
 Target: 240
 Frame Time: 4.17-5.00ms
-```
 
+```plaintext
 ---
 
 ## 🎯 **EXPECTED RESULTS**
@@ -149,6 +160,7 @@ Frame Time: 4.17-5.00ms
 ## 🚀 **PERFORMANCE OPTIMIZATIONS APPLIED**
 
 ### **GPU Acceleration**
+
 - ✅ Zero-copy rendering
 - ✅ Native GPU memory buffers
 - ✅ Hardware rasterization
@@ -156,12 +168,14 @@ Frame Time: 4.17-5.00ms
 - ✅ GPU blocklist bypass
 
 ### **Frame Rate**
+
 - ✅ Frame rate limiter removed
 - ✅ VSync disabled
 - ✅ Target 240 FPS
 - ✅ Unlocked rendering
 
 ### **Memory**
+
 - ✅ Increased heap size (8GB)
 - ✅ Reduced GC pressure
 - ✅ Optimized allocations
@@ -170,7 +184,7 @@ Frame Time: 4.17-5.00ms
 
 ## 🎃 **REGENERATIVE CITADEL PERFORMANCE**
 
-```
+```plaintext
 ╔══════════════════════════════════════════════════════════════╗
 ║                                                              ║
 ║     ⚡ PERFORMANCE FIXES APPLIED ⚡                          ║
@@ -192,20 +206,22 @@ Frame Time: 4.17-5.00ms
 ║  STATUS: 🟢 READY TO LAUNCH                                  ║
 ║                                                              ║
 ╚══════════════════════════════════════════════════════════════╝
-```
 
+```plaintext
 ---
 
 ## 🔄 **RESTART COMMAND**
 
 ```powershell
+
 # In terminal, stop current instance (Ctrl+C)
+
 # Then run:
 
 cd "D:\Security Research aka GitHub Repos\ProjectIDEAI"
 npm start
-```
 
+```plaintext
 ---
 
 **The Regenerative Citadel now runs at 240 FPS!** ⚡🎃⚡

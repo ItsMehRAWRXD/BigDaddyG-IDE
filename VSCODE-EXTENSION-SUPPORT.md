@@ -1,4 +1,4 @@
-# BigDaddyG IDE - VS Code Extension Support
+﻿# BigDaddyG IDE - VS Code Extension Support
 
 ## 🎯 **Goal: Full VS Code Extension Compatibility**
 
@@ -10,7 +10,7 @@ Make BigDaddyG IDE compatible with 50,000+ VS Code extensions while maintaining 
 
 ### **How VS Code Extensions Work:**
 
-```
+```plaintext
 VS Code Extension:
 ├── package.json (manifest)
 ├── extension.js (entry point)
@@ -21,35 +21,39 @@ VS Code Extension:
 │   ├── workspace
 │   └── debug
 └── Monaco Editor integration
-```
 
+```plaintext
 ### **BigDaddyG Current Stack:**
 
-```
+```plaintext
 BigDaddyG IDE:
 ├── ✅ Electron (same as VS Code)
 ├── ✅ Monaco Editor (same as VS Code)
 ├── ✅ Node.js runtime (same as VS Code)
 ├── ❌ VS Code Extension API (MISSING!)
 └── ❌ Extension Host (MISSING!)
-```
 
+```plaintext
 ---
 
 ## 🔨 **What We Need to Build:**
 
 ### **1. Extension Host Process**
+
 ```javascript
+
 electron/
 └── extension-host/
     ├── extension-host.js          // Main extension host
     ├── extension-loader.js        // Load/unload extensions
     ├── extension-manager.js       // Manage installed extensions
     └── extension-marketplace.js   // Download from marketplace
-```
 
+```plaintext
 ### **2. VS Code API Compatibility Layer**
+
 ```javascript
+
 electron/
 └── vscode-api/
     ├── vscode-api.js             // Main API shim
@@ -61,34 +65,38 @@ electron/
     ├── extensions.js             // Extension management
     ├── env.js                    // Environment info
     └── Uri.js                    // URI handling
-```
 
+```plaintext
 ### **3. Extension Marketplace Integration**
+
 ```javascript
+
 electron/
 └── marketplace/
     ├── marketplace-client.js     // Connect to VS Code marketplace
     ├── extension-search.js       // Search extensions
     ├── extension-install.js      // Install extensions
     └── extension-update.js       // Update extensions
-```
 
+```plaintext
 ### **4. Extension UI**
+
 ```javascript
+
 electron/
 └── ui/
     ├── extensions-panel.js       // Extension management UI
     ├── extension-details.js      // Extension info display
     └── extension-settings.js     // Extension settings
-```
 
+```plaintext
 ---
 
 ## 🎨 **UI Design:**
 
 ### **Extensions Sidebar (New Activity Bar Icon)**
 
-```
+```plaintext
 ┌────────────────────────────────────┐
 │ 🧩 EXTENSIONS                      │
 ├────────────────────────────────────┤
@@ -121,8 +129,8 @@ electron/
 │ POPULAR (100+)                     │
 │ └── [Browse Marketplace →]         │
 └────────────────────────────────────┘
-```
 
+```plaintext
 ---
 
 ## 💻 **Implementation Steps:**
@@ -132,6 +140,7 @@ electron/
 Create the VS Code API compatibility layer:
 
 ```javascript
+
 // File: electron/vscode-api/vscode-api.js
 
 class VSCodeAPI {
@@ -144,7 +153,7 @@ class VSCodeAPI {
         this.extensions = new ExtensionRegistry();
         this.env = new EnvironmentAPI();
     }
-    
+
     // Export as 'vscode' module
     export() {
         return {
@@ -164,13 +173,14 @@ class VSCodeAPI {
         };
     }
 }
-```
 
+```plaintext
 ### **Phase 2: Extension Host** ⚡ CRITICAL
 
 Create a separate process to run extensions:
 
 ```javascript
+
 // File: electron/extension-host/extension-host.js
 
 class ExtensionHost {
@@ -178,40 +188,40 @@ class ExtensionHost {
         this.extensions = new Map();
         this.vscodeAPI = new VSCodeAPI();
     }
-    
+
     async loadExtension(extensionPath) {
         // Read package.json
         const manifest = await this.readManifest(extensionPath);
-        
+
         // Validate extension
         if (!this.validateExtension(manifest)) {
             throw new Error('Invalid extension');
         }
-        
+
         // Create isolated context
         const context = this.createExtensionContext(manifest);
-        
+
         // Inject vscode API
         global.vscode = this.vscodeAPI.export();
-        
+
         // Load extension main file
         const extensionModule = require(
             path.join(extensionPath, manifest.main)
         );
-        
+
         // Activate extension
         await extensionModule.activate(context);
-        
+
         // Store extension
         this.extensions.set(manifest.name, {
             manifest,
             module: extensionModule,
             context
         });
-        
+
         console.log(`✅ Extension loaded: ${manifest.displayName}`);
     }
-    
+
     async unloadExtension(extensionName) {
         const ext = this.extensions.get(extensionName);
         if (ext && ext.module.deactivate) {
@@ -220,21 +230,22 @@ class ExtensionHost {
         this.extensions.delete(extensionName);
     }
 }
-```
 
+```plaintext
 ### **Phase 3: Marketplace Integration** 🔥 IMPORTANT
 
 Connect to VS Code Marketplace:
 
 ```javascript
+
 // File: electron/marketplace/marketplace-client.js
 
 class MarketplaceClient {
     constructor() {
-        this.marketplaceURL = 'https://marketplace.visualstudio.com';
+        this.marketplaceURL = '<https://marketplace.visualstudio.com';>
         this.extensionsDir = path.join(app.getPath('userData'), 'extensions');
     }
-    
+
     async searchExtensions(query) {
         const response = await fetch(
             `${this.marketplaceURL}/_apis/public/gallery/extensionquery`,
@@ -251,44 +262,45 @@ class MarketplaceClient {
                 })
             }
         );
-        
+
         return await response.json();
     }
-    
+
     async installExtension(extensionId) {
         // Download extension
         const vsixPath = await this.downloadExtension(extensionId);
-        
+
         // Extract VSIX (it's a ZIP)
         const extractPath = path.join(this.extensionsDir, extensionId);
         await this.extractVSIX(vsixPath, extractPath);
-        
+
         // Load extension
         await window.extensionHost.loadExtension(extractPath);
-        
+
         console.log(`✅ Installed: ${extensionId}`);
     }
-    
+
     async downloadExtension(extensionId) {
         const [publisher, name] = extensionId.split('.');
         const url = `${this.marketplaceURL}/_apis/public/gallery/publishers/${publisher}/vsextensions/${name}/latest/vspackage`;
-        
+
         const response = await fetch(url);
         const buffer = await response.arrayBuffer();
-        
+
         const vsixPath = path.join(this.extensionsDir, `${extensionId}.vsix`);
         await fs.writeFile(vsixPath, Buffer.from(buffer));
-        
+
         return vsixPath;
     }
 }
-```
 
+```plaintext
 ### **Phase 4: UI Integration** 🔥 IMPORTANT
 
 Add Extensions panel to the IDE:
 
 ```javascript
+
 // File: electron/ui/extensions-panel.js
 
 class ExtensionsPanel {
@@ -296,18 +308,18 @@ class ExtensionsPanel {
         this.marketplace = new MarketplaceClient();
         this.installedExtensions = [];
     }
-    
+
     render() {
         return `
             <div id="extensions-panel" class="sidebar-panel">
                 <div class="panel-header">
                     <h3>🧩 Extensions</h3>
-                    <input type="text" 
-                           id="extension-search" 
+                    <input type="text"
+                           id="extension-search"
                            placeholder="Search extensions..."
                            onkeyup="searchExtensions(this.value)">
                 </div>
-                
+
                 <div class="panel-content">
                     <div class="section">
                         <h4>INSTALLED</h4>
@@ -315,14 +327,14 @@ class ExtensionsPanel {
                             ${this.renderInstalledExtensions()}
                         </div>
                     </div>
-                    
+
                     <div class="section">
                         <h4>RECOMMENDED</h4>
                         <div id="recommended-extensions">
                             ${this.renderRecommendedExtensions()}
                         </div>
                     </div>
-                    
+
                     <div class="section">
                         <h4>POPULAR</h4>
                         <div id="popular-extensions">
@@ -333,7 +345,7 @@ class ExtensionsPanel {
             </div>
         `;
     }
-    
+
     renderInstalledExtensions() {
         return this.installedExtensions.map(ext => `
             <div class="extension-item installed">
@@ -351,8 +363,8 @@ class ExtensionsPanel {
         `).join('');
     }
 }
-```
 
+```plaintext
 ---
 
 ## 🎯 **API Compatibility Matrix:**
@@ -383,6 +395,7 @@ class ExtensionsPanel {
 ### **Example 1: Simple Extension (Prettier)**
 
 ```javascript
+
 // Prettier extension would work like this:
 
 // Their code:
@@ -395,10 +408,10 @@ function activate(context) {
             const editor = vscode.window.activeTextEditor;
             const document = editor.document;
             const text = document.getText();
-            
+
             // Format with Prettier
             const formatted = prettier.format(text);
-            
+
             // Replace text
             editor.edit(editBuilder => {
                 const fullRange = new vscode.Range(
@@ -409,16 +422,17 @@ function activate(context) {
             });
         }
     );
-    
+
     context.subscriptions.push(disposable);
 }
 
 // Our compatibility layer makes this work!
-```
 
+```plaintext
 ### **Example 2: Language Server (Python)**
 
 ```javascript
+
 // Python extension uses Language Server Protocol
 
 const vscode = require('vscode');
@@ -431,19 +445,19 @@ function activate(context) {
         serverOptions,
         clientOptions
     );
-    
+
     client.start();
     context.subscriptions.push(client);
 }
 
 // We need to implement Language Client support
-```
 
+```plaintext
 ---
 
 ## 🔌 **Files to Create:**
 
-```
+```plaintext
 ProjectIDEAI/
 ├── electron/
 │   ├── extension-host/
@@ -479,61 +493,58 @@ ProjectIDEAI/
 │       └── extension-settings.js      ✨ NEW - Extension settings
 │
 └── VSCODE-EXTENSION-SUPPORT.md        ✨ NEW - This file
-```
 
+```plaintext
 ---
 
 ## 🚀 **Recommended Extensions to Test With:**
 
 ### **Tier 1: Simple Extensions (Start Here)**
 
-```
+```plaintext
 1. Prettier (code formatting)
    - Simple, well-documented
    - Good test case
 
-2. Bracket Pair Colorizer
+  1. Bracket Pair Colorizer
    - Visual enhancement
    - Minimal API usage
 
-3. Material Icon Theme
+  1. Material Icon Theme
    - Just icons
    - Easy to support
-```
-
+```plaintext
 ### **Tier 2: Medium Complexity**
 
-```
-4. ESLint
+```plaintext
+  1. ESLint
    - Language server
    - Good complexity test
 
-5. GitLens
+  1. GitLens
    - Rich UI
    - Git integration
 
-6. REST Client
+  1. REST Client
    - HTTP requests
    - Custom UI panels
-```
-
+```plaintext
 ### **Tier 3: Complex Extensions**
 
-```
-7. Python
+```plaintext
+  1. Python
    - Full language server
    - Debugger integration
    - Complex features
 
-8. Docker
+  1. Docker
    - Multiple panels
    - External process management
 
-9. Kubernetes
+  1. Kubernetes
    - Cloud integration
    - Advanced UI
-```
-
+```plaintext
 ---
 
 ## 📊 **Expected Compatibility:**
@@ -556,7 +567,7 @@ ProjectIDEAI/
 
 ### **What This Gives Users:**
 
-```
+```plaintext
 ✅ 50,000+ extensions available
 ✅ Prettier, ESLint, GitLens work out of the box
 ✅ All language extensions (Python, Go, Rust, etc.)
@@ -568,15 +579,15 @@ ProjectIDEAI/
 ✅ Markdown preview
 ✅ PDF viewers
 ✅ And thousands more!
-```
 
+```plaintext
 ---
 
 ## 💰 **Size Impact:**
 
 ### **Additional Size:**
 
-```
+```plaintext
 Extension Support:
 ├── VS Code API shim: ~5 MB
 ├── Extension host: ~2 MB
@@ -591,8 +602,8 @@ Extensions (user installed):
 └── Typical setup (10 extensions): ~50 MB
 
 FINAL IMPACT: ~60 MB for full extension support
-```
 
+```plaintext
 **Worth it?** ABSOLUTELY! 🎉
 
 ---
@@ -600,24 +611,28 @@ FINAL IMPACT: ~60 MB for full extension support
 ## 🔧 **Implementation Priority:**
 
 ### **Phase 1: Foundation (Week 1-2)**
+
 - [ ] Create VS Code API shim
 - [ ] Implement core APIs (commands, window, workspace)
 - [ ] Create extension host process
 - [ ] Test with simple extension (Prettier)
 
 ### **Phase 2: Marketplace (Week 3)**
+
 - [ ] Marketplace client
 - [ ] Extension search
 - [ ] Extension install/uninstall
 - [ ] Extension UI panel
 
 ### **Phase 3: Advanced APIs (Week 4-5)**
+
 - [ ] Language server support
 - [ ] Debug API
 - [ ] Tasks API
 - [ ] SCM API
 
 ### **Phase 4: Polish (Week 6)**
+
 - [ ] Extension settings
 - [ ] Extension recommendations
 - [ ] Auto-update extensions
@@ -629,8 +644,9 @@ FINAL IMPACT: ~60 MB for full extension support
 
 ### **BigDaddyG IDE will become:**
 
-```
+```plaintext
 = Cursor (AI features)
+
 + VS Code (50,000 extensions)
 + BigDaddyG (custom model)
 + Ollama (local models)
@@ -639,13 +655,14 @@ FINAL IMPACT: ~60 MB for full extension support
 + Complete freedom
 
 = THE ULTIMATE IDE! 🚀
-```
 
+```plaintext
 ---
 
 ## 📝 **Next Steps:**
 
 Want me to:
+
 1. ✅ Start implementing the VS Code API shim?
 2. ✅ Create the extension host?
 3. ✅ Build the marketplace client?

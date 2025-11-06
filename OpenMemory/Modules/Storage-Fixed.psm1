@@ -26,7 +26,7 @@ function Initialize-OMStorage {
         Get-Content "$Root\memories.jsonl" -ErrorAction SilentlyContinue | ForEach-Object {
             try {
                 $memory = $_ | ConvertFrom-Json
-                $script:Memories = $script:Memories + @($memory)
+                $script:Memories += $memory
             } catch {
                 Write-Warning "[OpenMemory] ⚠️ Skipped corrupt memory line"
             }
@@ -56,7 +56,7 @@ function Initialize-OMStorage {
         Get-Content "$Root\embeddings.jsonl" -ErrorAction SilentlyContinue | ForEach-Object {
             try {
                 $vector = $_ | ConvertFrom-Json
-                $script:Vectors = $script:Vectors + @($vector)
+                $script:Vectors += $vector
             } catch {
                 Write-Warning "[OpenMemory] ⚠️ Skipped corrupt embedding line"
             }
@@ -122,7 +122,7 @@ function Add-OMMemory {
         metadata = $Metadata
     }
     
-    $script:Memories = $script:Memories + @($memory)
+    $script:Memories += $memory
     
     # Generate and store embedding
     $embedding = Get-OMEmbedding $Content
@@ -131,7 +131,7 @@ function Add-OMMemory {
         sector = $Sector
         vector = $embedding
     }
-    $script:Vectors = $script:Vectors + @($vectorEntry)
+    $script:Vectors += $vectorEntry
     
     # Update user summary
     if (-not $script:Users.ContainsKey($UserId)) {

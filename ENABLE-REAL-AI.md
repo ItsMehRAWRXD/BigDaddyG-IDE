@@ -1,4 +1,4 @@
-# Enable Real AI in BigDaddyG IDE
+﻿# Enable Real AI in BigDaddyG IDE
 
 ## Current State
 
@@ -11,32 +11,45 @@ To get **true AI orchestration** like Ollama:
 ## Option 1: Install Ollama (Recommended)
 
 ### Step 1: Install Ollama
-```bash
-# Download from: https://ollama.ai
-# Or on Windows with winget:
-winget install Ollama.Ollama
-```
 
-### Step 2: Pull AI Models
 ```bash
+
+# Download from: <https://ollama.ai>
+
+# Or on Windows with winget:
+
+winget install Ollama.Ollama
+
+```plaintext
+### Step 2: Pull AI Models
+
+```bash
+
 # For coding (recommended):
+
 ollama pull codellama:13b
 
 # Or for general use:
+
 ollama pull llama3:8b
 
 # Or for fast responses:
+
 ollama pull phi3:mini
-```
 
+```plaintext
 ### Step 3: Start Ollama
-```bash
-# Ollama runs on port 11434
-ollama serve
-```
 
+```bash
+
+# Ollama runs on port 11434
+
+ollama serve
+
+```plaintext
 ### Step 4: Orchestra Auto-Detects
-- Orchestra checks `http://localhost:11434` automatically
+
+- Orchestra checks `<http://localhost:11434`> automatically
 - If Ollama is running, Orchestra routes requests to it
 - You get REAL AI responses!
 
@@ -45,22 +58,26 @@ ollama serve
 ## Option 2: Load GGUF Models Directly
 
 ### Download Models
+
 Popular coding models:
+
 - **CodeLlama 13B** - Best for code (8GB)
 - **DeepSeek Coder** - Specialized for coding (6GB)
 - **Phi-3** - Fast and small (2GB)
 
-Download from: https://huggingface.co/models
+Download from: <https://huggingface.co/models>
 
 ### Place in Models Folder
-```
+
+```plaintext
 ProjectIDEAI/
   models/
     codellama-13b.gguf       ← Your model here
     phi-3-mini.gguf
-```
 
+```plaintext
 ### Orchestra Will Auto-Load
+
 - On startup, Orchestra scans for `.gguf` files
 - Loads them into memory
 - Uses llama.cpp for inference
@@ -70,32 +87,37 @@ ProjectIDEAI/
 ## Option 3: Cloud AI (Internet Required)
 
 Enable in Settings:
-```
+
+```plaintext
 Settings → AI Providers → Enable:
   ☑ Claude (via API key)
   ☑ GPT-4 (via OpenAI key)
   ☑ Multi AI Aggregator
-```
 
+```plaintext
 ---
 
 ## How to Check Current Mode
 
 ### In IDE Console:
-Look for startup messages:
-```
-✅ Ollama detected: http://localhost:11434 (3 models)
-🎼 Orchestra Mode: REAL AI ORCHESTRATION
-```
 
+Look for startup messages:
+
+```plaintext
+✅ Ollama detected: <http://localhost:11434> (3 models)
+🎼 Orchestra Mode: REAL AI ORCHESTRATION
+
+```plaintext
 Or:
-```
+
+```plaintext
 ℹ️ Ollama not found (optional)
 🎼 Orchestra Mode: PATTERN MATCHING (fast, limited)
-```
 
+```plaintext
 ### Test AI Intelligence:
-```
+
+```plaintext
 Pattern Matching Response:
 "Can you create a C++ parser?"
 → Returns pre-written parser template (0.1s)
@@ -103,8 +125,8 @@ Pattern Matching Response:
 Real AI Response:
 "Can you create a C++ parser with custom error recovery?"
 → Generates unique parser based on your specific request (5s)
-```
 
+```plaintext
 ---
 
 ## Comparison
@@ -130,6 +152,7 @@ Real AI Response:
 4. **Enjoy real AI!**
 
 **Or Keep Pattern Matching:**
+
 - Works offline
 - Instant responses
 - Good for common tasks
@@ -142,11 +165,12 @@ Real AI Response:
 ## Check If It's Working
 
 ### Test Prompt:
-```
-"Write a C++ parser that handles syntax errors gracefully and provides 
-helpful error messages with line numbers and suggestions for fixes."
-```
 
+```plaintext
+"Write a C++ parser that handles syntax errors gracefully and provides
+helpful error messages with line numbers and suggestions for fixes."
+
+```plaintext
 **Pattern Matching:** Returns generic parser template (doesn't handle the specific requirements)
 
 **Real AI:** Generates custom parser with error recovery, line tracking, and helpful messages
@@ -158,6 +182,7 @@ helpful error messages with line numbers and suggestions for fixes."
 ### How Orchestra Routes Requests
 
 ```javascript
+
 // 1. Check if prompt matches patterns
 if (matches known pattern) {
     return template response  // Fast!
@@ -170,9 +195,10 @@ if (ollama.isRunning()) {
 
 // 3. Fallback to helpful message
 return "Enable Ollama for full AI capabilities"
-```
 
+```plaintext
 ### Current Patterns Covered
+
 - Greetings (hi, hello)
 - C++ parser
 - Fibonacci
@@ -187,11 +213,13 @@ return "Enable Ollama for full AI capabilities"
 ## Want More?
 
 **Option 4: Hybrid Mode (Coming Soon)**
+
 - Fast responses for simple questions (pattern matching)
 - Complex questions → real AI
 - Best of both worlds!
 
 **Option 5: Distributed AI (Roadmap)**
+
 - Run different models for different tasks
 - Route Python questions → Python-specialized model
 - Route C++ → C++ specialized model

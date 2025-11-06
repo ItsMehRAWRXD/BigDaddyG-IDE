@@ -1,4 +1,4 @@
-# 🚀 BigDaddyG IDE - Electron Edition
+﻿# 🚀 BigDaddyG IDE - Electron Edition
 
 **Professional Desktop IDE with AI Copilot & Syntax Highlighting**
 
@@ -7,6 +7,7 @@
 ## 🌟 **WHAT'S NEW**
 
 ### **✅ Electron Desktop App**
+
 - Native desktop application (Windows, Mac, Linux)
 - No browser required
 - File system integration
@@ -14,6 +15,7 @@
 - Application menu
 
 ### **✅ Monaco Editor (VS Code Engine)**
+
 - Professional syntax highlighting
 - 100+ programming languages
 - IntelliSense & auto-completion
@@ -22,6 +24,7 @@
 - Multi-cursor editing
 
 ### **✅ Dedicated Tab System**
+
 - Each file in its own tab
 - Tab switching with click
 - Close individual tabs
@@ -29,6 +32,7 @@
 - Modified indicators
 
 ### **✅ Professional Layout**
+
 - **Left Sidebar:** File explorer
 - **Center:** Multi-tab editor with syntax highlighting
 - **Right Sidebar:** AI chat panel
@@ -42,17 +46,22 @@
 ### **Quick Install:**
 
 ```bash
+
 # Navigate to project
+
 cd "D:\Security Research aka GitHub Repos\ProjectIDEAI"
 
 # Install dependencies
+
 npm install
 
 # Start the app
-npm start
-```
 
+npm start
+
+```plaintext
 ### **Dependencies Installed:**
+
 - `electron` - Desktop app framework
 - `monaco-editor` - VS Code's editor
 - `electron-builder` - Build installers
@@ -66,17 +75,22 @@ npm start
 ### **Start the IDE:**
 
 ```bash
+
 # Method 1: npm script (recommended)
+
 npm start
 
 # Method 2: Development mode (with live reload)
+
 npm run dev
 
 # Method 3: Direct electron
-electron .
-```
 
+electron .
+
+```plaintext
 ### **First Run:**
+
 1. App launches with Welcome.md
 2. Monaco Editor loads with syntax highlighting
 3. Orchestra server starts automatically (port 11441)
@@ -89,6 +103,7 @@ electron .
 ### **1. Syntax Highlighting** 🌈
 
 **Supported Languages:**
+
 - **Assembly:** x86, x64, ARM
 - **Systems:** C, C++, Rust, Go
 - **Web:** JavaScript, TypeScript, HTML, CSS
@@ -98,6 +113,7 @@ electron .
 - **100+ more!**
 
 **Monaco Features:**
+
 - Syntax validation
 - Error highlighting
 - Code folding
@@ -108,12 +124,14 @@ electron .
 ### **2. Multi-Tab Editing** 📑
 
 **Tab Management:**
-```
+
+```plaintext
 [📄 Welcome.md] [⚙️ main.cpp*] [🐍 script.py] [📜 index.js]
      Active       Modified      Inactive      Inactive
-```
 
+```plaintext
 **Features:**
+
 - Click to switch tabs
 - × button to close
 - Drag to reorder (coming soon)
@@ -121,6 +139,7 @@ electron .
 - Modified indicator (*)
 
 **Keyboard Shortcuts:**
+
 - `Ctrl+N` - New file
 - `Ctrl+Tab` - Next tab
 - `Ctrl+W` - Close tab
@@ -128,6 +147,7 @@ electron .
 ### **3. Right-Click AI Copilot** 🤖
 
 **Select code → Right-click →**
+
 - 📖 **Explain Code** - Understand functionality
 - 🔧 **Fix Code** - Auto-debug
 - ⚡ **Optimize Code** - Performance improvements
@@ -136,7 +156,9 @@ electron .
 - 📝 **Add Documentation** - Docstrings
 
 **Example:**
+
 ```javascript
+
 // Select this code:
 function add(a, b) {
     return a - b;  // Bug!
@@ -149,12 +171,13 @@ function add(a, b) {
 }
 
 // Click ✅ Apply or ❌ Reject
-```
 
+```plaintext
 ### **4. Inline Suggestions (Cursor-Style)** 💡
 
 **When AI generates code:**
-```
+
+```plaintext
 ┌─────────────────────────────────────────┐
 │ 🤖 BigDaddyG Suggestion: FIX          │
 ├─────────────────────────────────────────┤
@@ -167,9 +190,10 @@ function add(a, b) {
 │                                         │
 │ [✅ Apply] [➕ Insert] [❌ Reject]     │
 └─────────────────────────────────────────┘
-```
 
+```plaintext
 **Actions:**
+
 - **✅ Apply** - Replace selected code
 - **➕ Insert** - Add below selection
 - **❌ Reject** - Dismiss suggestion
@@ -177,6 +201,7 @@ function add(a, b) {
 ### **5. AI Chat Panel** 💬
 
 **Features:**
+
 - Ask programming questions
 - Get code snippets
 - Debug assistance
@@ -184,16 +209,18 @@ function add(a, b) {
 - Ctrl+Enter to send
 
 **Example queries:**
-```
+
+```plaintext
 "Write a binary search in C++"
 "Explain how AES encryption works"
 "Create a polymorphic shellcode"
 "Optimize this bubble sort"
-```
 
+```plaintext
 ### **6. File System Integration** 💾
 
 **Operations:**
+
 - Open real files from disk
 - Save changes to filesystem
 - Create new files
@@ -201,19 +228,22 @@ function add(a, b) {
 - Auto-save (coming soon)
 
 **API:**
+
 ```javascript
+
 // Read file
 const content = await window.electron.readFile('/path/to/file.cpp');
 
 // Write file
 await window.electron.writeFile('/path/to/file.cpp', content);
-```
 
+```plaintext
 ---
 
 ## 🎯 **KEYBOARD SHORTCUTS**
 
 ### **File Operations:**
+
 | Shortcut | Action |
 |----------|--------|
 | `Ctrl+N` | New File |
@@ -225,6 +255,7 @@ await window.electron.writeFile('/path/to/file.cpp', content);
 | `Ctrl+Q` | Quit App |
 
 ### **Editor:**
+
 | Shortcut | Action |
 |----------|--------|
 | `Ctrl+Z` | Undo |
@@ -236,6 +267,7 @@ await window.electron.writeFile('/path/to/file.cpp', content);
 | `Alt+Up/Down` | Move Line |
 
 ### **AI:**
+
 | Shortcut | Action |
 |----------|--------|
 | `Ctrl+K` | Ask BigDaddyG |
@@ -244,6 +276,7 @@ await window.electron.writeFile('/path/to/file.cpp', content);
 | `Ctrl+Shift+O` | Optimize Code |
 
 ### **View:**
+
 | Shortcut | Action |
 |----------|--------|
 | `Ctrl+B` | Toggle Sidebar |
@@ -257,7 +290,8 @@ await window.electron.writeFile('/path/to/file.cpp', content);
 ## 🔧 **DEVELOPMENT**
 
 ### **Project Structure:**
-```
+
+```plaintext
 ProjectIDEAI/
 ├── electron/
 │   ├── main.js          # Electron main process
@@ -270,38 +304,44 @@ ProjectIDEAI/
 │
 ├── package.json         # Electron configuration
 └── README-ELECTRON.md   # This file
-```
 
+```plaintext
 ### **Build Commands:**
 
 ```bash
+
 # Development
+
 npm run dev              # Start with live reload
 
 # Testing
+
 npm start                # Start production build
 
 # Building
+
 npm run build            # Build for current platform
 npm run build:win        # Build Windows installer
 npm run build:mac        # Build macOS DMG
 npm run build:linux      # Build Linux AppImage/deb
 
 # Packaging
+
 npm run pack             # Package without installer
 npm run dist             # Full distribution build
-```
 
+```plaintext
 ### **Output:**
-```
+
+```plaintext
 dist/
 ├── BigDaddyG IDE-1.0.0.exe          # Windows installer
 ├── BigDaddyG IDE-1.0.0-portable.exe # Windows portable
 ├── BigDaddyG IDE-1.0.0.dmg          # macOS installer
 ├── BigDaddyG IDE-1.0.0.AppImage     # Linux AppImage
 └── BigDaddyG IDE-1.0.0.deb          # Debian package
-```
 
+```plaintext
 ---
 
 ## 🎨 **CUSTOMIZATION**
@@ -309,19 +349,23 @@ dist/
 ### **Monaco Editor Themes:**
 
 **Built-in:**
+
 - `vs` - Light theme
 - `vs-dark` - Dark theme (default)
 - `hc-black` - High contrast
 
 **Change theme:**
+
 ```javascript
+
 // In electron/renderer.js
 monaco.editor.setTheme('vs-dark');
-```
 
+```plaintext
 ### **Editor Settings:**
 
 ```javascript
+
 // In electron/renderer.js, editor creation:
 monaco.editor.create(container, {
     fontSize: 14,              // Font size
@@ -331,8 +375,8 @@ monaco.editor.create(container, {
     wordWrap: 'on',            // Word wrapping
     // ... more options
 });
-```
 
+```plaintext
 ---
 
 ## 🆚 **COMPARISON**
@@ -357,38 +401,46 @@ monaco.editor.create(container, {
 ## 🧪 **TESTING**
 
 ### **Test Monaco Editor:**
+
 1. Create new file: `Ctrl+N`
 2. Enter filename: `test.cpp`
 3. Type C++ code:
 ```cpp
+
 #include <iostream>
 
 int main() {
     std::cout << "Hello, World!" << std::endl;
     return 0;
 }
-```
-4. See syntax highlighting!
+
+```plaintext
+  1. See syntax highlighting!
 
 ### **Test AI Copilot:**
+
 1. Select the `main()` function
 2. Right-click → Explain Code
 3. See BigDaddyG's explanation
 4. Try Fix, Optimize, etc.
 
 ### **Test Inline Suggestions:**
+
 1. Write buggy code:
 ```javascript
+
 function add(a, b) {
     return a - b;  // Wrong!
 }
-```
-2. Select function
-3. Right-click → Fix Code
-4. See inline suggestion popup
-5. Click ✅ Apply
+
+```plaintext
+  1. Select function
+  2. Right-click → Fix Code
+  3. See inline suggestion popup
+  4. Click ✅ Apply
 
 ### **Test Multi-Tab:**
+
 1. Create 3 files (Ctrl+N each):
    - `main.cpp`
    - `utils.py`
@@ -402,65 +454,83 @@ function add(a, b) {
 ## 🚀 **BUILDING INSTALLERS**
 
 ### **Windows:**
+
 ```bash
+
 npm run build:win
 
 # Output:
-# dist/BigDaddyG IDE Setup 1.0.0.exe  (Installer)
-# dist/BigDaddyG IDE 1.0.0.exe        (Portable)
-```
 
+# dist/BigDaddyG IDE Setup 1.0.0.exe  (Installer)
+
+# dist/BigDaddyG IDE 1.0.0.exe        (Portable)
+
+```plaintext
 ### **macOS:**
+
 ```bash
+
 npm run build:mac
 
 # Output:
-# dist/BigDaddyG IDE-1.0.0.dmg
-```
 
+# dist/BigDaddyG IDE-1.0.0.dmg
+
+```plaintext
 ### **Linux:**
+
 ```bash
+
 npm run build:linux
 
 # Output:
-# dist/BigDaddyG IDE-1.0.0.AppImage
-# dist/BigDaddyG IDE_1.0.0_amd64.deb
-```
 
+# dist/BigDaddyG IDE-1.0.0.AppImage
+
+# dist/BigDaddyG IDE_1.0.0_amd64.deb
+
+```plaintext
 ### **All Platforms:**
+
 ```bash
+
 npm run dist
 
 # Builds for current platform
-```
 
+```plaintext
 ---
 
 ## 📊 **TECHNICAL DETAILS**
 
 ### **Electron:**
+
 - Version: 27.0.0
 - Node.js: Bundled
 - Chromium: Latest
 
 ### **Monaco Editor:**
+
 - Version: 0.44.0
 - Engine: Same as VS Code
 - Languages: 100+
 - Features: Full IntelliSense
 
 ### **BigDaddyG:**
+
 - Training: 200K lines ASM/Security
 - Context: 1M tokens
 - Models: 4 variants (Latest, Code, Debug, Crypto)
 - Server: Node.js (bundled)
 
 ### **File Size:**
+
 - Unpacked: ~200 MB
 - Installer: ~150 MB
 - Portable: ~180 MB
 
 ### **Performance:**
+
 - Boot time: <2 seconds
 - Memory: ~100-200 MB
 - CPU: Low (idle)
@@ -470,7 +540,9 @@ npm run dist
 ## 🔒 **SECURITY**
 
 ### **Context Isolation:**
+
 ```javascript
+
 // Enabled in electron/main.js
 webPreferences: {
     nodeIntegration: false,      // No Node in renderer
@@ -478,19 +550,22 @@ webPreferences: {
     preload: 'preload.js',       // Secure bridge
     webSecurity: true            // CORS enabled
 }
-```
 
+```plaintext
 ### **IPC Security:**
+
 ```javascript
+
 // Only exposed methods (preload.js):
+
 - readFile()
 - writeFile()
 - getAppVersion()
 - getAppPath()
 - onMenuEvent()
-```
-
+```plaintext
 ### **No Eval:**
+
 - No `eval()` usage
 - No `Function()` constructor
 - No dynamic code execution
@@ -500,92 +575,116 @@ webPreferences: {
 ## 💡 **TIPS & TRICKS**
 
 ### **1. Multi-Cursor Editing:**
-```
+
+```plaintext
 Alt+Click - Add cursor
 Ctrl+Alt+Up/Down - Add cursor above/below
 Ctrl+D - Select next occurrence
-```
 
+```plaintext
 ### **2. Command Palette:**
-```
-F1 or Ctrl+Shift+P - Show all commands
-```
 
+```plaintext
+F1 or Ctrl+Shift+P - Show all commands
+
+```plaintext
 ### **3. Quick Open:**
-```
+
+```plaintext
 Ctrl+P - Quick file open
 Ctrl+Shift+P - Command palette
-```
 
+```plaintext
 ### **4. Integrated Terminal:**
-```
-Ctrl+` - Toggle terminal
-```
 
+```plaintext
+Ctrl+` - Toggle terminal
+
+```plaintext
 ### **5. AI Chat:**
-```
+
+```plaintext
 Ctrl+Enter - Send message (in chat input)
 Ctrl+K - Focus chat input
-```
 
+```plaintext
 ---
 
 ## 🐛 **TROUBLESHOOTING**
 
 ### **App won't start:**
+
 ```bash
+
 # Check Node.js
+
 node --version  # Should be v18+
 
 # Reinstall dependencies
+
 rm -rf node_modules package-lock.json
 npm install
 
 # Try again
-npm start
-```
 
+npm start
+
+```plaintext
 ### **Monaco not loading:**
+
 ```bash
+
 # Verify monaco-editor installed
+
 ls node_modules/monaco-editor
 
 # If missing:
-npm install monaco-editor@0.44.0
-```
 
+npm install monaco-editor@0.44.0
+
+```plaintext
 ### **Orchestra server not connecting:**
+
 ```bash
+
 # Check if port 11441 is free
+
 netstat -an | findstr 11441
 
 # Kill existing process
+
 taskkill /F /IM node.exe
 
 # Restart app
-npm start
-```
 
+npm start
+
+```plaintext
 ### **Syntax highlighting not working:**
+
 ```javascript
+
 // Check language detection in renderer.js
 console.log(detectLanguage('test.cpp'));  // Should be 'cpp'
 
 // Manually set language
 monaco.editor.setModelLanguage(editor.getModel(), 'cpp');
-```
 
+```plaintext
 ---
 
 ## 📚 **DOCUMENTATION**
 
 ### **Monaco Editor:**
-- https://microsoft.github.io/monaco-editor/
+
+- <https://microsoft.github.io/monaco-editor/>
 
 ### **Electron:**
-- https://www.electronjs.org/docs
+
+- <https://www.electronjs.org/docs>
 
 ### **BigDaddyG:**
+
 - See `README-GENESIOS.md`
 - See `COPILOT-FEATURES.md`
 - See `SESSION-COMPLETE-SUMMARY.md`
@@ -595,6 +694,7 @@ monaco.editor.setModelLanguage(editor.getModel(), 'cpp');
 ## 🎊 **WHAT YOU NOW HAVE**
 
 ### **✅ Complete Desktop IDE:**
+
 - Professional syntax highlighting (Monaco)
 - Multi-tab editing system
 - File system integration
@@ -602,6 +702,7 @@ monaco.editor.setModelLanguage(editor.getModel(), 'cpp');
 - Cross-platform (Windows/Mac/Linux)
 
 ### **✅ AI Copilot:**
+
 - Right-click context menu
 - Inline suggestions (Apply/Reject)
 - Chat interface
@@ -609,6 +710,7 @@ monaco.editor.setModelLanguage(editor.getModel(), 'cpp');
 - 1M context window
 
 ### **✅ Professional Features:**
+
 - IntelliSense & auto-completion
 - Error highlighting
 - Bracket matching
@@ -617,6 +719,7 @@ monaco.editor.setModelLanguage(editor.getModel(), 'cpp');
 - Multi-cursor editing
 
 ### **✅ Production Ready:**
+
 - Build installers for any platform
 - Window state persistence
 - Application menu
@@ -628,18 +731,24 @@ monaco.editor.setModelLanguage(editor.getModel(), 'cpp');
 ## 🚀 **GET STARTED NOW**
 
 ```bash
+
 # Install dependencies
+
 npm install
 
 # Start the IDE
+
 npm start
 
 # Create your first file (Ctrl+N)
-# Write code with syntax highlighting
-# Right-click → Ask BigDaddyG for help
-# Build amazing things! 🌌💎✨
-```
 
+# Write code with syntax highlighting
+
+# Right-click → Ask BigDaddyG for help
+
+# Build amazing things! 🌌💎✨
+
+```plaintext
 ---
 
 **🌌 BIGDADDYG IDE - FROM BROWSER TO PROFESSIONAL DESKTOP APP IN ONE SESSION!** 🚀💎

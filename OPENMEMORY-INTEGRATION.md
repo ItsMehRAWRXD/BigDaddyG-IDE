@@ -1,4 +1,4 @@
-# 🧠 OpenMemory Integration - Complete Guide
+﻿# 🧠 OpenMemory Integration - Complete Guide
 
 **PowerShell-native cognitive memory system for BigDaddyG IDE**
 
@@ -24,25 +24,29 @@ Your BigDaddyG IDE now includes **OpenMemory** - a complete cognitive memory sys
 ### **1. Start OpenMemory**
 
 ```powershell
+
 cd "D:\Security Research aka GitHub Repos\ProjectIDEAI\OpenMemory"
 .\Start-OpenMemory.ps1
-```
 
+```plaintext
 ### **2. Use CLI**
 
 ```powershell
+
 Import-Module .\OpenMemory.psd1
 
 # Add memory
+
 Add-OMMemory "User prefers dark mode" -UserId "ada" -Sector Semantic
 
 # Search
-Search-OMMemory "preferences" -UserId "ada" -K 5
-```
 
+Search-OMMemory "preferences" -UserId "ada" -K 5
+
+```plaintext
 ### **3. Open Dashboard**
 
-Navigate to: **http://localhost:8765/dashboard**
+Navigate to: **<http://localhost:8765/dashboard**>
 
 ---
 

@@ -1,9 +1,9 @@
 # OpenMemory Storage Module
 # CRUD for memories & users – JSONL + in-memory index
 
-$script:Memories = @()
+$script:Memories = New-Object System.Collections.ArrayList
 $script:Users   = @{}
-$script:Vectors = @()
+$script:Vectors = New-Object System.Collections.ArrayList
 $script:StoreRoot = ""
 
 function Initialize-OMStorage {
@@ -12,8 +12,6 @@ function Initialize-OMStorage {
     )
     
     $script:StoreRoot = $Root
-    $script:Memories = @()
-    $script:Vectors = @()
     
     # Create storage folder if missing
     if (-not (Test-Path $Root)) { 
@@ -25,8 +23,7 @@ function Initialize-OMStorage {
     if (Test-Path "$Root\memories.jsonl") {
         Get-Content "$Root\memories.jsonl" -ErrorAction SilentlyContinue | ForEach-Object {
             try {
-                $memory = $_ | ConvertFrom-Json
-                $script:Memories = $script:Memories + @($memory)
+                $script:Memories.Add(($_ | ConvertFrom-Json))
             } catch {
                 Write-Warning "[OpenMemory] ⚠️ Skipped corrupt memory line"
             }
@@ -55,8 +52,7 @@ function Initialize-OMStorage {
     if (Test-Path "$Root\embeddings.jsonl") {
         Get-Content "$Root\embeddings.jsonl" -ErrorAction SilentlyContinue | ForEach-Object {
             try {
-                $vector = $_ | ConvertFrom-Json
-                $script:Vectors = $script:Vectors + @($vector)
+                $script:Vectors.Add(($_ | ConvertFrom-Json))
             } catch {
                 Write-Warning "[OpenMemory] ⚠️ Skipped corrupt embedding line"
             }
@@ -110,7 +106,7 @@ function Add-OMMemory {
     
     $id = [guid]::NewGuid().ToString('n')
     
-    $memory = [PSCustomObject]@{
+    $memory = [ordered]@{
         id       = $id
         content  = $Content
         user_id  = $UserId
@@ -122,16 +118,16 @@ function Add-OMMemory {
         metadata = $Metadata
     }
     
-    $script:Memories = $script:Memories + @($memory)
+    $null = $script:Memories.Add($memory)
     
     # Generate and store embedding
     $embedding = Get-OMEmbedding $Content
-    $vectorEntry = [PSCustomObject]@{
+    $vectorEntry = @{
         id     = $id
         sector = $Sector
         vector = $embedding
     }
-    $script:Vectors = $script:Vectors + @($vectorEntry)
+    $null = $script:Vectors.Add($vectorEntry)
     
     # Update user summary
     if (-not $script:Users.ContainsKey($UserId)) {
@@ -182,11 +178,34 @@ function Remove-OMMemory {
         [string]$Id
     )
     
-    $script:Memories = $script:Memories | Where-Object { $_.id -ne $Id }
-    $script:Vectors = $script:Vectors | Where-Object { $_.id -ne $Id }
+    $index = 0
+    $found = $false
     
-    Save-OMStorage -Quiet
-    Write-Host "[OpenMemory] 🗑️ Removed memory: $Id" -ForegroundColor Yellow
+    foreach ($m in $script:Memories) {
+        if ($m.id -eq $Id) {
+            $script:Memories.RemoveAt($index)
+            $found = $true
+            break
+        }
+        $index++
+    }
+    
+    if ($found) {
+        # Also remove embedding
+        $vecIndex = 0
+        foreach ($v in $script:Vectors) {
+            if ($v.id -eq $Id) {
+                $script:Vectors.RemoveAt($vecIndex)
+                break
+            }
+            $vecIndex++
+        }
+        
+        Save-OMStorage -Quiet
+        Write-Host "[OpenMemory] 🗑️ Removed memory: $Id" -ForegroundColor Yellow
+    } else {
+        Write-Warning "[OpenMemory] ⚠️ Memory not found: $Id"
+    }
 }
 
 function Get-OMUserSummary {
@@ -240,14 +259,13 @@ function Clear-OMStorage {
     )
     
     if (-not $Force) {
-        $script:Memories = @()
-        $script:Vectors = @()
-        $script:Users = @{}
-    } else {
-        $script:Memories = @()
-        $script:Vectors = @()
-        $script:Users = @{}
+        Write-Warning "[OpenMemory] ⚠️ Use -Force to confirm clearing all memories"
+        return
     }
+    
+    $script:Memories.Clear()
+    $script:Vectors.Clear()
+    $script:Users.Clear()
     
     Save-OMStorage
     

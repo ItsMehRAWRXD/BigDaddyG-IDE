@@ -1,8 +1,9 @@
-# BigDaddyG IDE - Voice Coding Guide
+﻿# BigDaddyG IDE - Voice Coding Guide
 
 ## 🎤 **COMPLETE HANDS-FREE DEVELOPMENT**
 
 Code without touching the keyboard! BigDaddyG IDE now supports:
+
 - ✅ **Voice-to-Text Coding** (like GitHub Copilot Voice)
 - ✅ **Voice Commands** (like Cursor Voice)
 - ✅ **Voice-Controlled AI** (ask BigDaddyG questions)
@@ -16,29 +17,29 @@ Code without touching the keyboard! BigDaddyG IDE now supports:
 ## 🚀 **Quick Start**
 
 ### **Method 1: Wake Word**
-```
+
+```plaintext
 1. Just say: "Hey BigDaddy"
 2. Voice indicator lights up: 🌟 Voice Active
 3. Start coding with your voice!
 4. Say: "Go to sleep" to deactivate
-```
-
+```plaintext
 ### **Method 2: Keyboard Shortcut**
-```
+
+```plaintext
 1. Press: Ctrl+Shift+V
 2. Voice indicator appears: 🎤 Listening...
 3. Say "Hey BigDaddy" to activate
 4. Start giving commands!
-```
-
+```plaintext
 ### **Method 3: Click Button**
-```
+
+```plaintext
 1. Click the 🎤 button (bottom-right)
 2. Voice indicator shows status
 3. Say "Hey BigDaddy"
 4. Ready to code!
-```
-
+```plaintext
 ---
 
 ## 💬 **Voice Commands**
@@ -222,7 +223,7 @@ Code without touching the keyboard! BigDaddyG IDE now supports:
 
 ### **Pure Text-to-Speech**
 
-```
+```plaintext
 Voice: "start dictation"
 
 Now everything you say becomes text:
@@ -236,9 +237,10 @@ Editor: the function takes two parameters
 Voice: "stop dictation"
 
 Back to code mode!
-```
 
+```plaintext
 ### **When to Use:**
+
 - ✅ Writing comments
 - ✅ Writing documentation
 - ✅ Writing README files
@@ -251,7 +253,7 @@ Back to code mode!
 
 ### **Session 1: Create a Simple Function**
 
-```
+```plaintext
 You: "Hey BigDaddy"
 AI: 🔊 "Voice coding activated. How can I help?"
 
@@ -268,13 +270,13 @@ You: "save file"
 AI: 🔊 "Done"
 
 ✅ Complete function created by voice!
-```
 
+```plaintext
 ---
 
 ### **Session 2: Write a Class with Methods**
 
-```
+```plaintext
 You: "Hey BigDaddy"
 AI: 🔊 "Voice coding activated"
 
@@ -282,7 +284,7 @@ You: "create class Calculator"
 Editor: class Calculator {}
 
 You: "new line create function add"
-Editor: 
+Editor:
 class Calculator {
   function add() {}
 }
@@ -303,13 +305,13 @@ AI: 🔊 "This is a Calculator class with two methods..."
 
 You: "save file"
 AI: 🔊 "Done"
-```
 
+```plaintext
 ---
 
 ### **Session 3: Debug Code with Voice**
 
-```
+```plaintext
 You: "Hey BigDaddy"
 
 You: "go to line 42"
@@ -333,13 +335,13 @@ You: "run"
 Terminal: [program output]
 
 AI: 🔊 "Program executed successfully"
-```
 
+```plaintext
 ---
 
 ### **Session 4: Full Agentic + Voice**
 
-```
+```plaintext
 You: "Hey BigDaddy"
 
 You: "execute task create a REST API with user authentication"
@@ -359,34 +361,42 @@ AI: 🔊 "Task completed successfully. REST API running on port 3000"
 
 You: "thank you, go to sleep"
 AI: 🔊 "Going to sleep"
-```
 
+```plaintext
 ---
 
 ## 🎛️ **Configuration**
 
 ### **Wake Word**
+
 ```javascript
+
 Default: "Hey BigDaddy"
 Change: VoiceConfig.wakeWord = "computer";
-```
 
+```plaintext
 ### **Sleep Word**
+
 ```javascript
+
 Default: "Go to sleep"
 Change: VoiceConfig.sleepWord = "stop listening";
-```
 
+```plaintext
 ### **Voice Feedback**
+
 ```javascript
+
 Enable/Disable: VoiceConfig.voiceFeedback = true/false;
 Voice Gender: VoiceConfig.voiceGender = 'male'/'female';
 Speech Rate: VoiceConfig.voiceRate = 1.0; // 0.5 - 2.0
 Pitch: VoiceConfig.voicePitch = 1.0; // 0.0 - 2.0
-```
 
+```plaintext
 ### **Language**
+
 ```javascript
+
 VoiceConfig.language = 'en-US'; // English (US)
 // Other options:
 // 'en-GB' - English (UK)
@@ -395,15 +405,17 @@ VoiceConfig.language = 'en-US'; // English (US)
 // 'de-DE' - German
 // 'ja-JP' - Japanese
 // etc.
-```
 
+```plaintext
 ### **Confidence Threshold**
+
 ```javascript
+
 VoiceConfig.minConfidence = 0.7; // 0.0 - 1.0
 // Higher = more accurate, less responsive
 // Lower = more responsive, less accurate
-```
 
+```plaintext
 ---
 
 ## 🔧 **Troubleshooting**
@@ -416,17 +428,17 @@ VoiceConfig.minConfidence = 0.7; // 0.0 - 1.0
    - Firefox: ⚠️ Limited support
    - Safari: ⚠️ Experimental
 
-2. **Check Microphone Permission**
+  1. **Check Microphone Permission**
    - Browser asks for mic permission
    - Must click "Allow"
    - Check browser settings if denied
 
-3. **Check Microphone**
+  1. **Check Microphone**
    - Is mic plugged in?
    - Is mic muted?
    - Test in browser settings
 
-4. **Voice Not Recognized?**
+  1. **Voice Not Recognized?**
    - Speak clearly
    - Reduce background noise
    - Lower VoiceConfig.minConfidence
@@ -438,12 +450,12 @@ VoiceConfig.minConfidence = 0.7; // 0.0 - 1.0
    - Say "Hey BigDaddy" first
    - Look for 🌟 Voice Active indicator
 
-2. **Check Exact Command**
+  1. **Check Exact Command**
    - Commands must match exactly
    - Case doesn't matter
    - Check VoiceCommands list
 
-3. **Use Command Prefix**
+  1. **Use Command Prefix**
    - If not working, try: "command save file"
 
 ---
@@ -451,6 +463,7 @@ VoiceConfig.minConfidence = 0.7; // 0.0 - 1.0
 ## 📊 **Voice Coding Best Practices**
 
 ### **✅ DO:**
+
 - Speak clearly and at normal pace
 - Say wake word before each session
 - Use exact command phrases
@@ -459,6 +472,7 @@ VoiceConfig.minConfidence = 0.7; // 0.0 - 1.0
 - Say "done" or check visually before next command
 
 ### **❌ DON'T:**
+
 - Mumble or speak too fast
 - Skip wake word
 - Mix commands without pausing
@@ -516,6 +530,7 @@ VoiceConfig.minConfidence = 0.7; // 0.0 - 1.0
 ### **Custom Voice Commands**
 
 ```javascript
+
 // Add your own commands
 VoiceCommands['deploy to production'] = () => {
     deployToProduction();
@@ -528,20 +543,20 @@ VoiceCommands['run all tests'] = () => {
 VoiceCommands['create component *'] = (name) => {
     createReactComponent(name);
 };
-```
 
+```plaintext
 ### **Chain Commands**
 
-```
+```plaintext
 You: "Hey BigDaddy"
 You: "new file then save file as hello.js then create function greet then save file"
 
 AI executes all commands in sequence!
-```
 
+```plaintext
 ### **Voice + Agentic Execution**
 
-```
+```plaintext
 You: "Hey BigDaddy"
 You: "execute task create a todo app with React"
 
@@ -558,15 +573,15 @@ You: "optimize this"
 [BigDaddyG optimizes the code]
 
 All hands-free! 🎉
-```
 
+```plaintext
 ---
 
 ## 🎊 **Summary**
 
 ### **What You Can Do with Voice:**
 
-```
+```plaintext
 ✅ Create files
 ✅ Write code
 ✅ Navigate files
@@ -583,12 +598,13 @@ All hands-free! 🎉
 ✅ Manage Git
 ✅ Full agentic tasks
 ✅ EVERYTHING hands-free!
-```
 
+```plaintext
 ### **BigDaddyG IDE Voice Features:**
 
-```
+```plaintext
 = GitHub Copilot Voice (code dictation)
+
 + Cursor Voice (natural language)
 + Talon Voice (full control)
 + AI Voice Assistant (BigDaddyG responds)
@@ -599,8 +615,8 @@ All hands-free! 🎉
 + FREE
 
 = THE ULTIMATE VOICE CODING SYSTEM! 🎤
-```
 
+```plaintext
 ---
 
 🎤 **Just say "Hey BigDaddy" and start coding without touching the keyboard!**

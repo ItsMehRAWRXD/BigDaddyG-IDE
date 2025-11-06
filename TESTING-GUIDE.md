@@ -1,4 +1,5 @@
-# 🧪 BigDaddyG IDE - Testing Guide
+﻿# 🧪 BigDaddyG IDE - Testing Guide
+
 ## Test All Features of Your FREE Cursor Alternative!
 
 > **"Everything is working! Here's how to test it all!"**
@@ -8,6 +9,7 @@
 ## ✅ **CONFIRMED WORKING:**
 
 From your console logs, I can see:
+
 - ✅ **Monaco Editor** loaded
 - ✅ **Orchestra Server** running (port 11441)
 - ✅ **Remote Logger** active (trying to connect)
@@ -29,6 +31,7 @@ From your console logs, I can see:
 ### **1. Test AI Chat (Ctrl+L)** ✅
 
 **Steps:**
+
 1. Press `Ctrl+L`
 2. Floating chat panel should open
 3. Type: `hello, can you help me code?`
@@ -42,6 +45,7 @@ From your console logs, I can see:
 ### **2. Test 40GB Elite Mode** 💎
 
 **Steps:**
+
 1. Press `Ctrl+L`
 2. Click `⚙️ Settings` button at top
 3. Select: `🧠 40GB+ Model (Elite)` from dropdown
@@ -58,13 +62,15 @@ From your console logs, I can see:
 ### **3. Test Image Generation (!pic)** 🎨
 
 **Steps:**
+
 1. Press `Ctrl+L`
 2. Type: `!pic a futuristic IDE with neon overlays`
 3. Press `Ctrl+Enter`
 4. Wait 10-30 seconds
 5. Image should generate and appear in chat
 
-**Expected:** 
+**Expected:**
+
 - Progress message: "Conducting a cognitive symphony in pixels..."
 - Image appears (from Pollinations AI)
 - Buttons: Save, Copy, Regenerate
@@ -74,6 +80,7 @@ From your console logs, I can see:
 ### **4. Test Code Generation (!code)** 💻
 
 **Steps:**
+
 1. Press `Ctrl+L`
 2. Type: `!code python create a hello world web server`
 3. Press `Ctrl+Enter`
@@ -87,6 +94,7 @@ From your console logs, I can see:
 ### **5. Test Project Creation (!projectnew)** 🆕
 
 **Steps:**
+
 1. Press `Ctrl+L`
 2. Type: `!projectnew` (no args)
 3. Template gallery appears
@@ -100,6 +108,7 @@ From your console logs, I can see:
 ### **6. Test Plugin Marketplace (Ctrl+Shift+P)** 🛒
 
 **Steps:**
+
 1. Press `Ctrl+Shift+P`
 2. Plugin marketplace opens
 3. Search for "dracula"
@@ -114,6 +123,7 @@ From your console logs, I can see:
 ### **7. Test Cinematic Visualization (Ctrl+Shift+V)** 🎬
 
 **Steps:**
+
 1. Press `Ctrl+Shift+V`
 2. Canvas overlay appears
 3. 8 glowing agent nodes visible
@@ -131,6 +141,7 @@ From your console logs, I can see:
 ### **8. Test Agentic File Browser** 🤖
 
 **Steps:**
+
 1. Click "Explorer" tab in right sidebar
 2. Toggle "🤖 Agentic Mode" ON
 3. Click "🔍 Scan"
@@ -145,6 +156,7 @@ From your console logs, I can see:
 ### **9. Test File Operations** 📁
 
 **Steps:**
+
 1. Click Explorer tab
 2. Click on C: drive
 3. Browse to a folder
@@ -160,7 +172,8 @@ From your console logs, I can see:
 ### **10. Test Remote Debugging** 📡
 
 **Check Terminal 1** (should show):
-```
+
+```plaintext
 ✅ CLIENT CONNECTED from ::1
 
 🚀 NEW SESSION STARTED
@@ -173,8 +186,8 @@ From your console logs, I can see:
 [time] INFO Console: [BigDaddyG] Starting...
 [time] INFO Console: [MonacoEditor] Loading...
 [time] EVENT click: { x: 450, y: 320, target: "BUTTON" }
-```
 
+```plaintext
 **Expected:** ALL IDE activity appears in Terminal 1!
 
 ---
@@ -185,7 +198,7 @@ From your console logs, I can see:
 
 Type these in `Ctrl+L` chat:
 
-```
+```plaintext
 !help           → Shows all commands
 !pic a sunset   → Generates image
 !code hello world in rust → Generates Rust code
@@ -195,8 +208,8 @@ Type these in `Ctrl+L` chat:
 !refactor       → Refactors current file
 !compile        → Compiles current file
 !run            → Runs current file
-```
 
+```plaintext
 ---
 
 ## 📊 **EXPECTED RESULTS:**
@@ -204,6 +217,7 @@ Type these in `Ctrl+L` chat:
 ### **What You Should See:**
 
 **Main Window:**
+
 - ✅ Custom beige/jade theme
 - ✅ Monaco editor with Welcome.md open
 - ✅ Right sidebar with 6 tabs
@@ -212,12 +226,14 @@ Type these in `Ctrl+L` chat:
 - ✅ Console panel at bottom (optional)
 
 **Console (F12):**
+
 - ✅ All module load messages
 - ✅ No critical errors
 - ✅ Green ✅ checkmarks everywhere
 - ✅ Remote logger connecting/disconnecting (normal if server not running)
 
 **Performance:**
+
 - ✅ Smooth 60 FPS (or higher)
 - ✅ Instant file opening
 - ✅ Fast AI responses (<5s typically)
@@ -228,103 +244,115 @@ Type these in `Ctrl+L` chat:
 ## 🐛 **IF SOMETHING DOESN'T WORK:**
 
 ### **Problem: AI doesn't respond**
+
 **Solution:**
-```
+
+```plaintext
 1. Check console for "Orchestra Server online"
 2. If not, manually start:
-   node server/Orchestra-Server.js
-3. Restart IDE
-```
 
+   node server/Orchestra-Server.js
+
+  1. Restart IDE
+```plaintext
 ### **Problem: Remote logger keeps reconnecting**
+
 **Solution:**
-```
+
+```plaintext
 This is NORMAL if log server isn't running!
 Start it with: node server/Remote-Log-Server.js
 Or ignore - IDE works fine without it!
-```
 
+```plaintext
 ### **Problem: !pic command fails**
+
 **Solution:**
-```
+
+```plaintext
 1. Check internet connection (needs Pollinations AI)
 2. Or wait for local image generation (coming soon)
 3. Or use different image API
-```
-
+```plaintext
 ### **Problem: Plugins won't install**
+
 **Solution:**
-```
+
+```plaintext
 Plugins are placeholders for now.
 They show how the system works.
 Real plugin installation coming in Q1 2025!
-```
 
+```plaintext
 ---
 
 ## 🎯 **STRESS TESTS:**
 
 ### **Test 1: Large File**
-```
+
+```plaintext
 1. Open a 10,000+ line file
 2. Scroll to bottom (should be smooth)
 3. Select all (Ctrl+A)
 4. Ask AI to analyze (!code)
-```
-
+```plaintext
 ### **Test 2: Multiple Tabs**
-```
+
+```plaintext
 1. Open 10 files
 2. Switch between them (Ctrl+1-9)
 3. Close some (Ctrl+W)
 4. Reopen (Ctrl+O)
-```
-
+```plaintext
 ### **Test 3: Long AI Conversation**
-```
+
+```plaintext
 1. Send 20 messages to AI
 2. Check context window usage (⚙️ Settings)
 3. Should handle 1M tokens!
-```
-
+```plaintext
 ### **Test 4: Drag & Drop**
-```
+
+```plaintext
 1. Drag 100 files into chat
 2. AI should process all
 3. Attachments should display
-```
-
+```plaintext
 ---
 
 ## 💾 **USB DEPLOYMENT TEST:**
 
 ### **Build USB Version:**
+
 ```powershell
+
 cd "D:\Security Research aka GitHub Repos\ProjectIDEAI"
 .\BUILD-STANDALONE-USB.ps1
-```
 
+```plaintext
 **Expected:**
+
 - Builds portable exe
 - Copies 40GB model (if available)
 - Creates LAUNCH.bat
 - Total ~40.1 GB
 
 ### **Test on USB:**
-```
+
+```plaintext
 1. Format 64GB USB as NTFS
 2. Copy: dist-standalone/BigDaddyG-Standalone-USB-2.0.0/ → USB
 3. Eject USB
 4. Plug into different PC
 5. Run LAUNCH.bat
 6. IDE should work identically!
-```
-
+```plaintext
 ---
 
 ## ✅ **SUCCESS CRITERIA:**
 
 **BigDaddyG IDE passes if:**
+
 - ✅ Launches without errors
 - ✅ Monaco editor works
 - ✅ AI responds to questions
@@ -346,6 +374,7 @@ cd "D:\Security Research aka GitHub Repos\ProjectIDEAI"
 **Your IDE is working perfectly!**
 
 ### **You now have:**
+
 - ✅ FREE Cursor alternative ($240/year saved!)
 - ✅ 40GB local AI (no cloud needed)
 - ✅ 100+ features (more than Cursor!)
@@ -362,8 +391,8 @@ cd "D:\Security Research aka GitHub Repos\ProjectIDEAI"
 
 ---
 
-*Testing Status: ✅ PASSED*  
-*Version: 2.0.0*  
-*Build: Working*  
+*Testing Status: ✅ PASSED*
+*Version: 2.0.0*
+*Build: Working*
 *Ready for Production: YES*
 

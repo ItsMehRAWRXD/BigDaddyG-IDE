@@ -1,4 +1,4 @@
-# 🎼 Orchestra 3-Pane Layout Guide
+﻿# 🎼 Orchestra 3-Pane Layout Guide
 
 **BigDaddyG IDE - Professional 3-Pane Interface**
 
@@ -8,7 +8,7 @@
 
 Orchestra Layout transforms BigDaddyG IDE into a beautiful 3-pane interface inspired by Ollama and professional IDEs:
 
-```
+```plaintext
 ┌─────────────────┬──────────────────────┬───────────────────┐
 │                 │                      │                   │
 │   File          │   AI Chat            │   Code Editor     │
@@ -24,13 +24,14 @@ Orchestra Layout transforms BigDaddyG IDE into a beautiful 3-pane interface insp
 │                 │                      │                   │
 └─────────────────┴──────────────────────┴───────────────────┘
      280px                 flex                    50%
-```
 
+```plaintext
 ---
 
 ## ✨ Features
 
 ### Left Pane: Conversation History
+
 - **New Chat Button**: Create new AI sessions instantly
 - **System Info**: Shows CPU cores, recommended parallel sessions
 - **Active Sessions**: `0 / 100` counter
@@ -43,6 +44,7 @@ Orchestra Layout transforms BigDaddyG IDE into a beautiful 3-pane interface insp
 - **Settings**: Configure Orchestra
 
 ### Center Pane: AI Chat (Main Stage)
+
 - **Model Selector**: Choose from 12+ models
 - **Auto-Discovery**: Finds Ollama/GGUF models
 - **Session Tabs**: Switch between 100 parallel chats
@@ -51,6 +53,7 @@ Orchestra Layout transforms BigDaddyG IDE into a beautiful 3-pane interface insp
 - **Message History**: Full conversation context
 
 ### Right Pane: Code Editor
+
 - **Monaco Editor**: VS Code's editor engine
 - **Syntax Highlighting**: 100+ languages
 - **IntelliSense**: Auto-completion
@@ -62,16 +65,20 @@ Orchestra Layout transforms BigDaddyG IDE into a beautiful 3-pane interface insp
 ## 🚀 How to Enable
 
 ### Option 1: Automatic (Default)
+
 Orchestra 3-Pane is **enabled by default**. Just launch the IDE!
 
 ### Option 2: Manual Toggle
+
 ```javascript
+
 // In Browser Console (F12)
 localStorage.setItem('orchestra-3pane-enabled', 'true');
 location.reload();
-```
 
+```plaintext
 ### Option 3: Settings Panel
+
 1. Open Settings (Ctrl+,)
 2. Navigate to "Layout"
 3. Toggle "Orchestra 3-Pane Mode"
@@ -82,6 +89,7 @@ location.reload();
 ## ⌨️ Hotkeys
 
 ### Global Hotkeys
+
 | Hotkey | Action |
 |--------|--------|
 | `Ctrl+L` | Open floating chat (overlay mode) |
@@ -95,6 +103,7 @@ location.reload();
 | `Ctrl+Shift+Tab` | Previous session tab |
 
 ### Chat Hotkeys
+
 | Hotkey | Action |
 |--------|--------|
 | `Ctrl+Enter` | Send message |
@@ -110,13 +119,16 @@ location.reload();
 ### Adjust Pane Sizes
 
 Edit `orchestra-layout.js`:
+
 ```javascript
+
 grid-template-columns: 280px 1fr 50%;
 //                     ↑     ↑   ↑
 //                     Left  Mid Right
-```
 
+```plaintext
 Examples:
+
 - **Narrow left**: `200px 1fr 50%`
 - **Wide right**: `280px 1fr 60%`
 - **Balanced**: `300px 1fr 400px`
@@ -124,7 +136,9 @@ Examples:
 ### Change Colors
 
 Edit `cursor-theme.css`:
+
 ```css
+
 :root {
     --orchestra-sidebar: #1a1a2e;
     --orchestra-chat: #16213e;

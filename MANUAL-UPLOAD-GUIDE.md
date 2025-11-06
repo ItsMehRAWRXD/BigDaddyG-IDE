@@ -1,14 +1,14 @@
-# 🚀 Manual Upload Guide - BigDaddyG IDE to GitHub
+﻿# 🚀 Manual Upload Guide - BigDaddyG IDE to GitHub
 
 ## ✅ Good News!
 
-1. ✅ Repository **created** on GitHub: https://github.com/ItsMehRAWRXD/BigDaddyG-IDE
+1. ✅ Repository **created** on GitHub: <https://github.com/ItsMehRAWRXD/BigDaddyG-IDE>
 2. ✅ Code **committed** locally (166 files, 6.8 MB)
 3. ⚠️  Git HTTPS helper issue preventing push
 
 ## 🔧 Fix Option 1: GitHub Desktop (Easiest)
 
-1. **Download GitHub Desktop**: https://desktop.github.com/
+1. **Download GitHub Desktop**: <https://desktop.github.com/>
 2. **Open GitHub Desktop**
 3. **File** → **Add Local Repository**
 4. **Select**: `D:\Security Research aka GitHub Repos\ProjectIDEAI`
@@ -18,36 +18,44 @@
 ## 🔧 Fix Option 2: Fix Git (Advanced)
 
 ```powershell
+
 # Reinstall Git for Windows with credential helper
+
 winget install --id Git.Git -e --source winget
 
-# Or download from: https://git-scm.com/download/win
-```
+# Or download from: <https://git-scm.com/download/win>
 
+```plaintext
 After reinstalling:
-```bash
-cd "D:\Security Research aka GitHub Repos\ProjectIDEAI"
-git remote add origin https://github.com/ItsMehRAWRXD/BigDaddyG-IDE.git
-git push -u origin master
-```
 
+```bash
+
+cd "D:\Security Research aka GitHub Repos\ProjectIDEAI"
+git remote add origin <https://github.com/ItsMehRAWRXD/BigDaddyG-IDE.git>
+git push -u origin master
+
+```plaintext
 ## 🔧 Fix Option 3: Use SSH Instead of HTTPS
 
 ```bash
+
 # Generate SSH key
+
 ssh-keygen -t ed25519 -C "your_email@example.com"
 
-# Add to GitHub: https://github.com/settings/keys
+# Add to GitHub: <https://github.com/settings/keys>
 
 # Change remote to SSH
+
 git remote remove origin
 git remote add origin git@github.com:ItsMehRAWRXD/BigDaddyG-IDE.git
 git push -u origin master
-```
 
+```plaintext
 ## 📊 What's Ready to Upload
 
 ✅ **166 Files Committed:**
+
 - All source code
 - All documentation
 - All test files
@@ -58,22 +66,24 @@ git push -u origin master
 ✅ **Size: 6.8 MB** (perfect for GitHub!)
 
 ✅ **Commit Message:**
-```
+
+```plaintext
 🚀 BigDaddyG IDE v2.0.0 - Source Code
 
 Features:
+
 - 100% Agentic execution
-- Self-healing RCK (40-layer security)  
+- Self-healing RCK (40-layer security)
 - Voice coding
 - Cross-IDE compatible
 - 309% more capable than Cursor!
-```
-
+```plaintext
 ## 🎯 Once Uploaded
 
-Visit: https://github.com/ItsMehRAWRXD/BigDaddyG-IDE
+Visit: <https://github.com/ItsMehRAWRXD/BigDaddyG-IDE>
 
 You'll see:
+
 - ✅ README with setup instructions
 - ✅ PRESERVATION-POLICY.md (your philosophy!)
 - ✅ All source code
@@ -81,13 +91,15 @@ You'll see:
 - ✅ Build scripts
 
 Anyone can recreate the full 21 GB project with:
+
 ```bash
-git clone https://github.com/ItsMehRAWRXD/BigDaddyG-IDE.git
+
+git clone <https://github.com/ItsMehRAWRXD/BigDaddyG-IDE.git>
 cd BigDaddyG-IDE
 npm install
 npm start
-```
 
+```plaintext
 ---
 
 **Recommendation: Use GitHub Desktop** (5 clicks, 2 minutes) 🎯

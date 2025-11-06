@@ -1,4 +1,4 @@
-# 🚀 BigDaddyG Web Enhancement Plan
+﻿# 🚀 BigDaddyG Web Enhancement Plan
 
 **Goal: Match/Exceed Cursor Web App Features While Staying FREE & Offline**
 
@@ -23,7 +23,9 @@
 ### **What We Need:**
 
 #### **A. GitHub OAuth Integration**
+
 ```javascript
+
 // GitHub authentication without backend server
 // Using GitHub OAuth Device Flow (no server needed!)
 
@@ -32,10 +34,10 @@ class GitHubIntegration {
         this.token = localStorage.getItem('github_token');
         this.username = localStorage.getItem('github_username');
     }
-    
+
     async authenticate() {
         // GitHub Device Flow (works without server!)
-        const deviceCodeResponse = await fetch('https://github.com/login/device/code', {
+        const deviceCodeResponse = await fetch('<https://github.com/login/device/code',> {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -46,24 +48,24 @@ class GitHubIntegration {
                 scope: 'repo,user'
             })
         });
-        
+
         const { device_code, user_code, verification_uri } = await deviceCodeResponse.json();
-        
+
         // Show user code to user
         alert(`Go to ${verification_uri} and enter code: ${user_code}`);
-        
+
         // Poll for authentication
         const token = await this.pollForToken(device_code);
-        
+
         localStorage.setItem('github_token', token);
         return token;
     }
-    
+
     async pollForToken(device_code) {
         while (true) {
             await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5 seconds
-            
-            const response = await fetch('https://github.com/login/oauth/access_token', {
+
+            const response = await fetch('<https://github.com/login/oauth/access_token',> {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -75,39 +77,39 @@ class GitHubIntegration {
                     grant_type: 'urn:ietf:params:oauth:grant-type:device_code'
                 })
             });
-            
+
             const data = await response.json();
-            
+
             if (data.access_token) {
                 return data.access_token;
             }
-            
+
             if (data.error === 'authorization_pending') {
                 continue; // Keep polling
             }
-            
+
             throw new Error('Authentication failed');
         }
     }
-    
+
     async listRepositories() {
         if (!this.token) {
             throw new Error('Not authenticated');
         }
-        
-        const response = await fetch('https://api.github.com/user/repos', {
+
+        const response = await fetch('<https://api.github.com/user/repos',> {
             headers: {
                 'Authorization': `Bearer ${this.token}`,
                 'Accept': 'application/vnd.github.v3+json'
             }
         });
-        
+
         return await response.json();
     }
-    
+
     async getFileContent(owner, repo, path) {
         const response = await fetch(
-            `https://api.github.com/repos/${owner}/${repo}/contents/${path}`,
+            `<https://api.github.com/repos/${owner}/${repo}/contents/${path}`,>
             {
                 headers: {
                     'Authorization': `Bearer ${this.token}`,
@@ -115,16 +117,16 @@ class GitHubIntegration {
                 }
             }
         );
-        
+
         const data = await response.json();
         // Decode base64 content
         return atob(data.content);
     }
-    
+
     async createBranch(owner, repo, branchName, fromBranch = 'main') {
         // Get SHA of base branch
         const refResponse = await fetch(
-            `https://api.github.com/repos/${owner}/${repo}/git/refs/heads/${fromBranch}`,
+            `<https://api.github.com/repos/${owner}/${repo}/git/refs/heads/${fromBranch}`,>
             {
                 headers: {
                     'Authorization': `Bearer ${this.token}`,
@@ -132,13 +134,13 @@ class GitHubIntegration {
                 }
             }
         );
-        
+
         const refData = await refResponse.json();
         const sha = refData.object.sha;
-        
+
         // Create new branch
         const createResponse = await fetch(
-            `https://api.github.com/repos/${owner}/${repo}/git/refs`,
+            `<https://api.github.com/repos/${owner}/${repo}/git/refs`,>
             {
                 method: 'POST',
                 headers: {
@@ -152,16 +154,16 @@ class GitHubIntegration {
                 })
             }
         );
-        
+
         return await createResponse.json();
     }
-    
+
     async commitFile(owner, repo, path, content, message, branch = 'main') {
         // Get current file SHA (if it exists)
         let sha = null;
         try {
             const fileResponse = await fetch(
-                `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`,
+                `<https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`,>
                 {
                     headers: {
                         'Authorization': `Bearer ${this.token}`,
@@ -174,10 +176,10 @@ class GitHubIntegration {
         } catch (e) {
             // File doesn't exist, that's okay
         }
-        
+
         // Create or update file
         const response = await fetch(
-            `https://api.github.com/repos/${owner}/${repo}/contents/${path}`,
+            `<https://api.github.com/repos/${owner}/${repo}/contents/${path}`,>
             {
                 method: 'PUT',
                 headers: {
@@ -193,13 +195,13 @@ class GitHubIntegration {
                 })
             }
         );
-        
+
         return await response.json();
     }
-    
+
     async createPullRequest(owner, repo, title, head, base = 'main', body = '') {
         const response = await fetch(
-            `https://api.github.com/repos/${owner}/${repo}/pulls`,
+            `<https://api.github.com/repos/${owner}/${repo}/pulls`,>
             {
                 method: 'POST',
                 headers: {
@@ -215,37 +217,38 @@ class GitHubIntegration {
                 })
             }
         );
-        
+
         return await response.json();
     }
 }
-```
 
+```plaintext
 #### **B. UI Components**
 
 ```html
+
 <!-- GitHub Integration Panel -->
 <div id="github-panel" class="side-panel">
     <h3>🐙 GitHub Integration</h3>
-    
+
     <div id="github-auth" style="display: none;">
         <button onclick="gitHub.authenticate()">
             🔐 Connect GitHub Account
         </button>
     </div>
-    
+
     <div id="github-connected" style="display: none;">
         <p>✅ Connected as: <span id="github-username"></span></p>
         <button onclick="gitHub.disconnect()">Disconnect</button>
-        
+
         <h4>📁 Your Repositories</h4>
         <select id="repo-selector" onchange="loadRepository()">
             <option>Select a repository...</option>
         </select>
-        
+
         <h4>📂 Files</h4>
         <div id="repo-files" class="file-tree"></div>
-        
+
         <h4>🚀 Quick Actions</h4>
         <button onclick="createFeatureBranch()">
             Create Feature Branch
@@ -258,8 +261,8 @@ class GitHubIntegration {
         </button>
     </div>
 </div>
-```
 
+```plaintext
 ---
 
 ## 2️⃣ Background Agents (Autonomous)
@@ -269,28 +272,29 @@ class GitHubIntegration {
 #### **A. Web Worker for Background Processing**
 
 ```javascript
+
 // background-agent-worker.js
 // Runs in separate thread, doesn't block UI
 
 self.addEventListener('message', async (event) => {
     const { type, task, code, context } = event.data;
-    
+
     switch (type) {
         case 'FIX_BUG':
             const fix = await fixBugInBackground(code, context);
             self.postMessage({ type: 'BUG_FIXED', result: fix });
             break;
-            
+
         case 'IMPLEMENT_FEATURE':
             const implementation = await implementFeature(task, context);
             self.postMessage({ type: 'FEATURE_IMPLEMENTED', result: implementation });
             break;
-            
+
         case 'REFACTOR_CODE':
             const refactored = await refactorCode(code);
             self.postMessage({ type: 'REFACTOR_COMPLETE', result: refactored });
             break;
-            
+
         case 'GENERATE_TESTS':
             const tests = await generateTests(code);
             self.postMessage({ type: 'TESTS_GENERATED', result: tests });
@@ -301,9 +305,9 @@ self.addEventListener('message', async (event) => {
 async function fixBugInBackground(code, errorMessage) {
     // Use embedded BigDaddyG:Debug model
     const prompt = `Fix this bug:\n\nCode:\n${code}\n\nError:\n${errorMessage}`;
-    
+
     const fixedCode = await bigDaddyGDebug(prompt);
-    
+
     return {
         originalCode: code,
         fixedCode: fixedCode,
@@ -315,32 +319,33 @@ async function fixBugInBackground(code, errorMessage) {
 async function implementFeature(featureDescription, existingCode) {
     // Use embedded BigDaddyG:Code model
     const prompt = `Implement this feature:\n\n${featureDescription}\n\nExisting code:\n${existingCode}`;
-    
+
     const implementation = await bigDaddyGCode(prompt);
-    
+
     return {
         feature: featureDescription,
         implementation: implementation,
         timestamp: Date.now()
     };
 }
-```
 
+```plaintext
 #### **B. Agent Manager (Main Thread)**
 
 ```javascript
+
 class BackgroundAgentManager {
     constructor() {
         this.agents = [];
         this.worker = new Worker('background-agent-worker.js');
         this.taskQueue = [];
-        
+
         // Listen for agent completions
         this.worker.addEventListener('message', (event) => {
             this.handleAgentComplete(event.data);
         });
     }
-    
+
     createAgent(task) {
         const agent = {
             id: Date.now() + Math.random(),
@@ -349,10 +354,10 @@ class BackgroundAgentManager {
             startTime: Date.now(),
             result: null
         };
-        
+
         this.agents.push(agent);
         this.updateAgentUI();
-        
+
         // Start agent in background
         this.worker.postMessage({
             type: task.type,
@@ -360,24 +365,24 @@ class BackgroundAgentManager {
             code: task.code,
             context: task.context
         });
-        
+
         return agent;
     }
-    
+
     handleAgentComplete(data) {
         const agent = this.agents.find(a => a.status === 'running');
-        
+
         if (agent) {
             agent.status = 'completed';
             agent.result = data.result;
             agent.endTime = Date.now();
             agent.duration = agent.endTime - agent.startTime;
-            
+
             this.updateAgentUI();
             this.showNotification(agent);
         }
     }
-    
+
     showNotification(agent) {
         // Browser notification
         if ('Notification' in window && Notification.permission === 'granted') {
@@ -386,7 +391,7 @@ class BackgroundAgentManager {
                 icon: '/icon-agent.png'
             });
         }
-        
+
         // In-app notification
         const notification = document.createElement('div');
         notification.className = 'agent-notification';
@@ -400,10 +405,10 @@ class BackgroundAgentManager {
             </div>
         `;
         document.body.appendChild(notification);
-        
+
         setTimeout(() => notification.remove(), 10000);
     }
-    
+
     updateAgentUI() {
         const agentList = document.getElementById('agent-list');
         agentList.innerHTML = this.agents.map(agent => `
@@ -434,14 +439,15 @@ class BackgroundAgentManager {
         `).join('');
     }
 }
-```
 
+```plaintext
 #### **C. Agent UI Panel**
 
 ```html
+
 <div id="agent-panel" class="side-panel">
     <h3>🤖 Background Agents</h3>
-    
+
     <div class="agent-controls">
         <h4>Create New Agent</h4>
         <select id="agent-type">
@@ -450,16 +456,16 @@ class BackgroundAgentManager {
             <option value="REFACTOR_CODE">Refactor Code</option>
             <option value="GENERATE_TESTS">Generate Tests</option>
         </select>
-        
-        <textarea id="agent-task-description" 
+
+        <textarea id="agent-task-description"
                   placeholder="Describe what the agent should do...">
         </textarea>
-        
+
         <button onclick="createBackgroundAgent()">
             🚀 Start Agent
         </button>
     </div>
-    
+
     <div class="agent-list" id="agent-list">
         <!-- Agents will appear here -->
     </div>
@@ -509,8 +515,8 @@ class BackgroundAgentManager {
     50% { opacity: 0.7; }
 }
 </style>
-```
 
+```plaintext
 ---
 
 ## 3️⃣ Team Features (Optional)
@@ -520,6 +526,7 @@ class BackgroundAgentManager {
 #### **A. Peer-to-Peer Collaboration (No Server!)**
 
 ```javascript
+
 // Using WebRTC for direct peer-to-peer connections
 // NO SERVER NEEDED (except for initial signaling)
 
@@ -529,11 +536,11 @@ class P2PTeamCollaboration {
         this.localId = this.generatePeerId();
         this.signalingChannel = this.connectToSignaling();
     }
-    
+
     generatePeerId() {
         return 'peer_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     }
-    
+
     connectToSignaling() {
         // Use free WebSocket signaling service (PeerJS, etc.)
         // Or use Firebase Realtime Database (free tier)
@@ -541,23 +548,23 @@ class P2PTeamCollaboration {
             initiator: false,
             trickle: false
         });
-        
+
         peer.on('signal', data => {
             // Send to signaling server
             this.sendSignal(data);
         });
-        
+
         peer.on('connect', () => {
             console.log('Connected to peer!');
         });
-        
+
         peer.on('data', data => {
             this.handlePeerMessage(JSON.parse(data));
         });
-        
+
         return peer;
     }
-    
+
     shareCode(code, filename) {
         const message = {
             type: 'CODE_SHARE',
@@ -566,11 +573,11 @@ class P2PTeamCollaboration {
             code: code,
             timestamp: Date.now()
         };
-        
+
         // Broadcast to all connected peers
         this.broadcast(message);
     }
-    
+
     shareEditorPosition(line, column) {
         const message = {
             type: 'CURSOR_POSITION',
@@ -578,10 +585,10 @@ class P2PTeamCollaboration {
             line: line,
             column: column
         };
-        
+
         this.broadcast(message);
     }
-    
+
     broadcast(message) {
         const data = JSON.stringify(message);
         this.peers.forEach(peer => {
@@ -590,7 +597,7 @@ class P2PTeamCollaboration {
             }
         });
     }
-    
+
     handlePeerMessage(message) {
         switch (message.type) {
             case 'CODE_SHARE':
@@ -605,11 +612,12 @@ class P2PTeamCollaboration {
         }
     }
 }
-```
 
+```plaintext
 #### **B. Simpler Alternative: Room Codes**
 
 ```javascript
+
 // Use Firebase Firestore (free tier) for simple team sync
 // Each team gets a "room code"
 
@@ -619,10 +627,10 @@ class SimpleTeamSync {
         this.db = firebase.firestore();
         this.roomCode = null;
     }
-    
+
     async createRoom() {
         const roomCode = this.generateRoomCode();
-        
+
         await this.db.collection('rooms').doc(roomCode).set({
             created: Date.now(),
             owner: localStorage.getItem('username') || 'Anonymous',
@@ -630,16 +638,16 @@ class SimpleTeamSync {
             code: '',
             messages: []
         });
-        
+
         this.roomCode = roomCode;
         this.listenToRoom();
-        
+
         return roomCode;
     }
-    
+
     async joinRoom(roomCode) {
         this.roomCode = roomCode;
-        
+
         // Add self to room members
         await this.db.collection('rooms').doc(roomCode).update({
             members: firebase.firestore.FieldValue.arrayUnion({
@@ -648,10 +656,10 @@ class SimpleTeamSync {
                 joinedAt: Date.now()
             })
         });
-        
+
         this.listenToRoom();
     }
-    
+
     listenToRoom() {
         this.db.collection('rooms').doc(this.roomCode)
             .onSnapshot(doc => {
@@ -659,7 +667,7 @@ class SimpleTeamSync {
                 this.handleRoomUpdate(data);
             });
     }
-    
+
     async shareCode(code) {
         await this.db.collection('rooms').doc(this.roomCode).update({
             code: code,
@@ -667,18 +675,19 @@ class SimpleTeamSync {
             lastUpdatedBy: this.localId
         });
     }
-    
+
     generateRoomCode() {
         return Math.random().toString(36).substr(2, 6).toUpperCase();
     }
 }
-```
 
+```plaintext
 ---
 
 ## 📋 Implementation Priority
 
 ### **Phase 1: GitHub Integration (Week 1-2)**
+
 - ✅ GitHub OAuth (Device Flow)
 - ✅ List repositories
 - ✅ View files
@@ -687,6 +696,7 @@ class SimpleTeamSync {
 - ✅ Create PRs
 
 ### **Phase 2: Background Agents (Week 3-4)**
+
 - ✅ Web Worker setup
 - ✅ Agent manager
 - ✅ Bug fixing agent
@@ -695,6 +705,7 @@ class SimpleTeamSync {
 - ✅ Agent UI
 
 ### **Phase 3: Team Features (Week 5-6)**
+
 - ✅ Simple room code system
 - ✅ Code sharing
 - ✅ Team chat

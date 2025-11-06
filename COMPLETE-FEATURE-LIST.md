@@ -1,4 +1,5 @@
-# 🚀 BigDaddyG IDE v2.0.0 - Complete Feature List
+﻿# 🚀 BigDaddyG IDE v2.0.0 - Complete Feature List
+
 ## The FREE Cursor Alternative with 40GB AI on USB
 
 > **"Functionally identical to Cursor, but FREE, OFFLINE, and 100% LEGAL"**
@@ -8,6 +9,7 @@
 ## 💎 **CORE FEATURES:**
 
 ### **1. Code Editor**
+
 - ✅ Monaco Editor (VS Code engine)
 - ✅ Syntax highlighting for 100+ languages
 - ✅ IntelliSense autocomplete
@@ -20,6 +22,7 @@
 - ✅ Everything highlightable/selectable
 
 ### **2. File Management**
+
 - ✅ Tabbed file editing
 - ✅ Drag & drop files (up to 1,001 files, unlimited size)
 - ✅ File explorer with drive browsing (C:, D:, E:, etc.)
@@ -29,6 +32,7 @@
 - ✅ Quick file search
 
 ### **3. User Interface**
+
 - ✅ Custom beige/jade Cursor-like theme
 - ✅ Custom title bar (minimize/maximize/close)
 - ✅ Frameless window with custom controls
@@ -49,6 +53,7 @@
 ## 🤖 **AI FEATURES (40GB Elite Mode):**
 
 ### **1. Orchestra AI Server**
+
 - ✅ Auto-starts with IDE
 - ✅ Auto-exits when IDE closes
 - ✅ Local inference (no cloud)
@@ -59,6 +64,7 @@
 - ✅ Context API
 
 ### **2. AI Chat (Ctrl+L)**
+
 - ✅ Floating chat panel (like Cursor's Composer)
 - ✅ Deep research mode (expandable thinking/reading)
 - ✅ Real-time thinking timer (changes color)
@@ -69,6 +75,7 @@
 - ✅ Everything highlightable
 
 ### **3. AI Parameters**
+
 - ✅ Temperature: 0.0 - 2.0
 - ✅ Top P: 0.0 - 1.0
 - ✅ Top K: 1 - 100
@@ -79,6 +86,7 @@
 - ✅ Explanation Level: Beginner/Intermediate/Expert
 
 ### **4. Thinking Time Control**
+
 - ✅ Slider: 5s - 600s (10 minutes!)
 - ✅ Quick presets: 30s, 2m, 5m, 10m
 - ✅ Model size presets:
@@ -117,6 +125,7 @@
 ### **3 Visual Modes:**
 
 **1. 🎭 Orchestration Mesh**
+
 - 8 glowing agent nodes
 - Connected by luminous threads
 - Real-time particle effects (100 fireflies)
@@ -124,12 +133,14 @@
 - Shows live system state
 
 **2. 🔁 Lifecycle Endpoints**
+
 - `/endcloud` (red glow) - Shutdown endpoint
 - `/rebirth` (jade glow) - Startup endpoint
 - Flowing particles between them
 - Visualizes regenerative architecture
 
 **3. 🧠 Cognition Trails**
+
 - Mouse-following particle trails
 - 100-point trail history
 - Glowing cursor halo
@@ -137,6 +148,7 @@
 - **Move your mouse to see AI "thinking"!**
 
 **Controls:**
+
 - `Ctrl+Shift+V` - Toggle visualization
 - `M` - Cycle between modes
 - `Escape` - Hide visualization
@@ -146,6 +158,7 @@
 ## 🔌 **PLUGIN SYSTEM (Ctrl+Shift+P):**
 
 ### **Plugin Marketplace:**
+
 - ✅ 15+ plugins available
 - ✅ Search & filter by category
 - ✅ One-click install/uninstall
@@ -153,6 +166,7 @@
 - ✅ Featured plugins section
 
 ### **Plugin Categories:**
+
 - 🌐 **Web** (3 plugins): Search, Docs, Packages
 - 🤖 **AI** (3 plugins): Code Review, Refactor, Tests
 - 📝 **Languages** (2 plugins): Rust, Go
@@ -161,12 +175,14 @@
 - 🧪 **Testing** (2 plugins): Jest, Code Stats
 
 ### **Extension Compatibility:**
+
 - ✅ VS Code extensions (100,000+ compatible!)
 - ✅ Cursor extensions (native support)
 - ✅ Visual Studio 2022 extensions (bridge)
 - ✅ Custom BigDaddyG extensions
 
 ### **Pre-installed Plugins:**
+
 - 📊 Code Statistics (shows lines, chars, words)
 
 ---
@@ -174,6 +190,7 @@
 ## 🤖 **AGENTIC FILE BROWSER:**
 
 ### **Autonomous Features:**
+
 - ✅ Auto-scan projects (detects all files)
 - ✅ Language detection (36+ languages)
 - ✅ Framework detection (React, Vue, Flask, etc.)
@@ -183,6 +200,7 @@
 - ✅ Config file detection
 
 ### **Agentic Actions:**
+
 - ✅ **🔍 Scan** - AI analyzes project structure
 - ✅ **🧠 Analyze** - AI provides insights
 - ✅ **🔧 Fix** - AI auto-fixes issues
@@ -190,6 +208,7 @@
 - ✅ **Agent Mode** - Continuous monitoring
 
 ### **Self-Improvement:**
+
 - ✅ Learns from usage patterns
 - ✅ Suggests its own improvements
 - ✅ Periodic re-analysis
@@ -202,12 +221,14 @@
 ### **Integrated Services:**
 
 **1. RawrZ Security Platform** (port 8080)
+
 - Security scanning
 - Code obfuscation
 - Secure execution
 - Vulnerability detection
 
 **2. Multi AI Aggregator** (port 3003)
+
 - **Claude 3 Opus** (best for code)
 - **ChatGPT-4o** (best for explanations)
 - **Kimi** (best for Chinese docs)
@@ -218,6 +239,7 @@
 **Query all 6 AIs at once!**
 
 ### **Auto-Compiler System:**
+
 - ✅ Detects 36+ programming languages
 - ✅ Auto-detects available compilers
 - ✅ Offers one-click compiler downloads
@@ -232,6 +254,7 @@ JavaScript, TypeScript, Python, Java, C, C++, C#, Go, Rust, Ruby, PHP, Swift, Ko
 ## 🤝 **COLLABORATION FEATURES:**
 
 ### **1. GitHub Integration**
+
 - ✅ OAuth Device Flow
 - ✅ Repository browsing
 - ✅ File viewing/editing
@@ -241,6 +264,7 @@ JavaScript, TypeScript, Python, Java, C, C++, C#, Go, Rust, Ruby, PHP, Swift, Ko
 - ✅ .gitignore templates
 
 ### **2. Team Collaboration** (Firebase)
+
 - ✅ Real-time code sharing
 - ✅ Team chat
 - ✅ Presence indicators
@@ -249,6 +273,7 @@ JavaScript, TypeScript, Python, Java, C, C++, C#, Go, Rust, Ruby, PHP, Swift, Ko
 - ✅ Join/leave notifications
 
 ### **3. Background Agents**
+
 - ✅ Bug fixing agent
 - ✅ Feature implementation agent
 - ✅ Refactoring agent
@@ -280,6 +305,7 @@ JavaScript, TypeScript, Python, Java, C, C++, C#, Go, Rust, Ruby, PHP, Swift, Ko
 ## 💾 **USB DEPLOYMENT:**
 
 ### **Standalone USB Edition:**
+
 - ✅ IDE + Orchestra + 40GB Model (all in one!)
 - ✅ Total size: ~40.1 GB
 - ✅ Fits on: 64GB USB stick (NTFS)
@@ -289,6 +315,7 @@ JavaScript, TypeScript, Python, Java, C, C++, C#, Go, Rust, Ruby, PHP, Swift, Ko
 - ✅ Fully portable
 
 ### **How to Deploy:**
+
 1. Build: `.\BUILD-STANDALONE-USB.ps1`
 2. Format: 64GB USB as NTFS
 3. Copy: `dist-standalone/BigDaddyG-Standalone-USB-2.0.0/` → USB
@@ -296,6 +323,7 @@ JavaScript, TypeScript, Python, Java, C, C++, C#, Go, Rust, Ruby, PHP, Swift, Ko
 5. Use: Plug into any PC, run `LAUNCH.bat`!
 
 **Performance:**
+
 - USB 3.2 SSD: ✅ Excellent (15s model load)
 - USB 3.0 SSD: ✅ Good (30s model load)
 - USB 2.0: ❌ Too slow (not recommended)
@@ -305,6 +333,7 @@ JavaScript, TypeScript, Python, Java, C, C++, C#, Go, Rust, Ruby, PHP, Swift, Ko
 ## 📚 **DOCUMENTATION:**
 
 ### **Complete Guides:**
+
 - ✅ **CURSOR-ALTERNATIVE.md** - Why BigDaddyG > Cursor
 - ✅ **EXTENSION-COMPATIBILITY.md** - Run VS Code/Cursor extensions
 - ✅ **ROADMAP-2025-2026.md** - 18 phases through 2027
@@ -319,6 +348,7 @@ JavaScript, TypeScript, Python, Java, C, C++, C#, Go, Rust, Ruby, PHP, Swift, Ko
 ## ⚖️ **LEGAL COMPLIANCE:**
 
 ### **100% Legal:**
+
 - ✅ No Cursor code copied
 - ✅ No EULA violations
 - ✅ No copyright infringement
@@ -328,6 +358,7 @@ JavaScript, TypeScript, Python, Java, C, C++, C#, Go, Rust, Ruby, PHP, Swift, Ko
 - ✅ Safe for commercial use
 
 ### **Third-Party Licenses:**
+
 - **Monaco Editor:** MIT (Microsoft)
 - **Electron:** MIT (OpenJS Foundation)
 - **Express:** MIT (Node.js)
@@ -382,6 +413,7 @@ JavaScript, TypeScript, Python, Java, C, C++, C#, Go, Rust, Ruby, PHP, Swift, Ko
 ## 💰 **SAVINGS:**
 
 **Annual Costs:**
+
 - Cursor: $240/year
 - GitHub Copilot: $100/year
 - ChatGPT Plus: $240/year
@@ -398,30 +430,35 @@ Over 5 years: **$2,900 saved!** 🤑
 ## 🎯 **USE CASES:**
 
 ### **1. Professional Developers:**
+
 - Save $580/year on subscriptions
 - Full offline capability
 - No cloud data leaks
 - Unlimited usage
 
 ### **2. Students:**
+
 - Can't afford $20/month
 - Need powerful AI for learning
 - USB deployment for school PCs
 - No installation rights needed
 
 ### **3. Enterprise:**
+
 - Security/compliance requirements
 - No cloud (data stays local)
 - Audit all code
 - No per-seat licensing
 
 ### **4. Travelers:**
+
 - Work from anywhere
 - USB stick in pocket
 - Any Windows PC becomes dev machine
 - No internet dependency
 
 ### **5. Educators:**
+
 - One USB, many students
 - Consistent environment
 - No IT department needed
@@ -432,36 +469,37 @@ Over 5 years: **$2,900 saved!** 🤑
 ## 🚀 **QUICK START:**
 
 ### **Download & Run:**
-```
+
+```plaintext
 1. Download: BigDaddyG-Portable-2.0.0.exe (92 MB)
 2. Double-click to launch
 3. Press Ctrl+L for AI chat
 4. Start coding!
-```
-
+```plaintext
 ### **USB Deployment:**
-```
+
+```plaintext
 1. Build: .\BUILD-STANDALONE-USB.ps1
 2. Format: 64GB USB as NTFS
 3. Copy: dist-standalone folder → USB
 4. Plug in: Any Windows PC
 5. Run: LAUNCH.bat
 6. Code: With 40GB AI offline!
-```
-
+```plaintext
 ### **Activate 40GB Mode:**
-```
+
+```plaintext
 1. Ctrl+L (open chat)
 2. ⚙️ Settings
 3. Select: 🧠 40GB+ Model (Elite)
 4. Done! 3-minute thinking time activated
-```
-
+```plaintext
 ---
 
 ## 🎯 **ROADMAP:**
 
 ### **Completed (v2.0.0):**
+
 - ✅ Core IDE with Monaco
 - ✅ Orchestra AI Server
 - ✅ 40GB Elite Mode
@@ -474,6 +512,7 @@ Over 5 years: **$2,900 saved!** 🤑
 - ✅ USB Deployment
 
 ### **Coming Q1 2025:**
+
 - [ ] 100+ plugins
 - [ ] VS Code extension compatibility layer
 - [ ] Web preview panel (no browser needed)
@@ -481,12 +520,14 @@ Over 5 years: **$2,900 saved!** 🤑
 - [ ] Mobile app
 
 ### **Coming Q2 2025:**
+
 - [ ] 1,000+ plugins
 - [ ] AI model marketplace
 - [ ] Custom AI training
 - [ ] Plugin SDK
 
 ### **Wild Ideas (2028+):**
+
 - [ ] Brain-computer interface
 - [ ] Holographic UI (AR coding)
 - [ ] Quantum algorithm editor
@@ -495,8 +536,8 @@ Over 5 years: **$2,900 saved!** 🤑
 
 ## 📞 **SUPPORT:**
 
-- **GitHub:** https://github.com/ItsMehRAWRXD/BigDaddyG-IDE
-- **Issues:** https://github.com/ItsMehRAWRXD/BigDaddyG-IDE/issues
+- **GitHub:** <https://github.com/ItsMehRAWRXD/BigDaddyG-IDE>
+- **Issues:** <https://github.com/ItsMehRAWRXD/BigDaddyG-IDE/issues>
 - **Docs:** Repository `/docs` folder
 
 ---
@@ -506,6 +547,7 @@ Over 5 years: **$2,900 saved!** 🤑
 **MIT License** - 100% open source
 
 You can:
+
 - ✅ Use commercially
 - ✅ Modify freely
 - ✅ Distribute publicly
@@ -531,22 +573,22 @@ You can:
 8. **100% legal** - Clean-room implementation
 9. **100% yours** - MIT licensed
 
-**Total features:** 100+  
-**Total commands:** 10  
-**Total plugins:** 15+ (growing to 1,000+)  
-**Total savings:** $580/year  
+**Total features:** 100+
+**Total commands:** 10
+**Total plugins:** 15+ (growing to 1,000+)
+**Total savings:** $580/year
 
 ---
 
 ## 💎 **THE BOTTOM LINE:**
 
-**You built Cursor IDE.**  
-**But FREE.**  
-**But OFFLINE.**  
-**But with 40GB AI.**  
-**But on a USB stick.**  
-**But 100% LEGAL.**  
-**But with MORE features.**  
+**You built Cursor IDE.**
+**But FREE.**
+**But OFFLINE.**
+**But with 40GB AI.**
+**But on a USB stick.**
+**But 100% LEGAL.**
+**But with MORE features.**
 
 **And you OWN it.**
 
@@ -554,9 +596,9 @@ You can:
 
 ---
 
-*Version: 2.0.0 (Standalone USB Edition)*  
-*Build Date: November 2, 2025*  
-*Model: 40GB (Embedded)*  
-*License: MIT (Open Source)*  
-*Repository: https://github.com/ItsMehRAWRXD/BigDaddyG-IDE*
+*Version: 2.0.0 (Standalone USB Edition)*
+*Build Date: November 2, 2025*
+*Model: 40GB (Embedded)*
+*License: MIT (Open Source)*
+*Repository: <https://github.com/ItsMehRAWRXD/BigDaddyG-IDE*>
 

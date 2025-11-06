@@ -1,6 +1,6 @@
-# 📦 BigDaddyG IDE - Import/Export Guide
+﻿# 📦 BigDaddyG IDE - Import/Export Guide
 
-**Version:** 2.0  
+**Version:** 2.0
 **Status:** 🟢 Full Compatibility with VS Code & Cursor
 
 ---
@@ -24,14 +24,14 @@ BigDaddyG IDE can **import ALL your existing VS Code and Cursor settings** with 
 ## 🚀 **Quick Start: One-Click Import**
 
 ### **Step 1: Click Auto-Import**
-```
+
+```plaintext
 1. Open BigDaddyG IDE
 2. Go to: Settings → Import/Export
 3. Click: "🚀 Auto-Import Everything"
 4. Wait 30-60 seconds
 5. Done! All your VS Code/Cursor settings are imported
-```
-
+```plaintext
 ### **What Gets Imported:**
 
 | Item | Source | Destination | Notes |
@@ -50,48 +50,53 @@ BigDaddyG IDE can **import ALL your existing VS Code and Cursor settings** with 
 ### **VS Code Locations**
 
 **Windows:**
-```
+
+```plaintext
 Settings:     %APPDATA%\Code\User\settings.json
 Keybindings:  %APPDATA%\Code\User\keybindings.json
 Snippets:     %APPDATA%\Code\User\snippets\
 Extensions:   %USERPROFILE%\.vscode\extensions\
-```
 
+```plaintext
 **macOS:**
-```
+
+```plaintext
 Settings:     ~/Library/Application Support/Code/User/settings.json
 Keybindings:  ~/Library/Application Support/Code/User/keybindings.json
 Snippets:     ~/Library/Application Support/Code/User/snippets/
 Extensions:   ~/.vscode/extensions/
-```
 
+```plaintext
 **Linux:**
-```
+
+```plaintext
 Settings:     ~/.config/Code/User/settings.json
 Keybindings:  ~/.config/Code/User/keybindings.json
 Snippets:     ~/.config/Code/User/snippets/
 Extensions:   ~/.vscode/extensions/
-```
 
+```plaintext
 ### **Cursor Locations**
 
 **Windows:**
-```
+
+```plaintext
 Settings:     %APPDATA%\Cursor\User\settings.json
 Keybindings:  %APPDATA%\Cursor\User\keybindings.json
 Memories:     %APPDATA%\Cursor\memories\
 .cursorrules: [project-root]\.cursorrules
 Extensions:   %USERPROFILE%\.cursor\extensions\
-```
 
+```plaintext
 ### **BigDaddyG Locations**
 
 **Windows:**
-```
+
+```plaintext
 All Settings: %APPDATA%\BigDaddyG\
 Export File:  %APPDATA%\BigDaddyG\bigdaddyg-export-[timestamp].json
-```
 
+```plaintext
 ---
 
 ## 🔧 **What Gets Imported (Detailed)**
@@ -99,7 +104,9 @@ Export File:  %APPDATA%\BigDaddyG\bigdaddyg-export-[timestamp].json
 ### **1. Settings.json**
 
 **Your VS Code settings:**
+
 ```json
+
 {
   "editor.fontSize": 14,
   "editor.fontFamily": "Fira Code",
@@ -110,10 +117,11 @@ Export File:  %APPDATA%\BigDaddyG\bigdaddyg-export-[timestamp].json
   "terminal.integrated.fontSize": 12,
   "files.autoSave": "afterDelay"
 }
-```
 
+```plaintext
 **Imported to BigDaddyG:**
-```
+
+```plaintext
 ✅ Font size, family
 ✅ Tab size, spaces vs tabs
 ✅ Format on save
@@ -122,12 +130,14 @@ Export File:  %APPDATA%\BigDaddyG\bigdaddyg-export-[timestamp].json
 ✅ Terminal settings
 ✅ Auto-save settings
 ✅ ALL other editor preferences
-```
 
+```plaintext
 ### **2. Keybindings.json**
 
 **Your custom shortcuts:**
+
 ```json
+
 [
   {
     "key": "ctrl+shift+p",
@@ -138,20 +148,23 @@ Export File:  %APPDATA%\BigDaddyG\bigdaddyg-export-[timestamp].json
     "command": "workbench.action.toggleSidebarVisibility"
   }
 ]
-```
 
+```plaintext
 **Imported to BigDaddyG:**
-```
+
+```plaintext
 ✅ All custom keybindings
 ✅ Overrides default shortcuts
 ✅ Multi-key combinations
 ✅ Conditional keybindings
-```
 
+```plaintext
 ### **3. Code Snippets**
 
 **Your snippets (e.g., `javascript.json`):**
+
 ```json
+
 {
   "React Component": {
     "prefix": "rfc",
@@ -170,20 +183,22 @@ Export File:  %APPDATA%\BigDaddyG\bigdaddyg-export-[timestamp].json
     ]
   }
 }
-```
 
+```plaintext
 **Imported to BigDaddyG:**
-```
+
+```plaintext
 ✅ All snippet files
 ✅ All languages
 ✅ Preserves tab stops ($1, $2)
 ✅ Works identically in BigDaddyG
-```
 
+```plaintext
 ### **4. Extensions**
 
 **Your installed extensions:**
-```
+
+```plaintext
 ✅ esbenp.prettier-vscode
 ✅ dbaeumer.vscode-eslint
 ✅ ms-python.python
@@ -192,9 +207,10 @@ Export File:  %APPDATA%\BigDaddyG\bigdaddyg-export-[timestamp].json
 ✅ formulahendry.code-runner
 ✅ amazon.q
 ... and ALL others
-```
 
+```plaintext
 **Import Process:**
+
 1. Detects all installed extensions
 2. Downloads from VS Code Marketplace
 3. Installs in BigDaddyG
@@ -204,19 +220,22 @@ Export File:  %APPDATA%\BigDaddyG\bigdaddyg-export-[timestamp].json
 ### **5. .cursorrules**
 
 **Your Cursor rules:**
-```
+
+```plaintext
 You are an expert in TypeScript and React.
 
 When writing code:
+
 - Always use functional components
 - Always use TypeScript
 - Always add proper error handling
 - Follow Airbnb style guide
 - Write comprehensive tests
-```
-
+```plaintext
 **Imported to BigDaddyG:**
+
 ```json
+
 {
   "name": "Imported from .cursorrules",
   "type": "system",
@@ -225,13 +244,14 @@ When writing code:
   "enabled": true,
   "imported": true
 }
-```
 
+```plaintext
 ### **6. Cursor Memories**
 
 **Cursor stores memories automatically. BigDaddyG imports them:**
 
 ```json
+
 {
   "user-prefers-typescript": {
     "value": "User always prefers TypeScript over JavaScript",
@@ -241,8 +261,8 @@ When writing code:
     "source": "cursor"
   }
 }
-```
 
+```plaintext
 ---
 
 ## 🎨 **Layout Import/Export**
@@ -257,14 +277,14 @@ When writing code:
 
 ### **Custom Layouts:**
 
-```
+```plaintext
 1. Arrange your windows how you like
 2. Click: "💾 Save Current Layout"
 3. Name it: "My Perfect Setup"
 4. Load it anytime with one click
-```
-
+```plaintext
 **Layouts Save:**
+
 - Window sizes
 - Panel positions
 - Sidebar width
@@ -280,46 +300,50 @@ When writing code:
 
 ### **From VS Code to BigDaddyG:**
 
-```
+```plaintext
 1. Install BigDaddyG IDE
 2. First launch → "Import from VS Code?"
 3. Click "Yes"
 4. Wait 30-60 seconds
 5. Done! Identical to your VS Code setup
-```
-
+```plaintext
 ### **From Cursor to BigDaddyG:**
 
-```
+```plaintext
 1. Install BigDaddyG IDE
 2. Click "Import from Cursor"
 3. Automatically imports:
+
    ✅ All settings
    ✅ All extensions
    ✅ .cursorrules → Rule engine
    ✅ Memories → Memory system
    ✅ Keybindings
    ✅ Snippets
-4. PLUS you get all BigDaddyG features:
+
+  1. PLUS you get all BigDaddyG features:
+
    ✅ Voice coding
    ✅ 100% agenticality
    ✅ Offline support
    ✅ Custom agents
    ✅ Model tuning
    ✅ Self-diagnostics
-```
 
+```plaintext
 ---
 
 ## 💾 **Export Your BigDaddyG Setup**
 
 ### **Full Export (Everything):**
-```
+
+```plaintext
 Click: "💾 Export Everything"
 
 Creates: bigdaddyg-export-[timestamp].json
 
 Contains:
+
   - All settings
   - All keybindings
   - All snippets
@@ -329,33 +353,33 @@ Contains:
   - Custom agents
   - Model tuning presets
   - Layouts
-```
-
+```plaintext
 ### **Share with Team:**
-```
+
+```plaintext
 1. Export your setup
 2. Share the JSON file
 3. Team members import it
 4. Everyone has identical configuration
-```
-
+```plaintext
 ### **Backup to USB:**
-```
+
+```plaintext
 Click: "💾 Export to USB"
 Saves to: E:\BigDaddyG\backup-[date].json
 
 Perfect for:
+
   - Portable setups
   - Air-gapped environments
   - Multiple machines
   - Disaster recovery
-```
-
+```plaintext
 ---
 
 ## 📊 **Import/Export UI**
 
-```
+```plaintext
 ┌─────────────────────────────────────────────────────┐
 │ 📦 Import/Export Settings                           │
 ├─────────────────────────────────────────────────────┤
@@ -389,8 +413,8 @@ Perfect for:
 │ │ [💾 Export to USB]  [☁️ Export to Cloud]        │ │
 │ └─────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────┘
-```
 
+```plaintext
 ---
 
 ## 🎯 **Example: Complete Migration**
@@ -398,6 +422,7 @@ Perfect for:
 ### **Scenario: You're switching from Cursor to BigDaddyG**
 
 **Your Cursor Setup:**
+
 - 47 extensions installed
 - Custom keybindings
 - .cursorrules with 15 rules
@@ -408,13 +433,13 @@ Perfect for:
 
 **Migration Process:**
 
-```
+```plaintext
 Step 1: Launch BigDaddyG
   → First-time setup wizard appears
 
 Step 2: "Import from Cursor?"
   → Click "Yes"
-  
+
 Step 3: Auto-Detection
   [00:01] Detecting Cursor installation...
   [00:02] ✅ Found Cursor at %APPDATA%\Cursor
@@ -424,7 +449,7 @@ Step 3: Auto-Detection
   [00:08] Discovered 47 extensions...
   [00:09] Reading .cursorrules...
   [00:10] Importing memories...
-  
+
 Step 4: Importing Extensions
   [00:15] Downloading esbenp.prettier-vscode... ✅
   [00:18] Downloading dbaeumer.vscode-eslint... ✅
@@ -445,21 +470,21 @@ Step 6: Verification
   [02:38] Verifying font... ✅
   [02:39] Verifying extensions... ✅ 47/47
   [02:40] Verifying keybindings... ✅
-  
+
 ✅ IMPORT COMPLETE!
 
 Your BigDaddyG now looks and feels IDENTICAL to your Cursor setup,
 PLUS you get:
+
   - Voice coding
   - Custom agents
   - Model tuning
   - 100% agenticality
   - Offline support
   - Self-diagnostics
-```
-
-**Total Time:** ~3 minutes  
-**Manual Steps:** 0  
+```plaintext
+**Total Time:** ~3 minutes
+**Manual Steps:** 0
 **Success Rate:** 100%
 
 ---
@@ -469,6 +494,7 @@ PLUS you get:
 ### **Import Your Current VS Code Layout:**
 
 **What BigDaddyG Preserves:**
+
 - ✅ Sidebar width (e.g., 300px)
 - ✅ Terminal height (e.g., 250px)
 - ✅ Editor split (horizontal/vertical, 2-3 groups)
@@ -481,7 +507,8 @@ PLUS you get:
 - ✅ Breadcrumbs, tabs
 
 **Your Cursor Layout:**
-```
+
+```plaintext
 ┌──────────┬──────────────────────┬──────────────┐
 │ Activity │                      │              │
 │   Bar    │                      │   Agent      │
@@ -491,23 +518,25 @@ PLUS you get:
 ├──────────┴──────────────────────┴──────────────┤
 │ Terminal (200px)                                │
 └─────────────────────────────────────────────────┘
-```
 
+```plaintext
 **Imported to BigDaddyG:**
-```
+
+```plaintext
 Exact same layout! ✅
+
   - Activity bar: 50px
   - Editor: Flex
   - Agent panel: 400px (docked right)
   - Terminal: 200px (bottom)
-  
+
 PLUS you can now:
+
   - Float the agent panel
   - Create custom layouts
   - Switch layouts with hotkeys
   - Save/load layouts per project
-```
-
+```plaintext
 ---
 
 ## 🧩 **Extension Compatibility**
@@ -515,6 +544,7 @@ PLUS you can now:
 ### **100% Compatible Extensions:**
 
 **Development:**
+
 - ✅ Prettier
 - ✅ ESLint
 - ✅ Python
@@ -525,6 +555,7 @@ PLUS you can now:
 - ✅ Kubernetes
 
 **AI Assistants:**
+
 - ✅ **Amazon Q** (works in BigDaddyG!)
 - ✅ **GitHub Copilot** (if you have license)
 - ✅ TabNine
@@ -532,11 +563,13 @@ PLUS you can now:
 - ✅ Codeium
 
 **Git:**
+
 - ✅ GitLens
 - ✅ Git Graph
 - ✅ Git History
 
 **Themes:**
+
 - ✅ One Dark Pro
 - ✅ Dracula
 - ✅ Material Theme
@@ -551,14 +584,15 @@ PLUS you can now:
 ### **Scenario: Work PC → Home PC → Laptop**
 
 **Export from Work PC:**
+
 ```powershell
 1. Open BigDaddyG
 2. Settings → Import/Export
 3. Click "💾 Export Everything"
 4. Save to: Dropbox/bigdaddyg-work.json
-```
-
+```plaintext
 **Import on Home PC:**
+
 ```powershell
 1. Open BigDaddyG
 2. Settings → Import/Export
@@ -566,22 +600,22 @@ PLUS you can now:
 4. Select: Dropbox/bigdaddyg-work.json
 5. Click "Import"
 6. Done! Identical setup
-```
-
+```plaintext
 **USB Portable Setup:**
-```
+
+```plaintext
 1. Export to USB: E:\BigDaddyG\
 2. Plug USB into any machine
 3. Run BigDaddyG from USB (portable mode)
 4. Auto-loads settings from USB
 5. Work anywhere with your exact setup
-```
-
+```plaintext
 ---
 
 ## 🔐 **What About API Keys and Secrets?**
 
 ### **Cursor Stores:**
+
 - API keys in settings
 - Git credentials
 - Extension tokens
@@ -589,26 +623,28 @@ PLUS you can now:
 ### **BigDaddyG Security:**
 
 **Automatically Detects Secrets:**
-```
+
+```plaintext
 Importing settings...
   ⚠️ Detected API key: OPENAI_API_KEY
   ⚠️ Detected secret: GITHUB_TOKEN
-  
+
 Options:
+
   1. [ ] Import (encrypted)
   2. [✓] Skip (re-enter manually)
   3. [ ] Use environment variables
-```
-
+```plaintext
 **Encrypted Storage:**
-```
+
+```plaintext
 If you choose to import secrets:
+
   - Encrypted with AES-256
   - Stored separately from settings
   - Password-protected
   - Never in plain text
-```
-
+```plaintext
 ---
 
 ## 📊 **Import Success Rates**
@@ -629,7 +665,9 @@ If you choose to import secrets:
 ## 🎯 **Quick Reference Commands**
 
 ### **Import:**
+
 ```javascript
+
 // From VS Code
 await settingsImporter.autoImport();
 
@@ -638,26 +676,30 @@ await settingsImporter.importFromExport('path/to/export.json');
 
 // Install extensions from list
 await settingsImporter.installImportedExtensions(extensionsList);
-```
 
+```plaintext
 ### **Export:**
+
 ```javascript
+
 // Export everything
 const exportPath = await settingsImporter.exportSettings();
 
 // Export to specific location
 await settingsImporter.exportToPath('E:\\BigDaddyG\\backup.json');
-```
 
+```plaintext
 ---
 
 ## 🏆 **Benefits**
 
 ### **Zero Learning Curve:**
-```
+
+```plaintext
 Day 1 with BigDaddyG = Day 1000 with VS Code/Cursor
 
 Because:
+
   - Exact same keybindings
   - Exact same themes
   - Exact same extensions
@@ -665,30 +707,32 @@ Because:
   - Exact same settings
 
 PLUS:
+
   - Voice coding
   - Custom agents
   - Model tuning
   - 100% agenticality
   - Self-diagnostics
   - Offline operation
-```
-
+```plaintext
 ### **Multi-Machine Consistency:**
-```
+
+```plaintext
 Export once, import everywhere:
+
   - Work laptop
   - Home desktop
   - Remote server
   - USB portable
 
 Always the same setup, always productive
-```
 
+```plaintext
 ---
 
 ## 🚀 **Summary**
 
-```
+```plaintext
 ╔════════════════════════════════════════════════════════════╗
 ║  BIGDADDYG IMPORT/EXPORT SYSTEM                            ║
 ╠════════════════════════════════════════════════════════════╣
@@ -710,12 +754,12 @@ Always the same setup, always productive
 ║  Compatibility:   99%+                                     ║
 ║  Learning Curve:  ZERO (feels identical)                   ║
 ╚════════════════════════════════════════════════════════════╝
-```
 
+```plaintext
 **BigDaddyG looks and feels like VS Code/Cursor, but with superpowers.**
 
-🔄 **Import your setup in 3 minutes.**  
-💾 **Export for backup or sharing.**  
+🔄 **Import your setup in 3 minutes.**
+💾 **Export for backup or sharing.**
 🚀 **Get all BigDaddyG features on top.**
 
 

@@ -1,6 +1,6 @@
-# 🤖 BigDaddyG IDE - Multi-Model Guide
+﻿# 🤖 BigDaddyG IDE - Multi-Model Guide
 
-**Last Updated:** November 4, 2025  
+**Last Updated:** November 4, 2025
 **Your IDE supports multiple AI models simultaneously!**
 
 ---
@@ -22,40 +22,45 @@ Your BigDaddyG IDE is designed as a **multi-model orchestration platform**. You 
 Your IDE comes with multiple specialized BigDaddyG models:
 
 ```javascript
+
 🌌 BigDaddyG:Latest      (Ctrl+Shift+1)
+
    - General purpose
    - 1M context
    - Trained on 200K lines ASM/Security/Encryption
 
 💻 BigDaddyG:Code        (Ctrl+Shift+2)
+
    - Code generation
    - Optimized for writing and debugging
    - Temperature: 0.5 (more focused)
 
 🐛 BigDaddyG:Debug       (Ctrl+Shift+3)
+
    - Bug fixing specialist
    - Expert at finding issues
    - Temperature: 0.3 (very precise)
 
 🔐 BigDaddyG:Crypto      (Ctrl+Shift+4)
+
    - Cryptography & Security
    - Encryption specialist
    - Temperature: 0.6
-```
-
+```plaintext
 ### **Model Selector in UI**
 
 Located in the right sidebar → Advanced Settings:
 
 ```html
+
 🎯 Model Selection:
 ├── 🧠 BigDaddyG Latest (Local)
 ├── 💻 BigDaddyG Code (Optimized)
 ├── 🤖 Claude Sonnet 4
 ├── 🌟 GPT-4 Turbo
 └── 🦙 CodeLlama 70B (Ollama)
-```
 
+```plaintext
 ---
 
 ## 🦙 **How to Add Ollama Models**
@@ -63,34 +68,43 @@ Located in the right sidebar → Advanced Settings:
 ### **Step 1: Install Ollama** (If not already)
 
 ```bash
-# Download from https://ollama.ai/
-# Or use winget:
-winget install Ollama.Ollama
-```
 
+# Download from <https://ollama.ai/>
+
+# Or use winget:
+
+winget install Ollama.Ollama
+
+```plaintext
 ### **Step 2: Pull Your Custom Model**
 
 ```bash
+
 # Pull a model from Ollama library
+
 ollama pull codellama:70b
 ollama pull deepseek-coder
 ollama pull llama3.1:70b
 
 # Or use your custom model
-ollama create your-custom-model -f Modelfile
-```
 
+ollama create your-custom-model -f Modelfile
+
+```plaintext
 ### **Step 3: Verify Ollama is Running**
 
 ```bash
+
 # Start Ollama server (usually auto-starts)
+
 ollama serve
 
 # List available models
-ollama list
-```
 
-**Default Ollama endpoint:** `http://localhost:11434`
+ollama list
+
+```plaintext
+**Default Ollama endpoint:** `<http://localhost:11434`>
 
 ### **Step 4: Configure in BigDaddyG IDE**
 
@@ -110,17 +124,22 @@ Your Orchestra server (`localhost:11441`) acts as a **model router**. It can for
 ### **Configure `server/settings.ini`**
 
 ```ini
+
 [Models]
+
 # Primary model (BigDaddyG)
+
 primary_model = BigDaddyG:Latest
-primary_endpoint = http://localhost:11441/api/chat
+primary_endpoint = <http://localhost:11441/api/chat>
 
 # Ollama integration
+
 ollama_enabled = true
-ollama_endpoint = http://localhost:11434
+ollama_endpoint = <http://localhost:11434>
 ollama_models = codellama,deepseek-coder,llama3.1,your-custom-model
 
 # External APIs (optional)
+
 claude_enabled = false
 claude_api_key = your-key-here
 
@@ -128,29 +147,35 @@ gpt4_enabled = false
 openai_api_key = your-key-here
 
 [Routing]
+
 # Auto-route based on task
+
 auto_routing = true
 
 # Route code tasks to BigDaddyG:Code
+
 code_tasks = BigDaddyG:Code
 
 # Route security tasks to BigDaddyG:Crypto
+
 security_tasks = BigDaddyG:Crypto
 
 # Route general chat to BigDaddyG:Latest
+
 general_tasks = BigDaddyG:Latest
 
 # Fallback to Ollama if BigDaddyG unavailable
-fallback_model = ollama:codellama
-```
 
+fallback_model = ollama:codellama
+
+```plaintext
 ---
 
 ## 🎨 **Model Hot-Swapping**
 
 ### **Keyboard Shortcuts**
 
-```
+```plaintext
 Ctrl+Shift+1 → BigDaddyG:Latest
 Ctrl+Shift+2 → BigDaddyG:Code
 Ctrl+Shift+3 → BigDaddyG:Debug
@@ -159,8 +184,8 @@ Ctrl+Shift+4 → BigDaddyG:Crypto
 Ctrl+Alt+1-6 → Plugin slots (Ollama models)
 
 Ctrl+M       → Open model selector
-```
 
+```plaintext
 ### **Via UI**
 
 1. Click the **model indicator** in the status bar
@@ -177,6 +202,7 @@ Ctrl+M       → Open model selector
 Orchestra server can automatically route requests:
 
 ```javascript
+
 // In your code, add task hints:
 {
   "prompt": "Optimize this code",
@@ -189,11 +215,12 @@ Orchestra server can automatically route requests:
   "task_type": "security_audit",     // Auto-routes to BigDaddyG:Crypto
   "model": "auto"
 }
-```
 
+```plaintext
 ### **Method 2: Explicit Model Selection**
 
 ```javascript
+
 // Send to specific model:
 {
   "prompt": "Write a function",
@@ -209,13 +236,14 @@ Orchestra server can automatically route requests:
   "prompt": "General question",
   "model": "ollama:codellama"
 }
-```
 
+```plaintext
 ### **Method 3: Parallel Execution**
 
 Your IDE supports **parallel model execution** via the Swarm Engine:
 
 ```javascript
+
 // Send same question to multiple models
 window.agenticAPI.askMultipleModels([
   'BigDaddyG:Latest',
@@ -225,8 +253,8 @@ window.agenticAPI.askMultipleModels([
 
 // Get responses from all models
 // Compare and choose the best answer
-```
 
+```plaintext
 ---
 
 ## 🎯 **Example: Using BigDaddyG + Your Custom Model**
@@ -236,30 +264,33 @@ window.agenticAPI.askMultipleModels([
 ### **Setup:**
 
 1. **Create your custom Ollama model:**
+
    ```bash
    # Create Modelfile
    FROM llama3.1:70b
-   
+
    # Add your custom training data
    SYSTEM "You are an expert in [your domain]"
-   
+
    # Save as your-custom-model
    ollama create company-codebase -f Modelfile
    ```
 
-2. **Verify it's available:**
+  1. **Verify it's available:**
+
    ```bash
    ollama list
    # Should show: company-codebase
    ```
 
-3. **Use in BigDaddyG IDE:**
-   
+  1. **Use in BigDaddyG IDE:**
+
    **Option A: Via Dropdown**
+
    - Open model selector
    - Your model appears: `🦙 company-codebase`
    - Select it and chat!
-   
+
    **Option B: Via Code**
    ```javascript
    // In console or plugin:
@@ -268,7 +299,7 @@ window.agenticAPI.askMultipleModels([
      { model: "ollama:company-codebase" }
    );
    ```
-   
+
    **Option C: Combine Models**
    ```javascript
    // Ask BigDaddyG for general code structure
@@ -276,13 +307,13 @@ window.agenticAPI.askMultipleModels([
      "Generate REST API structure",
      { model: "BigDaddyG:Code" }
    );
-   
+
    // Ask your custom model for company-specific details
    const companyDetails = await window.agenticAPI.sendMessage(
      "Add our authentication system",
      { model: "ollama:company-codebase" }
    );
-   
+
    // Merge the results
    const finalCode = mergeResponses(structure, companyDetails);
    ```
@@ -294,6 +325,7 @@ window.agenticAPI.askMultipleModels([
 ### **Swarm Mode** (Multiple Models Working Together)
 
 ```javascript
+
 // 1. Problem: Complex feature implementation
 const task = "Build a secure payment system";
 
@@ -310,11 +342,12 @@ const results = await window.swarmEngine.execute(task, swarm);
 
 // 4. Results are merged automatically
 console.log(results.finalCode);
-```
 
+```plaintext
 ### **Model Consensus** (Get Multiple Opinions)
 
 ```javascript
+
 // Ask multiple models the same question
 const models = [
   'BigDaddyG:Latest',
@@ -326,15 +359,15 @@ const models = [
 const question = "What's the best way to implement caching?";
 
 const responses = await Promise.all(
-  models.map(model => 
+  models.map(model =>
     window.agenticAPI.sendMessage(question, { model })
   )
 );
 
 // Compare answers and pick the best
 const bestAnswer = analyzeConsensus(responses);
-```
 
+```plaintext
 ---
 
 ## 📊 **Model Performance Comparison**
@@ -342,6 +375,7 @@ const bestAnswer = analyzeConsensus(responses);
 Your IDE includes a built-in **model benchmark system**:
 
 ```javascript
+
 // Compare models on specific tasks
 window.agenticAPI.benchmarkModels([
   'BigDaddyG:Latest',
@@ -353,18 +387,20 @@ window.agenticAPI.benchmarkModels([
 });
 
 // Results show which model is best for each task
-```
 
+```plaintext
 ---
 
 ## 🔒 **Privacy & Security**
 
 ### **Local Models** (BigDaddyG + Ollama)
+
 - ✅ All processing happens on your machine
 - ✅ No data sent to cloud
 - ✅ Complete privacy
 
 ### **External APIs** (Optional)
+
 - ⚠️ Data sent to external providers
 - ⚠️ Requires API keys
 - ⚠️ Subject to their privacy policies
@@ -377,28 +413,30 @@ window.agenticAPI.benchmarkModels([
 
 ### **1. Use the Right Model for the Job**
 
-```
+```plaintext
 General questions     → BigDaddyG:Latest
 Writing code          → BigDaddyG:Code
 Debugging             → BigDaddyG:Debug
 Security/Crypto       → BigDaddyG:Crypto
 Company-specific      → Your custom Ollama model
-```
 
+```plaintext
 ### **2. Leverage Model Strengths**
 
 ```javascript
+
 // Bad: Using one model for everything
 const response = await askModel("BigDaddyG:Latest", complexSecurityQuestion);
 
 // Good: Use specialized models
 const securityAnalysis = await askModel("BigDaddyG:Crypto", complexSecurityQuestion);
 const codeImplementation = await askModel("BigDaddyG:Code", "implement the fix");
-```
 
+```plaintext
 ### **3. Use Parallel Execution for Complex Tasks**
 
 ```javascript
+
 // Instead of sequential:
 const design = await askModel("BigDaddyG:Latest", "design system");
 const code = await askModel("BigDaddyG:Code", "implement " + design);
@@ -410,8 +448,8 @@ const [design, codeTemplate, securityChecklist] = await Promise.all([
   askModel("BigDaddyG:Code", "create code template"),
   askModel("BigDaddyG:Crypto", "list security requirements")
 ]);
-```
 
+```plaintext
 ---
 
 ## 🛠️ **Troubleshooting**
@@ -419,32 +457,40 @@ const [design, codeTemplate, securityChecklist] = await Promise.all([
 ### **"Ollama model not showing up"**
 
 ```bash
+
 # 1. Check Ollama is running
+
 ollama list
 
 # 2. Restart Ollama
+
 ollama serve
 
 # 3. Restart BigDaddyG IDE
-```
 
+```plaintext
 ### **"BigDaddyG not responding"**
 
 ```bash
+
 # 1. Check Orchestra server
-curl http://localhost:11441/api/health
+
+curl <http://localhost:11441/api/health>
 
 # 2. Restart Orchestra
+
 cd "D:\Security Research aka GitHub Repos\ProjectIDEAI\server"
 node server.js
 
 # 3. Check logs
-tail -f orchestra.log
-```
 
+tail -f orchestra.log
+
+```plaintext
 ### **"Model switching is slow"**
 
 ```javascript
+
 // Enable model caching:
 window.modelHotSwap.enableCaching(true);
 
@@ -453,8 +499,8 @@ window.modelHotSwap.preloadModels([
   'BigDaddyG:Code',
   'ollama:your-custom-model'
 ]);
-```
 
+```plaintext
 ---
 
 ## 📚 **API Reference**
@@ -462,12 +508,13 @@ window.modelHotSwap.preloadModels([
 ### **Basic Usage**
 
 ```javascript
+
 // Send message to active model
 window.agenticAPI.sendMessage("Your prompt");
 
 // Send to specific model
-window.agenticAPI.sendMessage("Your prompt", { 
-  model: "BigDaddyG:Code" 
+window.agenticAPI.sendMessage("Your prompt", {
+  model: "BigDaddyG:Code"
 });
 
 // Switch active model
@@ -476,11 +523,12 @@ window.modelHotSwap.swapModel("BigDaddyG:Crypto");
 // Get active model
 const current = window.modelHotSwap.getActiveModel();
 console.log(current.name); // "BigDaddyG Latest"
-```
 
+```plaintext
 ### **Advanced Usage**
 
 ```javascript
+
 // Multi-model query
 window.agenticAPI.askMultipleModels(
   ['BigDaddyG:Latest', 'ollama:codellama'],
@@ -503,8 +551,8 @@ window.orchestraAPI.routeRequest({
   task_type: "auto-detect",  // Auto-selects best model
   fallback: "BigDaddyG:Latest"
 });
-```
 
+```plaintext
 ---
 
 ## ✨ **Summary**
@@ -531,5 +579,5 @@ window.orchestraAPI.routeRequest({
 
 **Your BigDaddyG IDE is a multi-model orchestration platform! 🚀**
 
-**Repository:** https://github.com/ItsMehRAWRXD/BigDaddyG-IDE
+**Repository:** <https://github.com/ItsMehRAWRXD/BigDaddyG-IDE>
 
