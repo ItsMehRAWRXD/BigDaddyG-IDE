@@ -223,7 +223,7 @@
     // Auto-detect environment
     const isProduction = window.location.protocol === 'file:' || 
                         window.location.hostname === '' ||
-                        process.env.NODE_ENV === 'production';
+                        (typeof process !== 'undefined' && process.env && process.env.NODE_ENV === 'production');
     
     if (isProduction && DEBUG_CONFIG.enabled) {
         originalConsole.info('🏭 Production environment detected. Use debugMode.setProduction() to minimize logging.');

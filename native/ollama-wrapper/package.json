@@ -1,0 +1,33 @@
+{
+  "name": "bigdaddyg-ollama-native",
+  "version": "0.1.0",
+  "description": "Native C bindings for Ollama in BigDaddyG IDE",
+  "main": "index.js",
+  "scripts": {
+    "install": "node-gyp rebuild",
+    "build": "node-gyp rebuild",
+    "build:debug": "node-gyp rebuild --debug",
+    "clean": "node-gyp clean",
+    "test": "node test.js"
+  },
+  "keywords": [
+    "ollama",
+    "ai",
+    "native",
+    "bigdaddyg",
+    "napi"
+  ],
+  "author": "BigDaddyG Team",
+  "license": "MIT",
+  "gypfile": true,
+  "dependencies": {
+    "node-addon-api": "^7.0.0"
+  },
+  "devDependencies": {
+    "node-gyp": "^10.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
+
