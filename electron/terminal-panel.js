@@ -894,21 +894,37 @@ class TerminalPanel {
     toggle() {
         this.isVisible = !this.isVisible;
         const panel = document.getElementById('terminal-panel');
+        const mainContainer = document.getElementById('main-container');
         
         if (panel) {
             if (this.isVisible) {
-                panel.style.height = '400px';
+                // Show terminal
                 panel.style.display = 'flex';
-                console.log('[TerminalPanel] ✅ Terminal opened');
+                panel.style.height = '400px';
+                
+                // Push main content up
+                if (mainContainer) {
+                    mainContainer.classList.add('terminal-open');
+                }
+                
+                console.log('[TerminalPanel] ✅ Terminal opened - Full screen mode OFF');
             } else {
+                // Hide terminal
                 panel.style.height = '0px';
+                
+                // Give main content full space
+                if (mainContainer) {
+                    mainContainer.classList.remove('terminal-open');
+                }
+                
                 // Use setTimeout to hide after animation
                 setTimeout(() => {
                     if (!this.isVisible) {
                         panel.style.display = 'none';
                     }
                 }, 300);
-                console.log('[TerminalPanel] ✅ Terminal closed');
+                
+                console.log('[TerminalPanel] ✅ Terminal closed - Full screen mode ON');
             }
         }
         
@@ -922,27 +938,43 @@ class TerminalPanel {
     minimize() {
         this.isVisible = false;
         const panel = document.getElementById('terminal-panel');
+        const mainContainer = document.getElementById('main-container');
         
         if (panel) {
             panel.style.height = '0px';
+            
+            // Give main content full space
+            if (mainContainer) {
+                mainContainer.classList.remove('terminal-open');
+            }
+            
             setTimeout(() => {
                 if (!this.isVisible) {
                     panel.style.display = 'none';
                 }
             }, 300);
-            console.log('[TerminalPanel] ⬇️ Terminal minimized');
+            
+            console.log('[TerminalPanel] ⬇️ Terminal minimized - FULL SCREEN code editor!');
         }
     }
     
     show() {
         this.isVisible = true;
         const panel = document.getElementById('terminal-panel');
+        const mainContainer = document.getElementById('main-container');
         
         if (panel) {
             panel.style.display = 'flex';
+            
+            // Push main content up
+            if (mainContainer) {
+                mainContainer.classList.add('terminal-open');
+            }
+            
             setTimeout(() => {
                 panel.style.height = '400px';
             }, 10);
+            
             console.log('[TerminalPanel] ⬆️ Terminal shown');
         }
     }
