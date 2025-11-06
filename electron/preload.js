@@ -48,6 +48,13 @@ contextBridge.exposeInMainWorld('electron', {
   listDrives: () => ipcRenderer.invoke('list-drives'),
   onDrivesChanged: (callback) => ipcRenderer.on('drives-changed', (_, drives) => callback(drives)),
   
+  // Drive polling control (optimization)
+  drivePolling: {
+    start: () => ipcRenderer.invoke('drive-polling:start'),
+    stop: () => ipcRenderer.invoke('drive-polling:stop'),
+    status: () => ipcRenderer.invoke('drive-polling:status')
+  },
+  
   // Advanced file operations
   createDirectory: (dirPath) => ipcRenderer.invoke('createDirectory', dirPath),
   deleteItem: (itemPath, isDirectory) => ipcRenderer.invoke('deleteItem', itemPath, isDirectory),

@@ -1417,12 +1417,28 @@ function getWindowsDriveIcon(type) {
   return '💾';
 }
 
-// Watch for USB drive changes (Windows)
-if (process.platform === 'win32') {
+// Watch for USB drive changes (Windows) - Optimized with start/stop control
+let drivePollingInterval = null;
+let isFileExplorerOpen = false;
+
+function startDrivePolling() {
+  if (process.platform !== 'win32') return;
+  if (drivePollingInterval) return; // Already running
+  
   const { exec } = require('child_process');
   
-  // Poll for drive changes every 30 seconds (not too aggressive)
-  setInterval(() => {
+  console.log('[Main] 🔄 Starting drive polling...');
+  
+  // Initial scan
+  exec('wmic logicaldisk get name', (error, stdout) => {
+    if (!error && stdout && mainWindow && !mainWindow.isDestroyed()) {
+      const currentDrives = stdout.match(/[A-Z]:/g) || [];
+      mainWindow.webContents.send('drives-changed', currentDrives);
+    }
+  });
+  
+  // Poll for drive changes every 30 seconds
+  drivePollingInterval = setInterval(() => {
     if (mainWindow && !mainWindow.isDestroyed()) {
       exec('wmic logicaldisk get name', (error, stdout) => {
         if (!error && stdout) {
@@ -1431,8 +1447,36 @@ if (process.platform === 'win32') {
         }
       });
     }
-  }, 30000); // Changed from 5000ms to 30000ms (30 seconds)
+  }, 30000);
 }
+
+function stopDrivePolling() {
+  if (drivePollingInterval) {
+    console.log('[Main] ⏹️ Stopping drive polling...');
+    clearInterval(drivePollingInterval);
+    drivePollingInterval = null;
+  }
+}
+
+// IPC handlers for drive polling control
+ipcMain.handle('drive-polling:start', () => {
+  isFileExplorerOpen = true;
+  startDrivePolling();
+  return { success: true };
+});
+
+ipcMain.handle('drive-polling:stop', () => {
+  isFileExplorerOpen = false;
+  stopDrivePolling();
+  return { success: true };
+});
+
+ipcMain.handle('drive-polling:status', () => {
+  return { 
+    isRunning: drivePollingInterval !== null,
+    isFileExplorerOpen
+  };
+});
 
 // Orchestra server control
 ipcMain.handle('orchestra:start', () => {
