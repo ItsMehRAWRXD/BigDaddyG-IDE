@@ -54,6 +54,18 @@ contextBridge.exposeInMainWorld('electron', {
   moveItem: (sourcePath, destPath) => ipcRenderer.invoke('moveItem', sourcePath, destPath),
   getStats: (itemPath) => ipcRenderer.invoke('getStats', itemPath),
   
+  // Memory bridge
+  memory: {
+    getStats: () => ipcRenderer.invoke('memory:getStats'),
+    store: (content, metadata = {}) => ipcRenderer.invoke('memory:store', { content, metadata }),
+    query: (query, limit = 10) => ipcRenderer.invoke('memory:query', { query, limit }),
+    recent: (limit = 20) => ipcRenderer.invoke('memory:recent', limit),
+    embedding: (text, model = 'local') => ipcRenderer.invoke('memory:embedding', { text, model }),
+    similar: (embedding, threshold = 0.7, limit = 10) => ipcRenderer.invoke('memory:similar', { embedding, threshold, limit }),
+    decay: () => ipcRenderer.invoke('memory:decay'),
+    clear: () => ipcRenderer.invoke('memory:clear')
+  },
+
   // System integration
   launchProgram: (programPath) => ipcRenderer.invoke('launchProgram', programPath),
   openInExplorer: (itemPath) => ipcRenderer.invoke('openInExplorer', itemPath),

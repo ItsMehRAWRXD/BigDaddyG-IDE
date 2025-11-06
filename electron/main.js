@@ -11,6 +11,7 @@ const { spawn } = require('child_process');
 const windowStateKeeper = require('electron-window-state');
 const { EmbeddedBrowser } = require('./browser-view');
 const SafeModeDetector = require('./safe-mode-detector');
+const memoryService = require('./memory-service');
 
 let mainWindow;
 let orchestraServer = null;
@@ -1184,6 +1185,42 @@ ipcMain.handle('linux-speech-recognize', async () => {
       fallback: 'keyboard'
     };
   }
+});
+
+// ============================================================================
+// MEMORY BRIDGE (OpenMemory Integration)
+// ============================================================================
+
+ipcMain.handle('memory:getStats', async () => {
+  return memoryService.getStats();
+});
+
+ipcMain.handle('memory:store', async (event, { content, metadata }) => {
+  return memoryService.storeMemory(content, metadata);
+});
+
+ipcMain.handle('memory:query', async (event, { query, limit }) => {
+  return memoryService.queryMemory(query, limit);
+});
+
+ipcMain.handle('memory:recent', async (event, limit) => {
+  return memoryService.getRecentMemories(limit);
+});
+
+ipcMain.handle('memory:embedding', async (event, { text, model }) => {
+  return memoryService.createEmbedding(text, model);
+});
+
+ipcMain.handle('memory:similar', async (event, { embedding, threshold, limit }) => {
+  return memoryService.similaritySearch(embedding, threshold, limit);
+});
+
+ipcMain.handle('memory:decay', async () => {
+  return memoryService.applyDecay();
+});
+
+ipcMain.handle('memory:clear', async () => {
+  return memoryService.clearAllMemories();
 });
 
 // ============================================================================

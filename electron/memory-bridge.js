@@ -1,22 +1,15 @@
 /**
  * OpenMemory Bridge for BigDaddyG IDE
  * 
- * Bridges JavaScript IDE to PowerShell OpenMemory modules via Node.js child_process
+ * Bridges JavaScript IDE to PowerShell OpenMemory modules via IPC
  * Provides persistent, context-aware memory for all agentic operations
  */
 
 (function() {
 'use strict';
 
-const { exec } = require('child_process');
-const path = require('path');
-const fs = require('fs');
-
 class MemoryBridge {
     constructor() {
-        this.openMemoryPath = path.join(__dirname, '..', 'OpenMemory');
-        this.storePath = path.join(this.openMemoryPath, 'Store');
-        this.moduleBasePath = path.join(this.openMemoryPath, 'Modules');
         this.isInitialized = false;
         this.memoryStats = {
             totalMemories: 0,
@@ -24,6 +17,12 @@ class MemoryBridge {
             storageSize: 0,
             lastUpdated: null
         };
+        
+        // Check if we're in Electron renderer with preload bridge
+        if (!window.electron) {
+            console.warn('[MemoryBridge] ⚠️ Not running in Electron - memory features limited');
+            return;
+        }
         
         console.log('[MemoryBridge] 🧠 Initializing OpenMemory Bridge...');
         this.initialize();
@@ -35,19 +34,23 @@ class MemoryBridge {
     
     async initialize() {
         try {
-            // Check if OpenMemory module exists
-            if (!fs.existsSync(this.openMemoryPath)) {
-                console.error('[MemoryBridge] ❌ OpenMemory module not found at:', this.openMemoryPath);
-                return;
+            // Request memory stats via IPC
+            if (window.electron && window.electron.invoke) {
+                const stats = await window.electron.invoke('memory:getStats');
+                if (stats) {
+                    this.memoryStats = stats;
+                    this.isInitialized = true;
+                    console.log('[MemoryBridge] ✅ Memory system connected');
+                    console.log(`[MemoryBridge] 📊 ${stats.totalMemories} memories loaded`);
+                    return;
+                }
             }
             
-            // Ensure Store directory exists
-            if (!fs.existsSync(this.storePath)) {
-                fs.mkdirSync(this.storePath, { recursive: true });
-                console.log('[MemoryBridge] 📁 Created Store directory');
-            }
+            // Fallback: In-memory only mode
+            console.warn('[MemoryBridge] ⚠️ Running in memory-only mode (no persistence)');
+            this.setupInMemoryMode();
             
-            // Load initial memory stats
+            // Load initial memory stats from in-memory
             await this.updateStats();
             
             this.isInitialized = true;

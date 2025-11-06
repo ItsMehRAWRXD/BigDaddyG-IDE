@@ -396,7 +396,7 @@ class HotkeyManager {
     // COMMAND PALETTE
     // ========================================================================
     
-    showCommandPalette() {
+    async showCommandPalette() {
         // Remove existing palette
         const existing = document.getElementById('command-palette');
         if (existing) {
