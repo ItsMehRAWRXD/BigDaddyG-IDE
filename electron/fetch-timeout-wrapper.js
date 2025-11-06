@@ -58,8 +58,10 @@ class FetchTimeoutWrapper {
 
         try {
             // Race between fetch and timeout
+            // CRITICAL: Use originalFetch to avoid infinite recursion!
+            const fetchFn = typeof originalFetch !== 'undefined' ? originalFetch : fetch;
             const response = await Promise.race([
-                fetch(url, fetchOptions),
+                fetchFn(url, fetchOptions),
                 timeoutPromise
             ]);
 
@@ -217,12 +219,15 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = fetchWrapper;
 }
 
+// Save original fetch BEFORE creating wrapper
+const originalFetch = typeof window !== 'undefined' ? window.fetch : global.fetch;
+
 // Make available globally in renderer
 if (typeof window !== 'undefined') {
     window.fetchWrapper = fetchWrapper;
+    window.originalFetch = originalFetch; // Expose original
     
     // Override native fetch with wrapped version
-    const originalFetch = window.fetch;
     window.fetch = function(url, options) {
         // Use wrapper by default, but allow bypass with special flag
         if (options && options.__bypassWrapper) {
