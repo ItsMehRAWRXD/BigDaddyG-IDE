@@ -101,7 +101,21 @@ class AutomatedIntegrationTest {
             }
         }
         
-        this.logAction('SUCCESS', 'Monaco editor ready!');
+        // Make sure Monaco container is visible
+        const container = document.getElementById('monaco-container');
+        if (container) {
+            if (container.offsetHeight === 0 || container.style.display === 'none') {
+                console.log('[AutoTest] 💡 Monaco container hidden, making it visible...');
+                container.style.display = 'flex';
+                
+                // Hide any center tab content that might be blocking
+                document.querySelectorAll('.tab-content').forEach(panel => {
+                    panel.style.display = 'none';
+                });
+            }
+        }
+        
+        this.logAction('SUCCESS', 'Monaco editor ready and visible!');
     }
     
     async testCreateFile() {
