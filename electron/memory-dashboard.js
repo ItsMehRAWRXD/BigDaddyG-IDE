@@ -409,6 +409,11 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
+// Cleanup on window unload
+window.addEventListener('beforeunload', () => {
+    window.memoryDashboard.stopAutoUpdate();
+});
+
 console.log('[MemoryDashboard] 🎨 Memory Dashboard ready (Ctrl+Shift+M)');
 
 })();

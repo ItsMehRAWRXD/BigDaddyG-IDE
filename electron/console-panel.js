@@ -176,7 +176,7 @@ class ConsolePanel {
     
     setupOrchestraMonitoring() {
         // Check Orchestra status every 2 seconds
-        setInterval(() => {
+        this.orchestraMonitorInterval = setInterval(() => {
             this.checkOrchestraStatus();
         }, 2000);
         
@@ -186,6 +186,13 @@ class ConsolePanel {
         setTimeout(() => {
             this.checkOrchestraStatus();
         }, 5000);
+    }
+    
+    cleanup() {
+        if (this.orchestraMonitorInterval) {
+            clearInterval(this.orchestraMonitorInterval);
+            console.log('[ConsolePanel] 🧹 Cleared monitoring interval');
+        }
     }
     
     async checkOrchestraStatus() {

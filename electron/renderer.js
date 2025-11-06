@@ -410,21 +410,35 @@ function switchTab(tabId) {
     const tab = openTabs[tabId];
     
     try {
-        // Update editor
-        const model = monaco.editor.createModel(tab.content, tab.language);
-        editor.setModel(model);
+        // Dispose old model to prevent memory leak
+        const oldModel = editor.getModel();
+        if (oldModel && oldModel !== tab.model) {
+            oldModel.dispose();
+        }
         
-        // Track changes for dirty state
-        model.onDidChangeContent(() => {
-            if (openTabs[activeTab]) {
-                openTabs[activeTab].isDirty = true;
-                // Debounce render for performance
-                clearTimeout(window.tabRenderTimeout);
-                window.tabRenderTimeout = setTimeout(() => {
-                    renderTabs();
-                }, 300);
+        // Create or reuse model
+        if (!tab.model || tab.model.isDisposed()) {
+            tab.model = monaco.editor.createModel(tab.content, tab.language);
+            
+            // Track changes for dirty state
+            tab.model.onDidChangeContent(() => {
+                if (openTabs[activeTab]) {
+                    openTabs[activeTab].isDirty = true;
+                    // Debounce render for performance
+                    clearTimeout(window.tabRenderTimeout);
+                    window.tabRenderTimeout = setTimeout(() => {
+                        renderTabs();
+                    }, 300);
+                }
+            });
+        } else {
+            // Update existing model content if changed
+            if (tab.model.getValue() !== tab.content) {
+                tab.model.setValue(tab.content);
             }
-        });
+        }
+        
+        editor.setModel(tab.model);
         
         // Update UI
         renderTabs();
@@ -452,6 +466,12 @@ function closeTab(event, tabId) {
     }
     
     console.log(`[BigDaddyG] 🗑️ Closing tab: ${tab?.filename || tabId}`);
+    
+    // Dispose Monaco model to prevent memory leak
+    if (tab && tab.model && !tab.model.isDisposed()) {
+        tab.model.dispose();
+        console.log(`[BigDaddyG] 🧹 Disposed model for: ${tab.filename}`);
+    }
     
     delete openTabs[tabId];
     
@@ -1346,7 +1366,9 @@ function detectLanguage(filename) {
 async function openFileDialog() {
     try {
         console.log('[BigDaddyG] 📂 Opening file dialog...');
+        window.showLoading('Opening file...', { subtitle: 'Select a file to open' });
         const result = await window.electron.openFileDialog();
+        window.hideLoading();
         
         if (result.success && !result.canceled) {
             const { filename, content, filePath } = result;
@@ -1391,7 +1413,9 @@ async function saveCurrentFile() {
         }
         
         console.log(`[BigDaddyG] 💾 Saving file: ${tab.filePath}`);
+        window.showLoading(`Saving ${tab.filename}...`);
         const result = await window.electron.writeFile(tab.filePath, tab.content);
+        window.hideLoading();
         
         if (result.success) {
             tab.isDirty = false;
@@ -1464,7 +1488,7 @@ async function saveFileAs() {
 // ============================================================================
 
 // Auto-save tab state every 30 seconds
-setInterval(() => {
+let autoSaveInterval = setInterval(() => {
     try {
         const tabState = {
             openTabs: {},
@@ -1487,12 +1511,34 @@ setInterval(() => {
             };
         });
         
-        localStorage.setItem('bigdaddyg-tab-recovery', JSON.stringify(tabState));
+        // Check size before saving to avoid QuotaExceededError
+        const dataStr = JSON.stringify(tabState);
+        const dataSize = new Blob([dataStr]).size;
+        
+        if (dataSize > 4 * 1024 * 1024) { // Warn if > 4MB
+            console.warn('[BigDaddyG] ⚠️ Recovery data very large:', (dataSize / 1024 / 1024).toFixed(2), 'MB');
+        }
+        
+        localStorage.setItem('bigdaddyg-tab-recovery', dataStr);
         console.log('[BigDaddyG] 💾 Auto-saved tab state');
     } catch (error) {
-        console.warn('[BigDaddyG] ⚠️ Auto-save failed:', error);
+        if (error.name === 'QuotaExceededError') {
+            console.error('[BigDaddyG] ❌ localStorage full! Clearing recovery data...');
+            localStorage.removeItem('bigdaddyg-tab-recovery');
+        } else {
+            console.warn('[BigDaddyG] ⚠️ Auto-save failed:', error);
+        }
     }
 }, 30000); // Every 30 seconds
+
+// Clean up interval on window unload to prevent memory leak
+window.addEventListener('beforeunload', () => {
+    if (autoSaveInterval) {
+        clearInterval(autoSaveInterval);
+        autoSaveInterval = null;
+        console.log('[BigDaddyG] 🧹 Cleaned up auto-save interval');
+    }
+});
 
 // Try to recover tabs on load
 function tryRecoverTabs() {

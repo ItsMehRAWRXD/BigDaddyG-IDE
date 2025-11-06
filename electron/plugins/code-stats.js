@@ -61,7 +61,12 @@ if (window.pluginSystem) {
         setTimeout(updateStats, 1000);
         
         // Update every 2 seconds
-        setInterval(updateStats, 2000);
+        const statsInterval = setInterval(updateStats, 2000);
+        
+        // Cleanup on unload
+        window.addEventListener('beforeunload', () => {
+            clearInterval(statsInterval);
+        });
         
         console.log('[CodeStats] ✅ Status bar added');
     });

@@ -469,8 +469,14 @@ requestAnimationFrame(updateFPS);
 // PERFORMANCE MONITORING
 // ============================================================================
 
+let performanceMonitorInterval = null;
+
 function startPerformanceMonitoring() {
-    setInterval(() => {
+    if (performanceMonitorInterval) {
+        clearInterval(performanceMonitorInterval);
+    }
+    
+    performanceMonitorInterval = setInterval(() => {
         // CPU usage (approximate)
         if (performance.memory) {
             performanceMonitor.memory_usage = performance.memory.usedJSHeapSize / performance.memory.jsHeapSizeLimit;
@@ -480,6 +486,14 @@ function startPerformanceMonitoring() {
         updatePerformanceOverlay();
     }, 1000);
 }
+
+// Cleanup on window unload
+window.addEventListener('beforeunload', () => {
+    if (performanceMonitorInterval) {
+        clearInterval(performanceMonitorInterval);
+        console.log('[Performance] 🧹 Cleared performance monitor interval');
+    }
+});
 
 function updatePerformanceOverlay() {
     let overlay = document.getElementById('performance-overlay');

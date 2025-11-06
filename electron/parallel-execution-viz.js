@@ -118,9 +118,16 @@ class ParallelExecutionViz {
     
     startMonitoring() {
         // Monitor orchestra sessions
-        setInterval(() => {
+        this.monitorInterval = setInterval(() => {
             this.updateVisualization();
         }, 1000); // Update every second
+    }
+    
+    cleanup() {
+        if (this.monitorInterval) {
+            clearInterval(this.monitorInterval);
+            console.log('[ParallelExec] 🧹 Cleared monitor interval');
+        }
     }
     
     updateVisualization() {

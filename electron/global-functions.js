@@ -218,6 +218,89 @@ setTimeout(() => {
 }, 1000);
 
 // ============================================================================
+// LOADING INDICATOR SYSTEM
+// ============================================================================
+
+window.showLoading = (message = 'Loading...', options = {}) => {
+    // Remove existing loader
+    const existing = document.getElementById('global-loader');
+    if (existing) existing.remove();
+    
+    const loader = document.createElement('div');
+    loader.id = 'global-loader';
+    loader.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(10, 10, 30, 0.98);
+        border: 1px solid var(--cyan);
+        border-radius: 12px;
+        padding: 30px 40px;
+        z-index: 100000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        min-width: 300px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    `;
+    
+    loader.innerHTML = `
+        <div class="loader-spinner" style="
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(0, 212, 255, 0.2);
+            border-top-color: var(--cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        "></div>
+        <div style="color: #fff; font-size: 14px; font-weight: 500;">${message}</div>
+        ${options.subtitle ? `<div style="color: #666; font-size: 12px;">${options.subtitle}</div>` : ''}
+    `;
+    
+    // Add animation
+    const style = document.createElement('style');
+    style.textContent = '@keyframes spin { to { transform: rotate(360deg); } }';
+    if (!document.querySelector('style[data-loading-spin]')) {
+        style.setAttribute('data-loading-spin', '');
+        document.head.appendChild(style);
+    }
+    
+    document.body.appendChild(loader);
+    return loader;
+};
+
+window.hideLoading = () => {
+    const loader = document.getElementById('global-loader');
+    if (loader) {
+        loader.style.opacity = '0';
+        loader.style.transition = 'opacity 0.3s';
+        setTimeout(() => loader.remove(), 300);
+    }
+};
+
+window.updateLoading = (message, subtitle) => {
+    const loader = document.getElementById('global-loader');
+    if (loader) {
+        const messageEl = loader.querySelector('div:nth-child(2)');
+        if (messageEl) messageEl.textContent = message;
+        
+        if (subtitle) {
+            const subtitleEl = loader.querySelector('div:nth-child(3)');
+            if (subtitleEl) {
+                subtitleEl.textContent = subtitle;
+            } else {
+                const newSubtitle = document.createElement('div');
+                newSubtitle.style.cssText = 'color: #666; font-size: 12px;';
+                newSubtitle.textContent = subtitle;
+                loader.appendChild(newSubtitle);
+            }
+        }
+    }
+};
+
+// ============================================================================
 // NETWORK UTILITIES WITH TIMEOUT & RETRY
 // ============================================================================
 

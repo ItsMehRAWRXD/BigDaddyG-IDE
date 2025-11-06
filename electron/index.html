@@ -929,7 +929,10 @@
     </script>
     
     <!-- Core Scripts -->
-    <!-- ERROR CLEANUP - Must load first to intercept console -->
+    <!-- TIMER MANAGER - Must load FIRST to prevent memory leaks -->
+    <script src="timer-manager.js"></script>
+    
+    <!-- ERROR CLEANUP - Must load early to intercept console -->
     <script src="error-cleanup.js"></script>
     
     <!-- GLOBAL FUNCTIONS - Define all onclick handlers FIRST -->
