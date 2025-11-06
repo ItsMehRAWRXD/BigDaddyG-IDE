@@ -144,89 +144,89 @@ function startOrchestraServer() {
     stdio: 'pipe',
     env: { ...process.env, NODE_ENV: 'production' }
   });
-  */
   
-  orchestraServer.stdout.on('data', (data) => {
-    const message = data.toString().trim();
-    console.log(`[Orchestra] ${message}`);
+  // Event handlers only apply if using spawn (which we don't)
+  if (orchestraServer) {
+    orchestraServer.stdout.on('data', (data) => {
+      const message = data.toString().trim();
+      console.log(`[Orchestra] ${message}`);
+      
+      if (mainWindow) {
+        mainWindow.webContents.send('orchestra-log', {
+          type: 'output',
+          message: message
+        });
+      }
+    });
     
-    if (mainWindow) {
-      mainWindow.webContents.send('orchestra-log', {
-        type: 'output',
-        message: message
-      });
-    }
-  });
-  
-  orchestraServer.stderr.on('data', (data) => {
-    const message = data.toString().trim();
+    orchestraServer.stderr.on('data', (data) => {
+      const message = data.toString().trim();
+      
+      // Check if port is already in use
+      if (message.includes('EADDRINUSE') || message.includes('address already in use')) {
+        console.log('[Orchestra] Port 11441 already in use - server already running, this is OK');
+        
+        if (mainWindow) {
+          mainWindow.webContents.send('orchestra-status', {
+            running: true,
+            alreadyRunning: true
+          });
+        }
+        
+        // Kill this duplicate process
+        if (orchestraServer) {
+          orchestraServer.kill();
+          orchestraServer = null;
+        }
+        return;
+      }
+      
+      console.error(`[Orchestra Error] ${message}`);
+      
+      if (mainWindow) {
+        mainWindow.webContents.send('orchestra-log', {
+          type: 'error',
+          message: message
+        });
+      }
+    });
     
-    // Check if port is already in use
-    if (message.includes('EADDRINUSE') || message.includes('address already in use')) {
-      console.log('[Orchestra] Port 11441 already in use - server already running, this is OK');
+    orchestraServer.on('close', (code) => {
+      console.log(`[Orchestra] Process exited with code ${code}`);
+      orchestraServer = null;
       
       if (mainWindow) {
         mainWindow.webContents.send('orchestra-status', {
-          running: true,
-          alreadyRunning: true
+          running: false,
+          code: code
         });
       }
-      
-      // Kill this duplicate process
-      if (orchestraServer) {
-        orchestraServer.kill();
-        orchestraServer = null;
-      }
-      return;
-    }
-    
-    console.error(`[Orchestra Error] ${message}`);
-    
-    if (mainWindow) {
-      mainWindow.webContents.send('orchestra-log', {
-        type: 'error',
-        message: message
-      });
-    }
-  });
-  
-  orchestraServer.on('close', (code) => {
-    console.log(`[Orchestra] Process exited with code ${code}`);
-    orchestraServer = null;
-    
-    if (mainWindow) {
-      mainWindow.webContents.send('orchestra-status', {
-        running: false,
-        code: code
-      });
-    }
-  });
-  
-  orchestraServer.on('error', (error) => {
-    console.error('[Orchestra] Failed to start:', error);
-    
-    if (mainWindow) {
-      mainWindow.webContents.send('orchestra-log', {
-        type: 'error',
-        message: `Failed to start: ${error.message}`
-      });
-    }
-  });
-  
-  // Notify that server is starting
-  if (mainWindow) {
-    mainWindow.webContents.send('orchestra-status', {
-      running: true,
-      starting: true
     });
     
-    // Wait a moment, then check if it's actually running
-    setTimeout(() => {
-      checkOrchestraHealth();
-    }, 3000);
+    orchestraServer.on('error', (error) => {
+      console.error('[Orchestra] Failed to start:', error);
+      
+      if (mainWindow) {
+        mainWindow.webContents.send('orchestra-log', {
+          type: 'error',
+          message: `Failed to start: ${error.message}`
+        });
+      }
+    });
+    
+    console.log('[BigDaddyG] ✅ Orchestra server process started');
   }
+  */
   
-  console.log('[BigDaddyG] ✅ Orchestra server process started');
+  // Notify renderer that orchestra loaded directly (not spawned)
+  if (mainWindow) {
+    setTimeout(() => {
+      mainWindow.webContents.send('orchestra-status', {
+        running: true,
+        loadedDirectly: true
+      });
+    }, 1000);
+  }
 }
 
 function stopOrchestraServer() {

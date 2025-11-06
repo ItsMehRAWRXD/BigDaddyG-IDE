@@ -53,6 +53,7 @@ setTimeout(() => {
 // Monaco Editor initialization - Called when Monaco loads from index.html
 window.onMonacoLoad = function() {
     console.log('[BigDaddyG] 🎨 Monaco loaded, initializing editor...');
+    clearTimeout(window.monacoTimeout); // Cancel timeout if Monaco loads
     initMonacoEditor();
 };
 
@@ -60,6 +61,37 @@ window.onMonacoLoad = function() {
 if (typeof monaco !== 'undefined') {
     console.log('[BigDaddyG] 🎨 Monaco already available, initializing...');
     initMonacoEditor();
+} else {
+    // Set timeout fallback in case Monaco fails to load from CDN
+    console.log('[BigDaddyG] ⏳ Waiting for Monaco to load (15s timeout)...');
+    window.monacoTimeout = setTimeout(() => {
+        if (typeof monaco === 'undefined') {
+            console.error('[BigDaddyG] ❌ Monaco failed to load from CDN after 15s!');
+            console.error('[BigDaddyG] 💡 Showing fallback error message...');
+            
+            // Show user-friendly error instead of white screen
+            document.getElementById('monaco-container').innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; height: 100%; background: #1e1e1e; color: #fff; padding: 40px; text-align: center; flex-direction: column;">
+                    <div style="font-size: 48px; margin-bottom: 20px;">⚠️</div>
+                    <h2 style="color: #ff6b6b; margin-bottom: 20px;">Monaco Editor Failed to Load</h2>
+                    <p style="margin-bottom: 20px; max-width: 600px; line-height: 1.6;">
+                        The code editor couldn't load from the CDN. This might be due to:
+                    </p>
+                    <ul style="text-align: left; margin-bottom: 20px;">
+                        <li>No internet connection</li>
+                        <li>CDN is down or blocked</li>
+                        <li>Firewall/antivirus blocking the CDN</li>
+                    </ul>
+                    <button onclick="location.reload()" style="padding: 12px 30px; background: #00d4ff; color: #000; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold;">
+                        🔄 Retry Loading
+                    </button>
+                    <p style="margin-top: 20px; font-size: 12px; color: #666;">
+                        Or check your internet connection and try again
+                    </p>
+                </div>
+            `;
+        }
+    }, 15000); // 15 second timeout
 }
 
 function initMonacoEditor() {

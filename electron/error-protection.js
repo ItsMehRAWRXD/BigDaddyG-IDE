@@ -91,7 +91,7 @@ class ErrorProtectionSystem {
     protectConsoleMethods() {
         // DON'T override console methods - let error-tracker.js handle it
         // This prevents conflicts between error protection and error tracking
-        console.log('[ErrorProtection] ℹ️ Console methods handled by error-tracker.js');
+        console.log('[ErrorProtection] ℹ️ Console methods handled by error-tracker.js');('[ErrorProtection] ℹ️ Console methods handled by error-tracker.js');
     }
     
     addGlobalRecovery() {
