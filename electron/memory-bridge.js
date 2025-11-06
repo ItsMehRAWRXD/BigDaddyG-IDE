@@ -35,13 +35,13 @@ class MemoryBridge {
     async initialize() {
         try {
             // Request memory stats via IPC
-            if (window.electron && window.electron.invoke) {
-                const stats = await window.electron.invoke('memory:getStats');
-                if (stats) {
+            if (window.electron && window.electron.memory) {
+                const stats = await window.electron.memory.getStats();
+                if (stats && stats.success) {
                     this.memoryStats = stats;
                     this.isInitialized = true;
                     console.log('[MemoryBridge] ✅ Memory system connected');
-                    console.log(`[MemoryBridge] 📊 ${stats.totalMemories} memories loaded`);
+                    console.log(`[MemoryBridge] 📊 ${stats.totalMemories || 0} memories loaded`);
                     return;
                 }
             }
@@ -54,11 +54,14 @@ class MemoryBridge {
             await this.updateStats();
             
             this.isInitialized = true;
-            console.log('[MemoryBridge] ✅ OpenMemory Bridge initialized');
+            console.log('[MemoryBridge] ✅ OpenMemory Bridge initialized (in-memory mode)');
             console.log('[MemoryBridge] 📊 Stats:', this.memoryStats);
             
         } catch (error) {
             console.error('[MemoryBridge] ❌ Initialization failed:', error);
+            // Still mark as initialized in fallback mode
+            this.setupInMemoryMode();
+            this.isInitialized = true;
         }
     }
     
