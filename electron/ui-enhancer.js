@@ -527,7 +527,11 @@ class UIEnhancer {
                 currentTooltip.style.left = rect.left + (rect.width / 2) - (currentTooltip.offsetWidth / 2) + 'px';
                 currentTooltip.style.top = rect.top - currentTooltip.offsetHeight - 10 + 'px';
                 
-                setTimeout(() => currentTooltip.classList.add('show'), 10);
+                setTimeout(() => {
+                    if (currentTooltip) {
+                        currentTooltip.classList.add('show');
+                    }
+                }, 10);
             }
         });
         
