@@ -211,6 +211,9 @@ function initMonacoEditor() {
         renderValidationDecorations: 'editable'
     });
     
+    // Expose editor globally for tests and external access
+    window.editor = editor;
+    
     // Store initial tab
     openTabs['welcome'] = {
         id: 'welcome',

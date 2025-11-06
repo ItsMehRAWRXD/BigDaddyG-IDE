@@ -103,19 +103,38 @@ class PanelManager {
     
     togglePanel(panelName) {
         const panel = this.panels[panelName];
-        if (!panel) return;
+        if (!panel) {
+            console.warn(`[PanelManager] ⚠️ Panel "${panelName}" not found`);
+            return;
+        }
         
         const element = document.getElementById(panel.element);
-        if (!element) return;
+        if (!element) {
+            console.warn(`[PanelManager] ⚠️ Element "${panel.element}" not found for panel "${panelName}"`);
+            return;
+        }
         
         panel.visible = !panel.visible;
         
         if (panel.visible) {
             element.classList.remove('collapsed');
+            // Force visibility with inline styles (overrides resizable-panes)
+            element.style.display = 'flex';
+            element.style.width = ''; // Reset to CSS default
+            element.style.opacity = '1';
+            element.style.pointerEvents = 'auto';
             console.log(`[PanelManager] ✅ ${panelName} shown`);
+            window.showNotification?.(`✅ ${panelName}`, 'Shown', 'info', 1500);
         } else {
             element.classList.add('collapsed');
+            // Force hiding with inline styles (overrides everything)
+            element.style.width = '0px';
+            element.style.minWidth = '0px';
+            element.style.opacity = '0';
+            element.style.pointerEvents = 'none';
+            element.style.overflow = 'hidden';
             console.log(`[PanelManager] ✅ ${panelName} hidden - More space for editor!`);
+            window.showNotification?.(`✅ ${panelName}`, 'Hidden - More space!', 'info', 1500);
         }
         
         // Special handling for terminal (needs to update main-container)

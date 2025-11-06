@@ -121,6 +121,10 @@ contextBridge.exposeInMainWorld('electron', {
     getStats: () => ipcRenderer.invoke('native-ollama-node:stats')
   },
   
+  // Error logging to file
+  getLogFilePath: () => ipcRenderer.invoke('get-log-file-path'),
+  writeLogFile: (filePath, content) => ipcRenderer.invoke('write-log-file', filePath, content),
+  
   // Menu events (receive only)
   onMenuEvent: (callback) => {
     ipcRenderer.on('menu-new-file', () => callback('new-file'));

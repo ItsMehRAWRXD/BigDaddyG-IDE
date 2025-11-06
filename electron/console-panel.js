@@ -41,9 +41,9 @@ class ConsolePanel {
             backdrop-filter: blur(20px);
             border-top: 2px solid var(--cyan);
             z-index: 99999;
-            display: flex;
+            display: none;
             flex-direction: column;
-            transition: height 0.3s;
+            transition: height 0.3s, transform 0.3s ease;
             box-shadow: 0 -5px 30px rgba(0,212,255,0.3);
         `;
         
@@ -58,15 +58,6 @@ class ConsolePanel {
                 border-bottom: 1px solid var(--cyan);
             ">
                 <div style="display: flex; align-items: center; gap: 15px;">
-                    <button id="console-toggle" onclick="toggleConsolePanel()" style="
-                        background: none;
-                        border: none;
-                        color: var(--cyan);
-                        font-size: 18px;
-                        cursor: pointer;
-                        padding: 5px;
-                    ">⛶</button>
-                    
                     <div style="color: var(--cyan); font-weight: bold; font-size: 13px;">
                         🖥️ Console & Output
                     </div>
@@ -139,6 +130,18 @@ class ConsolePanel {
                         font-size: 11px;
                         font-weight: bold;
                     ">🗑️ Clear</button>
+                    
+                    <!-- Close Button -->
+                    <button onclick="window.menuBar?.toggleConsolePanel()" style="
+                        padding: 6px 12px;
+                        background: rgba(255,71,87,0.2);
+                        border: 1px solid var(--red);
+                        border-radius: 5px;
+                        color: var(--red);
+                        cursor: pointer;
+                        font-size: 11px;
+                        font-weight: bold;
+                    ">× Close</button>
                 </div>
             </div>
             

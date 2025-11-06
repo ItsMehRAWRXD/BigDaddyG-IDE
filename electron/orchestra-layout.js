@@ -88,21 +88,43 @@ class OrchestraLayout {
         sidebar.id = 'conversation-history-sidebar';
         sidebar.style.cssText = `
             position: fixed;
-            top: 40px;
+            top: 65px;
             left: 0;
             width: 280px;
-            height: calc(100vh - 40px);
+            height: calc(100vh - 65px);
             background: var(--cursor-bg-secondary);
             border-right: 1px solid var(--cursor-border);
             z-index: 999;
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            transition: transform 0.3s ease, opacity 0.3s ease;
         `;
         
         sidebar.innerHTML = `
             <!-- Header -->
-            <div style="padding: 16px; border-bottom: 1px solid var(--cursor-border);">
+            <div style="padding: 16px; border-bottom: 1px solid var(--cursor-border); position: relative;">
+                <button onclick="window.menuBar?.toggleConversationHistory()" style="
+                    position: absolute;
+                    top: 8px;
+                    right: 8px;
+                    background: none;
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    color: #ccc;
+                    width: 24px;
+                    height: 24px;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 14px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: all 0.2s;
+                    z-index: 10;
+                " onmouseover="this.style.background='rgba(255,71,87,0.2)'; this.style.borderColor='var(--red)'; this.style.color='var(--red)'" onmouseout="this.style.background='none'; this.style.borderColor='rgba(255,255,255,0.2)'; this.style.color='#ccc'">
+                    ×
+                </button>
+                
                 <button onclick="orchestraLayout.newSession()" style="
                     width: 100%;
                     background: linear-gradient(135deg, var(--cursor-jade-dark), var(--cursor-accent));

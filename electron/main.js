@@ -888,6 +888,35 @@ ipcMain.handle('get-app-path', () => {
 });
 
 // ============================================================================
+// ERROR LOGGING TO FILE
+// ============================================================================
+
+ipcMain.handle('get-log-file-path', async () => {
+  const logsDir = path.join(app.getPath('userData'), 'logs');
+  
+  // Create logs directory if it doesn't exist
+  try {
+    await fs.promises.mkdir(logsDir, { recursive: true });
+  } catch (err) {
+    console.error('[Main] Failed to create logs directory:', err);
+  }
+  
+  const timestamp = new Date().toISOString().replace(/:/g, '-').split('.')[0];
+  return path.join(logsDir, `bigdaddyg-session-${timestamp}.log`);
+});
+
+ipcMain.handle('write-log-file', async (event, filePath, content) => {
+  try {
+    // Append to log file
+    await fs.promises.appendFile(filePath, content, 'utf8');
+    return { success: true };
+  } catch (error) {
+    console.error('[Main] Failed to write log file:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// ============================================================================
 // AGENTIC FILE SYSTEM OPERATIONS (UNLIMITED)
 // ============================================================================
 

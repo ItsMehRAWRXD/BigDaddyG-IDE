@@ -7,17 +7,58 @@
 
 console.log('[VisualTest] 🎬 Loading visual test runner...');
 
+// Add bounce and pulse animations CSS
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+    }
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+`;
+document.head.appendChild(style);
+
 (function() {
 'use strict';
 
 class VisualTestRunner {
     constructor() {
         this.overlay = null;
+        this.overlayState = null; // Checkpoint for overlay state
         this.currentStep = 0;
         this.totalSteps = 8;
         this.results = [];
         
         console.log('[VisualTest] ✅ Visual test runner loaded');
+    }
+    
+    // Save current overlay state
+    saveOverlayState() {
+        if (this.overlay) {
+            this.overlayState = {
+                left: this.overlay.style.left,
+                top: this.overlay.style.top,
+                transform: this.overlay.style.transform,
+                opacity: this.overlay.style.opacity,
+                width: this.overlay.style.width,
+                backgroundColor: this.overlay.style.backgroundColor
+            };
+        }
+    }
+    
+    // Restore overlay to saved state
+    restoreOverlayState() {
+        if (this.overlay && this.overlayState) {
+            this.overlay.style.left = this.overlayState.left;
+            this.overlay.style.top = this.overlayState.top;
+            this.overlay.style.transform = this.overlayState.transform;
+            this.overlay.style.opacity = this.overlayState.opacity;
+            this.overlay.style.width = this.overlayState.width;
+            this.overlay.style.backgroundColor = this.overlayState.backgroundColor;
+        }
     }
     
     async start() {
@@ -26,8 +67,53 @@ class VisualTestRunner {
         // Create visual overlay
         this.createOverlay();
         
-        // Run tests with visual feedback
-        await this.wait(1000);
+        // Check if Monaco is ready, if not - BOOTSTRAP IT by creating a tab!
+        this.updateProgress(0, '🚀 Starting Monaco Editor', 'Checking if editor needs initialization...');
+        
+        if (!window.editor || !window.monaco) {
+            console.log('[VisualTest] 💡 Monaco not ready - creating a tab to bootstrap it!');
+            this.updateProgress(0, '🎬 Bootstrapping Monaco', 'Creating initial tab to trigger Monaco initialization...');
+            
+            // Create a tab to trigger Monaco initialization
+            if (typeof createNewTab === 'function') {
+                createNewTab('welcome.js', 'javascript', '// BigDaddyG IDE - Visual Test\nconsole.log("Monaco bootstrapped!");\n');
+                await this.wait(1000);
+            }
+            
+            // Now wait for Monaco to initialize (should be quick)
+            let attempts = 0;
+            while (!window.editor || !window.monaco) {
+                await this.wait(300);
+                attempts++;
+                if (attempts > 10) {
+                    this.updateProgress(0, '❌ Monaco Failed', 'Editor failed to initialize after creating tab');
+                    this.results.push({ step: 'Monaco Bootstrap', status: 'FAIL', icon: '❌' });
+                    this.flashScreen('#ff4757');
+                    await this.wait(2000);
+                    this.showResults();
+                    return;
+                }
+            }
+        }
+        
+        // Make sure Monaco container is visible
+        const container = document.getElementById('monaco-container');
+        if (container) {
+            if (container.offsetHeight === 0 || container.style.display === 'none') {
+                console.log('[VisualTest] 💡 Making Monaco container visible...');
+                container.style.display = 'flex';
+                document.querySelectorAll('.tab-content').forEach(panel => {
+                    if (panel !== container) {
+                        panel.style.display = 'none';
+                    }
+                });
+                await this.wait(300);
+            }
+        }
+        
+        console.log('[VisualTest] ✅ Monaco is ready and visible!');
+        this.flashScreen('#00ff88');
+        await this.wait(500);
         
         await this.step1_CheckMonaco();
         await this.step2_CreateFile();
@@ -204,13 +290,29 @@ visualTestDemo();`;
         
         try {
             if (window.panelManager) {
-                // Hide explorer
+                // Highlight and hide explorer
+                this.updateProgress(4, '📁 Hiding File Explorer', 'Watch the left sidebar disappear...');
+                this.highlightElement('#sidebar', '#ff6b35');
                 window.panelManager.togglePanel('explorer');
-                await this.wait(800);
+                await this.wait(1500);
                 
                 // Show it back
+                this.updateProgress(4, '📁 Showing File Explorer', 'Watch the left sidebar appear...');
+                this.highlightElement('#sidebar', '#00ff88');
                 window.panelManager.togglePanel('explorer');
-                await this.wait(800);
+                await this.wait(1500);
+                
+                // Highlight and hide chat
+                this.updateProgress(4, '💬 Hiding AI Chat', 'Watch the right sidebar disappear...');
+                this.highlightElement('#right-sidebar', '#ff6b35');
+                window.panelManager.togglePanel('chat');
+                await this.wait(1500);
+                
+                // Show it back
+                this.updateProgress(4, '💬 Showing AI Chat', 'Watch the right sidebar appear...');
+                this.highlightElement('#right-sidebar', '#00ff88');
+                window.panelManager.togglePanel('chat');
+                await this.wait(1500);
                 
                 this.results.push({ step: 'Panel Toggles', status: 'PASS', icon: '✅' });
                 this.flashScreen('#00ff88');
@@ -223,32 +325,232 @@ visualTestDemo();`;
         }
     }
     
+    highlightElement(selector, color = 'var(--cyan)') {
+        const element = document.querySelector(selector);
+        if (!element) return;
+        
+        // Add temporary highlight border
+        const originalBorder = element.style.border;
+        const originalBoxShadow = element.style.boxShadow;
+        element.style.border = `4px solid ${color}`;
+        element.style.boxShadow = `0 0 30px ${color}, 0 0 60px ${color}`;
+        element.style.transition = 'all 0.3s ease';
+        
+        setTimeout(() => {
+            element.style.border = originalBorder;
+            element.style.boxShadow = originalBoxShadow;
+        }, 2500);
+    }
+    
     async step5_ChatInput() {
-        this.updateProgress(5, '💬 Testing Chat', 'Typing message in chat input...');
+        console.log('[VisualTest] 💬 Starting chat input test...');
+        this.updateProgress(5, '💬 Testing Chat Input', 'Watch the chat input box on the right...');
         await this.wait(500);
         
         try {
             const chatInput = document.getElementById('ai-input');
-            if (chatInput) {
-                const message = "This is an automated test! The visual test runner is working! 🎉";
-                chatInput.value = '';
-                chatInput.focus();
-                
-                // Type character by character
-                for (let i = 0; i < message.length; i++) {
-                    chatInput.value = message.substring(0, i + 1);
-                    await this.wait(30);
-                }
-                
-                this.results.push({ step: 'Chat Input', status: 'PASS', icon: '✅' });
-                this.flashScreen('#00ff88');
-                await this.wait(1000);
-            } else {
-                throw new Error('Chat input not found');
+            console.log('[VisualTest] Chat input element found:', !!chatInput);
+            
+            if (!chatInput) {
+                throw new Error('Chat input element #ai-input not found in DOM');
             }
+            
+            // Make sure right sidebar is FULLY visible and GLOWING GREEN
+            const rightSidebar = document.getElementById('right-sidebar');
+            if (rightSidebar) {
+                console.log('[VisualTest] Making right sidebar GLOW GREEN...');
+                rightSidebar.classList.remove('collapsed');
+                rightSidebar.style.width = '400px';  // Force width
+                rightSidebar.style.minWidth = '400px';
+                rightSidebar.style.opacity = '1';
+                rightSidebar.style.pointerEvents = 'auto';
+                rightSidebar.style.display = 'flex';
+                rightSidebar.style.border = '10px solid #00ff00';  // HUGE GREEN BORDER
+                rightSidebar.style.boxShadow = '0 0 80px rgba(0, 255, 0, 1)';  // MASSIVE GLOW
+                rightSidebar.style.zIndex = '99999';
+                rightSidebar.style.position = 'relative';
+            }
+            
+            await this.wait(300);
+            
+            // Save current overlay state so we can restore it later
+            this.saveOverlayState();
+            
+            // Make overlay semi-transparent and smaller so chat input is visible
+            console.log('[VisualTest] Making overlay transparent and moving it...');
+            if (this.overlay) {
+                this.overlay.style.left = '15%';
+                this.overlay.style.top = '20%';
+                this.overlay.style.transform = 'translate(0, 0)';
+                this.overlay.style.opacity = '0.7';  // Semi-transparent
+                this.overlay.style.width = '300px';   // Smaller
+                this.overlay.style.backgroundColor = 'rgba(10, 10, 30, 0.85)';
+            }
+            
+            // Scroll chat input into view - FORCE IT!
+            console.log('[VisualTest] Scrolling chat input into view...');
+            chatInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Also scroll the right sidebar to bottom (reuse variable from above)
+            if (rightSidebar) {
+                rightSidebar.scrollTop = rightSidebar.scrollHeight;
+            }
+            
+            await this.wait(800);
+            
+            // Highlight the chat input container FIRST with HUGE glow
+            console.log('[VisualTest] Highlighting chat input...');
+            const inputContainer = document.getElementById('ai-input-container');
+            if (inputContainer) {
+                console.log('[VisualTest] Found chat input container! Making it GLOW!');
+                // Add MASSIVE highlight box
+                inputContainer.style.border = '8px solid #00ff00 !important';
+                inputContainer.style.boxShadow = '0 0 60px rgba(0, 255, 0, 1), inset 0 0 30px rgba(0, 255, 0, 0.3) !important';
+                inputContainer.style.backgroundColor = 'rgba(0, 255, 0, 0.1) !important';
+                inputContainer.style.animation = 'pulse 1s infinite !important';
+                inputContainer.style.zIndex = '100000 !important';
+                inputContainer.style.position = 'relative !important';
+                
+                // Also make the textarea itself glow
+                chatInput.style.border = '4px solid #00ff00 !important';
+                chatInput.style.backgroundColor = 'rgba(0, 255, 0, 0.2) !important';
+                chatInput.style.fontSize = '24px !important';  // BIGGER text so you can see it!
+            } else {
+                console.error('[VisualTest] ❌ Chat input container NOT FOUND!');
+            }
+            
+            // Create GIANT ARROW pointing RIGHT at the chat input
+            const arrow = document.createElement('div');
+            arrow.id = 'visual-test-arrow';
+            arrow.style.cssText = `
+                position: fixed;
+                right: 450px;
+                bottom: 100px;
+                font-size: 80px;
+                color: #00ff00;
+                z-index: 999999;
+                text-shadow: 0 0 40px #00ff00;
+                pointer-events: none;
+                background: rgba(0, 0, 0, 0.95);
+                padding: 30px;
+                border-radius: 16px;
+                border: 6px solid #00ff00;
+                box-shadow: 0 0 60px rgba(0, 255, 0, 1);
+            `;
+            arrow.innerHTML = '➡️ TYPING HERE IN GREEN SIDEBAR! ➡️';
+            document.body.appendChild(arrow);
+            
+            // Also create a SECOND indicator pointing directly at the textarea
+            const pointer = document.createElement('div');
+            pointer.id = 'demo-pointer';
+            pointer.style.cssText = `
+                position: fixed;
+                right: 410px;
+                bottom: 80px;
+                width: 0;
+                height: 0;
+                border-top: 40px solid transparent;
+                border-bottom: 40px solid transparent;
+                border-left: 60px solid #00ff00;
+                z-index: 999998;
+                filter: drop-shadow(0 0 20px #00ff00);
+                pointer-events: none;
+            `;
+            document.body.appendChild(pointer);
+            
+            const message = "This is an automated test! The visual test runner is working! 🎉";
+            chatInput.value = '';
+            chatInput.focus();
+            
+            console.log('[VisualTest] Typing message character by character...');
+            this.updateProgress(5, '⌨️ Typing in Chat', 'Watch the text appear...');
+            
+            // Type character by character
+            for (let i = 0; i < message.length; i++) {
+                chatInput.value = message.substring(0, i + 1);
+                await this.wait(30);
+            }
+            
+            console.log('[VisualTest] ✅ Chat input test PASSED');
+            this.results.push({ step: 'Chat Input', status: 'PASS', icon: '✅' });
+            this.flashScreen('#00ff88');
+            
+            // Remove the arrow and pointer (reuse variables from above)
+            if (arrow) arrow.remove();
+            const pointer = document.getElementById('demo-pointer');
+            if (pointer) pointer.remove();
+            
+            // Restore chat input styles
+            chatInput.style.border = '';
+            chatInput.style.backgroundColor = '';
+            chatInput.style.fontSize = '';
+            
+            // Restore chat input container styles
+            if (inputContainer) {
+                inputContainer.style.border = '';
+                inputContainer.style.boxShadow = '';
+                inputContainer.style.backgroundColor = '';
+                inputContainer.style.animation = '';
+                inputContainer.style.zIndex = '';
+                inputContainer.style.position = '';
+            }
+            
+            // Restore right sidebar to normal
+            if (rightSidebar) {
+                rightSidebar.style.border = '';
+                rightSidebar.style.boxShadow = '';
+                rightSidebar.style.zIndex = '';
+                rightSidebar.style.position = '';
+            }
+            
+            // Restore overlay to saved state
+            this.restoreOverlayState();
+            
+            await this.wait(1000);
         } catch (error) {
-            this.results.push({ step: 'Chat Input', status: 'FAIL', icon: '❌' });
+            console.error('[VisualTest] ❌ Chat input test FAILED:', error);
+            this.updateProgress(5, '❌ Chat Input Failed', error.message);
+            this.results.push({ step: 'Chat Input', status: 'FAIL', icon: '❌', error: error.message });
             this.flashScreen('#ff4757');
+            
+            // Remove the arrow and pointer if they exist
+            const arrowEl = document.getElementById('visual-test-arrow');
+            if (arrowEl) arrowEl.remove();
+            const pointerEl = document.getElementById('demo-pointer');
+            if (pointerEl) pointerEl.remove();
+            
+            // Restore chat input styles
+            const chatInput = document.getElementById('ai-input');
+            if (chatInput) {
+                chatInput.style.border = '';
+                chatInput.style.backgroundColor = '';
+                chatInput.style.fontSize = '';
+            }
+            
+            // Restore chat input container styles if they exist
+            const inputContainer = document.getElementById('ai-input-container');
+            if (inputContainer) {
+                inputContainer.style.border = '';
+                inputContainer.style.boxShadow = '';
+                inputContainer.style.backgroundColor = '';
+                inputContainer.style.animation = '';
+                inputContainer.style.zIndex = '';
+                inputContainer.style.position = '';
+            }
+            
+            // Restore right sidebar to normal
+            const rightSidebar = document.getElementById('right-sidebar');
+            if (rightSidebar) {
+                rightSidebar.style.border = '';
+                rightSidebar.style.boxShadow = '';
+                rightSidebar.style.zIndex = '';
+                rightSidebar.style.position = '';
+            }
+            
+            // Restore overlay to saved state (even on failure)
+            this.restoreOverlayState();
+            
+            await this.wait(2000);
         }
     }
     
@@ -393,15 +695,15 @@ visualTestDemo();`;
 window.visualTest = new VisualTestRunner();
 
 console.log('[VisualTest] 💡 Usage: visualTest.start()');
-console.log('[VisualTest] 🚀 AUTO-STARTING in 5 seconds...');
+console.log('[VisualTest] 🚀 AUTO-STARTING in 8 seconds (will bootstrap Monaco if needed)...');
 
-// Auto-start
+// Auto-start (reduced time since we bootstrap Monaco ourselves now)
 setTimeout(() => {
     console.log('[VisualTest] 🎬 Starting visual test NOW!');
     window.visualTest.start().catch(err => {
         console.error('[VisualTest] ❌ Test failed:', err);
     });
-}, 5000);
+}, 8000); // Wait 8 seconds, we'll bootstrap Monaco if needed
 
 })();
 

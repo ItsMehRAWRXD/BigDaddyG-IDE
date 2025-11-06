@@ -97,6 +97,47 @@
             border-color: var(--red);
         }
         
+        /* Menu Bar */
+        #menu-bar {
+            height: 30px;
+            background: var(--void);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            font-size: 13px;
+            -webkit-app-region: no-drag;
+            z-index: 1000;
+        }
+        
+        .menu-item {
+            padding: 5px 12px;
+            cursor: pointer;
+            position: relative;
+            color: #ccc;
+            transition: all 0.2s;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        .menu-item:hover {
+            background: rgba(0, 212, 255, 0.1);
+            color: var(--cyan);
+        }
+        
+        /* Panel hiding animations */
+        #conversation-history-sidebar.hidden {
+            transform: translateX(-100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        #console-panel.hidden {
+            transform: translateY(100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+        
         /* Main Container */
         #main-container {
             display: flex;
@@ -303,11 +344,13 @@
         }
         
         #right-sidebar.collapsed {
-            width: 0;
-            min-width: 0;
-            border: none;
-            opacity: 0;
-            overflow: hidden;
+            width: 0 !important;
+            min-width: 0 !important;
+            border: none !important;
+            opacity: 0 !important;
+            overflow: hidden !important;
+            pointer-events: none !important;
+            transition: all 0.3s ease !important;
         }
         
         #ai-chat-header {
@@ -1042,6 +1085,16 @@
     <script src="parallel-execution-viz.js"></script>
     
     <script src="tab-system.js"></script>
+    
+    <!-- UNIVERSAL CHAT HANDLER - Make ALL chat inputs work! -->
+    <script src="universal-chat-handler.js"></script>
+    
+    <!-- AGENTIC AUTO-FIXER - Self-healing IDE that autonomously fixes issues! -->
+    <script src="agentic-auto-fixer.js"></script>
+    
+    <!-- AGENTIC CODER - AI Agent that writes code autonomously! -->
+    <script src="agentic-coder.js"></script>
+    
     <script src="error-tracker.js"></script>
     <script src="voice-coding.js"></script>
     
@@ -1266,14 +1319,26 @@
         console.log('[BigDaddyG] ✨ Everything ready! Start coding!');
     </script>
     
+    <!-- ERROR LOG WRITER - Comprehensive error logging to file -->
+    <script src="error-log-writer.js"></script>
+    
     <!-- WEB BROWSER - Integrated browser -->
     <script src="web-browser.js"></script>
     
     <!-- PANEL MANAGER - Universal panel control -->
     <script src="panel-manager.js"></script>
     
+    <!-- MENU BAR - Professional IDE menu system -->
+    <script src="menu-bar.js"></script>
+    
     <!-- VISUAL TEST RUNNER - SEE the tests! -->
     <script src="visual-test-runner.js"></script>
+    
+    <!-- FULL AGENTIC DEMO - Shows chat, AI response, and agentic coding! -->
+    <script src="full-agentic-demo.js"></script>
+    
+    <!-- TAB SYSTEM DEBUGGER - Find why tabs aren't working -->
+    <script src="tab-debug.js"></script>
     
     <!-- IMMEDIATE DIAGNOSTICS - Check state RIGHT NOW -->
     <script src="immediate-diagnostics.js"></script>

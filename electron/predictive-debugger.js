@@ -254,7 +254,11 @@ ${code}
             return [];
             
         } catch (error) {
-            console.error('[PredictiveDebugger] ❌ AI analysis error:', error);
+            // Silently fail - predictive analysis is optional
+            // Only log if there's a real error message
+            if (error && error.message) {
+                console.warn('[PredictiveDebugger] ⚠️ AI analysis unavailable:', error.message);
+            }
             return [];
         }
     }

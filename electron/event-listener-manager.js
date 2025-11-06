@@ -83,7 +83,9 @@
         stats.byElement.set(element, elementCount + 1);
         
         // Warn if too many listeners on one element
-        if (elementCount + 1 > 50) {
+        // Higher threshold for document (IDE has many global shortcuts/handlers)
+        const threshold = element === document ? 200 : 50;
+        if (elementCount + 1 > threshold) {
             console.warn(
                 `⚠️ Event Listener Warning: Element "${listenerInfo.elementId}" has ${elementCount + 1} listeners! Possible memory leak.`,
                 element
