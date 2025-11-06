@@ -1343,6 +1343,138 @@ ipcMain.handle('orchestra:status', async () => {
 });
 
 // ============================================================================
+// FILE SYSTEM OPERATIONS
+// ============================================================================
+
+// Launch external program
+ipcMain.handle('launchProgram', async (event, programPath) => {
+  try {
+    console.log('[FileSystem] Launching program:', programPath);
+    
+    const { exec } = require('child_process');
+    
+    return new Promise((resolve) => {
+      exec(`"${programPath}"`, (error, stdout, stderr) => {
+        if (error) {
+          console.error('[FileSystem] Launch error:', error);
+          resolve({ success: false, error: error.message });
+        } else {
+          resolve({ success: true });
+        }
+      });
+    });
+  } catch (error) {
+    console.error('[FileSystem] Launch exception:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Open directory in system file explorer
+ipcMain.handle('openInExplorer', async (event, dirPath) => {
+  try {
+    console.log('[FileSystem] Opening in explorer:', dirPath);
+    
+    const { shell } = require('electron');
+    await shell.openPath(dirPath);
+    
+    return { success: true };
+  } catch (error) {
+    console.error('[FileSystem] Open explorer error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Create directory
+ipcMain.handle('createDirectory', async (event, dirPath) => {
+  try {
+    console.log('[FileSystem] Creating directory:', dirPath);
+    
+    fs.mkdirSync(dirPath, { recursive: true });
+    
+    return { success: true };
+  } catch (error) {
+    console.error('[FileSystem] Create directory error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Delete file or directory
+ipcMain.handle('deleteItem', async (event, itemPath, isDirectory = false) => {
+  try {
+    console.log('[FileSystem] Deleting:', itemPath, '(isDirectory:', isDirectory, ')');
+    
+    if (isDirectory) {
+      fs.rmSync(itemPath, { recursive: true, force: true });
+    } else {
+      fs.unlinkSync(itemPath);
+    }
+    
+    return { success: true };
+  } catch (error) {
+    console.error('[FileSystem] Delete error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Copy file or directory
+ipcMain.handle('copyItem', async (event, sourcePath, destPath) => {
+  try {
+    console.log('[FileSystem] Copying:', sourcePath, 'to', destPath);
+    
+    const stats = fs.statSync(sourcePath);
+    
+    if (stats.isDirectory()) {
+      // Copy directory recursively
+      fs.cpSync(sourcePath, destPath, { recursive: true });
+    } else {
+      // Copy file
+      fs.copyFileSync(sourcePath, destPath);
+    }
+    
+    return { success: true };
+  } catch (error) {
+    console.error('[FileSystem] Copy error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Move/Rename file or directory
+ipcMain.handle('moveItem', async (event, sourcePath, destPath) => {
+  try {
+    console.log('[FileSystem] Moving:', sourcePath, 'to', destPath);
+    
+    fs.renameSync(sourcePath, destPath);
+    
+    return { success: true };
+  } catch (error) {
+    console.error('[FileSystem] Move error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Get file/directory stats
+ipcMain.handle('getStats', async (event, itemPath) => {
+  try {
+    const stats = fs.statSync(itemPath);
+    
+    return {
+      success: true,
+      stats: {
+        isFile: stats.isFile(),
+        isDirectory: stats.isDirectory(),
+        size: stats.size,
+        created: stats.birthtime,
+        modified: stats.mtime,
+        accessed: stats.atime
+      }
+    };
+  } catch (error) {
+    console.error('[FileSystem] Stats error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// ============================================================================
 // TERMINAL EXECUTION
 // ============================================================================
 
@@ -1411,6 +1543,97 @@ ipcMain.handle('execute-command', async (event, { command, shell = 'powershell',
       });
     });
   });
+});
+
+// ============================================================================
+// PROGRAM LAUNCHING & SYSTEM INTEGRATION
+// ============================================================================
+
+// Launch external program
+ipcMain.handle('launchProgram', async (event, programPath) => {
+  try {
+    console.log('[System] Launching program:', programPath);
+    
+    const { exec } = require('child_process');
+    const { shell } = require('electron');
+    
+    // Use shell.openPath for cross-platform compatibility
+    if (fs.existsSync(programPath)) {
+      const result = await shell.openPath(programPath);
+      
+      if (result === '') {
+        console.log('[System] ✅ Program launched successfully');
+        return { success: true };
+      } else {
+        console.error('[System] ❌ Failed to launch:', result);
+        return { success: false, error: result };
+      }
+    } else {
+      return { success: false, error: 'Program not found' };
+    }
+  } catch (error) {
+    console.error('[System] Launch error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Open in system explorer/finder
+ipcMain.handle('openInExplorer', async (event, itemPath) => {
+  try {
+    console.log('[System] Opening in explorer:', itemPath);
+    const { shell } = require('electron');
+    
+    if (fs.existsSync(itemPath)) {
+      // Show item in folder (works on Windows, macOS, Linux)
+      shell.showItemInFolder(itemPath);
+      return { success: true };
+    } else {
+      return { success: false, error: 'Path not found' };
+    }
+  } catch (error) {
+    console.error('[System] Open in explorer error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Open URL in default browser
+ipcMain.handle('openUrl', async (event, url) => {
+  try {
+    console.log('[System] Opening URL:', url);
+    const { shell } = require('electron');
+    
+    await shell.openExternal(url);
+    return { success: true };
+  } catch (error) {
+    console.error('[System] Open URL error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Get system information
+ipcMain.handle('getSystemInfo', async () => {
+  const os = require('os');
+  
+  try {
+    return {
+      success: true,
+      info: {
+        platform: process.platform,
+        arch: process.arch,
+        release: os.release(),
+        cpus: os.cpus().length,
+        totalMemory: os.totalmem(),
+        freeMemory: os.freemem(),
+        hostname: os.hostname(),
+        username: os.userInfo().username,
+        homeDir: os.homedir(),
+        tempDir: os.tmpdir()
+      }
+    };
+  } catch (error) {
+    console.error('[System] Get system info error:', error);
+    return { success: false, error: error.message };
+  }
 });
 
 // Window controls

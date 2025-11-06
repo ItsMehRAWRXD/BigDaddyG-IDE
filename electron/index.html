@@ -929,8 +929,20 @@
     </script>
     
     <!-- Core Scripts -->
+    <!-- ERROR CLEANUP - Must load first to intercept console -->
+    <script src="error-cleanup.js"></script>
+    
     <!-- GLOBAL FUNCTIONS - Define all onclick handlers FIRST -->
     <script src="global-functions.js"></script>
+    
+    <!-- MEMORY BRIDGE - OpenMemory Integration for Persistent Context -->
+    <script src="memory-bridge.js"></script>
+    
+    <!-- MEMORY DASHBOARD - Visual interface for memory management -->
+    <script src="memory-dashboard.js"></script>
+    
+    <!-- UI ENHANCER - Professional animations and polish -->
+    <script src="ui-enhancer.js"></script>
     
     <script src="renderer.js"></script>
     
@@ -965,6 +977,13 @@
     <script src="hotkey-manager.js"></script>
     
     <script src="file-explorer.js"></script>
+    
+    <!-- ENHANCED FILE EXPLORER - Professional file browser with open editors -->
+    <script src="enhanced-file-explorer.js"></script>
+    
+    <!-- EXPLORER INTEGRATION - Connects explorer to Monaco and tabs -->
+    <script src="explorer-integration.js"></script>
+    
     <script src="chat-history.js"></script>
     <script src="ai-response-handler.js"></script>
     <script src="floating-chat.js"></script>
@@ -1189,6 +1208,9 @@
         
         console.log('[BigDaddyG] ✨ Everything ready! Start coding!');
     </script>
+    
+    <!-- IDE INITIALIZER - Final validation and system check (MUST BE LAST) -->
+    <script src="ide-initializer.js"></script>
 </body>
 </html>
 

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BigDaddyG IDE - Functionality Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1e1e1e;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+        }
+        .test-section {
+            background: #2d2d30;
+            border: 1px solid #3e3e42;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .test-button {
+            background: linear-gradient(135deg, #77ddbe, #4ecdc4);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 8px;
+            transition: all 0.2s;
+        }
+        .test-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(119, 221, 190, 0.4);
+        }
+        .status {
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin: 8px 0;
+            font-size: 12px;
+        }
+        .status.success { background: rgba(76, 175, 80, 0.2); border-left: 4px solid #4caf50; }
+        .status.error { background: rgba(244, 67, 54, 0.2); border-left: 4px solid #f44336; }
+        .status.info { background: rgba(33, 150, 243, 0.2); border-left: 4px solid #2196f3; }
+        .context-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .context-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #77ddbe, #4ecdc4);
+            width: 0%;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <h1>🤖 BigDaddyG IDE - Functionality Test</h1>
+    <p>Test the core functionality: CTRL+L chat, Ollama integration, and 1M context window.</p>
+
+    <!-- CTRL+L Chat Test -->
+    <div class="test-section">
+        <h2>📱 CTRL+L Chat Box Test</h2>
+        <p>Test the floating chat functionality</p>
+        <button class="test-button" onclick="testCtrlL()">Test CTRL+L Chat</button>
+        <button class="test-button" onclick="simulateCtrlL()">Simulate CTRL+L Keypress</button>
+        <div id="ctrl-l-status"></div>
+    </div>
+
+    <!-- Ollama Integration Test -->
+    <div class="test-section">
+        <h2>🦙 Ollama Integration Test</h2>
+        <p>Test local Ollama model connectivity</p>
+        <button class="test-button" onclick="testOllama()">Check Ollama Status</button>
+        <button class="test-button" onclick="testOllamaModels()">List Ollama Models</button>
+        <button class="test-button" onclick="testOllamaChat()">Test Ollama Chat</button>
+        <div id="ollama-status"></div>
+    </div>
+
+    <!-- Context Window Test -->
+    <div class="test-section">
+        <h2>🧠 1M Context Window Test</h2>
+        <p>Test the 1 million token context management</p>
+        <button class="test-button" onclick="testContext()">Check Context Status</button>
+        <button class="test-button" onclick="addTestContext()">Add Test Context</button>
+        <button class="test-button" onclick="clearContext()">Clear Context</button>
+        <div id="context-status"></div>
+        <div class="context-bar">
+            <div id="context-fill" class="context-fill"></div>
+        </div>
+        <div id="context-details"></div>
+    </div>
+
+    <!-- Orchestra Server Test -->
+    <div class="test-section">
+        <h2>🎼 Orchestra Server Test</h2>
+        <p>Test the BigDaddyG Orchestra server connectivity</p>
+        <button class="test-button" onclick="testOrchestra()">Check Orchestra Health</button>
+        <button class="test-button" onclick="testBigDaddyG()">Test BigDaddyG Model</button>
+        <div id="orchestra-status"></div>
+    </div>
+
+    <script src="electron/global-functions.js"></script>
+    <script src="electron/hotkey-manager.js"></script>
+    <script src="electron/floating-chat.js"></script>
+
+    <script>
+        // Test Functions
+        function updateStatus(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.innerHTML = `<div class="status ${type}">${message}</div>`;
+            }
+        }
+
+        // CTRL+L Chat Tests
+        function testCtrlL() {
+            updateStatus('ctrl-l-status', '🔍 Testing CTRL+L functionality...', 'info');
+            
+            if (window.floatingChat) {
+                try {
+                    window.floatingChat.toggle();
+                    updateStatus('ctrl-l-status', '✅ CTRL+L chat is working! FloatingChat found and toggled.', 'success');
+                } catch (error) {
+                    updateStatus('ctrl-l-status', `❌ Error toggling chat: ${error.message}`, 'error');
+                }
+            } else if (window.handleCtrlL) {
+                try {
+                    const result = window.handleCtrlL();
+                    updateStatus('ctrl-l-status', result ? '✅ CTRL+L handler working!' : '⚠️ CTRL+L handler found but returned false', result ? 'success' : 'error');
+                } catch (error) {
+                    updateStatus('ctrl-l-status', `❌ Error in CTRL+L handler: ${error.message}`, 'error');
+                }
+            } else {
+                updateStatus('ctrl-l-status', '❌ FloatingChat not found. Check if floating-chat.js is loaded.', 'error');
+            }
+        }
+
+        function simulateCtrlL() {
+            updateStatus('ctrl-l-status', '⌨️ Simulating CTRL+L keypress...', 'info');
+            
+            const event = new KeyboardEvent('keydown', {
+                key: 'l',
+                code: 'KeyL',
+                ctrlKey: true,
+                bubbles: true,
+                cancelable: true
+            });
+            
+            document.dispatchEvent(event);
+            
+            setTimeout(() => {
+                updateStatus('ctrl-l-status', '✅ CTRL+L keypress simulated. Check if chat opened.', 'success');
+            }, 100);
+        }
+
+        // Ollama Tests
+        async function testOllama() {
+            updateStatus('ollama-status', '🔍 Checking Ollama connectivity...', 'info');
+            
+            if (window.ollamaManager) {
+                try {
+                    const isAvailable = await window.ollamaManager.checkOllama();
+                    if (isAvailable) {
+                        updateStatus('ollama-status', '✅ Ollama is running and accessible at localhost:11434', 'success');
+                    } else {
+                        updateStatus('ollama-status', '❌ Ollama is not running or not accessible. Start Ollama service.', 'error');
+                    }
+                } catch (error) {
+                    updateStatus('ollama-status', `❌ Error checking Ollama: ${error.message}`, 'error');
+                }
+            } else {
+                updateStatus('ollama-status', '❌ Ollama manager not found. Check if global-functions.js is loaded.', 'error');
+            }
+        }
+
+        async function testOllamaModels() {
+            updateStatus('ollama-status', '📋 Fetching Ollama models...', 'info');
+            
+            if (window.ollamaManager) {
+                try {
+                    const models = await window.ollamaManager.getModels();
+                    const ollamaCount = models.ollama ? models.ollama.length : 0;
+                    const discoveredCount = models.discovered ? models.discovered.length : 0;
+                    
+                    updateStatus('ollama-status', 
+                        `✅ Found ${ollamaCount} Ollama models and ${discoveredCount} discovered models. Total: ${models.total || 0}`, 
+                        'success'
+                    );
+                } catch (error) {
+                    updateStatus('ollama-status', `❌ Error fetching models: ${error.message}`, 'error');
+                }
+            } else {
+                updateStatus('ollama-status', '❌ Ollama manager not available', 'error');
+            }
+        }
+
+        async function testOllamaChat() {
+            updateStatus('ollama-status', '💬 Testing Ollama chat...', 'info');
+            
+            if (window.ollamaManager) {
+                try {
+                    const response = await window.ollamaManager.sendMessage('Hello, test message', 'auto');
+                    if (response && response.success) {
+                        updateStatus('ollama-status', `✅ Chat working! Response: ${response.response.substring(0, 100)}...`, 'success');
+                    } else {
+                        updateStatus('ollama-status', '❌ Chat failed or no response received', 'error');
+                    }
+                } catch (error) {
+                    updateStatus('ollama-status', `❌ Chat error: ${error.message}`, 'error');
+                }
+            } else {
+                updateStatus('ollama-status', '❌ Ollama manager not available', 'error');
+            }
+        }
+
+        // Context Tests
+        function testContext() {
+            updateStatus('context-status', '🔍 Checking context window status...', 'info');
+            
+            if (window.contextManager) {
+                try {
+                    const status = window.contextManager.getStatus();
+                    updateStatus('context-status', 
+                        `✅ Context Manager Active - ${status.current} / ${status.max} tokens (${status.usage})`, 
+                        'success'
+                    );
+                    updateContextBar(parseFloat(status.usage));
+                    updateStatus('context-details', 
+                        `Available: ${status.available} tokens | Max: 1M tokens | Usage: ${status.usage}`, 
+                        'info'
+                    );
+                } catch (error) {
+                    updateStatus('context-status', `❌ Error checking context: ${error.message}`, 'error');
+                }
+            } else {
+                updateStatus('context-status', '❌ Context manager not found. Check if global-functions.js is loaded.', 'error');
+            }
+        }
+
+        function addTestContext() {
+            if (window.contextManager) {
+                const testContent = 'This is a test message to add to the context window. '.repeat(100);
+                window.contextManager.addToContext(testContent, 'test');
+                updateStatus('context-status', `✅ Added ${testContent.length} tokens to context`, 'success');
+                testContext(); // Refresh display
+            } else {
+                updateStatus('context-status', '❌ Context manager not available', 'error');
+            }
+        }
+
+        function clearContext() {
+            if (window.contextManager) {
+                window.contextManager.clearContext();
+                updateStatus('context-status', '✅ Context cleared', 'success');
+                updateContextBar(0);
+                updateStatus('context-details', 'Context window reset to 0 tokens', 'info');
+            } else {
+                updateStatus('context-status', '❌ Context manager not available', 'error');
+            }
+        }
+
+        function updateContextBar(percentage) {
+            const fill = document.getElementById('context-fill');
+            if (fill) {
+                fill.style.width = `${percentage}%`;
+                
+                // Change color based on usage
+                if (percentage > 90) {
+                    fill.style.background = 'linear-gradient(90deg, #ff4757, #ff6b7a)';
+                } else if (percentage > 70) {
+                    fill.style.background = 'linear-gradient(90deg, #ffa502, #ff6348)';
+                } else {
+                    fill.style.background = 'linear-gradient(90deg, #77ddbe, #4ecdc4)';
+                }
+            }
+        }
+
+        // Orchestra Server Tests
+        async function testOrchestra() {
+            updateStatus('orchestra-status', '🔍 Checking Orchestra server...', 'info');
+            
+            try {
+                const response = await fetch('http://localhost:11441/health');
+                if (response.ok) {
+                    const data = await response.json();
+                    updateStatus('orchestra-status', 
+                        `✅ Orchestra server is running! Models: ${data.models_found}, Agents: ${data.agents_found}`, 
+                        'success'
+                    );
+                } else {
+                    updateStatus('orchestra-status', `❌ Orchestra server returned ${response.status}`, 'error');
+                }
+            } catch (error) {
+                updateStatus('orchestra-status', `❌ Cannot connect to Orchestra server: ${error.message}`, 'error');
+            }
+        }
+
+        async function testBigDaddyG() {
+            updateStatus('orchestra-status', '🤖 Testing BigDaddyG model...', 'info');
+            
+            try {
+                const response = await fetch('http://localhost:11441/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: 'Hello BigDaddyG, this is a test message',
+                        model: 'BigDaddyG:Latest'
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    updateStatus('orchestra-status', 
+                        `✅ BigDaddyG responded! Model: ${data.model} | Response: ${data.response.substring(0, 100)}...`, 
+                        'success'
+                    );
+                } else {
+                    updateStatus('orchestra-status', `❌ BigDaddyG test failed: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                updateStatus('orchestra-status', `❌ BigDaddyG test error: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-run basic tests on load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                console.log('🧪 Running automatic functionality tests...');
+                testContext();
+                testOrchestra();
+            }, 1000);
+        });
+
+        // Listen for CTRL+L
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'l') {
+                e.preventDefault();
+                updateStatus('ctrl-l-status', '⌨️ CTRL+L detected! Chat should toggle.', 'info');
+            }
+        });
+    </script>
+</body>
+</html>

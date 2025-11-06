@@ -1,0 +1,33 @@
+{
+  "name": "bigdaddyg-ide-demo",
+  "version": "1.0.0",
+  "description": "Demo project for BigDaddyG IDE feature showcase",
+  "main": "demo.js",
+  "scripts": {
+    "start": "node demo.js",
+    "test": "echo \"✅ All tests passed! Demo working correctly.\"",
+    "build": "echo \"🔨 Building project... Done!\"",
+    "lint": "echo \"🔍 Linting code... No issues found.\"",
+    "deploy": "echo \"🚀 Deploying to production... Success!\"",
+    "dev": "echo \"🔥 Starting development server on http://localhost:3000\"",
+    "python-demo": "python demo.py"
+  },
+  "keywords": [
+    "ide",
+    "demo",
+    "bigdaddyg",
+    "development",
+    "ai-powered"
+  ],
+  "author": "BigDaddyG Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.0",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0"
+  }
+}
+

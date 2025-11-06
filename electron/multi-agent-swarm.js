@@ -276,17 +276,46 @@ class MultiAgentSwarm {
         
         this.addSwarmMessage('agent-start', `${agent.emoji} ${agent.name} is working...`);
         
+        // Query relevant memories for agent context
+        let memoryContext = '';
+        if (window.memory) {
+            try {
+                const relevantMemories = await window.memory.query(prompt, 3);
+                if (relevantMemories && relevantMemories.length > 0) {
+                    memoryContext = '\n\n[Previous context from memory]:\n' + 
+                        relevantMemories.map(m => `- ${m.Content}`).join('\n');
+                    console.log(`[AgentSwarm] 🧠 ${agent.name} retrieved`, relevantMemories.length, 'memories');
+                }
+            } catch (err) {
+                console.warn('[AgentSwarm] Failed to query memories:', err);
+            }
+        }
+        
         try {
             const response = await fetch('http://localhost:11441/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    message: `You are ${agent.name}, specialized in ${agent.role}. ${prompt}`,
+                    message: `You are ${agent.name}, specialized in ${agent.role}. ${prompt}${memoryContext}`,
                     model: agent.model
                 })
             });
             
             const data = await response.json();
+            
+            // Store agent response in memory
+            if (window.memory && data.response) {
+                await window.memory.store(data.response, {
+                    type: 'agent_response',
+                    source: 'swarm',
+                    context: { 
+                        agent: agent.name, 
+                        role: agent.role, 
+                        prompt: prompt.substring(0, 200),
+                        timestamp: new Date().toISOString() 
+                    }
+                }).catch(err => console.warn('[AgentSwarm] Failed to store response:', err));
+            }
             
             this.chatHistory.push({
                 agent: agentId,

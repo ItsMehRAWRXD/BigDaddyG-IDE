@@ -263,7 +263,13 @@ class FloatingChat {
                 </div>
                 
                 <div id="context-info" style="margin-top: 12px; padding: 8px; background: rgba(119, 221, 190, 0.05); border: 1px solid var(--cursor-jade-light); border-radius: 6px; font-size: 10px; color: var(--cursor-text-secondary);">
-                    💎 Context Window: Loading... | 🧠 Memory: Loading...
+                    💎 Context Window: 1M tokens | 🧠 Memory: Loading...
+                    <div style="margin-top: 4px; font-family: monospace; font-size: 9px;">
+                        <span id="context-usage-bar" style="display: inline-block; width: 100px; height: 8px; background: rgba(0,0,0,0.2); border-radius: 4px; overflow: hidden;">
+                            <span id="context-usage-fill" style="display: block; height: 100%; background: linear-gradient(90deg, var(--cursor-jade-dark), var(--cursor-accent)); width: 0%; transition: width 0.3s;"></span>
+                        </span>
+                        <span id="context-percentage" style="margin-left: 8px;">0%</span>
+                    </div>
                 </div>
             </div>
             
@@ -756,6 +762,11 @@ class FloatingChat {
         
         const responseId = `ai-response-${Date.now()}`;
         
+        // Add to context manager if available
+        if (window.contextManager) {
+            window.contextManager.addToContext(message, 'user');
+        }
+        
         try {
             // Create AI response container with thinking/reading sections
             const msgDiv = document.createElement('div');
@@ -904,7 +915,15 @@ class FloatingChat {
             // Display response
             const contentDiv = document.getElementById(`${responseId}-content`);
             if (contentDiv) {
-                contentDiv.innerHTML = this.formatResponse(data.response || data.message || 'No response');
+                const responseText = data.response || data.message || 'No response';
+                contentDiv.innerHTML = this.formatResponse(responseText);
+                
+                // Add to context manager
+                if (window.contextManager) {
+                    window.contextManager.addToContext(responseText, 'assistant');
+                    // Update context display
+                    this.updateContextDisplay();
+                }
                 
                 // CRITICAL: Scroll to show full response after content is rendered
                 this.scrollToBottom();
@@ -1378,27 +1397,54 @@ class FloatingChat {
         try {
             console.log('[FloatingChat] 📊 Loading context info...');
             
-            const response = await fetch('http://localhost:11441/api/context');
+            let contextData = null;
             
-            if (!response.ok) {
-                throw new Error(`Server returned ${response.status}`);
+            // Try Orchestra server first
+            try {
+                const response = await fetch('http://localhost:11441/api/context');
+                if (response.ok) {
+                    contextData = await response.json();
+                }
+            } catch (e) {
+                console.log('[FloatingChat] Orchestra not available, using local context manager');
             }
             
-            const data = await response.json();
+            // Fallback to local context manager
+            if (!contextData && window.contextManager) {
+                const status = window.contextManager.getStatus();
+                contextData = {
+                    tokens: status.current,
+                    maxTokens: status.max,
+                    contextWindow: '1M tokens',
+                    messageCount: 0
+                };
+            }
             
             const infoDiv = document.getElementById('context-info');
-            if (infoDiv) {
-                const tokenPercent = data.maxTokens ? Math.round((data.tokens / data.maxTokens) * 100) : 0;
-                const memoryBar = '█'.repeat(Math.floor(tokenPercent / 5)) + '░'.repeat(20 - Math.floor(tokenPercent / 5));
+            
+            if (infoDiv && contextData) {
+                const tokenPercent = contextData.maxTokens ? Math.round((contextData.tokens / contextData.maxTokens) * 100) : 0;
                 
                 infoDiv.innerHTML = `
-                    💎 Context Window: ${data.contextWindow || '1M tokens'} | 
-                    🧠 Memory: ${data.tokens || 0} / ${data.maxTokens || '1,000,000'} tokens (${tokenPercent}%) | 
-                    💬 Messages: ${data.messageCount || 0}
-                    <br>
-                    <div style="margin-top: 6px; font-family: monospace;">${memoryBar}</div>
+                    💎 Context Window: ${contextData.contextWindow || '1M tokens'} | 
+                    🧠 Memory: ${contextData.tokens || 0} / ${contextData.maxTokens || '1,000,000'} tokens (${tokenPercent}%) | 
+                    💬 Messages: ${contextData.messageCount || 0}
+                    <div style="margin-top: 4px; font-family: monospace; font-size: 9px;">
+                        <span id="context-usage-bar" style="display: inline-block; width: 100px; height: 8px; background: rgba(0,0,0,0.2); border-radius: 4px; overflow: hidden;">
+                            <span id="context-usage-fill" style="display: block; height: 100%; background: linear-gradient(90deg, var(--cursor-jade-dark), var(--cursor-accent)); width: ${tokenPercent}%; transition: width 0.3s;"></span>
+                        </span>
+                        <span id="context-percentage" style="margin-left: 8px;">${tokenPercent}%</span>
+                    </div>
                 `;
-                console.log('[FloatingChat] ✅ Context info loaded:', data);
+                
+                console.log('[FloatingChat] ✅ Context info loaded:', contextData);
+            } else if (infoDiv) {
+                infoDiv.innerHTML = `
+                    💎 Context Window: 1M tokens | 🧠 Memory: Ready
+                    <div style="margin-top: 4px; font-family: monospace; font-size: 9px;">
+                        <span style="color: var(--cursor-jade-dark);">Context manager initialized</span>
+                    </div>
+                `;
             }
         } catch (error) {
             console.error('[FloatingChat] ❌ Failed to load context info:', error);
@@ -1428,6 +1474,29 @@ class FloatingChat {
         } catch (error) {
             console.error('[FloatingChat] ❌ Error formatting thinking:', error);
             return `<div style="color: #ff4757;">Error formatting thinking: ${error.message}</div>`;
+        }
+    }
+    
+    updateContextDisplay() {
+        if (!window.contextManager) return;
+        
+        const status = window.contextManager.getStatus();
+        const usageFill = document.getElementById('context-usage-fill');
+        const usagePercent = document.getElementById('context-percentage');
+        
+        if (usageFill && usagePercent) {
+            const percent = parseFloat(status.usage);
+            usageFill.style.width = `${percent}%`;
+            usagePercent.textContent = status.usage;
+            
+            // Change color based on usage
+            if (percent > 90) {
+                usageFill.style.background = 'linear-gradient(90deg, #ff4757, #ff6b7a)';
+            } else if (percent > 70) {
+                usageFill.style.background = 'linear-gradient(90deg, #ffa502, #ff6348)';
+            } else {
+                usageFill.style.background = 'linear-gradient(90deg, var(--cursor-jade-dark), var(--cursor-accent))';
+            }
         }
     }
     

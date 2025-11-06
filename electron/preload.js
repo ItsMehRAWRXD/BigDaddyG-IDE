@@ -47,6 +47,24 @@ contextBridge.exposeInMainWorld('electron', {
   listDrives: () => ipcRenderer.invoke('list-drives'),
   onDrivesChanged: (callback) => ipcRenderer.on('drives-changed', (_, drives) => callback(drives)),
   
+  // Advanced file operations
+  createDirectory: (dirPath) => ipcRenderer.invoke('createDirectory', dirPath),
+  deleteItem: (itemPath, isDirectory) => ipcRenderer.invoke('deleteItem', itemPath, isDirectory),
+  copyItem: (sourcePath, destPath) => ipcRenderer.invoke('copyItem', sourcePath, destPath),
+  moveItem: (sourcePath, destPath) => ipcRenderer.invoke('moveItem', sourcePath, destPath),
+  getStats: (itemPath) => ipcRenderer.invoke('getStats', itemPath),
+  
+  // System integration
+  launchProgram: (programPath) => ipcRenderer.invoke('launchProgram', programPath),
+  openInExplorer: (itemPath) => ipcRenderer.invoke('openInExplorer', itemPath),
+  openUrl: (url) => ipcRenderer.invoke('openUrl', url),
+  getSystemInfo: () => ipcRenderer.invoke('getSystemInfo'),
+  
+  // Terminal execution
+  executeCommand: (command, shell, cwd) => ipcRenderer.invoke('execute-command', { command, shell, cwd }),
+  onTerminalOutput: (callback) => ipcRenderer.on('terminal-output', (_, data) => callback(data)),
+  onTerminalExit: (callback) => ipcRenderer.on('terminal-exit', (_, data) => callback(data)),
+  
   // Browser operations
   browser: {
     navigate: (url) => ipcRenderer.invoke('browser:navigate', url),

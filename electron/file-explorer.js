@@ -453,6 +453,103 @@ class FileExplorer {
             alert(`Error opening file: ${error.message}`);
         }
     }
+    
+    async launchProgram(programPath) {
+        try {
+            console.log('[Explorer] 🚀 Launching program:', programPath);
+            
+            if (window.electron && window.electron.launchProgram) {
+                const result = await window.electron.launchProgram(programPath);
+                
+                if (result.success) {
+                    console.log('[Explorer] ✅ Program launched successfully');
+                    
+                    // Show notification
+                    if (window.showNotification) {
+                        window.showNotification('✅ Program Launched', `${programPath} is now running`, 'success');
+                    }
+                } else {
+                    console.error('[Explorer] ❌ Failed to launch program:', result.error);
+                    alert(`Cannot launch ${programPath}: ${result.error}`);
+                }
+            } else {
+                alert('Program launching not available. Please check electron bridge.');
+            }
+        } catch (error) {
+            console.error('[Explorer] ❌ Error launching program:', error);
+            alert(`Error launching program: ${error.message}`);
+        }
+    }
+    
+    async openInSystemExplorer(dirPath) {
+        try {
+            console.log('[Explorer] 🪟 Opening in system explorer:', dirPath);
+            
+            if (window.electron && window.electron.openInExplorer) {
+                const result = await window.electron.openInExplorer(dirPath);
+                
+                if (result.success) {
+                    console.log('[Explorer] ✅ Opened in system explorer');
+                } else {
+                    console.error('[Explorer] ❌ Failed to open in explorer:', result.error);
+                }
+            }
+        } catch (error) {
+            console.error('[Explorer] ❌ Error opening in explorer:', error);
+        }
+    }
+    
+    async createNewFolder(parentPath, folderName) {
+        try {
+            if (!folderName) {
+                folderName = prompt('Enter folder name:');
+                if (!folderName) return;
+            }
+            
+            const newPath = `${parentPath}\\${folderName}`;
+            
+            if (window.electron && window.electron.createDirectory) {
+                const result = await window.electron.createDirectory(newPath);
+                
+                if (result.success) {
+                    console.log('[Explorer] ✅ Folder created:', newPath);
+                    await this.loadDirectory(parentPath); // Refresh
+                } else {
+                    alert(`Cannot create folder: ${result.error}`);
+                }
+            }
+        } catch (error) {
+            console.error('[Explorer] ❌ Error creating folder:', error);
+            alert(`Error: ${error.message}`);
+        }
+    }
+    
+    async deleteItem(itemPath, isDirectory = false) {
+        const itemName = itemPath.split('\\').pop();
+        const confirm = window.confirm(`Are you sure you want to delete "${itemName}"?`);
+        
+        if (!confirm) return;
+        
+        try {
+            if (window.electron && window.electron.deleteItem) {
+                const result = await window.electron.deleteItem(itemPath, isDirectory);
+                
+                if (result.success) {
+                    console.log('[Explorer] ✅ Item deleted:', itemPath);
+                    
+                    // Refresh current directory
+                    if (this.currentPath) {
+                        await this.loadDirectory(this.currentPath);
+                    }
+                } else {
+                    alert(`Cannot delete: ${result.error}`);
+                }
+            }
+        } catch (error) {
+            console.error('[Explorer] ❌ Error deleting item:', error);
+            alert(`Error: ${error.message}`);
+        }
+    }
 }
 
 // Helper function (if not defined elsewhere)

@@ -472,7 +472,40 @@ class EnhancedFileBrowser {
   }
   
   showError(message) {
-    alert(message); // TODO: Replace with better modal
+    // Replace with better modal
+    if (window.showNotification) {
+      window.showNotification('❌ Error', message, 'error', 5000);
+    } else {
+      // Fallback to custom modal
+      const modal = document.createElement('div');
+      modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 10000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      `;
+      
+      modal.innerHTML = `
+        <div style="background: rgba(10, 10, 30, 0.98); border: 1px solid var(--red); border-radius: 12px; padding: 30px; min-width: 400px; max-width: 600px;">
+          <h3 style="margin: 0 0 16px 0; color: var(--red); font-size: 18px;">❌ Error</h3>
+          <p style="margin: 0 0 24px 0; color: #ccc;">${message}</p>
+          <button onclick="this.parentElement.parentElement.remove()" style="padding: 10px 20px; background: var(--red); color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Close</button>
+        </div>
+      `;
+      
+      modal.onclick = (e) => {
+        if (e.target === modal) modal.remove();
+      };
+      
+      document.body.appendChild(modal);
+      setTimeout(() => modal.remove(), 5000);
+    }
   }
   
   injectStyles() {

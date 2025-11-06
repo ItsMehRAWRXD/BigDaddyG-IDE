@@ -27,6 +27,14 @@ out/
 *.tar.gz
 *.rar
 
+# Large files and binaries (GitHub has 100MB limit)
+BigDaddyG-AI-Edition-*.7z
+BigDaddyG-AI-Edition-*.zip
+sha256-*
+*.bin
+*.model
+*.safetensors
+
 # AI Models (too large - document how to download instead)
 # BUT INCLUDE DOCUMENTATION FILES
 models/*.gguf

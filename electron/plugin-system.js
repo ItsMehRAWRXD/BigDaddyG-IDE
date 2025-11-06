@@ -558,7 +558,25 @@ class PluginSystem {
      */
     addMenuItem(menu, label, callback) {
         console.log(`[PluginSystem] Adding menu item: ${menu} → ${label}`);
-        // TODO: Implement menu system
+        
+        // Implement menu system
+        if (!window.customMenuItems) {
+            window.customMenuItems = {};
+        }
+        
+        if (!window.customMenuItems[menu]) {
+            window.customMenuItems[menu] = [];
+        }
+        
+        window.customMenuItems[menu].push({
+            label,
+            callback
+        });
+        
+        // Trigger menu rebuild if menu system exists
+        if (window.rebuildMenus) {
+            window.rebuildMenus();
+        }
     }
     
     /**
@@ -566,7 +584,33 @@ class PluginSystem {
      */
     addPanel(id, title, content) {
         console.log(`[PluginSystem] Adding panel: ${id} (${title})`);
-        // TODO: Implement panel system
+        
+        // Implement panel system
+        const container = document.getElementById('center-tabs-content') || document.body;
+        
+        const panel = document.createElement('div');
+        panel.id = `plugin-panel-${id}`;
+        panel.className = 'tab-content-panel';
+        panel.style.cssText = `
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            padding: 20px;
+            overflow-y: auto;
+        `;
+        
+        panel.innerHTML = content;
+        container.appendChild(panel);
+        
+        // Add tab if tab system exists
+        if (window.addCenterTab) {
+            window.addCenterTab(title, () => {
+                document.querySelectorAll('.tab-content-panel').forEach(p => p.style.display = 'none');
+                panel.style.display = 'flex';
+            });
+        }
+        
+        return panel;
     }
     
     /**
@@ -574,7 +618,44 @@ class PluginSystem {
      */
     addStatusBarItem(id, content) {
         console.log(`[PluginSystem] Adding status bar item: ${id}`);
-        // TODO: Implement status bar system
+        
+        // Implement status bar system
+        let statusBar = document.getElementById('status-bar');
+        
+        if (!statusBar) {
+            // Create status bar if it doesn't exist
+            statusBar = document.createElement('div');
+            statusBar.id = 'status-bar';
+            statusBar.style.cssText = `
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 24px;
+                background: rgba(0, 0, 0, 0.8);
+                border-top: 1px solid rgba(0, 212, 255, 0.2);
+                display: flex;
+                align-items: center;
+                padding: 0 12px;
+                gap: 16px;
+                font-size: 11px;
+                color: #fff;
+                z-index: 100;
+            `;
+            document.body.appendChild(statusBar);
+        }
+        
+        const item = document.createElement('div');
+        item.id = `status-item-${id}`;
+        item.innerHTML = content;
+        item.style.cssText = `
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        `;
+        
+        statusBar.appendChild(item);
+        return item;
     }
     
     /**
@@ -583,9 +664,68 @@ class PluginSystem {
     async showDialog(title, message, buttons = ['OK']) {
         console.log(`[PluginSystem] Showing dialog: ${title}`);
         
-        // Simple implementation
-        const result = confirm(`${title}\n\n${message}`);
-        return result ? buttons[0] : buttons[1] || null;
+        return new Promise((resolve) => {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.8);
+                backdrop-filter: blur(5px);
+                z-index: 10000;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                animation: fadeIn 0.2s ease-out;
+            `;
+            
+            const dialog = document.createElement('div');
+            dialog.style.cssText = `
+                background: rgba(10, 10, 30, 0.98);
+                border: 1px solid var(--cyan);
+                border-radius: 12px;
+                padding: 30px;
+                min-width: 400px;
+                max-width: 600px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+                animation: scaleIn 0.3s ease-out;
+            `;
+            
+            dialog.innerHTML = `
+                <h3 style="margin: 0 0 16px 0; color: var(--cyan); font-size: 18px;">${title}</h3>
+                <p style="margin: 0 0 24px 0; color: #ccc; line-height: 1.6;">${message}</p>
+                <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                    ${buttons.map((btn, idx) => `
+                        <button 
+                            class="dialog-btn-${idx}" 
+                            style="padding: 10px 20px; background: ${idx === 0 ? 'var(--cyan)' : 'transparent'}; color: ${idx === 0 ? '#000' : 'var(--cyan)'}; border: 1px solid var(--cyan); border-radius: 6px; cursor: pointer; font-weight: bold;"
+                        >
+                            ${btn}
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+            
+            modal.appendChild(dialog);
+            document.body.appendChild(modal);
+            
+            buttons.forEach((btn, idx) => {
+                const btnEl = dialog.querySelector(`.dialog-btn-${idx}`);
+                btnEl.onclick = () => {
+                    modal.remove();
+                    resolve(btn);
+                };
+            });
+            
+            modal.onclick = (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                    resolve(null);
+                }
+            };
+        });
     }
     
     /**

@@ -149,6 +149,15 @@ class AIResponseHandler {
     }
     
     async executeMessage(message, attachments) {
+        // Store user message in memory
+        if (window.memory) {
+            await window.memory.store(message, {
+                type: 'user_message',
+                source: 'chat',
+                context: { attachments: attachments.length, timestamp: new Date().toISOString() }
+            }).catch(err => console.warn('[AIResponse] Failed to store user message:', err));
+        }
+        
         // Add user message with attachments info
         if (typeof addUserMessage === 'function') {
             const attachInfo = attachments.length > 0 ? 
@@ -156,13 +165,28 @@ class AIResponseHandler {
             addUserMessage(message + attachInfo, attachments);
         }
         
+        // Query relevant memories for context
+        let memoryContext = '';
+        if (window.memory) {
+            try {
+                const relevantMemories = await window.memory.query(message, 5);
+                if (relevantMemories && relevantMemories.length > 0) {
+                    memoryContext = '\n\n[Context from memory]:\n' + 
+                        relevantMemories.map(m => `- ${m.Content}`).join('\n');
+                    console.log('[AIResponse] 🧠 Added', relevantMemories.length, 'relevant memories to context');
+                }
+            } catch (err) {
+                console.warn('[AIResponse] Failed to query memories:', err);
+            }
+        }
+        
         // Create streaming response container
         const responseId = this.createStreamingResponse();
         
         try {
-            // Build request
+            // Build request with memory context
             const requestBody = {
-                message,
+                message: message + memoryContext,
                 model: 'BigDaddyG:Latest',
                 attachments: attachments.length,
                 stream: true
@@ -194,6 +218,15 @@ class AIResponseHandler {
                 
                 // Update streaming display
                 this.updateStreamingResponse(responseId, fullResponse);
+            }
+            
+            // Store AI response in memory
+            if (window.memory && fullResponse) {
+                await window.memory.store(fullResponse, {
+                    type: 'ai_response',
+                    source: 'chat',
+                    context: { userMessage: message, timestamp: new Date().toISOString() }
+                }).catch(err => console.warn('[AIResponse] Failed to store AI response:', err));
             }
             
             // Finalize response with code actions
