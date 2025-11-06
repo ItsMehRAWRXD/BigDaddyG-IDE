@@ -260,18 +260,48 @@ When AI generates code:
 - ➕ **Insert** - Add below selection
 - ❌ **Reject** - Dismiss suggestion
 
-## Keyboard Shortcuts
+## 🎹 Essential Keyboard Shortcuts
 
+### 📁 File Operations
 | Shortcut | Action |
 |----------|--------|
 | \`Ctrl+N\` | New File |
 | \`Ctrl+O\` | Open File |
 | \`Ctrl+S\` | Save File |
-| \`Ctrl+K\` | Ask BigDaddyG |
-| \`Ctrl+E\` | Explain Code |
-| \`Ctrl+Shift+F\` | Fix Code |
-| \`Ctrl+B\` | Toggle Sidebar |
+| \`Ctrl+Shift+S\` | Save As... |
+| \`Ctrl+K Ctrl+S\` | **Save All Files** |
+
+### 📑 Tab Management
+| Shortcut | Action |
+|----------|--------|
+| \`Ctrl+Tab\` | Next Tab |
+| \`Ctrl+Shift+Tab\` | Previous Tab |
+| \`Ctrl+W\` | Close Tab |
+| \`Ctrl+1-9\` | Jump to Tab 1-9 |
+| \`Alt+Left/Right\` | Navigate Tabs |
+
+### 🤖 AI & Commands
+| Shortcut | Action |
+|----------|--------|
+| \`Ctrl+L\` | Open AI Chat |
+| \`Ctrl+Enter\` | Send Message |
+| \`Ctrl+Shift+P\` | **Command Palette** |
+| \`Ctrl+Shift+M\` | Memory Dashboard |
+
+### 💻 Terminal
+| Shortcut | Action |
+|----------|--------|
 | \`Ctrl+\`\` | Toggle Terminal |
+| \`Ctrl+J\` | Open/Close Terminal |
+
+### ✍️ Code Editing
+| Shortcut | Action |
+|----------|--------|
+| \`Ctrl+F\` | Find |
+| \`Ctrl+H\` | Find & Replace |
+| \`Ctrl+/\` | Toggle Comment |
+
+> 💡 **Pro Tip:** Press \`Ctrl+Shift+P\` to search files and run commands!
 
 ## Example: Write Assembly Code
 
