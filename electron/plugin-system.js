@@ -414,7 +414,7 @@ class PluginSystem {
     /**
      * Register plugin code (called by plugin)
      */
-    registerPluginCode(pluginId, activateFn) {
+    async registerPluginCode(pluginId, activateFn) {
         const plugin = this.plugins.get(pluginId);
         
         if (!plugin) {

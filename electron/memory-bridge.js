@@ -324,29 +324,26 @@ class MemoryBridge {
     
     async updateStats() {
         try {
-            // Count files in Store directory
-            if (fs.existsSync(this.storePath)) {
-                const files = fs.readdirSync(this.storePath);
-                const memoryFiles = files.filter(f => f.endsWith('.json') || f.endsWith('.mem'));
-                
-                // Calculate total storage size
-                let totalSize = 0;
-                memoryFiles.forEach(file => {
-                    const filePath = path.join(this.storePath, file);
-                    const stats = fs.statSync(filePath);
-                    totalSize += stats.size;
-                });
-                
-                this.memoryStats = {
-                    totalMemories: memoryFiles.length,
-                    totalEmbeddings: memoryFiles.length, // Approximate
-                    storageSize: this.formatBytes(totalSize),
-                    storageSizeBytes: totalSize,
-                    lastUpdated: new Date().toISOString()
-                };
+            // In renderer process, can't access fs directly
+            // Request stats via IPC if available
+            if (window.electron && window.electron.memory) {
+                const stats = await window.electron.memory.getStats();
+                if (stats && stats.success) {
+                    this.memoryStats = stats;
+                    return;
+                }
             }
+            
+            // Fallback: Use in-memory stats
+            this.memoryStats = {
+                totalMemories: this.inMemoryStore ? this.inMemoryStore.size : 0,
+                totalEmbeddings: 0,
+                storageSize: '0 KB',
+                storageSizeBytes: 0,
+                lastUpdated: new Date().toISOString()
+            };
         } catch (error) {
-            console.error('[MemoryBridge] ❌ Failed to update stats:', error);
+            // Silent - stats update not critical
         }
     }
     

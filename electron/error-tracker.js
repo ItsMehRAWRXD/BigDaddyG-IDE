@@ -156,7 +156,7 @@ class ErrorTracker {
         // Add error button to UI
         this.createErrorButton();
         
-        this.originalError.call(console, '[ErrorTracker] ✅ Error tracking active');
+        console.log('[ErrorTracker] ✅ Error tracking active');
         
         // Track resource loading errors
         this.trackResourceErrors();
