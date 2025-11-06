@@ -109,6 +109,19 @@ class TerminalPanel {
                     <div style="color: var(--cyan); font-weight: bold; font-size: 13px;">
                         Terminal Panel
                     </div>
+                    
+                    <button id="terminal-minimize-btn" onclick="minimizeTerminalPanel()" style="
+                        background: rgba(255, 152, 0, 0.1);
+                        border: 1px solid var(--orange);
+                        color: var(--orange);
+                        padding: 4px 12px;
+                        border-radius: 4px;
+                        cursor: pointer;
+                        font-size: 11px;
+                        font-weight: bold;
+                    " title="Minimize Terminal (Hide Completely)">
+                        ⬇️ Hide
+                    </button>
                 </div>
                 
                 <!-- Tabs -->
@@ -885,8 +898,17 @@ class TerminalPanel {
         if (panel) {
             if (this.isVisible) {
                 panel.style.height = '400px';
+                panel.style.display = 'flex';
+                console.log('[TerminalPanel] ✅ Terminal opened');
             } else {
                 panel.style.height = '0px';
+                // Use setTimeout to hide after animation
+                setTimeout(() => {
+                    if (!this.isVisible) {
+                        panel.style.display = 'none';
+                    }
+                }, 300);
+                console.log('[TerminalPanel] ✅ Terminal closed');
             }
         }
         
@@ -894,6 +916,34 @@ class TerminalPanel {
         const toggleBtn = document.getElementById('terminal-toggle');
         if (toggleBtn) {
             toggleBtn.textContent = this.isVisible ? '⌨️' : '⌨️';
+        }
+    }
+    
+    minimize() {
+        this.isVisible = false;
+        const panel = document.getElementById('terminal-panel');
+        
+        if (panel) {
+            panel.style.height = '0px';
+            setTimeout(() => {
+                if (!this.isVisible) {
+                    panel.style.display = 'none';
+                }
+            }, 300);
+            console.log('[TerminalPanel] ⬇️ Terminal minimized');
+        }
+    }
+    
+    show() {
+        this.isVisible = true;
+        const panel = document.getElementById('terminal-panel');
+        
+        if (panel) {
+            panel.style.display = 'flex';
+            setTimeout(() => {
+                panel.style.height = '400px';
+            }, 10);
+            console.log('[TerminalPanel] ⬆️ Terminal shown');
         }
     }
     
@@ -935,6 +985,19 @@ function switchTerminalTab(tab) {
     if (terminalPanelInstance) {
         terminalPanelInstance.switchTab(tab);
     }
+}
+
+function minimizeTerminalPanel() {
+    if (terminalPanelInstance) {
+        terminalPanelInstance.minimize();
+    }
+}
+
+function showTerminalPanel() {
+    if (!terminalPanelInstance) {
+        terminalPanelInstance = new TerminalPanel();
+    }
+    terminalPanelInstance.show();
 }
 
 function createNewTerminal() {
