@@ -12,6 +12,7 @@ const windowStateKeeper = require('electron-window-state');
 const { EmbeddedBrowser } = require('./browser-view');
 const SafeModeDetector = require('./safe-mode-detector');
 const memoryService = require('./memory-service');
+const nativeOllamaNode = require('./native-ollama-node');
 
 let mainWindow;
 let orchestraServer = null;
@@ -1772,5 +1773,30 @@ ipcMain.on('window-close', () => {
   if (mainWindow) mainWindow.close();
 });
 
+// ============================================================================
+// NATIVE OLLAMA NODE.JS HTTP CLIENT
+// ============================================================================
+
+ipcMain.handle('native-ollama-node:generate', async (event, model, prompt) => {
+  try {
+    console.log(`[NativeOllama Main] Generating with model: ${model}`);
+    const response = await nativeOllamaNode.generate(model, prompt);
+    return { success: true, ...response };
+  } catch (error) {
+    console.error('[NativeOllama Main] Generation error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('native-ollama-node:stats', async () => {
+  try {
+    const stats = nativeOllamaNode.getStats();
+    return { success: true, ...stats };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+console.log('[BigDaddyG] ⚡ Native Ollama Node.js client registered');
 console.log('[BigDaddyG] 🌌 Main process initialized');
 

@@ -115,6 +115,12 @@ contextBridge.exposeInMainWorld('electron', {
     onUISuggestions: (callback) => ipcRenderer.on('browser:ui-suggestions', (_, data) => callback(data))
   },
   
+  // Native Ollama Node.js HTTP client
+  nativeOllamaNode: {
+    generate: (model, prompt) => ipcRenderer.invoke('native-ollama-node:generate', model, prompt),
+    getStats: () => ipcRenderer.invoke('native-ollama-node:stats')
+  },
+  
   // Menu events (receive only)
   onMenuEvent: (callback) => {
     ipcRenderer.on('menu-new-file', () => callback('new-file'));
