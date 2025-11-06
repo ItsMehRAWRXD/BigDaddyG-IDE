@@ -131,7 +131,8 @@ class UnifiedExtensionSystem {
             const timeout = setTimeout(() => controller.abort(), 1000);
             
             const response = await fetch(this.multiAIServer.health, {
-                signal: controller.signal
+                signal: controller.signal,
+                __bypassWrapper: true // Bypass fetch wrapper to avoid errors
             });
             
             clearTimeout(timeout);
@@ -144,9 +145,9 @@ class UnifiedExtensionSystem {
                 console.log('[UnifiedExtensions] 🤖 Available AI providers:', Object.keys(this.multiAIServer.availableProviders).join(', '));
             }
         } catch (error) {
-            // Multi AI not running (optional service)
+            // Multi AI not running (optional service) - silently ignore
             this.multiAIServer.status = 'offline';
-            console.log('[UnifiedExtensions] ℹ️ Multi AI Aggregator offline (optional)');
+            // Don't log - it's expected to be offline
         }
     }
     
