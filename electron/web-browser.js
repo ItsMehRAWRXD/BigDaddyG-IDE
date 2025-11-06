@@ -42,9 +42,10 @@ class WebBrowser {
             right: 0;
             bottom: 0;
             background: #1e1e1e;
-            z-index: 9999;
+            z-index: 99999;
             display: none;
             flex-direction: column;
+            pointer-events: auto;
         `;
         
         // Create browser toolbar
