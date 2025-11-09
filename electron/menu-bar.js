@@ -60,9 +60,9 @@ class MenuBar {
                     { label: 'Undo', shortcut: 'Ctrl+Z', action: () => this.undo() },
                     { label: 'Redo', shortcut: 'Ctrl+Y', action: () => this.redo() },
                     { type: 'separator' },
-                    { label: 'Cut', shortcut: 'Ctrl+X', action: () => document.execCommand('cut') },
-                    { label: 'Copy', shortcut: 'Ctrl+C', action: () => document.execCommand('copy') },
-                    { label: 'Paste', shortcut: 'Ctrl+V', action: () => document.execCommand('paste') },
+                    { label: 'Cut', shortcut: 'Ctrl+X', action: () => this.cut() },
+                    { label: 'Copy', shortcut: 'Ctrl+C', action: () => this.copy() },
+                    { label: 'Paste', shortcut: 'Ctrl+V', action: () => this.paste() },
                     { type: 'separator' },
                     { label: 'Find', shortcut: 'Ctrl+F', action: () => this.find() },
                     { label: 'Replace', shortcut: 'Ctrl+H', action: () => this.replace() }
@@ -336,6 +336,24 @@ class MenuBar {
     undo() {
         if (window.editor) {
             window.editor.trigger('keyboard', 'undo');
+        }
+    }
+    
+    async cut() {
+        if (window.editor) {
+            window.editor.trigger('keyboard', 'editor.action.clipboardCutAction');
+        }
+    }
+    
+    async copy() {
+        if (window.editor) {
+            window.editor.trigger('keyboard', 'editor.action.clipboardCopyAction');
+        }
+    }
+    
+    async paste() {
+        if (window.editor) {
+            window.editor.trigger('keyboard', 'editor.action.clipboardPasteAction');
         }
     }
     

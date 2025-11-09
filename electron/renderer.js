@@ -213,6 +213,7 @@ function initMonacoEditor() {
     
     // Expose editor globally for tests and external access
     window.editor = editor;
+    window.monacoEditor = editor; // Also expose as monacoEditor
     
     // Store initial tab
     openTabs['welcome'] = {
@@ -235,6 +236,7 @@ function initMonacoEditor() {
     // Initialize voice coding
     if (typeof VoiceCodingEngine !== 'undefined') {
         window.voiceCoding = new VoiceCodingEngine(editor);
+        window.voiceCodingEngine = window.voiceCoding; // Expose as both names
         console.log('[BigDaddyG] 🎤 Voice coding engine initialized');
         console.log('[BigDaddyG] 💡 Say "Hey BigDaddy" to start or press Ctrl+Shift+V');
     } else {
@@ -1570,6 +1572,15 @@ window.addEventListener('beforeunload', () => {
         autoSaveInterval = null;
         console.log('[BigDaddyG] 🧹 Cleaned up auto-save interval');
     }
+    
+    // Dispose all Monaco models
+    Object.values(openTabs).forEach(tab => {
+        if (tab.model && !tab.model.isDisposed()) {
+            tab.model.dispose();
+        }
+    });
+    
+    console.log('[BigDaddyG] 🧹 Cleaned up all resources');
 });
 
 // Try to recover tabs on load

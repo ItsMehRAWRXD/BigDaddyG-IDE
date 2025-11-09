@@ -22,6 +22,9 @@ class AgenticAutoFixer {
         this.fixesApplied = [];
         this.monitorInterval = null;
         this.errorLog = [];
+        this.lastLintCheck = 0;
+        this.lintCooldown = 10 * 60 * 1000; // 10 minutes
+        this.lintRunning = false;
         
         this.init();
     }
@@ -75,6 +78,10 @@ class AgenticAutoFixer {
         // 5. Check tab system
         const tabIssue = this.checkTabSystem();
         if (tabIssue) issues.push(tabIssue);
+
+        // 6. Check lint results (async, may return null)
+        const lintIssue = await this.checkLintStatus();
+        if (lintIssue) issues.push(lintIssue);
         
         if (issues.length > 0) {
             console.log(`[AgenticFixer] 🚨 Found ${issues.length} issue(s)!`);
@@ -207,6 +214,10 @@ class AgenticAutoFixer {
                     case 'log_errors':
                         this.reportErrors();
                         break;
+
+                case 'report_lint':
+                    this.reportLintIssue(issue);
+                    break;
                         
                     default:
                         console.log(`[AgenticFixer] ℹ️ No auto-fix available for: ${issue.type}`);
@@ -285,6 +296,92 @@ class AgenticAutoFixer {
         this.errorLog.forEach((err, i) => {
             console.log(`  ${i + 1}. ${err}`);
         });
+    }
+
+    async checkLintStatus() {
+        const browserApi = window.electron;
+        if (!browserApi?.executeCommand) {
+            return null;
+        }
+
+        const now = Date.now();
+        if (this.lintRunning || (now - this.lastLintCheck) < this.lintCooldown) {
+            return null;
+        }
+
+        this.lintRunning = true;
+        this.lastLintCheck = now;
+
+        try {
+            const command = 'npm run lint -- --max-warnings=0';
+            const result = await browserApi.executeCommand(command, 'powershell');
+
+            if (!result) {
+                return null;
+            }
+
+            const { code, output = '', error = '' } = result;
+            const combined = `${output}\n${error}`.trim();
+
+            if (code === 0) {
+                if (combined) {
+                    console.log('[AgenticFixer] ✅ Lint check passed');
+                }
+                return null;
+            }
+
+            const message = combined || 'Lint command reported errors';
+
+            if (/missing script/i.test(message)) {
+                console.warn('[AgenticFixer] ⚠️ Lint script missing (npm run lint)');
+                return {
+                    type: 'lint_missing_script',
+                    severity: 'LOW',
+                    description: 'No lint script found in package.json (npm run lint)',
+                    autoFix: 'none'
+                };
+            }
+
+            return {
+                type: 'lint_errors',
+                severity: 'HIGH',
+                description: 'Lint errors detected - see console for details',
+                autoFix: 'report_lint',
+                data: {
+                    output,
+                    error,
+                    code
+                }
+            };
+        } catch (error) {
+            console.warn('[AgenticFixer] Lint check failed:', error?.message || error);
+            return {
+                type: 'lint_execution_failed',
+                severity: 'MEDIUM',
+                description: `Lint command failed: ${error?.message || 'Unknown error'}`,
+                autoFix: 'none'
+            };
+        } finally {
+            this.lintRunning = false;
+        }
+    }
+
+    reportLintIssue(issue) {
+        const payload = issue?.data || {};
+        const output = payload.output?.trim();
+        const error = payload.error?.trim();
+        const message = [output, error].filter(Boolean).join('\n\n') || 'No lint output captured.';
+
+        console.group('[AgenticFixer] 📛 Lint Issues Detected');
+        console.log(message);
+        if (payload.code !== undefined) {
+            console.log('Exit code:', payload.code);
+        }
+        console.groupEnd();
+
+        if (window.showNotification) {
+            window.showNotification('Lint errors detected', 'Open the console for the complete report.', 'error', 5000);
+        }
     }
     
     // Public API for error tracking

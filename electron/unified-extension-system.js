@@ -15,6 +15,7 @@ class UnifiedExtensionSystem {
         this.detectedLanguages = new Set();
         this.compilers = new Map();
         this.agents = new Map();
+        this.rawrzPreference = this.getRawrZPreference();
         
         console.log('[UnifiedExtensions] 🚀 Initializing unified extension system...');
     }
@@ -72,6 +73,52 @@ class UnifiedExtensionSystem {
             }
         }
     }
+
+    getRawrZPreference() {
+        try {
+            const value = localStorage?.getItem('rawrz:status');
+            if (value === 'enabled' || value === 'disabled') {
+                return value;
+            }
+        } catch (error) {
+            console.warn('[UnifiedExtensions] Unable to read RawrZ preference:', error.message);
+        }
+        return 'disabled';
+    }
+
+    setRawrZPreference(status) {
+        this.rawrzPreference = status;
+        try {
+            localStorage?.setItem('rawrz:status', status);
+        } catch (error) {
+            console.warn('[UnifiedExtensions] Unable to persist RawrZ preference:', error.message);
+        }
+    }
+
+    async enableRawrZ() {
+        if (this.rawrzServer?.status === 'running') {
+            this.showNotification('RawrZ Security Platform is already online.', 'info');
+            return;
+        }
+
+        this.setRawrZPreference('enabled');
+        this.showNotification('Enabling RawrZ Security Platform...', 'info');
+        await this.startRawrZServer();
+
+        if (this.rawrzServer?.status === 'running') {
+            this.showNotification('RawrZ Security Platform online.', 'success');
+        } else {
+            this.showNotification('RawrZ Security Platform unavailable. Ensure the service is running locally.', 'error');
+        }
+    }
+
+    disableRawrZ() {
+        this.setRawrZPreference('disabled');
+        if (this.rawrzServer) {
+            this.rawrzServer.status = 'disabled';
+        }
+        this.showNotification('RawrZ Security Platform disabled.', 'info');
+    }
     
     async startRawrZServer() {
         console.log('[UnifiedExtensions] 🔐 Starting RawrZ Security Platform...');
@@ -83,6 +130,14 @@ class UnifiedExtensionSystem {
             health: 'http://localhost:8080/health',
             status: 'starting'
         };
+
+        const preference = this.getRawrZPreference();
+
+        if (preference !== 'enabled') {
+            this.rawrzServer.status = 'disabled';
+            console.log('[UnifiedExtensions] ℹ️ RawrZ Security Platform disabled (opt-in). Use unifiedExtensions.enableRawrZ() to start it.');
+            return;
+        }
         
         try {
             // Check if RawrZ is already running
@@ -90,7 +145,8 @@ class UnifiedExtensionSystem {
             const timeout = setTimeout(() => controller.abort(), 1000);
             
             const response = await fetch(this.rawrzServer.health, { 
-                signal: controller.signal 
+                signal: controller.signal,
+                __bypassWrapper: true
             });
             
             clearTimeout(timeout);
@@ -98,6 +154,8 @@ class UnifiedExtensionSystem {
             if (response.ok) {
                 this.rawrzServer.status = 'running';
                 console.log('[UnifiedExtensions] ✅ RawrZ Security Platform online');
+            } else {
+                this.rawrzServer.status = 'offline';
             }
         } catch (error) {
             // RawrZ not running (optional service)
@@ -548,7 +606,7 @@ class UnifiedExtensionSystem {
                 ✅ Unified Extension System Online!
             </div>
             <div style="font-size: 11px; opacity: 0.9; line-height: 1.6;">
-                🔐 RawrZ Security: ${this.rawrzServer.status}<br>
+                🔐 RawrZ Security: ${this.rawrzServer.status}${this.rawrzServer.status === 'disabled' ? ' (opt-in)' : ''}<br>
                 🤖 Multi AI: ${this.multiAIServer.status}<br>
                 🔍 Languages Detected: ${langCount}<br>
                 🔧 Compilers Ready: ${compilerCount}/${langCount}<br>
@@ -625,7 +683,7 @@ class UnifiedExtensionSystem {
     
     async executeRawrZCommand(command) {
         if (this.rawrzServer.status !== 'running') {
-            throw new Error('RawrZ Security Platform not available');
+            throw new Error('RawrZ Security Platform not available (enable via unifiedExtensions.enableRawrZ()).');
         }
         
         console.log(`[UnifiedExtensions] 🔐 Executing RawrZ command...`);

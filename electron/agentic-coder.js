@@ -83,7 +83,6 @@ class AgenticCoder {
     }
     
     async analyzeTask(task) {
-        // Use Ollama to analyze the task
         const prompt = `You are an autonomous coding agent. Analyze this task and provide a detailed plan:
 
 Task: ${task}
@@ -96,6 +95,14 @@ Current IDE State:
 Provide a step-by-step plan to fix this issue.`;
 
         try {
+            if (window.aiProviderManager) {
+                const result = await window.aiProviderManager.chatWithFallback(prompt, {
+                    temperature: 0.3,
+                    maxTokens: 2048
+                });
+                return result.response;
+            }
+            
             const response = await fetch('http://localhost:11434/api/generate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -127,7 +134,6 @@ Provide a step-by-step plan to fix this issue.`;
     async generateSolution(analysis) {
         console.log('[AgenticCoder] Analysis:', analysis);
         
-        // Generate code solution using AI
         const prompt = `Based on this analysis, generate JavaScript code to fix the issue:
 
 ${analysis}
@@ -135,6 +141,14 @@ ${analysis}
 Provide ONLY the code, no explanations.`;
 
         try {
+            if (window.aiProviderManager) {
+                const result = await window.aiProviderManager.chatWithFallback(prompt, {
+                    temperature: 0.2,
+                    maxTokens: 4096
+                });
+                return result.response;
+            }
+            
             const response = await fetch('http://localhost:11434/api/generate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

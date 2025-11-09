@@ -6,8 +6,8 @@
  * 2. Typing a message
  * 3. AI responding
  * 4. Agentic coding - AI writes code autonomously
- * 5. Testing the code
- * 6. Fixing issues autonomously
+ * 5. Testing & auto-fixing the code
+ * 6. Browser agent drives YouTube showcase
  */
 
 console.log('[AgenticDemo] 🎬 Loading full agentic demonstration...');
@@ -19,6 +19,7 @@ class FullAgenticDemo {
     constructor() {
         this.isRunning = false;
         this.overlay = null;
+        this.totalSteps = 6;
         console.log('[AgenticDemo] ✅ Full agentic demo loaded');
     }
     
@@ -26,6 +27,11 @@ class FullAgenticDemo {
         if (this.isRunning) {
             console.log('[AgenticDemo] ⚠️ Demo already running!');
             return;
+        }
+        
+        // Close floating chat if open
+        if (window.floatingChat) {
+            window.floatingChat.ensureClosed();
         }
         
         this.isRunning = true;
@@ -39,6 +45,7 @@ class FullAgenticDemo {
             await this.demo3_AIResponds();
             await this.demo4_AgenticCoding();
             await this.demo5_TestAndFix();
+            await this.demo6_BrowserShowcase();
             await this.showResults();
         } catch (error) {
             console.error('[AgenticDemo] ❌ Demo failed:', error);
@@ -84,6 +91,10 @@ class FullAgenticDemo {
         document.body.appendChild(this.overlay);
     }
     
+    getStepLabel(stepNumber) {
+        return `Demo ${stepNumber}/${this.totalSteps}`;
+    }
+    
     updateProgress(step, description) {
         const progressEl = document.getElementById('demo-progress');
         const stepEl = document.getElementById('demo-step');
@@ -96,7 +107,7 @@ class FullAgenticDemo {
     }
     
     async demo1_OpenFloatingChat() {
-        this.updateProgress('Demo 1/5', '🗨️ Opening Floating Chat (Ctrl+L)');
+        this.updateProgress(this.getStepLabel(1), '🗨️ Opening Floating Chat (Ctrl+L)');
         console.log('[AgenticDemo] 1️⃣ Opening floating chat with Ctrl+L...');
         
         await this.wait(1000);
@@ -113,7 +124,7 @@ class FullAgenticDemo {
     }
     
     async demo2_AskAIQuestion() {
-        this.updateProgress('Demo 2/5', '⌨️ Typing Question to AI');
+        this.updateProgress(this.getStepLabel(2), '⌨️ Typing Question to AI');
         console.log('[AgenticDemo] 2️⃣ Typing a question for the AI...');
         
         await this.wait(500);
@@ -137,7 +148,7 @@ class FullAgenticDemo {
         const question = "Write a function to calculate fibonacci numbers";
         chatInput.value = '';
         
-        this.updateProgress('Demo 2/5', '⌨️ Typing: ' + question);
+        this.updateProgress(this.getStepLabel(2), '⌨️ Typing: ' + question);
         
         for (let i = 0; i < question.length; i++) {
             chatInput.value = question.substring(0, i + 1);
@@ -149,7 +160,7 @@ class FullAgenticDemo {
         
         // Submit the message
         console.log('[AgenticDemo] 📤 Sending message to AI...');
-        this.updateProgress('Demo 2/5', '📤 Sending to AI...');
+        this.updateProgress(this.getStepLabel(2), '📤 Sending to AI...');
         
         // Find and click send button or trigger send
         if (window.universalChatHandler) {
@@ -167,7 +178,7 @@ class FullAgenticDemo {
     }
     
     async demo3_AIResponds() {
-        this.updateProgress('Demo 3/5', '🤖 AI is Thinking...');
+        this.updateProgress(this.getStepLabel(3), '🤖 AI is Thinking...');
         console.log('[AgenticDemo] 3️⃣ Waiting for AI response...');
         
         // Show typing indicator
@@ -195,14 +206,14 @@ class FullAgenticDemo {
         await this.wait(1000);
         typingIndicator.remove();
         
-        this.updateProgress('Demo 3/5', '✅ AI Responded Successfully!');
+        this.updateProgress(this.getStepLabel(3), '✅ AI Responded Successfully!');
         console.log('[AgenticDemo] ✅ AI response received!');
         
         await this.wait(2000);
     }
     
     async demo4_AgenticCoding() {
-        this.updateProgress('Demo 4/5', '🤖 Agentic Coding - AI Writes Code!');
+        this.updateProgress(this.getStepLabel(4), '🤖 Agentic Coding - AI Writes Code!');
         console.log('[AgenticDemo] 4️⃣ Demonstrating agentic coding...');
         
         await this.wait(1000);
@@ -224,7 +235,7 @@ console.log('Fib(10):', fibonacci(10));
             
             // Type the code character by character in Monaco
             if (window.editor) {
-                this.updateProgress('Demo 4/5', '⌨️ AI is writing code autonomously...');
+                this.updateProgress(this.getStepLabel(4), '⌨️ AI is writing code autonomously...');
                 
                 // Highlight Monaco editor
                 const monacoContainer = document.getElementById('monaco-container');
@@ -246,7 +257,7 @@ console.log('Fib(10):', fibonacci(10));
                 }
                 
                 console.log('[AgenticDemo] ✅ AI code written!');
-                this.updateProgress('Demo 4/5', '✅ AI wrote code successfully!');
+                this.updateProgress(this.getStepLabel(4), '✅ AI wrote code successfully!');
             }
         }
         
@@ -254,28 +265,54 @@ console.log('Fib(10):', fibonacci(10));
     }
     
     async demo5_TestAndFix() {
-        this.updateProgress('Demo 5/5', '🧪 Testing & Auto-Fixing');
+        this.updateProgress(this.getStepLabel(5), '🧪 Testing & Auto-Fixing');
         console.log('[AgenticDemo] 5️⃣ Running tests and auto-fixes...');
         
         await this.wait(1000);
         
         // Show agentic auto-fixer in action
         if (window.agenticAutoFixer) {
-            this.updateProgress('Demo 5/5', '🤖 Agentic Auto-Fixer Scanning...');
+            this.updateProgress(this.getStepLabel(5), '🤖 Agentic Auto-Fixer Scanning...');
             await window.agenticAutoFixer.scanForIssues();
         }
         
         if (window.agenticCoder) {
-            this.updateProgress('Demo 5/5', '🔧 Auto-fixing issues...');
+            this.updateProgress(this.getStepLabel(5), '🔧 Auto-fixing issues...');
             window.agenticCoder.fixEverythingNow();
         }
         
         await this.wait(2000);
         
-        this.updateProgress('Demo 5/5', '✅ All fixes applied!');
+        this.updateProgress(this.getStepLabel(5), '✅ All fixes applied!');
         console.log('[AgenticDemo] ✅ Auto-fixes complete!');
         
         await this.wait(2000);
+    }
+
+    async demo6_BrowserShowcase() {
+        this.updateProgress(this.getStepLabel(6), '🌐 Launching agentic browser showcase...');
+        console.log('[AgenticDemo] 6️⃣ Launching agentic browser demo...');
+        await this.wait(1000);
+
+        if (window.agenticBrowserDemo && typeof window.agenticBrowserDemo.start === 'function') {
+            try {
+                if (window.agenticBrowserDemo.running) {
+                    console.log('[AgenticDemo] Browser demo already running, waiting for completion...');
+                    await this.wait(4000);
+                } else {
+                    await window.agenticBrowserDemo.start();
+                }
+                this.updateProgress(this.getStepLabel(6), '✅ Browser demo complete!');
+            } catch (error) {
+                console.error('[AgenticDemo] ❌ Browser demo failed:', error);
+                this.updateProgress(this.getStepLabel(6), '⚠️ Browser demo unavailable');
+            }
+        } else {
+            console.warn('[AgenticDemo] ⚠️ agenticBrowserDemo not available');
+            this.updateProgress(this.getStepLabel(6), '⚠️ Browser demo module not found');
+        }
+
+        await this.wait(1500);
     }
     
     async showResults() {
@@ -305,6 +342,7 @@ console.log('Fib(10):', fibonacci(10));
         console.log('  3. ✅ AI responds');
         console.log('  4. ✅ Agentic coding works');
         console.log('  5. ✅ Auto-fix works');
+        console.log('  6. ✅ Browser demo works');
         
         await this.wait(3000);
         
@@ -317,13 +355,13 @@ console.log('Fib(10):', fibonacci(10));
 // Initialize
 window.fullAgenticDemo = new FullAgenticDemo();
 
-// Auto-start after 15 seconds (after visual test completes)
-setTimeout(() => {
-    console.log('[AgenticDemo] 🎬 AUTO-STARTING FULL DEMONSTRATION!');
-    window.fullAgenticDemo.start().catch(err => {
-        console.error('[AgenticDemo] ❌ Demo failed:', err);
-    });
-}, 15000);
+// Auto-start DISABLED - use fullAgenticDemo.start() to run manually
+// setTimeout(() => {
+//     console.log('[AgenticDemo] 🎬 AUTO-STARTING FULL DEMONSTRATION!');
+//     window.fullAgenticDemo.start().catch(err => {
+//         console.error('[AgenticDemo] ❌ Demo failed:', err);
+//     });
+// }, 15000);
 
 console.log('[AgenticDemo] ✅ Full agentic demo ready');
 console.log('[AgenticDemo] 💡 Will auto-start in 15 seconds, or use: fullAgenticDemo.start()');

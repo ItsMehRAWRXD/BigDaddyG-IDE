@@ -12,6 +12,8 @@ class ErrorCleanup {
     constructor() {
         this.errorCount = 0;
         this.warningCount = 0;
+        this.suppressedWarningCount = 0;
+        this.startTime = Date.now();
         this.init();
     }
     
@@ -33,6 +35,7 @@ class ErrorCleanup {
     suppressDeprecatedWarnings() {
         const originalWarn = console.warn;
         const originalError = console.error;
+        const cleanup = this;
         
         // List of warnings to suppress
         const suppressPatterns = [
@@ -50,8 +53,10 @@ class ErrorCleanup {
             const shouldSuppress = suppressPatterns.some(pattern => pattern.test(message));
             
             if (!shouldSuppress) {
+                cleanup.warningCount++;
                 originalWarn.apply(console, args);
             } else {
+                cleanup.suppressedWarningCount++;
                 // Silently log to debug if needed
                 if (window.DEBUG_MODE) {
                     originalWarn.apply(console, ['[Suppressed]', ...args]);
@@ -60,12 +65,8 @@ class ErrorCleanup {
         };
         
         console.error = function(...args) {
-            const message = args.join(' ');
-            
             // Count actual errors (not suppressed)
-            if (window.errorCleanup) {
-                window.errorCleanup.errorCount++;
-            }
+            cleanup.errorCount++;
             
             originalError.apply(console, args);
         };
@@ -109,8 +110,6 @@ class ErrorCleanup {
     
     addGlobalErrorHandler() {
         window.addEventListener('error', (event) => {
-            this.errorCount++;
-            
             // Log error in a clean format
             console.error('[Global Error]', {
                 message: event.message,
@@ -131,12 +130,13 @@ class ErrorCleanup {
             }
             
             // Prevent default error display
+            if (typeof event.preventDefault === 'function') {
+                event.preventDefault();
+            }
             return true;
         });
         
         window.addEventListener('unhandledrejection', (event) => {
-            this.errorCount++;
-            
             console.error('[Unhandled Promise Rejection]', event.reason);
             
             // Prevent default
@@ -182,16 +182,20 @@ class ErrorCleanup {
     // ========================================================================
     
     getStats() {
+        const uptimeSeconds = this.startTime ? Math.floor((Date.now() - this.startTime) / 1000) : 0;
         return {
             errors: this.errorCount,
             warnings: this.warningCount,
-            uptime: Math.floor((Date.now() - this.startTime) / 1000)
+            suppressedWarnings: this.suppressedWarningCount,
+            uptime: uptimeSeconds
         };
     }
     
     clearStats() {
         this.errorCount = 0;
         this.warningCount = 0;
+        this.suppressedWarningCount = 0;
+        this.startTime = Date.now();
         console.success('[ErrorCleanup] Stats cleared');
     }
     
@@ -200,6 +204,7 @@ class ErrorCleanup {
         console.section('Error Statistics');
         console.log('Errors:', stats.errors);
         console.log('Warnings:', stats.warnings);
+        console.log('Suppressed Warnings:', stats.suppressedWarnings);
         console.log('Uptime:', stats.uptime + 's');
     }
 }
@@ -254,7 +259,6 @@ function showConsoleBanner() {
 // ========================================================================
 
 window.errorCleanup = new ErrorCleanup();
-window.errorCleanup.startTime = Date.now();
 
 // Show banner after a short delay to ensure all systems are loaded
 setTimeout(() => {

@@ -105,14 +105,16 @@ class PanelManager {
         const panel = this.panels[panelName];
         if (!panel) {
             console.warn(`[PanelManager] ⚠️ Panel "${panelName}" not found`);
-            return;
+            return false;
         }
         
         const element = document.getElementById(panel.element);
         if (!element) {
             console.warn(`[PanelManager] ⚠️ Element "${panel.element}" not found for panel "${panelName}"`);
-            return;
+            return false;
         }
+        
+        try {
         
         panel.visible = !panel.visible;
         
@@ -144,6 +146,12 @@ class PanelManager {
             } else {
                 window.terminalPanelInstance.minimize();
             }
+        }
+        
+        return true;
+        } catch (error) {
+            console.error(`[PanelManager] Error toggling ${panelName}:`, error);
+            return false;
         }
     }
     

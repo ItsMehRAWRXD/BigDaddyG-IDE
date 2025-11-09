@@ -1,0 +1,82 @@
+.ide-container {
+    display: flex;
+    height: 100vh;
+    font-family: 'Consolas', monospace;
+    background: #1e1e1e;
+    color: #fff;
+}
+
+.sidebar {
+    width: 250px;
+    background: #252526;
+    border-right: 1px solid #444;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.toolbar {
+    height: 40px;
+    background: #2d2d30;
+    border-bottom: 1px solid #444;
+    padding: 8px;
+}
+
+.editor-area {
+    flex: 1;
+    position: relative;
+}
+
+#editor {
+    width: 100%;
+    height: 100%;
+    background: #1e1e1e;
+    color: #fff;
+    border: none;
+    padding: 16px;
+    font-family: inherit;
+    resize: none;
+    outline: none;
+}
+
+.panels {
+    height: 200px;
+    background: #252526;
+    border-top: 1px solid #444;
+    display: flex;
+}
+
+.panels > div {
+    flex: 1;
+    border-right: 1px solid #444;
+    padding: 8px;
+}
+
+.ai-output {
+    width: 300px;
+    background: #0e1419;
+    border-left: 1px solid #444;
+    padding: 8px;
+    overflow-y: auto;
+}
+
+.ai-output h3 {
+    margin: 0 0 8px 0;
+    color: #00ff00;
+    font-size: 14px;
+}
+
+#ai-log {
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+#ai-log div {
+    margin-bottom: 4px;
+    color: #ccc;
+}

@@ -93,6 +93,8 @@ window.ollamaManager = {
     baseUrl: 'http://localhost:11434',
     orchestraUrl: 'http://localhost:11441',
     availableModels: [],
+    diskModels: [],
+    orchestraModels: [],
     isConnected: false,
     
     async checkOllama() {
@@ -116,17 +118,45 @@ window.ollamaManager = {
     
     async loadModels() {
         try {
+            if (window.electron?.models?.discover) {
+                const result = await window.electron.models.discover();
+                if (result && result.success) {
+                    this.diskModels = result.ollama?.disk || [];
+                    this.availableModels = (result.ollama?.server || []).map(model => ({
+                        name: model.name,
+                        size: model.size,
+                        digest: model.digest,
+                        modified: model.modified
+                    }));
+                    this.orchestraModels = result.orchestra?.models || [];
+                    console.log('[Ollama] 📦 Loaded', this.availableModels.length, 'models (server),', this.diskModels.length, 'on disk');
+                    return {
+                        ollama: this.availableModels,
+                        disk: this.diskModels,
+                        orchestra: this.orchestraModels
+                    };
+                }
+            }
+        } catch (error) {
+            console.warn('[Ollama] Model discovery via main process failed, falling back to HTTP', error);
+        }
+
+        try {
             const response = await fetch(`${this.baseUrl}/api/tags`);
             if (response.ok) {
                 const data = await response.json();
                 this.availableModels = data.models || [];
                 console.log('[Ollama] 📦 Loaded', this.availableModels.length, 'models');
-                return this.availableModels;
             }
         } catch (error) {
             console.error('[Ollama] Error loading models:', error);
         }
-        return [];
+
+        return {
+            ollama: this.availableModels,
+            disk: this.diskModels,
+            orchestra: this.orchestraModels
+        };
     },
     
     async getModels() {
@@ -134,9 +164,10 @@ window.ollamaManager = {
             await this.loadModels();
         }
         return { 
-            ollama: this.availableModels, 
-            discovered: this.availableModels,
-            total: this.availableModels.length 
+            ollama: this.availableModels,
+            disk: this.diskModels,
+            orchestra: this.orchestraModels,
+            total: this.availableModels.length
         };
     },
     

@@ -17,6 +17,7 @@ class TimerManager {
             timersCreated: 0,
             intervalsCreated: 0,
             timersCleared: 0,
+            timersCompleted: 0,
             intervalsCleared: 0,
             activeTimers: 0,
             activeIntervals: 0
@@ -53,12 +54,23 @@ class TimerManager {
         window.setTimeout = function(callback, delay, ...args) {
             self.stats.timersCreated++;
             self.stats.activeTimers++;
-            
-            const timerId = self.originalSetTimeout.call(window, function() {
-                self.timers.delete(timerId);
-                self.stats.activeTimers--;
-                callback(...args);
-            }, delay);
+
+            let timerId;
+            const wrappedCallback = () => {
+                if (self.timers.has(timerId)) {
+                    self.timers.delete(timerId);
+                }
+                self.stats.activeTimers = Math.max(0, self.stats.activeTimers - 1);
+                self.stats.timersCompleted++;
+
+                try {
+                    callback(...args);
+                } catch (error) {
+                    console.error('[TimerManager] Callback error:', error);
+                }
+            };
+
+            timerId = self.originalSetTimeout.call(window, wrappedCallback, delay);
             
             // Track timer with stack trace for debugging
             self.timers.set(timerId, {
@@ -93,7 +105,7 @@ class TimerManager {
             if (self.timers.has(timerId)) {
                 self.timers.delete(timerId);
                 self.stats.timersCleared++;
-                self.stats.activeTimers--;
+                self.stats.activeTimers = Math.max(0, self.stats.activeTimers - 1);
             }
             return self.originalClearTimeout.call(window, timerId);
         };
@@ -151,14 +163,22 @@ class TimerManager {
         console.log('[TimerManager] 🧹 Cleaning up all timers...');
         
         // Clear all timeouts
+        const pendingTimeouts = this.timers.size;
         for (const timerId of this.timers.keys()) {
             this.originalClearTimeout.call(window, timerId);
         }
+        this.timers.clear();
+        this.stats.timersCleared += pendingTimeouts;
+        this.stats.activeTimers = 0;
         
         // Clear all intervals
+        const pendingIntervals = this.intervals.size;
         for (const intervalId of this.intervals.keys()) {
             this.originalClearInterval.call(window, intervalId);
         }
+        this.intervals.clear();
+        this.stats.intervalsCleared += pendingIntervals;
+        this.stats.activeIntervals = 0;
         
         // Clear leak detection
         if (this.leakDetectionInterval) {
@@ -170,16 +190,19 @@ class TimerManager {
     }
     
     logStats() {
+        const resolvedTimers = this.stats.timersCleared + this.stats.timersCompleted;
+
         console.log('[TimerManager] 📊 Timer Statistics:');
         console.log(`  Timeouts Created: ${this.stats.timersCreated}`);
         console.log(`  Timeouts Cleared: ${this.stats.timersCleared}`);
+        console.log(`  Timeouts Completed: ${this.stats.timersCompleted}`);
         console.log(`  Timeouts Active: ${this.stats.activeTimers}`);
         console.log(`  Intervals Created: ${this.stats.intervalsCreated}`);
         console.log(`  Intervals Cleared: ${this.stats.intervalsCleared}`);
         console.log(`  Intervals Active: ${this.stats.activeIntervals}`);
         
         const leakRate = this.stats.timersCreated > 0 
-            ? Math.round((1 - this.stats.timersCleared / this.stats.timersCreated) * 100)
+            ? Math.max(0, Math.round((1 - resolvedTimers / this.stats.timersCreated) * 100))
             : 0;
         
         if (leakRate > 20) {

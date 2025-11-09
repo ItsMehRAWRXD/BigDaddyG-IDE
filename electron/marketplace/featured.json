@@ -1,0 +1,15 @@
+{
+  "featured": [
+    "github.copilot",
+    "amazonwebservices.amazon-q-vscode",
+    "eamodio.gitlens",
+    "ms-python.python",
+    "ms-vscode.cpptools",
+    "rust-lang.rust-analyzer",
+    "ms-azuretools.vscode-docker",
+    "ms-dotnettools.csharp",
+    "ms-vscode.powershell",
+    "redhat.vscode-yaml"
+  ]
+}
+

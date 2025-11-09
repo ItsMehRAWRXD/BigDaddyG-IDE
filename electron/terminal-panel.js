@@ -1102,11 +1102,13 @@ if (typeof monaco !== 'undefined') {
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         terminalPanelInstance = new TerminalPanel();
+        window.terminalPanelInstance = terminalPanelInstance; // Expose globally
         console.log('[TerminalPanel] ✅ Terminal panel initialized');
         console.log('[TerminalPanel] 💡 Press Ctrl+J to toggle');
     });
 } else {
     terminalPanelInstance = new TerminalPanel();
+    window.terminalPanelInstance = terminalPanelInstance; // Expose globally
     console.log('[TerminalPanel] ✅ Terminal panel initialized');
     console.log('[TerminalPanel] 💡 Press Ctrl+J to toggle');
 }

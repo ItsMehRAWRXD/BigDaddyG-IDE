@@ -23,6 +23,13 @@ class EmbeddedBrowser {
         this.networkLogs = [];
         this.consoleLogs = [];
         this.screenshots = [];
+        this.mediaState = {
+            isPlaying: false,
+            isYouTube: false,
+            title: ''
+        };
+        this.youtubeControlsInjected = false;
+        this.youtubeLastSearch = '';
         
         this.setupBrowserView();
         this.setupIPCHandlers();
@@ -50,6 +57,15 @@ class EmbeddedBrowser {
             }
         });
         
+        this.browserView.webContents.on('media-started-playing', () => {
+            const title = this.browserView.webContents.getTitle() || this.mediaState.title;
+            this.updateMediaState({ isPlaying: true, title });
+        });
+
+        this.browserView.webContents.on('media-paused', () => {
+            this.updateMediaState({ isPlaying: false });
+        });
+
         // Set initial bounds
         this.updateBounds();
         
@@ -61,10 +77,29 @@ class EmbeddedBrowser {
         this.browserView.webContents.on('did-finish-load', () => {
             this.currentURL = this.browserView.webContents.getURL();
             this.addToHistory(this.currentURL);
+            const title = this.browserView.webContents.getTitle();
+            const isYouTube = this.isYouTubeUrl(this.currentURL);
+            this.updateMediaState({
+                isYouTube,
+                title: title || ''
+            });
+            if (isYouTube) {
+                this.injectYouTubeControls().catch(error => {
+                    console.warn('[Browser] ⚠️ Failed to inject YouTube controls:', error);
+                });
+            } else {
+                this.youtubeControlsInjected = false;
+            }
             this.sendToRenderer('browser:loaded', { 
                 url: this.currentURL,
                 title: this.browserView.webContents.getTitle()
             });
+        });
+
+        this.browserView.webContents.on('page-title-updated', (event, title) => {
+            if (this.isYouTubeUrl(this.browserView.webContents.getURL())) {
+                this.updateMediaState({ title: title || '' });
+            }
         });
         
         this.browserView.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
@@ -159,6 +194,148 @@ class EmbeddedBrowser {
     }
     
     // ========================================================================
+    // YOUTUBE & MEDIA CONTROLS
+    // ========================================================================
+
+    isYouTubeUrl(url = '') {
+        return typeof url === 'string' && url.includes('youtube.com');
+    }
+
+    async executeInBrowserView(script) {
+        if (!this.browserView) {
+            return null;
+        }
+        try {
+            return await this.browserView.webContents.executeJavaScript(script, true);
+        } catch (error) {
+            console.warn('[Browser] ⚠️ Script execution failed:', error.message || error);
+            return null;
+        }
+    }
+
+    updateMediaState(partial = {}) {
+        this.mediaState = {
+            ...this.mediaState,
+            ...partial
+        };
+        this.sendToRenderer('browser:media-state', this.mediaState);
+    }
+
+    async injectYouTubeControls() {
+        if (!this.browserView || this.youtubeControlsInjected) {
+            return;
+        }
+        const result = await this.executeInBrowserView(`(function() {
+            if (window.__BigDaddyGYouTubeControls) {
+                return 'existing';
+            }
+            window.__BigDaddyGYouTubeControls = {
+                togglePlayback() {
+                    const video = document.querySelector('video');
+                    if (!video) {
+                        return { success: false, reason: 'no-video' };
+                    }
+                    if (video.paused) {
+                        video.play();
+                        return { success: true, state: 'playing' };
+                    }
+                    video.pause();
+                    return { success: true, state: 'paused' };
+                },
+                async enterPictureInPicture() {
+                    const video = document.querySelector('video');
+                    if (!video) {
+                        return { success: false, reason: 'no-video' };
+                    }
+                    if (!document.pictureInPictureEnabled) {
+                        return { success: false, reason: 'pip-not-supported' };
+                    }
+                    if (document.pictureInPictureElement) {
+                        await document.exitPictureInPicture();
+                        return { success: true, state: 'closed' };
+                    }
+                    await video.requestPictureInPicture();
+                    return { success: true, state: 'opened' };
+                },
+                async playFirstVideo() {
+                    const candidates = Array.from(document.querySelectorAll('ytd-video-renderer a#thumbnail, ytd-rich-item-renderer a#thumbnail, a#video-title'));
+                    const target = candidates.find(el => el.offsetParent !== null);
+                    if (target) {
+                        target.click();
+                        return { success: true, action: 'clicked' };
+                    }
+                    const video = document.querySelector('video');
+                    if (video) {
+                        if (video.paused) {
+                            video.play();
+                        }
+                        return { success: true, action: 'play-triggered' };
+                    }
+                    return { success: false, reason: 'no-video-found' };
+                }
+            };
+            return 'injected';
+        })()`);
+        if (result) {
+            this.youtubeControlsInjected = true;
+        }
+    }
+
+    async openYouTubeHome() {
+        this.navigate('https://www.youtube.com');
+        this.show();
+    }
+
+    async searchYouTube(query) {
+        if (!query || typeof query !== 'string') {
+            return;
+        }
+        this.youtubeLastSearch = query;
+        const target = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
+        this.navigate(target);
+        this.show();
+    }
+
+    async togglePlayback() {
+        await this.injectYouTubeControls();
+        const result = await this.executeInBrowserView(`(function() {
+            if (!window.__BigDaddyGYouTubeControls) {
+                return { success: false, reason: 'controls-not-ready' };
+            }
+            return window.__BigDaddyGYouTubeControls.togglePlayback();
+        })();`);
+        if (result && result.state) {
+            this.updateMediaState({ isPlaying: result.state === 'playing' });
+        }
+        return result;
+    }
+
+    async enterPictureInPicture() {
+        await this.injectYouTubeControls();
+        const result = await this.executeInBrowserView(`(function() {
+            if (!window.__BigDaddyGYouTubeControls) {
+                return { success: false, reason: 'controls-not-ready' };
+            }
+            return window.__BigDaddyGYouTubeControls.enterPictureInPicture();
+        })();`);
+        return result;
+    }
+
+    async playFirstYouTubeVideo() {
+        await this.injectYouTubeControls();
+        const result = await this.executeInBrowserView(`(function() {
+            if (!window.__BigDaddyGYouTubeControls) {
+                return { success: false, reason: 'controls-not-ready' };
+            }
+            return window.__BigDaddyGYouTubeControls.playFirstVideo();
+        })();`);
+        if (result && result.success) {
+            this.updateMediaState({ isPlaying: true });
+        }
+        return result;
+    }
+
+    // ========================================================================
     // NAVIGATION
     // ========================================================================
     
@@ -177,6 +354,13 @@ class EmbeddedBrowser {
             }
         }
         
+        const isYouTube = this.isYouTubeUrl(cleanURL);
+        this.youtubeControlsInjected = false;
+        this.updateMediaState({
+            isPlaying: false,
+            isYouTube,
+            title: ''
+        });
         this.currentURL = cleanURL;
         this.browserView.webContents.loadURL(cleanURL);
         
@@ -471,6 +655,32 @@ class EmbeddedBrowser {
             this.hide();
         });
         
+        ipcMain.handle('browser:open-youtube', () => {
+            this.show();
+            return this.openYouTubeHome();
+        });
+
+        ipcMain.handle('browser:search-youtube', (event, query) => {
+            this.show();
+            return this.searchYouTube(query);
+        });
+
+        ipcMain.handle('browser:play-youtube', () => {
+            return this.playFirstYouTubeVideo();
+        });
+
+        ipcMain.handle('browser:toggle-playback', () => {
+            return this.togglePlayback();
+        });
+
+        ipcMain.handle('browser:enter-pip', () => {
+            return this.enterPictureInPicture();
+        });
+
+        ipcMain.handle('browser:get-media-state', () => {
+            return this.mediaState;
+        });
+
         ipcMain.handle('browser:screenshot', async (event, options) => {
             return await this.takeScreenshot(options);
         });

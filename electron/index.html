@@ -681,6 +681,9 @@
                     <button onclick="if(window.tabSystem) window.tabSystem.openSettingsTab()" style="width: 100%; background: none; border: 1px solid var(--cursor-border); color: var(--cursor-text); padding: 12px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; text-align: left; transition: all 0.2s;" onmouseover="this.style.background='var(--cursor-bg-tertiary)';" onmouseout="this.style.background='none';">
                         ⚙️ Open Settings <span style="float: right; font-size: 10px; opacity: 0.7;">Ctrl+,</span>
                     </button>
+                    <button onclick="if(window.browserPanel) window.browserPanel.show()" style="width: 100%; background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 255, 136, 0.2)); border: 1px solid var(--cyan); color: var(--cyan); padding: 12px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; text-align: left; transition: all 0.2s;" onmouseover="this.style.background='linear-gradient(135deg, rgba(0, 212, 255, 0.3), rgba(0, 255, 136, 0.3))';" onmouseout="this.style.background='linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 255, 136, 0.2))';">
+                        🌐 Open Browser <span style="float: right; font-size: 10px; opacity: 0.7;">Ctrl+Shift+B</span>
+                    </button>
                 </div>
                 
                 <!-- Tab Content Areas -->
@@ -880,6 +883,9 @@
                         <p style="color: var(--cursor-text-secondary);">Settings panel - coming soon!</p>
                     </div>
                     
+                    <!-- TODO PANEL -->
+                    <div id="todo-panel-container" style="position: fixed; bottom: 20px; right: 20px; width: 350px; z-index: 1000;"></div>
+                    
                 </div>
                 <!-- END Tab Content Areas -->
             </div>
@@ -980,6 +986,9 @@
     </script>
     
     <!-- Core Scripts -->
+    <!-- WINDOW API BRIDGE - Must load FIRST to expose missing APIs -->
+    <script src="window-api-bridge.js"></script>
+    
     <!-- TIMER MANAGER - Must load FIRST to prevent memory leaks -->
     <script src="timer-manager.js"></script>
     
@@ -1092,6 +1101,12 @@
     <!-- AGENTIC AUTO-FIXER - Self-healing IDE that autonomously fixes issues! -->
     <script src="agentic-auto-fixer.js"></script>
     
+    <!-- AI PROVIDER MANAGER - Unified AI provider interface -->
+    <script src="ai-provider-manager.js"></script>
+    
+    <!-- AGENTIC AI BRIDGE - Connect AI providers to agentic features -->
+    <script src="agentic-ai-bridge.js"></script>
+    
     <!-- AGENTIC CODER - AI Agent that writes code autonomously! -->
     <script src="agentic-coder.js"></script>
     
@@ -1102,6 +1117,7 @@
     <script src="plugin-system.js"></script>
     <script src="plugin-marketplace.js"></script>
     <script src="plugins/code-stats.js"></script>
+    <script src="plugins/first-party-linter.js"></script>
     
     <!-- UNIFIED EXTENSION SYSTEM - RawrZ, Multi AI, Auto-compile -->
     <script src="unified-extension-system.js"></script>
@@ -1135,6 +1151,7 @@
     <script src="enhanced-agentic-executor.js"></script>
     <script src="ui/live-coding-panel.js"></script>
     <script src="ui/todo-panel.js"></script>
+    <script src="neural-code-synthesis.js"></script>
     <script src="ui/chat-customizer.js"></script>
     <script src="agentic-test-runner.js"></script>
     <script src="swarm-engine.js"></script>
@@ -1317,6 +1334,16 @@
         }
         
         console.log('[BigDaddyG] ✨ Everything ready! Start coding!');
+        
+        // Global error handlers
+        window.addEventListener('unhandledrejection', (event) => {
+            console.error('[BigDaddyG] ❌ Unhandled Promise Rejection:', event.reason);
+            event.preventDefault();
+        });
+        
+        window.addEventListener('error', (event) => {
+            console.error('[BigDaddyG] ❌ Global Error:', event.error);
+        });
     </script>
     
     <!-- ERROR LOG WRITER - Comprehensive error logging to file -->
@@ -1324,6 +1351,9 @@
     
     <!-- WEB BROWSER - Integrated browser -->
     <script src="web-browser.js"></script>
+    
+    <!-- BROWSER PANEL - Enhanced tabbed browser -->
+    <script src="browser-panel.js"></script>
     
     <!-- PANEL MANAGER - Universal panel control -->
     <script src="panel-manager.js"></script>
@@ -1336,6 +1366,9 @@
     
     <!-- FULL AGENTIC DEMO - Shows chat, AI response, and agentic coding! -->
     <script src="full-agentic-demo.js"></script>
+
+    <!-- AGENTIC BROWSER DEMO - AI drives the integrated browser -->
+    <script src="agentic-browser-demo.js"></script>
     
     <!-- TAB SYSTEM DEBUGGER - Find why tabs aren't working -->
     <script src="tab-debug.js"></script>
@@ -1345,6 +1378,9 @@
     
     <!-- IDE INITIALIZER - Final validation and system check (MUST BE LAST) -->
     <script src="ide-initializer.js"></script>
+    
+    <!-- DEMO LAUNCHER - Comprehensive visual showcase of all features -->
+    <script src="demo-launcher.js"></script>
 </body>
 </html>
 

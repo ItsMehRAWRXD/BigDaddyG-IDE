@@ -192,32 +192,100 @@ class AIResponseHandler {
                 stream: true
             };
             
-            const response = await fetch('http://localhost:11441/api/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(requestBody),
-                signal: this.currentAbortController.signal
-            });
-            
-            if (!response.ok) {
-                throw new Error(`Server returned ${response.status}`);
-            }
-            
-            // Stream response
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder();
+            // Try BigDaddyG Orchestra server first, then fallback to native client
             let fullResponse = '';
+            let responseSource = 'unknown';
             
-            while (true) {
-                const { done, value } = await reader.read();
+            try {
+                // Primary: Orchestra Server API
+                const response = await fetch('http://localhost:11441/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody),
+                    signal: this.currentAbortController.signal
+                });
                 
-                if (done) break;
+                if (response.ok) {
+                    responseSource = 'orchestra';
+                    
+                    if (requestBody.stream) {
+                        // Handle Server-Sent Events streaming
+                        const reader = response.body.getReader();
+                        const decoder = new TextDecoder();
+                        
+                        while (true) {
+                            const { done, value } = await reader.read();
+                            if (done) break;
+                            
+                            const chunk = decoder.decode(value, { stream: true });
+                            const lines = chunk.split('\n');
+                            
+                            for (const line of lines) {
+                                if (line.startsWith('data: ')) {
+                                    const data = line.slice(6);
+                                    if (data === '[DONE]') break;
+                                    
+                                    try {
+                                        const parsed = JSON.parse(data);
+                                        if (parsed.type === 'token' && parsed.content) {
+                                            fullResponse += parsed.content;
+                                            this.updateStreamingResponse(responseId, fullResponse);
+                                        } else if (parsed.type === 'complete') {
+                                            fullResponse = parsed.content || fullResponse;
+                                            break;
+                                        }
+                                    } catch (e) {
+                                        // Non-JSON chunk, treat as direct content
+                                        fullResponse += data;
+                                        this.updateStreamingResponse(responseId, fullResponse);
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        // Non-streaming response
+                        const data = await response.json();
+                        fullResponse = data.response || data.content || 'No response content';
+                    }
+                } else {
+                    throw new Error(`Orchestra server returned ${response.status}`);
+                }
+            } catch (orchestraError) {
+                console.warn('[AIResponse] Orchestra server failed, trying native client:', orchestraError.message);
                 
-                const chunk = decoder.decode(value, { stream: true });
-                fullResponse += chunk;
-                
-                // Update streaming display
-                this.updateStreamingResponse(responseId, fullResponse);
+                try {
+                    // Fallback: Native BigDaddyG client via IPC
+                    if (window.electron && window.electron.nativeOllama) {
+                        responseSource = 'native';
+                        
+                        const nativeResponse = await window.electron.nativeOllama.generate(
+                            requestBody.model || 'bigdaddyg:latest',
+                            requestBody.message,
+                            { 
+                                stream: false,
+                                fallbackToMock: true,
+                                signal: this.currentAbortController.signal
+                            }
+                        );
+                        
+                        if (nativeResponse.success) {
+                            fullResponse = nativeResponse.response || 'No response from native client';
+                            if (nativeResponse.isMock) {
+                                responseSource = 'mock';
+                            }
+                        } else {
+                            throw new Error(nativeResponse.error || 'Native client failed');
+                        }
+                    } else {
+                        throw new Error('Native client not available');
+                    }
+                } catch (nativeError) {
+                    console.warn('[AIResponse] Native client failed, using fallback:', nativeError.message);
+                    
+                    // Final fallback: Mock response
+                    responseSource = 'fallback';
+                    fullResponse = this.generateFallbackResponse(message);
+                }
             }
             
             // Store AI response in memory
@@ -229,8 +297,11 @@ class AIResponseHandler {
                 }).catch(err => console.warn('[AIResponse] Failed to store AI response:', err));
             }
             
+            // Add response source indicator
+            const sourceIndicator = this.getSourceIndicator(responseSource);
+            
             // Finalize response with code actions
-            this.finalizeResponse(responseId, fullResponse);
+            this.finalizeResponse(responseId, fullResponse, sourceIndicator);
             
         } catch (error) {
             if (error.name !== 'AbortError') {
@@ -501,6 +572,27 @@ class AIResponseHandler {
     
     escapeCode(code) {
         return code.replace(/`/g, '\\`').replace(/\$/g, '\\$');
+    }
+    
+    generateFallbackResponse(message) {
+        const responses = [
+            "I understand you're asking about: " + message.substring(0, 50) + "... Let me help with that.",
+            "I'm currently experiencing connectivity issues, but I can still assist you with your request.",
+            "While I work on reconnecting to my full capabilities, here's what I can tell you about your query.",
+            "I'm operating in offline mode right now, but I'll do my best to help with your question."
+        ];
+        return responses[Math.floor(Math.random() * responses.length)];
+    }
+    
+    getSourceIndicator(source) {
+        const indicators = {
+            'orchestra': '🎼 Orchestra Server',
+            'native': '💻 Native Client', 
+            'mock': '🎭 Mock Response',
+            'fallback': '⚡ Fallback Mode',
+            'unknown': '❓ Unknown Source'
+        };
+        return indicators[source] || indicators['unknown'];
     }
     
     addAIMessage(text, isError = false) {

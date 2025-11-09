@@ -3,7 +3,16 @@
  * Professional desktop IDE with dedicated tabs and syntax highlighting
  */
 
-const { app, BrowserWindow, ipcMain, Menu, dialog } = require('electron');
+const electronModule = require('electron');
+const { app, BrowserWindow, ipcMain, Menu, dialog } = electronModule;
+
+if (!app || typeof app.whenReady !== 'function') {
+  console.error('[BigDaddyG] ❌ Electron "app" module unavailable.');
+  console.error('[BigDaddyG]    • ELECTRON_RUN_AS_NODE =', process.env.ELECTRON_RUN_AS_NODE || 'undefined');
+  console.error('[BigDaddyG]    • process.type =', process.type || 'undefined');
+  console.error('[BigDaddyG] 🚫 This file must be launched with the Electron runtime (e.g. `npm start`).');
+  process.exit(1);
+}
 const path = require('path');
 const fs = require('fs');
 const http = require('http');
@@ -12,39 +21,239 @@ const windowStateKeeper = require('electron-window-state');
 const { EmbeddedBrowser } = require('./browser-view');
 const SafeModeDetector = require('./safe-mode-detector');
 const memoryService = require('./memory-service');
-const nativeOllamaNode = require('./native-ollama-node');
+const nativeOllamaClient = require('./native-ollama-node');
+const { getBigDaddyGCore } = require('./bigdaddyg-agentic-core');
+const { createExtensionHost, ExtensionBridge } = require('./extension-host/extension-host');
+const MarketplaceClient = require('./marketplace/marketplace-client');
+const ExtensionManager = require('./marketplace/extension-manager');
+const SettingsImporter = require('./settings/settings-importer');
+const ApiKeyStore = require('./settings/api-key-store');
 
 let mainWindow;
 let orchestraServer = null;
 let remoteLogServer = null;
 let embeddedBrowser;
 let safeModeDetector = new SafeModeDetector();
+let marketplaceClient = null;
+let extensionHostInstance = null;
+let extensionBridge = null;
+let extensionManager = null;
+let settingsImporter = null;
+let marketplaceReady = false;
+let marketplaceInitPromise = null;
+let apiKeyStore = null;
+let modelInterfaceInstance = null;
+let bigDaddyGCore = null;
+
+const FEATURED_MARKETPLACE_PATH = path.join(__dirname, 'marketplace', 'featured.json');
+
+const MARKETPLACE_EVENT_CHANNEL = 'marketplace:event';
+
+function broadcastMarketplaceEvent(event) {
+  const windows = BrowserWindow.getAllWindows();
+  windows.forEach((win) => {
+    if (win && !win.isDestroyed()) {
+      win.webContents.send(MARKETPLACE_EVENT_CHANNEL, event);
+    }
+  });
+}
+
+function parseExtensionId(extensionId) {
+  if (typeof extensionId !== 'string') {
+    throw new Error('Extension ID must be a string');
+  }
+  const parts = extensionId.split('.');
+  if (parts.length < 2) {
+    throw new Error(`Invalid extension ID: ${extensionId}`);
+  }
+  const publisher = parts.shift();
+  const name = parts.join('.');
+  if (!publisher || !name) {
+    throw new Error(`Invalid extension ID: ${extensionId}`);
+  }
+  return { publisher, name };
+}
+
+function getPluginDirectory() {
+  const dir = path.join(app.getPath('userData'), 'plugins');
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+  return dir;
+}
+
+async function initializeExtensionEcosystem() {
+  if (marketplaceInitPromise) {
+    return marketplaceInitPromise;
+  }
+
+  marketplaceInitPromise = (async () => {
+    try {
+      if (!mainWindow) {
+        throw new Error('Main window not initialized');
+      }
+
+      console.log('[Marketplace] 🚀 Initializing extension marketplace...');
+
+      marketplaceClient = new MarketplaceClient();
+      await marketplaceClient.initialize();
+
+      extensionHostInstance = createExtensionHost(mainWindow, null);
+      await extensionHostInstance.initialize();
+
+      extensionBridge = new ExtensionBridge(extensionHostInstance);
+
+      extensionManager = new ExtensionManager(marketplaceClient, extensionHostInstance);
+      await extensionManager.initialize();
+
+      settingsImporter = new SettingsImporter(marketplaceClient, extensionHostInstance);
+
+      extensionManager.on('extension-installed', (payload) => {
+        broadcastMarketplaceEvent({ type: 'installed', payload });
+      });
+
+      extensionManager.on('extension-uninstalled', (payload) => {
+        broadcastMarketplaceEvent({ type: 'uninstalled', payload });
+      });
+
+      extensionManager.on('extension-enabled', (payload) => {
+        broadcastMarketplaceEvent({ type: 'enabled', payload });
+      });
+
+      extensionManager.on('extension-disabled', (payload) => {
+        broadcastMarketplaceEvent({ type: 'disabled', payload });
+      });
+
+      extensionManager.on('extension-updated', (payload) => {
+        broadcastMarketplaceEvent({ type: 'updated', payload });
+      });
+
+      marketplaceReady = true;
+      console.log('[Marketplace] ✅ Extension marketplace ready');
+    } catch (error) {
+      marketplaceReady = false;
+      marketplaceInitPromise = null;
+      console.error('[Marketplace] ❌ Failed to initialize:', error);
+      throw error;
+    }
+  })();
+
+  return marketplaceInitPromise;
+}
+
+async function ensureMarketplaceReady() {
+  if (!marketplaceReady) {
+    await initializeExtensionEcosystem();
+  }
+  return marketplaceReady;
+}
+
+async function getInstalledExtensionMetadata(extensionId) {
+  if (!marketplaceClient) {
+    return null;
+  }
+  const installed = await marketplaceClient.listInstalledExtensions();
+  return installed.find((ext) => ext.id === extensionId) || null;
+}
+
+function getExtensionState(extensionId) {
+  if (!extensionManager) {
+    return null;
+  }
+  const state = extensionManager.getExtensionState(extensionId);
+  return state ? { ...state } : null;
+}
+
+class ModelInterface {
+  constructor() {
+    this.initialized = false;
+  }
+
+  async initialize() {
+    try {
+      const health = await checkOrchestraHealth();
+      this.initialized = health;
+      return health;
+    } catch (error) {
+      console.error('[ModelInterface] Initialization failed:', error);
+      return false;
+    }
+  }
+
+  async listModels() {
+    if (!this.initialized) {
+      await this.initialize();
+    }
+    try {
+      const response = await fetch('http://localhost:11441/api/models');
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      const data = await response.json();
+      return data.models || [];
+    } catch (error) {
+      console.warn('[ModelInterface] Failed to list models:', error.message);
+      return [];
+    }
+  }
+}
+
+async function getModelInterface() {
+  if (!modelInterfaceInstance) {
+    modelInterfaceInstance = new ModelInterface();
+  }
+  const ready = await modelInterfaceInstance.initialize();
+  if (!ready) {
+    return null;
+  }
+  return modelInterfaceInstance;
+}
+
+async function listOrchestraModels() {
+  try {
+    const instance = await getModelInterface();
+    if (!instance) {
+      return { available: false, models: [] };
+    }
+    const models = await instance.listModels();
+    return { available: true, models };
+  } catch (error) {
+    console.warn('[Orchestra] Failed to list models:', error.message || error);
+    return { available: false, models: [], error: error.message };
+  }
+}
 
 // ============================================================================
 // GPU & PERFORMANCE OPTIMIZATIONS
 // ============================================================================
 
-// FIX: HIGH REFRESH RATE DISPLAY SUPPORT (8K @ 540Hz!)
-app.commandLine.appendSwitch('disable-gpu-vsync'); // Disable vsync for high refresh
-app.commandLine.appendSwitch('disable-frame-rate-limit');
-app.commandLine.appendSwitch('max-gum-fps', '600'); // Support up to 600fps
+// Apply performance optimizations BEFORE app.whenReady()
+try {
+  app.commandLine.appendSwitch('disable-gpu-vsync'); // Disable vsync for high refresh
+  app.commandLine.appendSwitch('disable-frame-rate-limit');
+  app.commandLine.appendSwitch('max-gum-fps', '600'); // Support up to 600fps
+  app.commandLine.appendSwitch('disable-gpu');
+  app.commandLine.appendSwitch('disable-software-rasterizer', 'false');
+  app.commandLine.appendSwitch('js-flags', '--max-old-space-size=8192');
+  console.log('[BigDaddyG] ✅ Performance optimizations applied');
+} catch (error) {
+  console.log('[BigDaddyG] ⚠️ Some performance optimizations failed:', error.message);
+}
 
-// FIX: Force software rendering for stability (high res displays)
-app.commandLine.appendSwitch('disable-gpu');
-app.commandLine.appendSwitch('disable-software-rasterizer', 'false');
-
-// FIX: Reduce memory pressure
-app.commandLine.appendSwitch('js-flags', '--max-old-space-size=8192');
-
-console.log('[BigDaddyG] ⚡ GPU acceleration enabled');
+console.log('[BigDaddyG] ⚡ Performance optimizations ready');
 console.log('[BigDaddyG] 🎯 Target: 240 FPS');
 
 // ============================================================================
 // APPLICATION LIFECYCLE
 // ============================================================================
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   console.log('[BigDaddyG] 🚀 Starting Electron app...');
+  
+  // Initialize BigDaddyG Core
+  bigDaddyGCore = await getBigDaddyGCore();
+
+  bigDaddyGCore.attachNativeClient(nativeOllamaClient);
   
   // Start Orchestra server
   startOrchestraServer();
@@ -57,6 +266,16 @@ app.whenReady().then(() => {
   
   // Set up application menu
   createMenu();
+
+  try {
+    await ensureApiKeyStore();
+  } catch (error) {
+    console.error('[BigDaddyG] ❌ Failed to initialize API key store:', error);
+  }
+
+  initializeExtensionEcosystem().catch((error) => {
+    console.error('[Marketplace] Startup initialization failed:', error);
+  });
   
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
@@ -298,6 +517,133 @@ function checkOrchestraHealth() {
       resolve(false);
     });
   });
+}
+
+// ============================================================================
+// MARKETPLACE & EXTENSION HELPERS
+// ============================================================================
+
+async function loadFeaturedExtensionIds() {
+    try {
+        const content = await fs.promises.readFile(FEATURED_MARKETPLACE_PATH, 'utf8');
+        const data = JSON.parse(content);
+        if (Array.isArray(data.featured)) {
+            return data.featured;
+        }
+    } catch (error) {
+        console.warn('[Marketplace] ⚠️ Could not load featured catalog:', error.message);
+    }
+    return [];
+}
+
+async function fetchFeaturedExtensions() {
+    const ids = await loadFeaturedExtensionIds();
+    const extensions = [];
+
+    for (const id of ids) {
+        const [publisher, name] = (id || '').split('.');
+        if (!publisher || !name) {
+            continue;
+        }
+
+        try {
+            const ext = await marketplaceClient.getExtension(publisher, name);
+            extensions.push(ext);
+        } catch (error) {
+            console.warn(`[Marketplace] ⚠️ Failed to fetch featured extension ${id}:`, error.message);
+        }
+    }
+
+    return extensions;
+}
+
+async function ensureApiKeyStore() {
+    if (!apiKeyStore) {
+        apiKeyStore = new ApiKeyStore(app);
+        await apiKeyStore.initialize();
+    }
+    return apiKeyStore;
+}
+
+function maskKeyValue(value) {
+    if (!value || typeof value !== 'string') {
+        return '';
+    }
+
+    if (value.length <= 4) {
+        return '*'.repeat(value.length);
+    }
+
+    return `${value.slice(0, 4)}...${value.slice(-4)}`;
+}
+
+// ============================================================================
+// OLLAMA HELPERS
+// ============================================================================
+
+async function listOllamaModels() {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 4000);
+
+    try {
+        const response = await fetch('http://localhost:11434/api/tags', { signal: controller.signal });
+        clearTimeout(timeout);
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data.models || [];
+    } catch (error) {
+        clearTimeout(timeout);
+        throw error;
+    }
+}
+
+async function getOllamaStatus() {
+    try {
+        await listOllamaModels();
+        return { available: true };
+    } catch (error) {
+        return { available: false, error: error.message };
+    }
+}
+
+function runOllamaCommand(args) {
+    return new Promise((resolve) => {
+        try {
+            const proc = spawn('ollama', args, {
+                shell: process.platform === 'win32'
+            });
+
+            let stdout = '';
+            let stderr = '';
+
+            proc.stdout.on('data', (data) => {
+                stdout += data.toString();
+            });
+
+            proc.stderr.on('data', (data) => {
+                stderr += data.toString();
+            });
+
+            proc.on('close', (code) => {
+                if (code === 0) {
+                    resolve({ success: true, output: stdout.trim(), error: stderr.trim() });
+                } else {
+                    const message = (stderr || stdout || `Exit code ${code}`).trim();
+                    resolve({ success: false, error: message });
+                }
+            });
+
+            proc.on('error', (error) => {
+                resolve({ success: false, error: error.message });
+            });
+        } catch (error) {
+            resolve({ success: false, error: error.message });
+        }
+    });
 }
 
 // ============================================================================
@@ -633,6 +979,10 @@ function createMenu() {
           accelerator: 'Ctrl+Shift+B',
           click: () => {
             mainWindow.webContents.send('menu-show-browser');
+            // Also try to show embedded browser if available
+            if (embeddedBrowser) {
+              embeddedBrowser.show();
+            }
           }
         },
         {
@@ -738,6 +1088,247 @@ function createMenu() {
 // ============================================================================
 // IPC HANDLERS
 // ============================================================================
+
+ipcMain.handle('plugin:get-directory', async () => {
+  try {
+    return getPluginDirectory();
+  } catch (error) {
+    console.error('[PluginSystem] Failed to resolve plugin directory:', error);
+    throw error;
+  }
+});
+
+ipcMain.handle('marketplace:status', async () => {
+  try {
+    await ensureMarketplaceReady();
+    if (!marketplaceReady || !marketplaceClient) {
+      throw new Error('Marketplace not initialized');
+    }
+
+    const installed = await marketplaceClient.listInstalledExtensions();
+    const states = installed.reduce((acc, ext) => {
+      acc[ext.id] = getExtensionState(ext.id);
+      return acc;
+    }, {});
+
+    return {
+      success: true,
+      ready: marketplaceReady,
+      installed,
+      states,
+      autoActivate: extensionManager ? Array.from(extensionManager.autoActivate || []) : []
+    };
+  } catch (error) {
+    console.error('[Marketplace] Status error:', error);
+    return {
+      success: false,
+      ready: marketplaceReady,
+      error: error.message
+    };
+  }
+});
+
+ipcMain.handle('marketplace:search', async (event, options = {}) => {
+  try {
+    await ensureMarketplaceReady();
+    if (!marketplaceReady || !marketplaceClient) {
+      throw new Error('Marketplace not initialized');
+    }
+
+    const {
+      query = '',
+      pageNumber = 1,
+      pageSize = 30
+    } = options;
+
+    const results = await marketplaceClient.searchExtensions(query, pageNumber, pageSize);
+    return { success: true, results };
+  } catch (error) {
+    console.error('[Marketplace] Search error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('marketplace:featured', async () => {
+  try {
+    await ensureMarketplaceReady();
+    if (!marketplaceClient) {
+      throw new Error('Marketplace not initialized');
+    }
+
+    const extensions = await fetchFeaturedExtensions();
+    const installed = extensionManager ? await extensionManager.listExtensionsWithStates() : [];
+
+    return {
+      success: true,
+      extensions,
+      installed
+    };
+  } catch (error) {
+    console.error('[Marketplace] Featured error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('marketplace:get-extension', async (event, extensionId) => {
+  try {
+    await ensureMarketplaceReady();
+    if (!marketplaceClient) {
+      throw new Error('Marketplace not initialized');
+    }
+
+    const { publisher, name } = parseExtensionId(extensionId);
+    const extension = await marketplaceClient.getExtension(publisher, name);
+    const installed = await getInstalledExtensionMetadata(extensionId);
+    const state = getExtensionState(extensionId);
+
+    return { success: true, extension, installed, state };
+  } catch (error) {
+    console.error('[Marketplace] Get extension error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('marketplace:list-installed', async () => {
+  try {
+    await ensureMarketplaceReady();
+    if (!marketplaceClient) {
+      throw new Error('Marketplace not initialized');
+    }
+
+    const installed = await marketplaceClient.listInstalledExtensions();
+    return { success: true, installed };
+  } catch (error) {
+    console.error('[Marketplace] List installed error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('marketplace:list-with-state', async () => {
+  try {
+    await ensureMarketplaceReady();
+    if (!extensionManager) {
+      throw new Error('Extension manager not initialized');
+    }
+
+    const extensions = await extensionManager.listExtensionsWithStates();
+    return { success: true, extensions };
+  } catch (error) {
+    console.error('[Marketplace] List with state error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('marketplace:install', async (event, extensionId) => {
+  try {
+    await ensureMarketplaceReady();
+    if (!extensionManager) {
+      throw new Error('Extension manager not initialized');
+    }
+
+    await extensionManager.installExtension(extensionId);
+    const installed = await getInstalledExtensionMetadata(extensionId);
+    const state = getExtensionState(extensionId);
+
+    return { success: true, installed, state };
+  } catch (error) {
+    console.error('[Marketplace] Install error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('marketplace:uninstall', async (event, extensionId) => {
+  try {
+    await ensureMarketplaceReady();
+    if (!extensionManager) {
+      throw new Error('Extension manager not initialized');
+    }
+
+    await extensionManager.uninstallExtension(extensionId);
+    return { success: true };
+  } catch (error) {
+    console.error('[Marketplace] Uninstall error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('marketplace:enable', async (event, extensionId) => {
+  try {
+    await ensureMarketplaceReady();
+    if (!extensionManager) {
+      throw new Error('Extension manager not initialized');
+    }
+
+    await extensionManager.enableExtension(extensionId);
+    return { success: true, state: getExtensionState(extensionId) };
+  } catch (error) {
+    console.error('[Marketplace] Enable error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('marketplace:disable', async (event, extensionId) => {
+  try {
+    await ensureMarketplaceReady();
+    if (!extensionManager) {
+      throw new Error('Extension manager not initialized');
+    }
+
+    await extensionManager.disableExtension(extensionId);
+    return { success: true, state: getExtensionState(extensionId) };
+  } catch (error) {
+    console.error('[Marketplace] Disable error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('marketplace:check-updates', async () => {
+  try {
+    await ensureMarketplaceReady();
+    if (!extensionManager) {
+      throw new Error('Extension manager not initialized');
+    }
+
+    const updates = await extensionManager.checkForUpdates();
+    return { success: true, updates };
+  } catch (error) {
+    console.error('[Marketplace] Check updates error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('marketplace:update', async (event, extensionId) => {
+  try {
+    await ensureMarketplaceReady();
+    if (!extensionManager) {
+      throw new Error('Extension manager not initialized');
+    }
+
+    await extensionManager.updateExtension(extensionId);
+    const installed = await getInstalledExtensionMetadata(extensionId);
+    const state = getExtensionState(extensionId);
+
+    return { success: true, installed, state };
+  } catch (error) {
+    console.error('[Marketplace] Update error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('marketplace:update-all', async () => {
+  try {
+    await ensureMarketplaceReady();
+    if (!extensionManager) {
+      throw new Error('Extension manager not initialized');
+    }
+
+    const results = await extensionManager.updateAllExtensions();
+    return { success: true, results };
+  } catch (error) {
+    console.error('[Marketplace] Update all error:', error);
+    return { success: false, error: error.message };
+  }
+});
 
 ipcMain.handle('read-file', async (event, filePath) => {
   const fs = require('fs').promises;
@@ -1326,6 +1917,186 @@ ipcMain.handle('memory:clear', async () => {
 });
 
 // ============================================================================
+// API KEY MANAGEMENT
+// ============================================================================
+
+ipcMain.handle('apikeys:list', async () => {
+  try {
+    const store = await ensureApiKeyStore();
+    const keys = await store.list();
+
+    const response = {};
+    Object.entries(keys).forEach(([provider, info]) => {
+      response[provider] = {
+        ...info,
+        masked: maskKeyValue(info?.key)
+      };
+    });
+
+    return { success: true, keys: response };
+  } catch (error) {
+    console.error('[API Keys] List error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('apikeys:set', async (event, { provider, key, metadata = {} }) => {
+  try {
+    if (!provider) {
+      throw new Error('Provider is required');
+    }
+
+    const store = await ensureApiKeyStore();
+    const record = await store.set(provider, key, metadata);
+
+    return {
+      success: true,
+      provider,
+      record: {
+        ...record,
+        masked: maskKeyValue(record?.key)
+      }
+    };
+  } catch (error) {
+    console.error('[API Keys] Set error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('apikeys:delete', async (event, provider) => {
+  try {
+    if (!provider) {
+      throw new Error('Provider is required');
+    }
+
+    const store = await ensureApiKeyStore();
+    const removed = await store.remove(provider);
+
+    return { success: true, removed };
+  } catch (error) {
+    console.error('[API Keys] Delete error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// ============================================================================
+// MODEL DISCOVERY (ORCHESTRA + OLLAMA)
+// ============================================================================
+
+async function discoverModels() {
+  const catalog = {
+    ollama: [],
+    orchestra: [],
+    bigdaddyg: null
+  };
+
+  try {
+    const ollamaModels = await listOllamaModels();
+    catalog.ollama = ollamaModels;
+  } catch (error) {
+    console.warn('[Models] Failed to discover Ollama models:', error.message);
+  }
+
+  try {
+    const orchestraResult = await listOrchestraModels();
+    catalog.orchestra = orchestraResult.models || [];
+  } catch (error) {
+    console.warn('[Models] Failed to discover Orchestra models:', error.message);
+  }
+
+  return catalog;
+}
+
+ipcMain.handle('models:discover', async () => {
+  try {
+    const catalog = await discoverModels();
+    const orchestra = await listOrchestraModels();
+    const ollamaServer = await listOllamaModels();
+
+    return {
+      success: true,
+      catalog,
+      orchestra,
+      ollama: {
+        server: ollamaServer,
+        disk: catalog.ollama || []
+      }
+    };
+  } catch (error) {
+    console.error('[Models] Discover error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// ============================================================================
+// OLLAMA MODEL MANAGEMENT
+// ============================================================================
+
+ipcMain.handle('ollama:list-models', async () => {
+  try {
+    const models = await listOllamaModels();
+    return { success: true, models };
+  } catch (error) {
+    console.error('[Ollama] List models error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('ollama:status', async () => {
+  try {
+    const status = await getOllamaStatus();
+    return { success: true, status };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('ollama:pull-model', async (event, modelName) => {
+  try {
+    const model = (modelName || '').trim();
+    if (!model) {
+      throw new Error('Model name is required');
+    }
+
+    const result = await runOllamaCommand(['pull', model]);
+    return { ...result, model };
+  } catch (error) {
+    console.error('[Ollama] Pull error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('ollama:delete-model', async (event, modelName) => {
+  try {
+    const model = (modelName || '').trim();
+    if (!model) {
+      throw new Error('Model name is required');
+    }
+
+    const result = await runOllamaCommand(['rm', model]);
+    return { ...result, model };
+  } catch (error) {
+    console.error('[Ollama] Delete error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('ollama:show-model', async (event, modelName) => {
+  try {
+    const model = (modelName || '').trim();
+    if (!model) {
+      throw new Error('Model name is required');
+    }
+
+    const result = await runOllamaCommand(['show', model]);
+    return { ...result, model };
+  } catch (error) {
+    console.error('[Ollama] Show error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// ============================================================================
 // DRIVE & FILE SYSTEM BROWSING
 // ============================================================================
 
@@ -1807,21 +2578,30 @@ ipcMain.on('window-close', () => {
 // NATIVE OLLAMA NODE.JS HTTP CLIENT
 // ============================================================================
 
-ipcMain.handle('native-ollama-node:generate', async (event, model, prompt) => {
+ipcMain.handle('bigdaddyg:generate', async (event, model, prompt, options) => {
   try {
-    console.log(`[NativeOllama Main] Generating with model: ${model}`);
-    const response = await nativeOllamaNode.generate(model, prompt);
+    const response = await bigDaddyGCore.processRequest(model, prompt, options);
     return { success: true, ...response };
   } catch (error) {
-    console.error('[NativeOllama Main] Generation error:', error);
     return { success: false, error: error.message };
   }
 });
 
-ipcMain.handle('native-ollama-node:stats', async () => {
+ipcMain.handle('bigdaddyg:stats', async () => {
   try {
-    const stats = nativeOllamaNode.getStats();
-    return { success: true, ...stats };
+    const coreStats = bigDaddyGCore.getStats();
+    const nativeStats = nativeOllamaClient.getStats();
+    return { success: true, core: coreStats, native: nativeStats };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('bigdaddyg:clear-cache', async () => {
+  try {
+    bigDaddyGCore.clearCache();
+    nativeOllamaClient.clearCache();
+    return { success: true };
   } catch (error) {
     return { success: false, error: error.message };
   }

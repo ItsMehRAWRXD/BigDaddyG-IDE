@@ -152,7 +152,7 @@ class TodoPanel {
             ${statusIcons[todo.status]}
           </button>
           <div class="todo-item-content">
-            <div class="todo-item-text ${todo.status === 'completed' ? 'completed' : ''}">${this.escapeHtml(todo.content)}</div>
+            <div class="todo-item-text clickable ${todo.status === 'completed' ? 'completed' : ''}" onclick="window.todoPanel.executeTodo('${todo.id}')" title="Click to execute instantly">${this.escapeHtml(todo.content)}</div>
             ${todo.details ? `<div class="todo-item-details">${this.escapeHtml(todo.details)}</div>` : ''}
             ${todo.tags ? `<div class="todo-item-tags">${todo.tags.map(t => `<span class="todo-tag">${t}</span>`).join('')}</div>` : ''}
           </div>
@@ -160,6 +160,7 @@ class TodoPanel {
         
         <div class="todo-item-right">
           ${todo.priority ? `<span class="todo-priority todo-priority-${todo.priority}">!</span>` : ''}
+          <button class="todo-item-btn" data-action="execute" data-id="${todo.id}" title="Execute Now">⚡</button>
           <button class="todo-item-btn" data-action="edit" data-id="${todo.id}" title="Edit">✏️</button>
           <button class="todo-item-btn" data-action="delete" data-id="${todo.id}" title="Delete">🗑️</button>
         </div>
@@ -207,7 +208,9 @@ class TodoPanel {
         const action = btn.dataset.action;
         const id = btn.dataset.id;
         
-        if (action === 'edit') {
+        if (action === 'execute') {
+          this.executeTodo(id);
+        } else if (action === 'edit') {
           this.editTodo(id);
         } else if (action === 'delete') {
           this.deleteTodo(id);
@@ -289,6 +292,33 @@ class TodoPanel {
     }
   }
   
+  addSampleTodos() {
+    const samples = [
+      {
+        content: 'Create a REST API for user authentication',
+        priority: 'high',
+        tags: ['api', 'auth']
+      },
+      {
+        content: 'Build a React component for file upload',
+        priority: 'normal',
+        tags: ['react', 'ui']
+      },
+      {
+        content: 'Write Python script to analyze CSV data',
+        priority: 'normal',
+        tags: ['python', 'data']
+      },
+      {
+        content: 'Generate HTML form with validation',
+        priority: 'low',
+        tags: ['html', 'forms']
+      }
+    ];
+    
+    samples.forEach(sample => this.addTodo(sample));
+  }
+  
   cycleStatus(id) {
     const todo = this.todos.find(t => t.id === id);
     if (!todo) return;
@@ -360,6 +390,9 @@ class TodoPanel {
       if (stored) {
         this.todos = JSON.parse(stored);
         this.render();
+      } else {
+        // Add sample todos on first load
+        this.addSampleTodos();
       }
     } catch (error) {
       console.error('[TodoPanel] Error loading todos:', error);
@@ -414,6 +447,67 @@ class TodoPanel {
     };
     
     input.click();
+  }
+  
+  executeTodo(id) {
+    const todo = this.todos.find(t => t.id === id);
+    if (!todo) return;
+    
+    // Mark as in progress
+    todo.status = 'in_progress';
+    todo.updated = Date.now();
+    this.saveTodos();
+    this.render();
+    
+    // Execute the todo using neural code synthesis
+    this.synthesizeAndExecute(todo);
+  }
+  
+  async synthesizeAndExecute(todo) {
+    try {
+      console.log('[TodoPanel] 🧠 Synthesizing code for:', todo.content);
+      
+      // Send to AI for code synthesis
+      const prompt = `Generate code to accomplish this task: "${todo.content}"
+      
+Provide working code that can be executed immediately. Include any necessary imports or setup.`;
+      
+      // Use the existing AI system to generate code
+      if (window.sendToAI) {
+        // Add the prompt to AI input and send
+        const aiInput = document.getElementById('ai-input');
+        if (aiInput) {
+          aiInput.value = prompt;
+          await window.sendToAI();
+        }
+      }
+      
+      // Mark as completed after synthesis
+      setTimeout(() => {
+        const updatedTodo = this.todos.find(t => t.id === todo.id);
+        if (updatedTodo && updatedTodo.status === 'in_progress') {
+          updatedTodo.status = 'completed';
+          updatedTodo.updated = Date.now();
+          this.saveTodos();
+          this.render();
+        }
+      }, 2000);
+      
+      // Emit event for neural synthesis
+      this.emitEvent('todo-synthesized', { todo, prompt });
+      
+    } catch (error) {
+      console.error('[TodoPanel] ❌ Synthesis failed:', error);
+      
+      // Mark as failed
+      const failedTodo = this.todos.find(t => t.id === todo.id);
+      if (failedTodo) {
+        failedTodo.status = 'pending';
+        failedTodo.updated = Date.now();
+        this.saveTodos();
+        this.render();
+      }
+    }
   }
   
   emitEvent(name, data) {
@@ -700,6 +794,17 @@ class TodoPanel {
         line-height: 1.4;
         color: var(--green);
         margin-bottom: 4px;
+        transition: all 0.2s;
+      }
+      
+      .todo-item-text.clickable {
+        cursor: pointer;
+      }
+      
+      .todo-item-text.clickable:hover {
+        color: var(--cyan);
+        text-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+        transform: translateX(2px);
       }
       
       .todo-item-text.completed {

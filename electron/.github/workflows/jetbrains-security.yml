@@ -1,0 +1,46 @@
+name: Security Scan and Build
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+    
+    - name: Cache Gradle packages
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+    
+    - name: Run dependency check
+      run: ./gradlew dependencyCheckAnalyze
+      working-directory: ide-extensions/jetbrains
+    
+    - name: Run tests
+      run: ./gradlew test
+      working-directory: ide-extensions/jetbrains
+    
+    - name: Build plugin
+      run: ./gradlew buildPlugin
+      working-directory: ide-extensions/jetbrains
+    
+    - name: Upload security report
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: dependency-check-report
+        path: ide-extensions/jetbrains/build/reports/dependency-check-report.html

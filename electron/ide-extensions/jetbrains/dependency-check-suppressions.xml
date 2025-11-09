@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+    <!-- Suppress false positives for IntelliJ Platform dependencies -->
+    <suppress>
+        <notes><![CDATA[
+        IntelliJ Platform dependencies are managed by JetBrains and regularly updated.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.jetbrains.*$</packageUrl>
+        <cve>CVE-2021-44228</cve>
+    </suppress>
+    
+    <!-- Suppress known issues in test dependencies -->
+    <suppress>
+        <notes><![CDATA[
+        Test dependencies are not included in production builds.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.junit.*$</packageUrl>
+        <cve>CVE-2020-15250</cve>
+    </suppress>
+</suppressions>

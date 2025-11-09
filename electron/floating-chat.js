@@ -511,27 +511,17 @@ class FloatingChat {
     }
     
     minimize() {
-        this.close();
-        // Show notification badge on sidebar chat tab
-        const chatTab = document.querySelector('[onclick*="chat"]');
-        if (chatTab && !chatTab.querySelector('.notification-badge')) {
-            const badge = document.createElement('span');
-            badge.className = 'notification-badge';
-            badge.textContent = '1';
-            badge.style.cssText = `
-                position: absolute;
-                top: 8px;
-                right: 8px;
-                background: var(--cursor-jade-dark);
-                color: white;
-                font-size: 10px;
-                padding: 2px 6px;
-                border-radius: 10px;
-                font-weight: 600;
-            `;
-            chatTab.style.position = 'relative';
-            chatTab.appendChild(badge);
-        }
+        if (!this.isOpen) return;
+        
+        this.isOpen = false;
+        this.panel.style.opacity = '0';
+        this.panel.style.transform = 'translate(-50%, -50%) scale(0.9)';
+        
+        setTimeout(() => {
+            this.panel.style.display = 'none';
+        }, 300);
+        
+        console.log('[FloatingChat] ➖ Minimized');
     }
     
     toggle() {
@@ -539,6 +529,13 @@ class FloatingChat {
             this.close();
         } else {
             this.open();
+        }
+    }
+    
+    // Helper for demos to ensure chat is closed
+    ensureClosed() {
+        if (this.isOpen) {
+            this.close();
         }
     }
     

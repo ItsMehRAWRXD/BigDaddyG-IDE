@@ -1,0 +1,373 @@
+{
+  "name": "bigdaddyg-vscode",
+  "displayName": "BigDaddyG AI Assistant Pro",
+  "description": "Enterprise-grade AI coding assistant with multi-agent capabilities, security hardening, and production monitoring",
+  "version": "2.0.0",
+  "publisher": "bigdaddyg",
+  "icon": "resources/icon.png",
+  "galleryBanner": {
+    "color": "#1e1e1e",
+    "theme": "dark"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bigdaddyg/ProjectIDEAI"
+  },
+  "bugs": {
+    "url": "https://github.com/bigdaddyg/ProjectIDEAI/issues"
+  },
+  "homepage": "https://github.com/bigdaddyg/ProjectIDEAI",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.80.0",
+    "node": ">=18.0.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Machine Learning",
+    "Snippets",
+    "Debuggers",
+    "Testing",
+    "Other"
+  ],
+  "keywords": [
+    "ai",
+    "assistant",
+    "coding",
+    "autocomplete",
+    "refactoring",
+    "testing",
+    "security",
+    "multi-agent"
+  ],
+  "activationEvents": [
+    "onStartupFinished",
+    "onCommand:bigdaddyg.authenticate",
+    "onLanguage:javascript",
+    "onLanguage:typescript",
+    "onLanguage:python",
+    "onLanguage:java",
+    "onLanguage:csharp",
+    "onLanguage:cpp",
+    "onLanguage:go",
+    "onLanguage:rust",
+    "onLanguage:php",
+    "onLanguage:ruby"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "bigdaddyg.authenticate",
+        "title": "BigDaddyG: Authenticate",
+        "icon": "$(key)"
+      },
+      {
+        "command": "bigdaddyg.openChat",
+        "title": "BigDaddyG: Open Chat",
+        "icon": "$(comment-discussion)"
+      },
+      {
+        "command": "bigdaddyg.explainCode",
+        "title": "BigDaddyG: Explain Code",
+        "icon": "$(info)"
+      },
+      {
+        "command": "bigdaddyg.generateTests",
+        "title": "BigDaddyG: Generate Tests",
+        "icon": "$(beaker)"
+      },
+      {
+        "command": "bigdaddyg.refactorCode",
+        "title": "BigDaddyG: Refactor Code",
+        "icon": "$(tools)"
+      },
+      {
+        "command": "bigdaddyg.fixBugs",
+        "title": "BigDaddyG: Fix Bugs",
+        "icon": "$(bug)"
+      },
+      {
+        "command": "bigdaddyg.selectAgent",
+        "title": "BigDaddyG: Select Agent",
+        "icon": "$(person)"
+      },
+      {
+        "command": "bigdaddyg.configureSettings",
+        "title": "BigDaddyG: Configure Settings",
+        "icon": "$(settings-gear)"
+      },
+      {
+        "command": "bigdaddyg.securityScan",
+        "title": "BigDaddyG: Security Scan",
+        "icon": "$(shield)"
+      },
+      {
+        "command": "bigdaddyg.performanceAnalysis",
+        "title": "BigDaddyG: Performance Analysis",
+        "icon": "$(pulse)"
+      },
+      {
+        "command": "bigdaddyg.codeReview",
+        "title": "BigDaddyG: Code Review",
+        "icon": "$(checklist)"
+      },
+      {
+        "command": "bigdaddyg.generateDocumentation",
+        "title": "BigDaddyG: Generate Documentation",
+        "icon": "$(book)"
+      },
+      {
+        "command": "bigdaddyg.optimizeCode",
+        "title": "BigDaddyG: Optimize Code",
+        "icon": "$(rocket)"
+      },
+      {
+        "command": "bigdaddyg.showDashboard",
+        "title": "BigDaddyG: Show Dashboard",
+        "icon": "$(dashboard)"
+      },
+      {
+        "command": "bigdaddyg.exportMetrics",
+        "title": "BigDaddyG: Export Metrics",
+        "icon": "$(graph)"
+      },
+      {
+        "command": "bigdaddyg.refreshAgents",
+        "title": "Refresh Agents",
+        "icon": "$(refresh)"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "bigdaddyg",
+          "title": "BigDaddyG",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "bigdaddyg": [
+        {
+          "type": "webview",
+          "id": "bigdaddyg.chatView",
+          "name": "AI Chat",
+          "when": "bigdaddyg.authenticated"
+        },
+        {
+          "id": "bigdaddyg.agentsView",
+          "name": "Multi-Agent Swarm",
+          "when": "bigdaddyg.authenticated"
+        },
+        {
+          "type": "webview",
+          "id": "bigdaddyg.dashboardView",
+          "name": "Performance Dashboard",
+          "when": "bigdaddyg.authenticated"
+        },
+        {
+          "id": "bigdaddyg.securityView",
+          "name": "Security Monitor",
+          "when": "bigdaddyg.authenticated"
+        },
+        {
+          "id": "bigdaddyg.metricsView",
+          "name": "Usage Metrics",
+          "when": "bigdaddyg.authenticated"
+        },
+        {
+          "id": "bigdaddyg.authView",
+          "name": "Authentication",
+          "when": "!bigdaddyg.authenticated"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "BigDaddyG",
+      "properties": {
+        "bigdaddyg.apiEndpoint": {
+          "type": "string",
+          "default": "http://localhost:11434",
+          "description": "BigDaddyG API endpoint URL"
+        },
+        "bigdaddyg.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "API key for authentication"
+        },
+        "bigdaddyg.defaultModel": {
+          "type": "string",
+          "default": "llama3.2",
+          "description": "Default AI model to use"
+        },
+        "bigdaddyg.enableAutoComplete": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable AI-powered code completion"
+        },
+        "bigdaddyg.enableInlineChat": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable inline chat suggestions"
+        },
+        "bigdaddyg.maxTokens": {
+          "type": "number",
+          "default": 2048,
+          "description": "Maximum tokens for AI responses"
+        },
+        "bigdaddyg.enableTelemetry": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable anonymous usage telemetry"
+        },
+        "bigdaddyg.securityLevel": {
+          "type": "string",
+          "enum": ["basic", "standard", "enterprise"],
+          "default": "standard",
+          "description": "Security hardening level"
+        },
+        "bigdaddyg.enableCodeScanning": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable automatic security code scanning"
+        },
+        "bigdaddyg.performanceMode": {
+          "type": "string",
+          "enum": ["balanced", "performance", "battery"],
+          "default": "balanced",
+          "description": "Performance optimization mode"
+        },
+        "bigdaddyg.cacheEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable response caching for better performance"
+        },
+        "bigdaddyg.logLevel": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "debug"],
+          "default": "info",
+          "description": "Logging level for diagnostics"
+        },
+        "bigdaddyg.enterpriseFeatures": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable enterprise features (requires license)"
+        },
+        "bigdaddyg.customEndpoints": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {"type": "string"},
+              "url": {"type": "string"},
+              "apiKey": {"type": "string"}
+            }
+          },
+          "default": [],
+          "description": "Custom AI service endpoints"
+        }
+      }
+    },
+    "keybindings": [
+      {
+        "command": "bigdaddyg.openChat",
+        "key": "ctrl+shift+g",
+        "mac": "cmd+shift+g"
+      },
+      {
+        "command": "bigdaddyg.explainCode",
+        "key": "ctrl+shift+e",
+        "mac": "cmd+shift+e",
+        "when": "editorHasSelection"
+      },
+      {
+        "command": "bigdaddyg.generateTests",
+        "key": "ctrl+shift+t",
+        "mac": "cmd+shift+t",
+        "when": "editorHasSelection"
+      },
+      {
+        "command": "bigdaddyg.refactorCode",
+        "key": "ctrl+shift+r",
+        "mac": "cmd+shift+r",
+        "when": "editorHasSelection"
+      },
+      {
+        "command": "bigdaddyg.securityScan",
+        "key": "ctrl+shift+s",
+        "mac": "cmd+shift+s"
+      },
+      {
+        "command": "bigdaddyg.showDashboard",
+        "key": "ctrl+shift+d",
+        "mac": "cmd+shift+d"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "bigdaddyg.explainCode",
+          "when": "editorHasSelection",
+          "group": "bigdaddyg@1"
+        },
+        {
+          "command": "bigdaddyg.refactorCode",
+          "when": "editorHasSelection",
+          "group": "bigdaddyg@2"
+        },
+        {
+          "command": "bigdaddyg.generateTests",
+          "when": "editorHasSelection",
+          "group": "bigdaddyg@3"
+        },
+        {
+          "command": "bigdaddyg.fixBugs",
+          "when": "editorHasSelection",
+          "group": "bigdaddyg@4"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
+    "test": "node ./out/test/runTest.js",
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.80.0",
+    "@vscode/test-electron": "^2.3.0",
+    "typescript": "^5.0.0",
+    "@vscode/vsce": "^2.19.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "ws": "^8.14.2",
+    "jsonwebtoken": "^9.0.2",
+    "crypto-js": "^4.2.0",
+    "node-cache": "^5.1.2",
+    "winston": "^3.11.0",
+    "semver": "^7.5.4",
+    "uuid": "^9.0.1",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.4",
+    "chart.js": "^4.4.0",
+    "d3": "^7.8.5"
+  },
+  "extensionDependencies": [],
+  "capabilities": {
+    "virtualWorkspaces": {
+      "supported": "limited",
+      "description": "Limited support in virtual workspaces"
+    },
+    "untrustedWorkspaces": {
+      "supported": "limited",
+      "description": "Limited functionality in untrusted workspaces"
+    }
+  }
+}

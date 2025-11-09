@@ -840,6 +840,7 @@ document.addEventListener('keydown', (e) => {
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         safetyManagerInstance = new SafetyManager();
+        window.safetyManagerInstance = safetyManagerInstance; // Expose globally
         createSafetyIndicator();
         console.log('[Safety] ✅ Safety system initialized');
         console.log('[Safety] 🛡️ Current level:', currentSafetyLevel);
@@ -847,6 +848,7 @@ if (document.readyState === 'loading') {
     });
 } else {
     safetyManagerInstance = new SafetyManager();
+    window.safetyManagerInstance = safetyManagerInstance; // Expose globally
     createSafetyIndicator();
     console.log('[Safety] ✅ Safety system initialized');
     console.log('[Safety] 🛡️ Current level:', currentSafetyLevel);

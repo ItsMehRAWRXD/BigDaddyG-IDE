@@ -5,7 +5,73 @@
 
 const fs = require('fs');
 const path = require('path');
-const ini = require('ini');
+
+function parseIni(content) {
+    const config = {};
+    let currentSection = null;
+
+    const lines = content.split(/\r?\n/);
+    for (const rawLine of lines) {
+        const line = rawLine.trim();
+        if (!line || line.startsWith(';') || line.startsWith('#')) {
+            continue;
+        }
+
+        if (line.startsWith('[') && line.endsWith(']')) {
+            currentSection = line.slice(1, -1).trim();
+            if (!config[currentSection]) {
+                config[currentSection] = {};
+            }
+            continue;
+        }
+
+        const equalsIndex = line.indexOf('=');
+        if (equalsIndex === -1) {
+            continue;
+        }
+
+        const key = line.slice(0, equalsIndex).trim();
+        const valueRaw = line.slice(equalsIndex + 1).trim();
+
+        let value;
+        if (/^(true|false)$/i.test(valueRaw)) {
+            value = valueRaw.toLowerCase() === 'true';
+        } else if (/^-?\d+(\.\d+)?$/.test(valueRaw)) {
+            value = Number(valueRaw);
+        } else {
+            value = valueRaw;
+        }
+
+        if (!currentSection) {
+            currentSection = 'DEFAULT';
+            if (!config[currentSection]) {
+                config[currentSection] = {};
+            }
+        }
+
+        config[currentSection][key] = value;
+    }
+
+    return config;
+}
+
+function stringifyIni(config) {
+    const sections = [];
+
+    for (const [section, values] of Object.entries(config)) {
+        sections.push(`[${section}]`);
+        for (const [key, value] of Object.entries(values)) {
+            let serialized = value;
+            if (typeof value === 'boolean') {
+                serialized = value ? 'true' : 'false';
+            }
+            sections.push(`${key}=${serialized}`);
+        }
+        sections.push('');
+    }
+
+    return sections.join('\n').trim() + '\n';
+}
 
 class SafeModeDetector {
     constructor() {
@@ -18,7 +84,8 @@ class SafeModeDetector {
         try {
             if (fs.existsSync(this.iniPath)) {
                 const content = fs.readFileSync(this.iniPath, 'utf-8');
-                return ini.parse(content);
+                const parsed = parseIni(content);
+                return Object.keys(parsed).length ? parsed : this.getDefaultConfig();
             }
         } catch (error) {
             console.error('[SafeMode] Error loading config:', error);
@@ -30,7 +97,7 @@ class SafeModeDetector {
     
     saveConfig() {
         try {
-            const content = ini.stringify(this.config);
+            const content = stringifyIni(this.config);
             fs.writeFileSync(this.iniPath, content, 'utf-8');
             console.log('[SafeMode] ✅ Configuration saved');
         } catch (error) {

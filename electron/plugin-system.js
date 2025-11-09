@@ -517,6 +517,17 @@ class PluginSystem {
             apiVersion: '1.0.0',
             main: 'plugins/code-stats.js'
         });
+
+        // First-party linter dashboard
+        await this.loadPlugin({
+            id: 'lint-coach',
+            name: 'Lint Coach',
+            version: '1.0.0',
+            author: 'BigDaddyG Team',
+            description: 'Run ESLint from the IDE with inline results and auto scheduling',
+            apiVersion: '1.0.0',
+            main: 'plugins/first-party-linter.js'
+        });
         
         // Sample plugin: Web Search (coming soon)
         await this.loadPlugin({

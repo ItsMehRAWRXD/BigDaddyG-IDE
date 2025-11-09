@@ -81,8 +81,13 @@ class PerformanceDashboard {
     }
     
     updateMetrics() {
-        // FPS
+        // FPS - ensure it's exposed globally
         this.metrics.fps = window.currentFPS || 0;
+        
+        // Make sure currentFPS is available globally
+        if (!window.currentFPS) {
+            window.currentFPS = this.metrics.fps;
+        }
         
         // Memory
         if (performance.memory) {

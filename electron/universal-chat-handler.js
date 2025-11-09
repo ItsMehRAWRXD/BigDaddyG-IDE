@@ -142,32 +142,47 @@ class UniversalChatHandler {
         }
     }
     
+    sanitizeInput(input) {
+        return input.replace(/[<>"'&]/g, (match) => {
+            const map = { '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '&': '&amp;' };
+            return map[match];
+        });
+    }
+    
     async sendToOllama(message, source) {
         try {
-            // Show typing indicator
+            const sanitizedMessage = this.sanitizeInput(message);
             const typingId = this.displayMessage('assistant', '💭 Thinking...', source);
             
-            // Call Ollama
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 30000);
+            
             const response = await fetch('http://localhost:11434/api/generate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     model: 'deepseek-coder:33b-instruct-q4_K_M',
-                    prompt: message,
+                    prompt: sanitizedMessage,
                     stream: false
-                })
+                }),
+                signal: controller.signal
             });
             
-            const data = await response.json();
-            const answer = data.response || 'No response from AI';
+            clearTimeout(timeoutId);
             
-            // Remove typing indicator and show real response
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            
+            const data = await response.json();
+            const answer = this.sanitizeInput(data.response || 'No response from AI');
+            
             this.removeMessage(typingId);
             this.displayMessage('assistant', answer, source);
             
         } catch (error) {
             console.error('[UniversalChat] ❌ Error sending to Ollama:', error);
-            this.displayMessage('error', `Error: ${error.message}`, source);
+            this.removeMessage(typingId);
+            const errorMsg = error.name === 'AbortError' ? 'Request timeout' : 'Connection failed';
+            this.displayMessage('error', `Error: ${errorMsg}`, source);
         }
     }
     

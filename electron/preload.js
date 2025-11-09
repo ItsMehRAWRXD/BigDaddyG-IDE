@@ -21,6 +21,7 @@ contextBridge.exposeInMainWorld('electron', {
   readDir: (dirPath) => ipcRenderer.invoke('read-dir', dirPath),
   getFileStats: (filePath) => ipcRenderer.invoke('get-file-stats', filePath),
   fileExists: (filePath) => ipcRenderer.invoke('file-exists', filePath),
+  getPluginDir: () => ipcRenderer.invoke('plugin:get-directory'),
   
   // Agentic file system operations (unlimited)
   scanWorkspace: (options) => ipcRenderer.invoke('scanWorkspace', options),
@@ -61,6 +62,48 @@ contextBridge.exposeInMainWorld('electron', {
   copyItem: (sourcePath, destPath) => ipcRenderer.invoke('copyItem', sourcePath, destPath),
   moveItem: (sourcePath, destPath) => ipcRenderer.invoke('moveItem', sourcePath, destPath),
   getStats: (itemPath) => ipcRenderer.invoke('getStats', itemPath),
+
+  marketplace: {
+    status: () => ipcRenderer.invoke('marketplace:status'),
+    featured: () => ipcRenderer.invoke('marketplace:featured'),
+    search: (options) => ipcRenderer.invoke('marketplace:search', options),
+    getExtension: (extensionId) => ipcRenderer.invoke('marketplace:get-extension', extensionId),
+    listInstalled: () => ipcRenderer.invoke('marketplace:list-installed'),
+    listWithState: () => ipcRenderer.invoke('marketplace:list-with-state'),
+    install: (extensionId) => ipcRenderer.invoke('marketplace:install', extensionId),
+    uninstall: (extensionId) => ipcRenderer.invoke('marketplace:uninstall', extensionId),
+    enable: (extensionId) => ipcRenderer.invoke('marketplace:enable', extensionId),
+    disable: (extensionId) => ipcRenderer.invoke('marketplace:disable', extensionId),
+    checkUpdates: () => ipcRenderer.invoke('marketplace:check-updates'),
+    update: (extensionId) => ipcRenderer.invoke('marketplace:update', extensionId),
+    updateAll: () => ipcRenderer.invoke('marketplace:update-all'),
+    onEvent: (callback) => {
+      if (typeof callback !== 'function') {
+        return () => {};
+      }
+      const listener = (_, event) => callback(event);
+      ipcRenderer.on('marketplace:event', listener);
+      return () => ipcRenderer.removeListener('marketplace:event', listener);
+    }
+  },
+
+  apiKeys: {
+    list: () => ipcRenderer.invoke('apikeys:list'),
+    set: (provider, key, metadata) => ipcRenderer.invoke('apikeys:set', { provider, key, metadata }),
+    delete: (provider) => ipcRenderer.invoke('apikeys:delete', provider)
+  },
+
+  ollama: {
+    listModels: () => ipcRenderer.invoke('ollama:list-models'),
+    pullModel: (model) => ipcRenderer.invoke('ollama:pull-model', model),
+    deleteModel: (model) => ipcRenderer.invoke('ollama:delete-model', model),
+    showModel: (model) => ipcRenderer.invoke('ollama:show-model', model),
+    status: () => ipcRenderer.invoke('ollama:status')
+  },
+
+  models: {
+    discover: () => ipcRenderer.invoke('models:discover')
+  },
   
   // Memory bridge
   memory: {
@@ -94,6 +137,12 @@ contextBridge.exposeInMainWorld('electron', {
     stop: () => ipcRenderer.invoke('browser:stop'),
     show: () => ipcRenderer.invoke('browser:show'),
     hide: () => ipcRenderer.invoke('browser:hide'),
+    openYouTube: () => ipcRenderer.invoke('browser:open-youtube'),
+    searchYouTube: (query) => ipcRenderer.invoke('browser:search-youtube', query),
+    playYouTube: () => ipcRenderer.invoke('browser:play-youtube'),
+    togglePlayback: () => ipcRenderer.invoke('browser:toggle-playback'),
+    enterPictureInPicture: () => ipcRenderer.invoke('browser:enter-pip'),
+    getMediaState: () => ipcRenderer.invoke('browser:get-media-state'),
     screenshot: (options) => ipcRenderer.invoke('browser:screenshot', options),
     analyze: () => ipcRenderer.invoke('browser:analyze'),
     suggestUI: () => ipcRenderer.invoke('browser:suggest-ui'),
@@ -112,7 +161,8 @@ contextBridge.exposeInMainWorld('electron', {
     onNetwork: (callback) => ipcRenderer.on('browser:network', (_, data) => callback(data)),
     onScreenshot: (callback) => ipcRenderer.on('browser:screenshot', (_, data) => callback(data)),
     onIssues: (callback) => ipcRenderer.on('browser:issues', (_, data) => callback(data)),
-    onUISuggestions: (callback) => ipcRenderer.on('browser:ui-suggestions', (_, data) => callback(data))
+    onUISuggestions: (callback) => ipcRenderer.on('browser:ui-suggestions', (_, data) => callback(data)),
+    onMediaState: (callback) => ipcRenderer.on('browser:media-state', (_, data) => callback(data))
   },
   
   // Native Ollama Node.js HTTP client
