@@ -8,6 +8,9 @@
 (function() {
 'use strict';
 
+const OLLAMA_ENDPOINT = 'http://localhost:11434';
+const OLLAMA_PORT = 11434;
+
 class NativeOllamaBridge {
     constructor() {
         this.nativeModule = null;

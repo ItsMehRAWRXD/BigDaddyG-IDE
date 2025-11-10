@@ -623,8 +623,8 @@
     <link rel="stylesheet" href="background-agent.css">
     <script src="background-agent-manager.js"></script>
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js" onerror="console.warn('Firebase optional - team features will use fallback')"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js" onerror="console.warn('Firebase optional - team features will use fallback')"></script>
     <link rel="stylesheet" href="team-collaboration.css">
     <script src="team-collaboration.js"></script>
     <!-- FPS Display Toggle -->
@@ -852,7 +852,7 @@
                         • "Optimize performance"
                     </div>
                 </div>
-                <div id="ai-input-container" style="position: relative; z-index: 1000; background: var(--void); padding: 10px; margin-bottom: 20px;">
+                <div id="ai-input-container" style="position: relative; z-index: 900; background: var(--void); padding: 10px; margin-bottom: 20px;">
                     <!-- File Attachments Display -->
                     <div id="file-attachments" style="display: none;"></div>
                     
@@ -907,7 +907,7 @@
                     </div>
                     
                     <!-- TODO PANEL -->
-                    <div id="todo-panel-container" style="position: fixed; bottom: 20px; right: 20px; width: 350px; z-index: 1000;"></div>
+                    <div id="todo-panel-container" style="position: fixed; bottom: 20px; right: 20px; width: 350px; z-index: 1050;"></div>
                     
                 </div>
                 <!-- END Tab Content Areas -->

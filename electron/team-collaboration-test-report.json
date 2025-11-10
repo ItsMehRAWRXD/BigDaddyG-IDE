@@ -1,0 +1,331 @@
+{
+  "timestamp": "2025-11-10T19:23:32.189Z",
+  "summary": {
+    "total": 64,
+    "passed": 63,
+    "failed": 1,
+    "passRate": 98.4
+  },
+  "tests": [
+    {
+      "name": "team-collaboration.js exists",
+      "passed": true,
+      "details": "Size: 25.8KB"
+    },
+    {
+      "name": "team-collaboration-enhanced.js exists",
+      "passed": true,
+      "details": "Size: 13.9KB"
+    },
+    {
+      "name": "Has TeamCollaboration class",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has createRoom method",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has joinRoom method",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has sendMessage method",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has sendCursorPosition method",
+      "passed": false,
+      "details": ""
+    },
+    {
+      "name": "Has Firebase config",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has room management",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has member tracking",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has enhanced class",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has session management",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has peer connections",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has media streams",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has broadcast method",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has RTCPeerConnection",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has data channel",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has ICE servers config",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has track handling",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has STUN server",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has Firebase check",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has Firestore",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has collection",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has document",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has snapshot listener",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has fallback mechanism",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has screen share method",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has getDisplayMedia",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has screen stream",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has stop screen share",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has stream broadcast",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has cursor in screen",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has error handling",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has voice start method",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has getUserMedia",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has voice stream",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has echo cancellation",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has noise suppression",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has auto gain",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has stop voice",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "team-collaboration-enhanced.js has cursor tracking",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Sends x, y coordinates",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Includes user info",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "team-collaboration.js has chat system",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has message sending",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has timestamp",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has user attribution",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "team-collaboration-enhanced.js has chat system",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has message sending",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has timestamp",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has user attribution",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has create session",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has join session",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has session ID",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has disconnect",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has session object",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has peer map",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has connections map",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has create peer method",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has peer tracking",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has code sync",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has broadcast method",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has handle message",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Has event emitter",
+      "passed": true,
+      "details": ""
+    }
+  ]
+}
