@@ -617,6 +617,21 @@
         ::-webkit-scrollbar-thumb:hover {
             background: rgba(0, 212, 255, 0.5);
         }
+        
+        /* Quick Action Buttons */
+        .quick-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+        }
+        
+        .quick-action-btn:active {
+            transform: translateY(0);
+        }
+        
+        .quick-action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
     </style>
     <link rel="stylesheet" href="github-integration.css">
     <script src="github-integration.js"></script>
@@ -856,6 +871,34 @@
                     <!-- File Attachments Display -->
                     <div id="file-attachments" style="display: none;"></div>
                     
+                    <!-- Quick Actions Toolbar -->
+                    <div id="quick-actions-toolbar" style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; padding: 8px; background: rgba(0, 212, 255, 0.05); border-radius: 6px;">
+                        <button id="generate-code-btn" class="quick-action-btn" style="padding: 6px 12px; background: rgba(119, 221, 190, 0.15); color: var(--cyan); border: 1px solid rgba(119, 221, 190, 0.3); border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                            💻 Generate Code
+                        </button>
+                        <button id="fix-bug-btn" class="quick-action-btn" style="padding: 6px 12px; background: rgba(255, 107, 53, 0.15); color: var(--orange); border: 1px solid rgba(255, 107, 53, 0.3); border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                            🐛 Fix Bug
+                        </button>
+                        <button id="summarize-btn" class="quick-action-btn" style="padding: 6px 12px; background: rgba(168, 85, 247, 0.15); color: var(--purple); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                            📝 Summarize
+                        </button>
+                        <button id="explain-code-btn" class="quick-action-btn" style="padding: 6px 12px; background: rgba(0, 255, 136, 0.15); color: var(--green); border: 1px solid rgba(0, 255, 136, 0.3); border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                            📚 Explain Code
+                        </button>
+                        <button id="optimize-btn" class="quick-action-btn" style="padding: 6px 12px; background: rgba(0, 212, 255, 0.15); color: var(--cyan); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                            ⚡ Optimize
+                        </button>
+                        <button id="add-tests-btn" class="quick-action-btn" style="padding: 6px 12px; background: rgba(168, 85, 247, 0.15); color: var(--purple); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                            🧪 Add Tests
+                        </button>
+                        <button id="refactor-btn" class="quick-action-btn" style="padding: 6px 12px; background: rgba(119, 221, 190, 0.15); color: var(--cyan); border: 1px solid rgba(119, 221, 190, 0.3); border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                            🔄 Refactor
+                        </button>
+                        <button id="document-btn" class="quick-action-btn" style="padding: 6px 12px; background: rgba(0, 255, 136, 0.15); color: var(--green); border: 1px solid rgba(0, 255, 136, 0.3); border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                            📖 Document
+                        </button>
+                    </div>
+                    
                     <textarea id="ai-input" placeholder="@ for context, / for commands, or drag files here 📎" class="chat-input-box" style="position: relative; z-index: 1001;"></textarea>
                     <div style="display: flex; gap: 8px; margin-top: 10px; position: relative; z-index: 1001;">
                         <button id="ai-send-btn" onclick="sendToAI()" style="flex: 1; padding: 10px; background: var(--cyan); color: var(--void); border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">💬 Send</button>
@@ -1051,7 +1094,8 @@
             }, function(err) {
                 console.error('[Monaco] ❌ Failed to load Monaco editor.main:', err);
             });
-        })();
+            })();
+        }
     </script>
     
     <!-- Core Scripts -->

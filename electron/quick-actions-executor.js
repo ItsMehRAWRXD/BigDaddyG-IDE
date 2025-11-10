@@ -97,71 +97,63 @@ class QuickActionsExecutor {
     }
     
     async executeQuickAction(action, button) {
-        if (!this.executor) {
-            this.showError('Agentic executor not available');
-            return;
-        }
-        
         // Get current code context
         const currentCode = this.getCurrentCode();
         const selectedText = this.getSelectedText();
         
-        // Show loading state
-        const originalText = button.textContent;
-        button.textContent = '⏳ Processing...';
-        button.disabled = true;
+        // Build the task prompt
+        let task = '';
         
-        try {
-            let task = '';
-            
-            switch (action) {
-                case 'generateCode':
-                    task = this.buildGenerateCodeTask(selectedText);
-                    break;
-                case 'fixBug':
-                    task = this.buildFixBugTask(currentCode, selectedText);
-                    break;
-                case 'summarize':
-                    task = this.buildSummarizeTask(currentCode, selectedText);
-                    break;
-                case 'explainCode':
-                    task = this.buildExplainCodeTask(currentCode, selectedText);
-                    break;
-                case 'optimize':
-                    task = this.buildOptimizeTask(currentCode, selectedText);
-                    break;
-                case 'addTests':
-                    task = this.buildAddTestsTask(currentCode, selectedText);
-                    break;
-                case 'refactor':
-                    task = this.buildRefactorTask(currentCode, selectedText);
-                    break;
-                case 'document':
-                    task = this.buildDocumentTask(currentCode, selectedText);
-                    break;
-                default:
-                    throw new Error(`Unknown action: ${action}`);
-            }
-            
-            // Execute the task
-            const result = await this.executor.executeTask(task, (progress) => {
-                this.handleProgress(progress, button);
-            });
-            
-            if (result.success) {
-                this.showSuccess(`${action} completed successfully!`);
-                this.displayResult(result, action);
-            } else {
-                this.showError(`${action} failed: ${result.error}`);
-            }
-            
-        } catch (error) {
-            console.error(`[QuickActions] ${action} failed:`, error);
-            this.showError(`${action} failed: ${error.message}`);
-        } finally {
-            // Restore button state
-            button.textContent = originalText;
-            button.disabled = false;
+        switch (action) {
+            case 'generateCode':
+                task = this.buildGenerateCodeTask(selectedText);
+                break;
+            case 'fixBug':
+                task = this.buildFixBugTask(currentCode, selectedText);
+                break;
+            case 'summarize':
+                task = this.buildSummarizeTask(currentCode, selectedText);
+                break;
+            case 'explainCode':
+                task = this.buildExplainCodeTask(currentCode, selectedText);
+                break;
+            case 'optimize':
+                task = this.buildOptimizeTask(currentCode, selectedText);
+                break;
+            case 'addTests':
+                task = this.buildAddTestsTask(currentCode, selectedText);
+                break;
+            case 'refactor':
+                task = this.buildRefactorTask(currentCode, selectedText);
+                break;
+            case 'document':
+                task = this.buildDocumentTask(currentCode, selectedText);
+                break;
+            default:
+                console.error(`[QuickActions] Unknown action: ${action}`);
+                return;
+        }
+        
+        // Set the task in the input field
+        const inputField = document.getElementById('ai-input');
+        if (inputField) {
+            inputField.value = task;
+        }
+        
+        // Automatically send to AI if executor is available
+        if (this.executor && typeof window.sendToAI === 'function') {
+            // Give a brief moment for the user to see what was populated
+            setTimeout(() => {
+                window.sendToAI();
+            }, 100);
+        } else if (typeof window.sendToAI === 'function') {
+            // No executor but sendToAI exists - just send
+            setTimeout(() => {
+                window.sendToAI();
+            }, 100);
+        } else {
+            // No sendToAI function - just populate the field
+            console.log('[QuickActions] Populated input field with:', task);
         }
     }
     
@@ -240,106 +232,6 @@ class QuickActionsExecutor {
         }
         
         return '';
-    }
-    
-    handleProgress(progress, button) {
-        switch (progress.type) {
-            case 'plan':
-                button.textContent = '📋 Planning...';
-                break;
-            case 'step_start':
-                button.textContent = `🔧 ${progress.step.description}`;
-                break;
-            case 'command':
-                button.textContent = '💻 Executing...';
-                break;
-            case 'step_complete':
-                button.textContent = '✅ Step complete';
-                break;
-            case 'verifying':
-                button.textContent = '🔍 Verifying...';
-                break;
-        }
-    }
-    
-    displayResult(result, action) {
-        // Find the chat messages container
-        const messagesContainer = document.getElementById('ai-chat-messages') || 
-                                 document.getElementById('floating-chat-messages');
-        
-        if (!messagesContainer) {
-            console.warn('[QuickActions] No messages container found');
-            return;
-        }
-        
-        // Create result message
-        const resultDiv = document.createElement('div');
-        resultDiv.className = 'ai-message';
-        resultDiv.style.cssText = `
-            margin-bottom: 16px;
-            padding: 14px;
-            background: rgba(119, 221, 190, 0.1);
-            border-left: 4px solid var(--cursor-jade-dark);
-            border-radius: 8px;
-        `;
-        
-        const actionIcons = {
-            generateCode: '💻',
-            fixBug: '🐛',
-            summarize: '📝',
-            explainCode: '📚',
-            optimize: '⚡',
-            addTests: '🧪',
-            refactor: '🔄',
-            document: '📖'
-        };
-        
-        const icon = actionIcons[action] || '🤖';
-        const title = action.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-        
-        resultDiv.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-                <span style="font-size: 16px;">${icon}</span>
-                <span style="font-weight: 600; color: var(--cursor-jade-dark);">${title} Result</span>
-                <span style="font-size: 10px; color: var(--cursor-text-secondary);">${new Date().toLocaleTimeString()}</span>
-            </div>
-            <div style="color: var(--cursor-text); font-size: 13px; line-height: 1.6;">
-                Task completed successfully! Check the verification results for details.
-            </div>
-        `;
-        
-        messagesContainer.appendChild(resultDiv);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }
-    
-    showSuccess(message) {
-        this.showNotification(message, 'success');
-    }
-    
-    showError(message) {
-        this.showNotification(message, 'error');
-    }
-    
-    showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: ${type === 'error' ? '#ff4757' : type === 'success' ? '#77ddbe' : '#4a90e2'};
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            z-index: 20000;
-            font-size: 13px;
-            font-weight: 600;
-            animation: slideInRight 0.3s ease-out;
-        `;
-        notification.textContent = message;
-        document.body.appendChild(notification);
-        
-        setTimeout(() => notification.remove(), 3000);
     }
 }
 
