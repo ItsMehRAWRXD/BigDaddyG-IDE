@@ -97,6 +97,7 @@ class APIKeyManagerUI {
                         <li><strong>DeepSeek:</strong> <a href="https://platform.deepseek.com/api_keys" target="_blank">platform.deepseek.com/api_keys</a></li>
                         <li><strong>Azure OpenAI:</strong> <a href="https://portal.azure.com/" target="_blank">portal.azure.com</a></li>
                         <li><strong>Cohere:</strong> <a href="https://dashboard.cohere.com/api-keys" target="_blank">dashboard.cohere.com/api-keys</a></li>
+                        <li><strong>Kimi (Moonshot):</strong> <a href="https://platform.moonshot.cn/console/api-keys" target="_blank">platform.moonshot.cn/console/api-keys</a></li>
                     </ul>
                 </div>
                 
@@ -194,6 +195,14 @@ class APIKeyManagerUI {
                 models: 'command, command-light',
                 pricing: '$0.0001-$0.002 per 1K tokens',
                 icon: '🔗'
+            },
+            {
+                id: 'kimi',
+                name: 'Kimi (Moonshot AI)',
+                description: 'Long context (200K tokens!)',
+                models: 'moonshot-v1-8k, moonshot-v1-32k, moonshot-v1-128k',
+                pricing: '$0.0002-$0.001 per 1K tokens',
+                icon: '🌙'
             }
         ];
         

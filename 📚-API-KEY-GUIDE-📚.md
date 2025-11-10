@@ -19,6 +19,7 @@ BigDaddyG IDE supports **7 major AI providers** with API key authentication, plu
 | **DeepSeek** | DeepSeek Chat/Coder | Fast | $ | Code generation |
 | **Azure OpenAI** | Same as OpenAI | Medium | Custom | Enterprise |
 | **Cohere** | Command, Command-Light | Fast | $ | Embeddings, search |
+| **Kimi** | Moonshot-v1 (8k/32k/128k) | Fast | $ | Long context (200K tokens!) |
 
 ### **🏠 Local Providers (No API Keys Needed!)**
 
@@ -214,6 +215,28 @@ node bigdaddyg-cli.js ai --provider openai "Create a REST API"
 - Command-Light: $0.0002 per 1K tokens
 
 **Best for:** Embeddings, semantic search, RAG
+
+---
+
+### **8. Kimi (Moonshot AI)**
+
+**Where:** https://platform.moonshot.cn/console/api-keys
+
+**Steps:**
+1. Sign up at Moonshot AI
+2. Go to Console → API Keys
+3. Create new key
+4. Copy the key
+5. Paste into BigDaddyG IDE
+
+**Cost:**
+- Moonshot-v1-8k: $0.0002 per 1K tokens
+- Moonshot-v1-32k: $0.0004 per 1K tokens
+- Moonshot-v1-128k: $0.001 per 1K tokens
+
+**Context Window:** Up to **200K tokens!** (Longest context in BigDaddyG!)
+
+**Best for:** Long documents, code analysis, large conversations
 
 ---
 

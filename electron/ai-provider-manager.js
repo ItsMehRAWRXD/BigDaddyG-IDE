@@ -106,6 +106,16 @@ class AIProviderManager {
       keyId: 'deepseek',
       defaultModel: 'deepseek-chat'
     });
+
+    // Kimi (Moonshot AI)
+    this.providers.set('kimi', {
+      name: 'Kimi (Moonshot AI)',
+      type: 'cloud',
+      endpoint: 'https://api.moonshot.cn/v1/chat/completions',
+      requiresKey: true,
+      keyId: 'kimi',
+      defaultModel: 'moonshot-v1-8k'
+    });
   }
 
   async loadApiKeys() {
@@ -271,6 +281,8 @@ class AIProviderManager {
         return this.chatGroq(message, model, options);
       case 'deepseek':
         return this.chatDeepSeek(message, model, options);
+      case 'kimi':
+        return this.chatKimi(message, model, options);
       default:
         throw new Error(`Unknown AI provider: ${provider}`);
     }
@@ -283,7 +295,8 @@ class AIProviderManager {
       anthropic: 'claude-3-sonnet-20240229',
       gemini: 'gemini-1.5-flash',
       groq: 'mixtral-8x7b-32768',
-      deepseek: 'deepseek-chat'
+      deepseek: 'deepseek-chat',
+      kimi: 'moonshot-v1-8k'
     };
     return defaults[provider] || 'llama3.2';
   }
@@ -461,6 +474,33 @@ class AIProviderManager {
     }
     const content = data.choices?.[0]?.message?.content || '';
     return { response: content.trim(), provider: 'deepseek', model: payload.model, raw: data };
+  }
+
+  async chatKimi(message, model, options = {}) {
+    const apiKey = this.getApiKey('kimi');
+    if (!apiKey) {
+      throw new Error('Kimi API key not configured');
+    }
+    const payload = {
+      model: model || this.providers.get('kimi')?.defaultModel || 'moonshot-v1-8k',
+      messages: [{ role: 'user', content: message }],
+      temperature: options.temperature ?? 0.7,
+      max_tokens: options.maxTokens ?? 1024
+    };
+    const res = await fetch('https://api.moonshot.cn/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error?.message || 'Kimi request failed');
+    }
+    const content = data.choices?.[0]?.message?.content || '';
+    return { response: content.trim(), provider: 'kimi', model: payload.model, raw: data };
   }
 
   async chatExtension(provider, message, options) {
