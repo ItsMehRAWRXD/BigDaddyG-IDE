@@ -1,0 +1,1399 @@
+{
+  "timestamp": "2025-11-10T22:48:45.510Z",
+  "summary": {
+    "total": 380,
+    "accessible": 219,
+    "percentage": "57.6",
+    "missing": 161
+  },
+  "missingFeatures": [
+    {
+      "name": "Theme Manager",
+      "category": "core",
+      "ui": "settings",
+      "location": "Settings tab"
+    },
+    {
+      "name": "BigDaddyG Local AI",
+      "category": "ai",
+      "ui": "chat",
+      "location": "AI Chat model selector"
+    },
+    {
+      "name": "Ollama Integration",
+      "category": "ai",
+      "ui": "chat",
+      "location": "AI Chat model selector"
+    },
+    {
+      "name": "OpenAI (GPT-4)",
+      "category": "ai",
+      "ui": "chat",
+      "location": "AI Chat model selector"
+    },
+    {
+      "name": "Anthropic (Claude)",
+      "category": "ai",
+      "ui": "chat",
+      "location": "AI Chat model selector"
+    },
+    {
+      "name": "Google Gemini",
+      "category": "ai",
+      "ui": "chat",
+      "location": "AI Chat model selector"
+    },
+    {
+      "name": "Groq",
+      "category": "ai",
+      "ui": "chat",
+      "location": "AI Chat model selector"
+    },
+    {
+      "name": "DeepSeek",
+      "category": "ai",
+      "ui": "chat",
+      "location": "AI Chat model selector"
+    },
+    {
+      "name": "Azure OpenAI",
+      "category": "ai",
+      "ui": "chat",
+      "location": "AI Chat model selector"
+    },
+    {
+      "name": "Cohere",
+      "category": "ai",
+      "ui": "chat",
+      "location": "AI Chat model selector"
+    },
+    {
+      "name": "Kimi (Moonshot)",
+      "category": "ai",
+      "ui": "chat",
+      "location": "AI Chat model selector"
+    },
+    {
+      "name": "Cursor AI",
+      "category": "ai",
+      "ui": "chat",
+      "location": "AI Chat model selector"
+    },
+    {
+      "name": "GitHub Copilot",
+      "category": "ai",
+      "ui": "extension",
+      "location": "Marketplace"
+    },
+    {
+      "name": "Amazon Q",
+      "category": "ai",
+      "ui": "extension",
+      "location": "Marketplace"
+    },
+    {
+      "name": "AI Provider Manager",
+      "category": "ai",
+      "ui": "settings",
+      "location": "Settings tab"
+    },
+    {
+      "name": "Agentic Safety",
+      "category": "ai",
+      "ui": "settings",
+      "location": "Settings tab"
+    },
+    {
+      "name": "AI Code Review",
+      "category": "ai",
+      "ui": "context-menu",
+      "location": "Right-click code"
+    },
+    {
+      "name": "AI Refactoring",
+      "category": "ai",
+      "ui": "context-menu",
+      "location": "Right-click code"
+    },
+    {
+      "name": "AI Documentation",
+      "category": "ai",
+      "ui": "context-menu",
+      "location": "Right-click code"
+    },
+    {
+      "name": "AI Test Generation",
+      "category": "ai",
+      "ui": "context-menu",
+      "location": "Right-click code"
+    },
+    {
+      "name": "Deep Research Engine",
+      "category": "ai",
+      "ui": "chat",
+      "location": "AI Chat toggle"
+    },
+    {
+      "name": "Predictive Debugger",
+      "category": "ai",
+      "ui": "debugger",
+      "location": "Debug tab"
+    },
+    {
+      "name": "Visual Code Flow",
+      "category": "ai",
+      "ui": "command",
+      "location": "Command Palette"
+    },
+    {
+      "name": "DALL-E Integration",
+      "category": "ai",
+      "ui": "image-gen",
+      "location": "Image Gen tab"
+    },
+    {
+      "name": "Stable Diffusion",
+      "category": "ai",
+      "ui": "image-gen",
+      "location": "Image Gen tab"
+    },
+    {
+      "name": "Midjourney",
+      "category": "ai",
+      "ui": "image-gen",
+      "location": "Image Gen tab"
+    },
+    {
+      "name": "Model Hotswap",
+      "category": "ai",
+      "ui": "dropdown",
+      "location": "AI Chat model selector"
+    },
+    {
+      "name": "Temperature Control",
+      "category": "ai",
+      "ui": "slider",
+      "location": "AI Chat advanced settings"
+    },
+    {
+      "name": "Token Limit Control",
+      "category": "ai",
+      "ui": "slider",
+      "location": "AI Chat advanced settings"
+    },
+    {
+      "name": "Context Window",
+      "category": "ai",
+      "ui": "dropdown",
+      "location": "AI Chat advanced settings"
+    },
+    {
+      "name": "Chat History",
+      "category": "ai",
+      "ui": "panel",
+      "location": "AI Chat past chats"
+    },
+    {
+      "name": "Godot Integration",
+      "category": "game",
+      "ui": "game-editor",
+      "location": "Game Editor tab"
+    },
+    {
+      "name": "Unity Integration",
+      "category": "game",
+      "ui": "game-editor",
+      "location": "Game Editor tab"
+    },
+    {
+      "name": "Unreal Integration",
+      "category": "game",
+      "ui": "game-editor",
+      "location": "Game Editor tab"
+    },
+    {
+      "name": "Sunshine Engine",
+      "category": "game",
+      "ui": "game-editor",
+      "location": "Game Editor tab"
+    },
+    {
+      "name": "Visual Scene Editor",
+      "category": "game",
+      "ui": "game-editor",
+      "location": "Game Editor tab"
+    },
+    {
+      "name": "Asset Browser",
+      "category": "game",
+      "ui": "game-editor",
+      "location": "Game Editor tab"
+    },
+    {
+      "name": "Asset Preview System",
+      "category": "game",
+      "ui": "game-editor",
+      "location": "Game Editor tab"
+    },
+    {
+      "name": "Shader Editor",
+      "category": "game",
+      "ui": "game-editor",
+      "location": "Game Editor tab"
+    },
+    {
+      "name": "Animation Timeline",
+      "category": "game",
+      "ui": "game-editor",
+      "location": "Game Editor tab"
+    },
+    {
+      "name": "Texture Preview",
+      "category": "game",
+      "ui": "game-editor",
+      "location": "Asset Browser"
+    },
+    {
+      "name": "3D Model Preview",
+      "category": "game",
+      "ui": "game-editor",
+      "location": "Asset Browser"
+    },
+    {
+      "name": "Audio Preview",
+      "category": "game",
+      "ui": "game-editor",
+      "location": "Asset Browser"
+    },
+    {
+      "name": "Video Preview",
+      "category": "game",
+      "ui": "game-editor",
+      "location": "Asset Browser"
+    },
+    {
+      "name": "Blueprint Support",
+      "category": "game",
+      "ui": "game-editor",
+      "location": "Game Editor tab"
+    },
+    {
+      "name": "Particle System Editor",
+      "category": "game",
+      "ui": "game-editor",
+      "location": "Game Editor tab"
+    },
+    {
+      "name": "Physics Preview",
+      "category": "game",
+      "ui": "game-editor",
+      "location": "Game Editor tab"
+    },
+    {
+      "name": "Collision Editor",
+      "category": "game",
+      "ui": "game-editor",
+      "location": "Game Editor tab"
+    },
+    {
+      "name": "Tilemap Editor",
+      "category": "game",
+      "ui": "game-editor",
+      "location": "Game Editor tab"
+    },
+    {
+      "name": "Game Performance Profiler",
+      "category": "game",
+      "ui": "game-editor",
+      "location": "Game Editor tab"
+    },
+    {
+      "name": "Real-time Sync",
+      "category": "team",
+      "ui": "team-tab",
+      "location": "Team tab"
+    },
+    {
+      "name": "Live Chat",
+      "category": "team",
+      "ui": "panel",
+      "location": "Team tab"
+    },
+    {
+      "name": "Review Comments",
+      "category": "team",
+      "ui": "inline",
+      "location": "Code review mode"
+    },
+    {
+      "name": "Permissions System",
+      "category": "team",
+      "ui": "settings",
+      "location": "Team tab settings"
+    },
+    {
+      "name": "Session Management",
+      "category": "team",
+      "ui": "panel",
+      "location": "Team tab"
+    },
+    {
+      "name": "Room ID Sharing",
+      "category": "team",
+      "ui": "text-field",
+      "location": "Team tab"
+    },
+    {
+      "name": "Participant List",
+      "category": "team",
+      "ui": "panel",
+      "location": "Team tab"
+    },
+    {
+      "name": "Extension Search",
+      "category": "extensions",
+      "ui": "search",
+      "location": "Marketplace tab"
+    },
+    {
+      "name": "Extension Enable/Disable",
+      "category": "extensions",
+      "ui": "toggle",
+      "location": "Marketplace tab"
+    },
+    {
+      "name": "Extension Updates",
+      "category": "extensions",
+      "ui": "notification",
+      "location": "Marketplace tab"
+    },
+    {
+      "name": "Extension Ratings",
+      "category": "extensions",
+      "ui": "stars",
+      "location": "Marketplace tab"
+    },
+    {
+      "name": "Extension Reviews",
+      "category": "extensions",
+      "ui": "panel",
+      "location": "Marketplace tab"
+    },
+    {
+      "name": "Extension Categories",
+      "category": "extensions",
+      "ui": "filter",
+      "location": "Marketplace tab"
+    },
+    {
+      "name": "Featured Extensions",
+      "category": "extensions",
+      "ui": "panel",
+      "location": "Marketplace tab"
+    },
+    {
+      "name": "Popular Extensions",
+      "category": "extensions",
+      "ui": "panel",
+      "location": "Marketplace tab"
+    },
+    {
+      "name": "Recently Updated",
+      "category": "extensions",
+      "ui": "panel",
+      "location": "Marketplace tab"
+    },
+    {
+      "name": "Extension Settings",
+      "category": "extensions",
+      "ui": "settings",
+      "location": "Settings tab"
+    },
+    {
+      "name": "Auto Update System",
+      "category": "extensions",
+      "ui": "toggle",
+      "location": "Marketplace tab"
+    },
+    {
+      "name": "Download Stats",
+      "category": "extensions",
+      "ui": "display",
+      "location": "Marketplace tab"
+    },
+    {
+      "name": "Breakpoints",
+      "category": "debug",
+      "ui": "inline",
+      "location": "Monaco Editor gutter"
+    },
+    {
+      "name": "Conditional Breakpoints",
+      "category": "debug",
+      "ui": "context-menu",
+      "location": "Right-click breakpoint"
+    },
+    {
+      "name": "Variable Inspector",
+      "category": "debug",
+      "ui": "panel",
+      "location": "Debug tab"
+    },
+    {
+      "name": "Call Stack",
+      "category": "debug",
+      "ui": "panel",
+      "location": "Debug tab"
+    },
+    {
+      "name": "Watch Expressions",
+      "category": "debug",
+      "ui": "panel",
+      "location": "Debug tab"
+    },
+    {
+      "name": "Debug Console",
+      "category": "debug",
+      "ui": "panel",
+      "location": "Debug tab"
+    },
+    {
+      "name": "CPU Profiler",
+      "category": "debug",
+      "ui": "panel",
+      "location": "Debug tab"
+    },
+    {
+      "name": "Memory Profiler",
+      "category": "debug",
+      "ui": "panel",
+      "location": "Debug tab"
+    },
+    {
+      "name": "Network Inspector",
+      "category": "debug",
+      "ui": "panel",
+      "location": "Debug tab"
+    },
+    {
+      "name": "Console Panel",
+      "category": "debug",
+      "ui": "panel",
+      "location": "Bottom panel"
+    },
+    {
+      "name": "Test Runner",
+      "category": "debug",
+      "ui": "command",
+      "location": "Command Palette"
+    },
+    {
+      "name": "Visual Test Runner",
+      "category": "debug",
+      "ui": "command",
+      "location": "Command Palette"
+    },
+    {
+      "name": "FPS Counter",
+      "category": "performance",
+      "ui": "display",
+      "location": "Performance tab"
+    },
+    {
+      "name": "Memory Usage",
+      "category": "performance",
+      "ui": "display",
+      "location": "Performance tab"
+    },
+    {
+      "name": "Memory Limit",
+      "category": "performance",
+      "ui": "display",
+      "location": "Performance tab"
+    },
+    {
+      "name": "Memory Bar",
+      "category": "performance",
+      "ui": "progress",
+      "location": "Performance tab"
+    },
+    {
+      "name": "Tab Count",
+      "category": "performance",
+      "ui": "display",
+      "location": "Performance tab"
+    },
+    {
+      "name": "Extension Count",
+      "category": "performance",
+      "ui": "display",
+      "location": "Performance tab"
+    },
+    {
+      "name": "Performance Modes",
+      "category": "performance",
+      "ui": "settings",
+      "location": "Settings tab"
+    },
+    {
+      "name": "Performance Dashboard",
+      "category": "performance",
+      "ui": "shortcut",
+      "location": "Ctrl+Shift+M (duplicate)"
+    },
+    {
+      "name": "Repository List",
+      "category": "github",
+      "ui": "panel",
+      "location": "GitHub tab"
+    },
+    {
+      "name": "Branch Management",
+      "category": "github",
+      "ui": "dropdown",
+      "location": "GitHub tab"
+    },
+    {
+      "name": "Switch Branch",
+      "category": "github",
+      "ui": "dropdown",
+      "location": "GitHub tab"
+    },
+    {
+      "name": "Pull Requests",
+      "category": "github",
+      "ui": "panel",
+      "location": "GitHub tab"
+    },
+    {
+      "name": "Review PR",
+      "category": "github",
+      "ui": "panel",
+      "location": "GitHub tab"
+    },
+    {
+      "name": "Issues",
+      "category": "github",
+      "ui": "panel",
+      "location": "GitHub tab"
+    },
+    {
+      "name": "Git Status",
+      "category": "github",
+      "ui": "display",
+      "location": "GitHub tab"
+    },
+    {
+      "name": "Agent Panel",
+      "category": "agents",
+      "ui": "panel",
+      "location": "Agents tab"
+    },
+    {
+      "name": "Agent Type Selector",
+      "category": "agents",
+      "ui": "dropdown",
+      "location": "Agents tab"
+    },
+    {
+      "name": "Agent Task Input",
+      "category": "agents",
+      "ui": "text-field",
+      "location": "Agents tab"
+    },
+    {
+      "name": "Agent Status",
+      "category": "agents",
+      "ui": "display",
+      "location": "Agents tab"
+    },
+    {
+      "name": "Agent Progress",
+      "category": "agents",
+      "ui": "progress",
+      "location": "Agents tab"
+    },
+    {
+      "name": "Agent Results",
+      "category": "agents",
+      "ui": "panel",
+      "location": "Agents tab"
+    },
+    {
+      "name": "Swarm Visualizer",
+      "category": "agents",
+      "ui": "modal",
+      "location": "AI Chat button"
+    },
+    {
+      "name": "Browser Panel",
+      "category": "browser",
+      "ui": "panel",
+      "location": "Browser overlay"
+    },
+    {
+      "name": "Browser Tabs",
+      "category": "browser",
+      "ui": "tabs",
+      "location": "Browser panel"
+    },
+    {
+      "name": "URL Bar",
+      "category": "browser",
+      "ui": "input",
+      "location": "Browser panel"
+    },
+    {
+      "name": "Back/Forward",
+      "category": "browser",
+      "ui": "buttons",
+      "location": "Browser panel"
+    },
+    {
+      "name": "Live Server",
+      "category": "browser",
+      "ui": "extension",
+      "location": "Marketplace"
+    },
+    {
+      "name": "Browser Presets",
+      "category": "browser",
+      "ui": "dropdown",
+      "location": "Browser panel"
+    },
+    {
+      "name": "Theme Selector",
+      "category": "ui",
+      "ui": "settings",
+      "location": "Settings tab"
+    },
+    {
+      "name": "Color Customization",
+      "category": "ui",
+      "ui": "settings",
+      "location": "Settings tab"
+    },
+    {
+      "name": "Font Settings",
+      "category": "ui",
+      "ui": "settings",
+      "location": "Settings tab"
+    },
+    {
+      "name": "Font Size",
+      "category": "ui",
+      "ui": "settings",
+      "location": "Settings tab"
+    },
+    {
+      "name": "Tab Size",
+      "category": "ui",
+      "ui": "settings",
+      "location": "Settings tab"
+    },
+    {
+      "name": "Indentation",
+      "category": "ui",
+      "ui": "settings",
+      "location": "Settings tab"
+    },
+    {
+      "name": "Word Wrap",
+      "category": "ui",
+      "ui": "settings",
+      "location": "Settings tab"
+    },
+    {
+      "name": "Minimap",
+      "category": "ui",
+      "ui": "settings",
+      "location": "Settings tab"
+    },
+    {
+      "name": "Line Numbers",
+      "category": "ui",
+      "ui": "settings",
+      "location": "Settings tab"
+    },
+    {
+      "name": "Context Menus",
+      "category": "ui",
+      "ui": "right-click",
+      "location": "Anywhere"
+    },
+    {
+      "name": "Keyboard Shortcuts",
+      "category": "ui",
+      "ui": "settings",
+      "location": "Settings tab"
+    },
+    {
+      "name": "Hotkey Manager",
+      "category": "ui",
+      "ui": "settings",
+      "location": "Settings tab"
+    },
+    {
+      "name": "Resizable Panes",
+      "category": "ui",
+      "ui": "drag",
+      "location": "Pane dividers"
+    },
+    {
+      "name": "Transparency Manager",
+      "category": "ui",
+      "ui": "settings",
+      "location": "Settings tab"
+    },
+    {
+      "name": "Chameleon Theme",
+      "category": "ui",
+      "ui": "settings",
+      "location": "Settings tab"
+    },
+    {
+      "name": "TODO Panel",
+      "category": "ui",
+      "ui": "floating",
+      "location": "Bottom-right"
+    },
+    {
+      "name": "Live Coding Panel",
+      "category": "ui",
+      "ui": "panel",
+      "location": "Side panel"
+    },
+    {
+      "name": "Chat Customizer",
+      "category": "ui",
+      "ui": "settings",
+      "location": "AI Chat"
+    },
+    {
+      "name": "Flexible Layout",
+      "category": "ui",
+      "ui": "drag",
+      "location": "Panes"
+    },
+    {
+      "name": "Orchestra Layout",
+      "category": "ui",
+      "ui": "settings",
+      "location": "Settings tab"
+    },
+    {
+      "name": "Drive List",
+      "category": "files",
+      "ui": "panel",
+      "location": "Explorer tab"
+    },
+    {
+      "name": "File Browser",
+      "category": "files",
+      "ui": "panel",
+      "location": "Explorer tab"
+    },
+    {
+      "name": "Open File",
+      "category": "files",
+      "ui": "double-click",
+      "location": "Explorer"
+    },
+    {
+      "name": "Rename",
+      "category": "files",
+      "ui": "context-menu",
+      "location": "Right-click file"
+    },
+    {
+      "name": "Delete",
+      "category": "files",
+      "ui": "context-menu",
+      "location": "Right-click file"
+    },
+    {
+      "name": "Copy/Paste",
+      "category": "files",
+      "ui": "context-menu",
+      "location": "Right-click file"
+    },
+    {
+      "name": "Drag & Drop",
+      "category": "files",
+      "ui": "drag",
+      "location": "Files to editor"
+    },
+    {
+      "name": "Recent Files",
+      "category": "files",
+      "ui": "menu",
+      "location": "File menu"
+    },
+    {
+      "name": "Recent Folders",
+      "category": "files",
+      "ui": "menu",
+      "location": "File menu"
+    },
+    {
+      "name": "File Search",
+      "category": "files",
+      "ui": "search",
+      "location": "Explorer tab"
+    },
+    {
+      "name": "File Filters",
+      "category": "files",
+      "ui": "filter",
+      "location": "Explorer tab"
+    },
+    {
+      "name": "Command System",
+      "category": "commands",
+      "ui": "chat",
+      "location": "AI Chat"
+    },
+    {
+      "name": "!pic command",
+      "category": "commands",
+      "ui": "chat",
+      "location": "AI Chat"
+    },
+    {
+      "name": "!code command",
+      "category": "commands",
+      "ui": "chat",
+      "location": "AI Chat"
+    },
+    {
+      "name": "!projectnew",
+      "category": "commands",
+      "ui": "chat",
+      "location": "AI Chat"
+    },
+    {
+      "name": "!projectresume",
+      "category": "commands",
+      "ui": "chat",
+      "location": "AI Chat"
+    },
+    {
+      "name": "File Commands",
+      "category": "commands",
+      "ui": "palette",
+      "location": "Command Palette"
+    },
+    {
+      "name": "Edit Commands",
+      "category": "commands",
+      "ui": "palette",
+      "location": "Command Palette"
+    },
+    {
+      "name": "View Commands",
+      "category": "commands",
+      "ui": "palette",
+      "location": "Command Palette"
+    },
+    {
+      "name": "Git Commands",
+      "category": "commands",
+      "ui": "palette",
+      "location": "Command Palette"
+    },
+    {
+      "name": "Debug Commands",
+      "category": "commands",
+      "ui": "palette",
+      "location": "Command Palette"
+    },
+    {
+      "name": "Terminal Commands",
+      "category": "commands",
+      "ui": "palette",
+      "location": "Command Palette"
+    },
+    {
+      "name": "AI Commands",
+      "category": "commands",
+      "ui": "palette",
+      "location": "Command Palette"
+    },
+    {
+      "name": "Quick Actions",
+      "category": "commands",
+      "ui": "context-menu",
+      "location": "Right-click"
+    },
+    {
+      "name": "Permission System",
+      "category": "security",
+      "ui": "settings",
+      "location": "Settings tab"
+    },
+    {
+      "name": "Memory Dashboard",
+      "category": "utility",
+      "ui": "panel",
+      "location": "Available via menu"
+    },
+    {
+      "name": "Enhanced Terminal",
+      "category": "utility",
+      "ui": "panel",
+      "location": "Bottom panel"
+    },
+    {
+      "name": "Cinematic Visualization",
+      "category": "utility",
+      "ui": "shortcut",
+      "location": "Ctrl+Shift+V"
+    },
+    {
+      "name": "Visual Benchmark",
+      "category": "utility",
+      "ui": "command",
+      "location": "Command Palette"
+    },
+    {
+      "name": "System Diagnostic",
+      "category": "utility",
+      "ui": "command",
+      "location": "Command Palette"
+    },
+    {
+      "name": "Demo Launcher",
+      "category": "utility",
+      "ui": "command",
+      "location": "Command Palette"
+    },
+    {
+      "name": "Debug Mode",
+      "category": "utility",
+      "ui": "settings",
+      "location": "Settings tab"
+    }
+  ],
+  "recommendations": [
+    {
+      "feature": "Theme Manager",
+      "category": "core",
+      "suggestion": "Add UI element in appropriate location for Theme Manager",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "BigDaddyG Local AI",
+      "category": "ai",
+      "suggestion": "Add button or dropdown in AI Chat for BigDaddyG Local AI",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Ollama Integration",
+      "category": "ai",
+      "suggestion": "Add button or dropdown in AI Chat for Ollama Integration",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "OpenAI (GPT-4)",
+      "category": "ai",
+      "suggestion": "Add button or dropdown in AI Chat for OpenAI (GPT-4)",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Anthropic (Claude)",
+      "category": "ai",
+      "suggestion": "Add button or dropdown in AI Chat for Anthropic (Claude)",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Google Gemini",
+      "category": "ai",
+      "suggestion": "Add button or dropdown in AI Chat for Google Gemini",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Groq",
+      "category": "ai",
+      "suggestion": "Add button or dropdown in AI Chat for Groq",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "DeepSeek",
+      "category": "ai",
+      "suggestion": "Add button or dropdown in AI Chat for DeepSeek",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Azure OpenAI",
+      "category": "ai",
+      "suggestion": "Add button or dropdown in AI Chat for Azure OpenAI",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Cohere",
+      "category": "ai",
+      "suggestion": "Add button or dropdown in AI Chat for Cohere",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Kimi (Moonshot)",
+      "category": "ai",
+      "suggestion": "Add button or dropdown in AI Chat for Kimi (Moonshot)",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Cursor AI",
+      "category": "ai",
+      "suggestion": "Add button or dropdown in AI Chat for Cursor AI",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "GitHub Copilot",
+      "category": "ai",
+      "suggestion": "Add button or dropdown in AI Chat for GitHub Copilot",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Amazon Q",
+      "category": "ai",
+      "suggestion": "Add button or dropdown in AI Chat for Amazon Q",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "AI Provider Manager",
+      "category": "ai",
+      "suggestion": "Add button or dropdown in AI Chat for AI Provider Manager",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Agentic Safety",
+      "category": "ai",
+      "suggestion": "Add button or dropdown in AI Chat for Agentic Safety",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "AI Code Review",
+      "category": "ai",
+      "suggestion": "Add button or dropdown in AI Chat for AI Code Review",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "AI Refactoring",
+      "category": "ai",
+      "suggestion": "Add button or dropdown in AI Chat for AI Refactoring",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "AI Documentation",
+      "category": "ai",
+      "suggestion": "Add button or dropdown in AI Chat for AI Documentation",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "AI Test Generation",
+      "category": "ai",
+      "suggestion": "Add button or dropdown in AI Chat for AI Test Generation",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Deep Research Engine",
+      "category": "ai",
+      "suggestion": "Add button or dropdown in AI Chat for Deep Research Engine",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Predictive Debugger",
+      "category": "ai",
+      "suggestion": "Add button or dropdown in AI Chat for Predictive Debugger",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Visual Code Flow",
+      "category": "ai",
+      "suggestion": "Add button or dropdown in AI Chat for Visual Code Flow",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "DALL-E Integration",
+      "category": "ai",
+      "suggestion": "Add button or dropdown in AI Chat for DALL-E Integration",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Stable Diffusion",
+      "category": "ai",
+      "suggestion": "Add button or dropdown in AI Chat for Stable Diffusion",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Midjourney",
+      "category": "ai",
+      "suggestion": "Add button or dropdown in AI Chat for Midjourney",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Model Hotswap",
+      "category": "ai",
+      "suggestion": "Add button or dropdown in AI Chat for Model Hotswap",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Temperature Control",
+      "category": "ai",
+      "suggestion": "Add button or dropdown in AI Chat for Temperature Control",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Token Limit Control",
+      "category": "ai",
+      "suggestion": "Add button or dropdown in AI Chat for Token Limit Control",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Context Window",
+      "category": "ai",
+      "suggestion": "Add button or dropdown in AI Chat for Context Window",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Chat History",
+      "category": "ai",
+      "suggestion": "Add button or dropdown in AI Chat for Chat History",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Godot Integration",
+      "category": "game",
+      "suggestion": "Add button or panel in Game Editor for Godot Integration",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Unity Integration",
+      "category": "game",
+      "suggestion": "Add button or panel in Game Editor for Unity Integration",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Unreal Integration",
+      "category": "game",
+      "suggestion": "Add button or panel in Game Editor for Unreal Integration",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Sunshine Engine",
+      "category": "game",
+      "suggestion": "Add button or panel in Game Editor for Sunshine Engine",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Visual Scene Editor",
+      "category": "game",
+      "suggestion": "Add button or panel in Game Editor for Visual Scene Editor",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Asset Browser",
+      "category": "game",
+      "suggestion": "Add button or panel in Game Editor for Asset Browser",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Asset Preview System",
+      "category": "game",
+      "suggestion": "Add button or panel in Game Editor for Asset Preview System",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Shader Editor",
+      "category": "game",
+      "suggestion": "Add button or panel in Game Editor for Shader Editor",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Animation Timeline",
+      "category": "game",
+      "suggestion": "Add button or panel in Game Editor for Animation Timeline",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Texture Preview",
+      "category": "game",
+      "suggestion": "Add button or panel in Game Editor for Texture Preview",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "3D Model Preview",
+      "category": "game",
+      "suggestion": "Add button or panel in Game Editor for 3D Model Preview",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Audio Preview",
+      "category": "game",
+      "suggestion": "Add button or panel in Game Editor for Audio Preview",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Video Preview",
+      "category": "game",
+      "suggestion": "Add button or panel in Game Editor for Video Preview",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Blueprint Support",
+      "category": "game",
+      "suggestion": "Add button or panel in Game Editor for Blueprint Support",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Particle System Editor",
+      "category": "game",
+      "suggestion": "Add button or panel in Game Editor for Particle System Editor",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Physics Preview",
+      "category": "game",
+      "suggestion": "Add button or panel in Game Editor for Physics Preview",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Collision Editor",
+      "category": "game",
+      "suggestion": "Add button or panel in Game Editor for Collision Editor",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Tilemap Editor",
+      "category": "game",
+      "suggestion": "Add button or panel in Game Editor for Tilemap Editor",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Game Performance Profiler",
+      "category": "game",
+      "suggestion": "Add button or panel in Game Editor for Game Performance Profiler",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Real-time Sync",
+      "category": "team",
+      "suggestion": "Add button in Team tab for Real-time Sync",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Live Chat",
+      "category": "team",
+      "suggestion": "Add button in Team tab for Live Chat",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Review Comments",
+      "category": "team",
+      "suggestion": "Add button in Team tab for Review Comments",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Permissions System",
+      "category": "team",
+      "suggestion": "Add button in Team tab for Permissions System",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Session Management",
+      "category": "team",
+      "suggestion": "Add button in Team tab for Session Management",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Room ID Sharing",
+      "category": "team",
+      "suggestion": "Add button in Team tab for Room ID Sharing",
+      "priority": "HIGH"
+    },
+    {
+      "feature": "Participant List",
+      "category": "team",
+      "suggestion": "Add button in Team tab for Participant List",
+      "priority": "HIGH"
+    }
+  ],
+  "uiElements": {
+    "tabs": [
+      "Chat (Ctrl+Shift+C)",
+      "Explorer (Ctrl+Shift+E)",
+      "GitHub (Ctrl+Shift+G)",
+      "Agents (Ctrl+Shift+A)",
+      "Team (Ctrl+Shift+T)",
+      "Settings (Ctrl+,)",
+      "Marketplace (Ctrl+Shift+X)",
+      "Game Editor (Ctrl+Shift+J)",
+      "Image Gen (Ctrl+Shift+I)",
+      "Performance (Ctrl+Shift+M)",
+      "Debug (Ctrl+Shift+D)",
+      "Browser (Ctrl+Shift+B)",
+      "Welcome (First launch)"
+    ],
+    "buttons": [
+      "AI Send",
+      "Voice Input",
+      "Clear Chat",
+      "Open Floating Chat",
+      "Refresh Explorer",
+      "New File/Folder",
+      "Install Extension",
+      "Uninstall Extension",
+      "Start Agent",
+      "Create Room",
+      "Share Screen",
+      "Start Video/Voice",
+      "Build Game",
+      "Run Game",
+      "Swarm Engine",
+      "System Optimizer",
+      "API Key Manager"
+    ],
+    "menus": [
+      "File Menu",
+      "Edit Menu",
+      "View Menu",
+      "Git Menu",
+      "Debug Menu",
+      "Terminal Menu",
+      "Help Menu",
+      "Context Menus (Right-click)"
+    ],
+    "panels": [
+      "Chat Messages",
+      "Past Chats",
+      "Advanced Settings",
+      "File Browser",
+      "Extension List",
+      "Agent List",
+      "Team Participants",
+      "Performance Stats",
+      "Debug Console",
+      "Variable Inspector",
+      "Call Stack",
+      "Watch Expressions"
+    ],
+    "shortcuts": [
+      "Ctrl+Shift+C - Chat",
+      "Ctrl+Shift+E - Explorer",
+      "Ctrl+Shift+G - GitHub",
+      "Ctrl+Shift+A - Agents",
+      "Ctrl+Shift+T - Team",
+      "Ctrl+Shift+X - Marketplace",
+      "Ctrl+Shift+J - Game Editor",
+      "Ctrl+Shift+I - Image Gen",
+      "Ctrl+Shift+M - Performance",
+      "Ctrl+Shift+D - Debug",
+      "Ctrl+Shift+P - Command Palette",
+      "Ctrl+Shift+B - Browser",
+      "Ctrl+, - Settings",
+      "Ctrl+L - Floating Chat",
+      "Ctrl+N - New File",
+      "Ctrl+S - Save File"
+    ]
+  }
+}
