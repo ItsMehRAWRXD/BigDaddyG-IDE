@@ -1,0 +1,68 @@
+{
+  "results": {
+    "uiComponents": {
+      "tested": 12,
+      "wired": 12,
+      "unwired": 0,
+      "broken": 0
+    },
+    "backendIntegrations": {
+      "tested": 22,
+      "wired": 19,
+      "unwired": 3,
+      "broken": 0
+    },
+    "eventHandlers": {
+      "tested": 4,
+      "wired": 1,
+      "unwired": 2,
+      "broken": 1
+    },
+    "apiEndpoints": {
+      "tested": 0,
+      "wired": 0,
+      "unwired": 0,
+      "broken": 0
+    },
+    "modules": {
+      "tested": 20,
+      "loaded": 19,
+      "missing": 1,
+      "broken": 0
+    }
+  },
+  "issues": [
+    {
+      "severity": "HIGH",
+      "description": "Agentic core loaded not loaded in index.html"
+    },
+    {
+      "severity": "HIGH",
+      "description": "Tab system integration not found in renderer.js"
+    },
+    {
+      "severity": "HIGH",
+      "description": "IPC communication not found in renderer.js"
+    },
+    {
+      "severity": "MEDIUM",
+      "description": "AI provider calls not found in renderer.js"
+    },
+    {
+      "severity": "HIGH",
+      "description": "Settings IPC not implemented"
+    },
+    {
+      "severity": "MEDIUM",
+      "description": "AI provider IPC only wired on one side"
+    },
+    {
+      "severity": "HIGH",
+      "description": "Tab system events not implemented"
+    }
+  ],
+  "totalTests": 58,
+  "totalPassing": 51,
+  "overallPercentage": "87.9",
+  "grade": "B"
+}
