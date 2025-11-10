@@ -403,6 +403,148 @@ class TeamCollaboration {
     }
     
     // ============================================================================
+    // VIDEO CHAT & MEDIA
+    // ============================================================================
+    
+    async startVideo() {
+        try {
+            console.log('[Team] 📹 Starting video chat...');
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                video: true, 
+                audio: true 
+            });
+            this.localStream = stream;
+            this.showNotification('Video chat started', 'success');
+            return stream;
+        } catch (error) {
+            console.error('[Team] ❌ Failed to start video:', error);
+            this.showNotification('Failed to start video: ' + error.message, 'error');
+            return null;
+        }
+    }
+    
+    async stopVideo() {
+        if (this.localStream) {
+            this.localStream.getTracks().forEach(track => track.stop());
+            this.localStream = null;
+            console.log('[Team] 🛑 Video chat stopped');
+            this.showNotification('Video chat stopped', 'info');
+        }
+    }
+    
+    async toggleVideo() {
+        if (this.localStream) {
+            await this.stopVideo();
+        } else {
+            await this.startVideo();
+        }
+    }
+    
+    // Video chat with webcam
+    async startWebcam() {
+        return await this.startVideo();
+    }
+    
+    // ============================================================================
+    // VOICE CHAT
+    // ============================================================================
+    
+    async startVoice() {
+        try {
+            console.log('[Team] 🎤 Starting voice chat...');
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                audio: true 
+            });
+            this.audioStream = stream;
+            this.showNotification('Voice chat started', 'success');
+            return stream;
+        } catch (error) {
+            console.error('[Team] ❌ Failed to start voice:', error);
+            this.showNotification('Failed to start voice: ' + error.message, 'error');
+            return null;
+        }
+    }
+    
+    async stopVoice() {
+        if (this.audioStream) {
+            this.audioStream.getTracks().forEach(track => track.stop());
+            this.audioStream = null;
+            console.log('[Team] 🛑 Voice chat stopped');
+            this.showNotification('Voice chat stopped', 'info');
+        }
+    }
+    
+    async toggleVoice() {
+        if (this.audioStream) {
+            await this.stopVoice();
+        } else {
+            await this.startVoice();
+        }
+    }
+    
+    // ============================================================================
+    // SCREEN SHARING
+    // ============================================================================
+    
+    async screenShare() {
+        try {
+            console.log('[Team] 🖥️ Starting screen sharing...');
+            const stream = await navigator.mediaDevices.getDisplayMedia({
+                video: true,
+                audio: false
+            });
+            this.screenStream = stream;
+            this.showNotification('Screen sharing started', 'success');
+            return stream;
+        } catch (error) {
+            console.error('[Team] ❌ Failed to share screen:', error);
+            this.showNotification('Failed to share screen: ' + error.message, 'error');
+            return null;
+        }
+    }
+    
+    async stopScreenShare() {
+        if (this.screenStream) {
+            this.screenStream.getTracks().forEach(track => track.stop());
+            this.screenStream = null;
+            console.log('[Team] 🛑 Screen sharing stopped');
+            this.showNotification('Screen sharing stopped', 'info');
+        }
+    }
+    
+    // ============================================================================
+    // WHITEBOARD
+    // ============================================================================
+    
+    async createWhiteboard() {
+        try {
+            console.log('[Team] 🎨 Creating whiteboard...');
+            this.whiteboard = {
+                canvas: document.createElement('canvas'),
+                context: null,
+                drawing: false,
+                strokes: []
+            };
+            this.whiteboard.context = this.whiteboard.canvas.getContext('2d');
+            this.showNotification('Whiteboard created', 'success');
+            return this.whiteboard;
+        } catch (error) {
+            console.error('[Team] ❌ Failed to create whiteboard:', error);
+            this.showNotification('Failed to create whiteboard: ' + error.message, 'error');
+            return null;
+        }
+    }
+    
+    async clearWhiteboard() {
+        if (this.whiteboard && this.whiteboard.context) {
+            const { canvas, context } = this.whiteboard;
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            this.whiteboard.strokes = [];
+            console.log('[Team] 🧹 Whiteboard cleared');
+        }
+    }
+    
+    // ============================================================================
     // UI MANAGEMENT
     // ============================================================================
     

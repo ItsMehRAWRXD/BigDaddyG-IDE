@@ -1,8 +1,55 @@
-// Performance Optimizations - Minimal Implementation
+// Performance Optimizations - Full Implementation with FPS and Memory Monitoring
 class PerformanceOptimizer {
     constructor() {
         this.cache = new Map();
         this.observers = new Set();
+        this.fps = 0;
+        this.memory = { used: 0, total: 0, heap: 0 };
+        this.lastFrameTime = performance.now();
+        this.frameCount = 0;
+        this.startFPSMonitoring();
+        this.startMemoryMonitoring();
+    }
+
+    // FPS Monitoring
+    startFPSMonitoring() {
+        const updateFPS = () => {
+            this.frameCount++;
+            const currentTime = performance.now();
+            const elapsed = currentTime - this.lastFrameTime;
+            
+            if (elapsed >= 1000) {
+                this.fps = Math.round((this.frameCount * 1000) / elapsed);
+                this.frameCount = 0;
+                this.lastFrameTime = currentTime;
+            }
+            
+            requestAnimationFrame(updateFPS);
+        };
+        requestAnimationFrame(updateFPS);
+    }
+
+    // Memory Monitoring
+    startMemoryMonitoring() {
+        setInterval(() => {
+            if (performance.memory) {
+                this.memory = {
+                    used: Math.round(performance.memory.usedJSHeapSize / 1048576), // MB
+                    total: Math.round(performance.memory.totalJSHeapSize / 1048576),
+                    heap: Math.round(performance.memory.jsHeapSizeLimit / 1048576)
+                };
+            }
+        }, 1000);
+    }
+
+    // Get current FPS
+    getFPS() {
+        return this.fps;
+    }
+
+    // Get current memory usage
+    getMemory() {
+        return this.memory;
     }
 
     // DOM Query Optimization

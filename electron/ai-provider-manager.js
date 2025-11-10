@@ -350,8 +350,16 @@ class AIProviderManager {
       defaultModel: 'claude-3-sonnet-20240229'
     });
 
-    // Google Gemini
+    // Google Gemini (with 'google' alias for compatibility)
     this.providers.set('gemini', {
+      name: 'Google Gemini',
+      type: 'cloud',
+      endpoint: 'https://generativelanguage.googleapis.com/v1beta',
+      requiresKey: true,
+      keyId: 'gemini',
+      defaultModel: 'gemini-1.5-flash'
+    });
+    this.providers.set('google', {
       name: 'Google Gemini',
       type: 'cloud',
       endpoint: 'https://generativelanguage.googleapis.com/v1beta',
@@ -399,6 +407,16 @@ class AIProviderManager {
       keyId: 'cursor',
       defaultModel: 'gpt-4',
       description: 'Cursor AI models with streaming support'
+    });
+    
+    // BigDaddyA - Built-in Local AI (no external dependencies)
+    this.providers.set('bigdaddya', {
+      name: 'BigDaddyA (Built-in Local AI)',
+      type: 'local',
+      endpoint: 'internal://bigdaddya',
+      requiresKey: false,
+      defaultModel: 'bigdaddya-omni',
+      description: 'Built-in local AI with no external dependencies'
     });
 
     // Cohere

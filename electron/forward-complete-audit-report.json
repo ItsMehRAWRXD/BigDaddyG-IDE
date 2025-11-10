@@ -1,8 +1,8 @@
 {
-  "timestamp": "2025-11-10T23:13:14.260Z",
+  "timestamp": "2025-11-10T23:23:18.419Z",
   "totalTests": 102,
-  "passed": 98,
-  "failed": 4,
+  "passed": 102,
+  "failed": 0,
   "warnings": 0,
   "categories": {
     "Core Foundation": {
@@ -54,8 +54,8 @@
     },
     "File System Integrity": {
       "total": 9,
-      "passed": 8,
-      "failed": 1,
+      "passed": 9,
+      "failed": 0,
       "tests": [
         {
           "name": "file-explorer.js exists",
@@ -63,7 +63,7 @@
         },
         {
           "name": "monaco-config.js exists",
-          "status": "FAIL"
+          "status": "PASS"
         },
         {
           "name": "logger.js exists",
@@ -97,8 +97,8 @@
     },
     "Core Modules": {
       "total": 11,
-      "passed": 10,
-      "failed": 1,
+      "passed": 11,
+      "failed": 0,
       "tests": [
         {
           "name": "tab-system.js exists",
@@ -142,14 +142,14 @@
         },
         {
           "name": "Core modules loaded in HTML",
-          "status": "FAIL"
+          "status": "PASS"
         }
       ]
     },
     "AI Architecture": {
       "total": 20,
-      "passed": 18,
-      "failed": 2,
+      "passed": 20,
+      "failed": 0,
       "tests": [
         {
           "name": "ai-provider-manager.js exists",
@@ -173,7 +173,7 @@
         },
         {
           "name": "google provider registered",
-          "status": "FAIL"
+          "status": "PASS"
         },
         {
           "name": "groq provider registered",
@@ -209,7 +209,7 @@
         },
         {
           "name": "bigdaddya provider registered",
-          "status": "FAIL"
+          "status": "PASS"
         },
         {
           "name": "bigdaddya-integration.js exists",

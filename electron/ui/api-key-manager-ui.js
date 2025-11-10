@@ -87,6 +87,35 @@ class APIKeyManagerUI {
                     <!-- Providers will be inserted here -->
                 </div>
                 
+                <div style="margin-top: 20px; padding: 15px; background: rgba(0, 212, 255, 0.1); border-radius: 6px; border-left: 3px solid var(--cyan, #00d4ff);">
+                    <h4 style="margin: 0 0 10px 0;">🎯 Model Selection</h4>
+                    <p style="margin: 0 0 10px 0; font-size: 14px; color: var(--text-muted, #aaa);">
+                        Select your preferred model for each provider:
+                    </p>
+                    <select id="model-selection-dropdown" style="
+                        width: 100%;
+                        padding: 8px;
+                        background: var(--background-secondary, #2a2a2a);
+                        color: var(--text-color, #fff);
+                        border: 1px solid var(--border-color, #444);
+                        border-radius: 4px;
+                        font-size: 14px;
+                        cursor: pointer;
+                    ">
+                        <option value="">-- Select a model --</option>
+                        <option value="gpt-4">GPT-4 (OpenAI)</option>
+                        <option value="gpt-3.5-turbo">GPT-3.5 Turbo (OpenAI)</option>
+                        <option value="claude-3-opus">Claude 3 Opus (Anthropic)</option>
+                        <option value="claude-3-sonnet">Claude 3 Sonnet (Anthropic)</option>
+                        <option value="gemini-pro">Gemini Pro (Google)</option>
+                        <option value="mixtral-8x7b">Mixtral 8x7B (Groq)</option>
+                        <option value="deepseek-chat">DeepSeek Chat</option>
+                        <option value="kimi-chat">Kimi Chat (Moonshot)</option>
+                        <option value="command">Command (Cohere)</option>
+                        <option value="cursor-fast">Cursor Fast</option>
+                    </select>
+                </div>
+                
                 <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-color, #444);">
                     <h3 style="margin-top: 0;">📚 Where to Get API Keys:</h3>
                     <ul style="line-height: 1.8; color: var(--text-muted, #aaa);">

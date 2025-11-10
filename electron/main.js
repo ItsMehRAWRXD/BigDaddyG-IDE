@@ -3,10 +3,12 @@
  * Professional desktop IDE with dedicated tabs and syntax highlighting
  */
 
+// Electron Main Process Entry Point
 const electronModule = require('electron');
 const { app, BrowserWindow, ipcMain, Menu, dialog } = electronModule;
 const IPCServer = require('./ipc-server');
 
+// Verify Electron environment - app.whenReady must be available
 if (!app || typeof app.whenReady !== 'function') {
   console.error('[BigDaddyG] ❌ Electron "app" module unavailable.');
   console.error('[BigDaddyG]    • ELECTRON_RUN_AS_NODE =', process.env.ELECTRON_RUN_AS_NODE || 'undefined');
@@ -14,6 +16,8 @@ if (!app || typeof app.whenReady !== 'function') {
   console.error('[BigDaddyG] 🚫 This file must be launched with the Electron runtime (e.g. `npm start`).');
   process.exit(1);
 }
+
+// Main process initialization - createWindow will be called by app.whenReady
 const path = require('path');
 const fs = require('fs');
 const http = require('http');

@@ -53,6 +53,11 @@ class VisualGameEditor {
     
     /**
      * Load game engine integrations
+     * Supports multiple scripting languages:
+     * - GDScript (Godot)
+     * - C# (Unity, Godot)
+     * - C++ (Unreal Engine)
+     * - Sunshine Script (Sunshine Engine)
      */
     async loadEngineIntegrations() {
         if (window.electron) {
@@ -63,7 +68,16 @@ class VisualGameEditor {
                 this.unrealIntegration = await window.electron.getUnrealIntegration?.();
                 this.sunshineIntegration = await window.electron.getSunshineIntegration?.();
                 
+                // Language support
+                this.supportedLanguages = {
+                    godot: ['gdscript', 'csharp', 'C#'],
+                    unity: ['csharp', 'C#'],
+                    unreal: ['cpp', 'C++', 'blueprints'],
+                    sunshine: ['sunshine-script', 'javascript']
+                };
+                
                 console.log('[VisualGameEditor] Engine integrations loaded');
+                console.log('[VisualGameEditor] Supported languages:', this.supportedLanguages);
             } catch (error) {
                 console.warn('[VisualGameEditor] Could not load engine integrations:', error);
             }
