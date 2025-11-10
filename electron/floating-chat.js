@@ -1,6 +1,9 @@
 /**
  * BigDaddyG IDE - Floating Centered Chat Panel
  * Like Cursor's Composer - opens in center, doesn't block sidebar
+ * 
+ * IMPORTANT: All ! commands are routed through command-system.js
+ * This chat is a UI surface only - command logic lives in command-system.js
  */
 
 (function() {
@@ -296,7 +299,7 @@ class FloatingChat {
                 <div style="position: relative;">
                     <textarea 
                         id="floating-chat-input" 
-                        placeholder="@ for context, / for commands, or drag files here 📎"
+                        placeholder="Ask anything or use ! for commands (!help for list) 💬"
                         style="
                             width: 100%;
                             min-height: 80px;
