@@ -388,6 +388,37 @@ class MemoryBridge {
     getStats() {
         return this.memoryStats;
     }
+    
+    isAvailable() {
+        // Check if memory service is actually available and working
+        if (!this.isInitialized) {
+            return false;
+        }
+        
+        // Check if we have Electron IPC bridge
+        if (window.electron && window.electron.memory) {
+            return true;
+        }
+        
+        // In-memory mode is technically available but limited
+        return this.inMemoryStore !== undefined;
+    }
+    
+    getAvailabilityStatus() {
+        if (!this.isInitialized) {
+            return { available: false, mode: 'not-initialized', message: 'Memory service not initialized' };
+        }
+        
+        if (window.electron && window.electron.memory) {
+            return { available: true, mode: 'full', message: 'Memory service fully available' };
+        }
+        
+        if (this.inMemoryStore !== undefined) {
+            return { available: true, mode: 'limited', message: 'In-memory mode (limited functionality)' };
+        }
+        
+        return { available: false, mode: 'offline', message: 'Memory service offline' };
+    }
 }
 
 // ========================================================================

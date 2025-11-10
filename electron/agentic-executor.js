@@ -247,7 +247,7 @@ class AgenticExecutor {
             startTime: null,
             endTime: null
         };
-        this.workingDirectory = process.cwd();
+        this.workingDirectory = (window.env && window.env.cwd) ? window.env.cwd() : '/';
         
         // Initialize security hardening
         this.security = new AgenticSecurityHardening(AgenticConfig.safetyLevel);

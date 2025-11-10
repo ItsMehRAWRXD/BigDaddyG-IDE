@@ -364,21 +364,85 @@ Return the structure as a JSON object with file paths as keys and content as val
             }
         }
         
-        // Compile based on file extension
-        // This would integrate with unified-extension-system.js
-        this.showSuccess(`✅ Compilation complete! (Integration with auto-compiler coming soon)`);
+        try {
+            // Get file content
+            const code = window.editor?.getValue() || '';
+            if (!code) {
+                this.showError('No code to compile');
+                return;
+            }
+            
+            // Detect language from file extension
+            const ext = filePath.split('.').pop().toLowerCase();
+            const langMap = {
+                'js': 'node',
+                'ts': 'tsc',
+                'py': 'python',
+                'java': 'javac',
+                'c': 'gcc',
+                'cpp': 'g++',
+                'cs': 'csc',
+                'go': 'go build',
+                'rs': 'cargo build'
+            };
+            
+            const compiler = langMap[ext];
+            if (!compiler) {
+                this.showError(`No compiler configured for .${ext} files`);
+                return;
+            }
+            
+            // Use agentic executor to compile
+            if (window.getAgenticExecutor) {
+                const executor = window.getAgenticExecutor();
+                const result = await executor.executeTask(`Compile ${filePath} using ${compiler}`);
+                
+                if (result.success) {
+                    this.showSuccess(`✅ Compilation successful!\n\n${result.output || ''}`);
+                } else {
+                    this.showError(`❌ Compilation failed:\n\n${result.error || 'Unknown error'}`);
+                }
+            } else {
+                // Fallback: show command to run
+                this.showSuccess(`✅ Run this command to compile:\n\n${compiler} ${filePath}`);
+            }
+            
+        } catch (error) {
+            this.showError(`Compilation error: ${error.message}`);
+        }
     }
     
     async handleRunCommand(args) {
         const file = args || 'current';
         this.showProgress(`▶️ Running ${file}...`);
         
-        // Integrate with agentic-file-browser.js runFile()
-        if (window.agenticBrowser) {
+        try {
             let filePath = file === 'current' ? this.getCurrentFilePath() : file;
-            if (filePath) {
-                await window.agenticBrowser.runFile(filePath);
+            
+            if (!filePath) {
+                this.showError('No file specified');
+                return;
             }
+            
+            // Use agentic executor to run file
+            if (window.getAgenticExecutor) {
+                const executor = window.getAgenticExecutor();
+                const result = await executor.executeTask(`Run ${filePath}`);
+                
+                if (result.success) {
+                    this.showSuccess(`✅ Execution complete!\n\n${result.output || ''}`);
+                } else {
+                    this.showError(`❌ Execution failed:\n\n${result.error || 'Unknown error'}`);
+                }
+            } else if (window.agenticBrowser) {
+                // Fallback to file browser
+                await window.agenticBrowser.runFile(filePath);
+            } else {
+                this.showError('No execution system available');
+            }
+            
+        } catch (error) {
+            this.showError(`Execution error: ${error.message}`);
         }
     }
     

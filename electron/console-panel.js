@@ -187,22 +187,38 @@ class ConsolePanel {
     }
     
     setupOrchestraMonitoring() {
-        // Check Orchestra status every 2 seconds
+        // Use centralized status manager if available
+        if (window.statusManager) {
+            this.statusUnsubscribe = window.statusManager.subscribe('orchestra', (running, data) => {
+                this.setOrchestraRunning(running, data);
+            });
+            console.log('[ConsolePanel] 🔄 Subscribed to centralized status manager');
+            return;
+        }
+        
+        // Fallback: local monitoring
+        console.warn('[ConsolePanel] ⚠️ Status manager not available, using local monitoring');
         this.orchestraMonitorInterval = setInterval(() => {
             this.checkOrchestraStatus();
-        }, 2000);
+        }, 3000);
         
-        // Initial check - wait 5 seconds for server to start
-        // (Orchestra takes 5-10s to scan models and initialize)
-        this.setOrchestraRunning(null); // Show "Starting..." initially
-        setTimeout(() => {
-            this.checkOrchestraStatus();
-        }, 5000);
+        // Initial check
+        this.setOrchestraRunning(null);
+        setTimeout(() => this.checkOrchestraStatus(), 2000);
     }
     
     cleanup() {
+        // Unsubscribe from status manager
+        if (this.statusUnsubscribe) {
+            this.statusUnsubscribe();
+            this.statusUnsubscribe = null;
+            console.log('[ConsolePanel] 🧹 Unsubscribed from status manager');
+        }
+        
+        // Clear local interval if used
         if (this.orchestraMonitorInterval) {
             clearInterval(this.orchestraMonitorInterval);
+            this.orchestraMonitorInterval = null;
             console.log('[ConsolePanel] 🧹 Cleared monitoring interval');
         }
     }
@@ -533,11 +549,11 @@ if (window.electron) {
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-        consolePanelInstance = new ConsolePanel();
+        window.consolePanelInstance = new ConsolePanel();
         console.log('[ConsolePanel] ✅ Console panel initialized');
     });
 } else {
-    consolePanelInstance = new ConsolePanel();
+    window.consolePanelInstance = new ConsolePanel();
     console.log('[ConsolePanel] ✅ Console panel initialized');
 }
 

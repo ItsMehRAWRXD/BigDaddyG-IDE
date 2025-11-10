@@ -138,11 +138,80 @@ const STYLES = `
 
 .settings-control input[type="range"] {
     padding: 0;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--cursor-border);
+    outline: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.settings-control input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--cursor-accent);
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+}
+
+.settings-control input[type="range"]::-webkit-slider-thumb:hover {
+    background: var(--cursor-accent-hover);
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 212, 255, 0.4);
+}
+
+.settings-control input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--cursor-accent);
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+}
+
+.settings-control input[type="range"]::-moz-range-thumb:hover {
+    background: var(--cursor-accent-hover);
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 212, 255, 0.4);
+}
+
+.settings-control input[type="range"]:focus {
+    box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.3);
+}
+
+.settings-control input[type="range"]:active::-webkit-slider-thumb {
+    transform: scale(1.2);
+    box-shadow: 0 6px 16px rgba(0, 212, 255, 0.6);
+}
+
+.settings-control input[type="range"]:active::-moz-range-thumb {
+    transform: scale(1.2);
+    box-shadow: 0 6px 16px rgba(0, 212, 255, 0.6);
 }
 
 .settings-control .settings-value {
     font-size: 12px;
     color: var(--cursor-text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.settings-control .settings-value strong {
+    color: var(--cursor-accent);
+    font-weight: 600;
+    min-width: 60px;
+    text-align: right;
 }
 
 .settings-grid--hotkeys {
@@ -527,9 +596,19 @@ class SettingsPanel {
         });
 
         this.container.querySelectorAll('[data-setting-range]').forEach((input) => {
+            // Use both 'input' and 'change' events for better responsiveness
             input.addEventListener('input', (event) => {
                 const path = event.target.getAttribute('data-setting-range');
                 const value = parseFloat(event.target.value);
+                if (!Number.isFinite(value)) return;
+                this.syncRelatedInputs(path, value);
+                this.queueUpdate(path, value);
+            });
+            
+            input.addEventListener('change', (event) => {
+                const path = event.target.getAttribute('data-setting-range');
+                const value = parseFloat(event.target.value);
+                if (!Number.isFinite(value)) return;
                 this.syncRelatedInputs(path, value);
                 this.queueUpdate(path, value);
             });
@@ -571,22 +650,44 @@ class SettingsPanel {
 
     syncRelatedInputs(path, value, options = {}) {
         if (!this.container) return;
+        
+        // Ensure value is valid
+        if (!Number.isFinite(value)) {
+            console.warn('[SettingsPanel] Invalid value for', path, ':', value);
+            return;
+        }
+        
         const slider = this.container.querySelector(`[data-setting-range="${path}"]`);
         const number = options.skipNumber ? null : this.container.querySelector(`[data-setting-number="${path}"]`);
-        if (slider && slider.value !== String(value)) slider.value = value;
-        if (number && number.value !== String(value)) number.value = value;
+        
+        // Update slider value
+        if (slider && slider.value !== String(value)) {
+            slider.value = value;
+            // Trigger visual update for webkit browsers
+            slider.style.setProperty('--value', value);
+        }
+        
+        // Update number input value
+        if (number && number.value !== String(value)) {
+            number.value = value;
+        }
+        
+        // Update display text
         const display = this.container.querySelector(`[data-display="${path}"]`);
         if (display) {
             if (path.includes('transparency')) {
                 display.textContent = formatOpacity(value);
             } else if (path.includes('appearance.fontSize') || path.includes('panelSpacing')) {
-                display.textContent = `${value}px`;
+                display.textContent = `${Math.round(value)}px`;
             } else if (path.includes('appearance.uiScale')) {
                 display.textContent = `${Number(value).toFixed(2)}x`;
             } else {
                 display.textContent = value;
             }
         }
+        
+        // Apply the setting immediately for visual feedback
+        this.applySettingPreview(path, value);
     }
 
     handleAction(action) {
@@ -703,6 +804,30 @@ class SettingsPanel {
         }
 
         this.renderIfMounted();
+    }
+    
+    applySettingPreview(path, value) {
+        // Apply settings immediately for visual feedback
+        try {
+            if (path === 'appearance.fontSize') {
+                document.documentElement.style.setProperty('--app-font-size', `${value}px`);
+            } else if (path === 'appearance.uiScale') {
+                document.documentElement.style.setProperty('--app-ui-scale', value);
+            } else if (path === 'layout.panelSpacing') {
+                document.documentElement.style.setProperty('--panel-spacing', `${value}px`);
+            } else if (path.startsWith('appearance.transparency.')) {
+                const transparencyType = path.split('.').pop();
+                if (transparencyType === 'window') {
+                    document.documentElement.style.setProperty('--window-opacity', value);
+                } else if (transparencyType === 'sidePanels') {
+                    document.documentElement.style.setProperty('--side-panel-opacity', value);
+                } else if (transparencyType === 'chatPanels') {
+                    document.documentElement.style.setProperty('--chat-panel-opacity', value);
+                }
+            }
+        } catch (error) {
+            console.warn('[SettingsPanel] Failed to apply preview for', path, ':', error);
+        }
     }
 }
 

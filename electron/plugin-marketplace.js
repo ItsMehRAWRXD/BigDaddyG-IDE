@@ -289,7 +289,7 @@ class PluginMarketplace {
 
                 const safeExtensions = (sourceExtensions || []).filter(ext => {
                     if (!ext || typeof ext !== 'object') {
-                        console.warn('[PluginMarketplace] ⚠️ Skipping invalid marketplace entry:', ext);
+                        // Silently skip null entries from API
                         return false;
                     }
                     if (!ext.publisher || !ext.name) {
@@ -1603,6 +1603,24 @@ if (document.readyState === 'loading') {
 
 // Export
 window.PluginMarketplace = PluginMarketplace;
+
+// Global convenience functions
+window.openMarketplace = function() {
+    if (window.pluginMarketplace) {
+        window.pluginMarketplace.open();
+    } else {
+        console.warn('[openMarketplace] Plugin marketplace not initialized yet');
+    }
+};
+
+window.openModelCatalog = function() {
+    if (window.pluginMarketplace) {
+        window.pluginMarketplace.showOllamaManager();
+        window.pluginMarketplace.open();
+    } else {
+        console.warn('[openModelCatalog] Plugin marketplace not initialized yet');
+    }
+};
 
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = PluginMarketplace;

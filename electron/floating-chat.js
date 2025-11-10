@@ -635,8 +635,14 @@ class FloatingChat {
     async loadAvailableModels() {
         try {
             // Query Orchestra for available neural network models
-            const response = await fetch('http://localhost:11441/api/ai-mode');
-            if (!response.ok) return;
+            const response = await fetch('http://localhost:11441/api/ai-mode', {
+                signal: AbortSignal.timeout(3000) // 3 second timeout
+            });
+            
+            if (!response.ok) {
+                // Endpoint doesn't exist - silently continue with default models
+                return;
+            }
             
             const data = await response.json();
             

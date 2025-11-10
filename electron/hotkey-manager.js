@@ -11,7 +11,8 @@ const DEFAULT_HOTKEYS = {
     'ide.openFile':     { combo: 'Ctrl+O',                description: 'Open File',                category: 'File' },
     'ide.saveFile':     { combo: 'Ctrl+S',                description: 'Save File',                category: 'File' },
     'ide.saveFileAs':   { combo: 'Ctrl+Shift+S',          description: 'Save As',                  category: 'File' },
-    'ide.saveAll':      { combo: 'Ctrl+K Ctrl+S',         description: 'Save All Files',           category: 'File' },
+    // 'ide.saveAll': Removed - chord hotkeys not fully supported yet
+    'ide.saveAll':      { combo: 'Ctrl+Alt+S',            description: 'Save All Files',           category: 'File' },
 
     'tabs.next':        { combo: 'Ctrl+Tab',              description: 'Next Tab',                 category: 'Tabs' },
     'tabs.previous':    { combo: 'Ctrl+Shift+Tab',        description: 'Previous Tab',             category: 'Tabs' },
@@ -41,8 +42,13 @@ const DEFAULT_HOTKEYS = {
     'chat.stop':           { combo: 'Ctrl+Shift+X',       description: 'Stop AI Execution',        category: 'Chat' },
 
     'terminal.toggle':  { combo: 'Ctrl+J',                description: 'Toggle Terminal',          category: 'Terminal' },
+    'terminal.altToggle': { combo: 'Ctrl+`',              description: 'Toggle Terminal (Alt)',    category: 'Terminal' },
     'console.toggle':   { combo: 'Ctrl+Shift+U',          description: 'Toggle Console Panel',     category: 'Terminal' },
     'browser.toggle':   { combo: 'Ctrl+Shift+B',          description: 'Toggle Browser',           category: 'Terminal' },
+    'memory.dashboard': { combo: 'Ctrl+Shift+M',          description: 'Memory Dashboard',         category: 'Tools' },
+    'swarm.engine':     { combo: 'Ctrl+Alt+S',            description: 'Swarm Engine',             category: 'Tools' },
+    'layout.customize': { combo: 'Ctrl+Shift+L',          description: 'Customize Layout',         category: 'View' },
+    'layout.reset':     { combo: 'Ctrl+Alt+L',            description: 'Reset Layout',             category: 'View' },
 
     'voice.start':      { combo: 'Ctrl+Shift+V',          description: 'Start Voice Coding',       category: 'Voice' },
     'palette.open':     { combo: 'Ctrl+Shift+P',          description: 'Enhanced Command Palette', category: 'Productivity' },
@@ -337,17 +343,16 @@ class HotkeyManager {
         }, 'Stop AI Execution');
         
         // ========================================================================
-        // TERMINAL
+        // TERMINAL & CONSOLE - Unified terminal toggle
         // ========================================================================
         this.bindHotkey('terminal.toggle', () => {
-            if (typeof window.toggleTerminalPanel === 'function') {
-                window.toggleTerminalPanel();
-            } else if (window.terminalPanelInstance) {
-                window.terminalPanelInstance.toggle();
-            } else {
-                console.warn('[HotkeyManager] Terminal panel not ready yet');
-            }
+            this.toggleUnifiedTerminal();
         }, 'Toggle Terminal');
+
+        // Alt keybinding for terminal (same as Ctrl+J)
+        this.bindHotkey('terminal.altToggle', () => {
+            this.toggleUnifiedTerminal();
+        }, 'Toggle Terminal (Alt)');
 
         this.bindHotkey('console.toggle', () => {
             if (typeof window.toggleConsolePanel === 'function') {
@@ -368,6 +373,58 @@ class HotkeyManager {
                 console.warn('[HotkeyManager] Browser panel not ready yet');
             }
         }, 'Toggle Browser');
+        
+        // ========================================================================
+        // MEMORY DASHBOARD
+        // ========================================================================
+        this.bindHotkey('memory.dashboard', () => {
+            if (window.memoryBridge && window.memoryBridge.isAvailable()) {
+                if (window.tabSystem && typeof window.tabSystem.openMemoryTab === 'function') {
+                    window.tabSystem.openMemoryTab();
+                } else {
+                    console.warn('[HotkeyManager] Memory tab system not ready');
+                }
+            } else {
+                console.warn('[HotkeyManager] Memory service not available');
+                window.showNotification?.('Memory Service Offline', 'Please start the memory service first', 'warning', 3000);
+            }
+        }, 'Memory Dashboard');
+        
+        // ========================================================================
+        // SWARM ENGINE
+        // ========================================================================
+        this.bindHotkey('swarm.engine', () => {
+            if (window.swarmEngine) {
+                window.swarmEngine.toggle();
+            } else if (window.tabSystem && typeof window.tabSystem.openSwarmTab === 'function') {
+                window.tabSystem.openSwarmTab();
+            } else {
+                console.warn('[HotkeyManager] Swarm engine not ready');
+                window.showNotification?.('Swarm Engine', 'Feature coming soon', 'info', 2000);
+            }
+        }, 'Swarm Engine');
+        
+        // ========================================================================
+        // FLEXIBLE LAYOUT
+        // ========================================================================
+        this.bindHotkey('layout.customize', () => {
+            if (window.flexibleLayout) {
+                window.flexibleLayout.showPanelSelector((type) => {
+                    window.flexibleLayout.addPanel(type, 'root');
+                });
+            } else {
+                window.showNotification?.('Layout System', 'Loading...', 'info', 2000);
+            }
+        }, 'Customize Layout');
+        
+        this.bindHotkey('layout.reset', () => {
+            if (window.flexibleLayout) {
+                if (confirm('Reset layout to default?')) {
+                    window.flexibleLayout.createDefaultLayout();
+                    window.showNotification?.('Layout Reset', 'Back to default!', 'success', 2000);
+                }
+            }
+        }, 'Reset Layout');
         
         // ========================================================================
         // VOICE CODING & COMMAND PALETTE
@@ -555,6 +612,23 @@ class HotkeyManager {
             padding-top: 100px;
             animation: fadeIn 0.2s ease-out;
         `;
+        
+        // Add CSS animations if not already present
+        if (!document.getElementById('hotkey-animations')) {
+            const style = document.createElement('style');
+            style.id = 'hotkey-animations';
+            style.textContent = `
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                @keyframes slideUp {
+                    from { transform: translateY(20px); opacity: 0; }
+                    to { transform: translateY(0); opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
         
         // Create palette container
         const palette = document.createElement('div');
@@ -859,22 +933,32 @@ class HotkeyManager {
         return [];
     }
     
-    toggleTerminal() {
-        // Try enhanced terminal first
-        if (window.enhancedTerminal) {
+    toggleUnifiedTerminal() {
+        // Unified terminal toggle - works for both Ctrl+J and Ctrl+`
+        if (typeof window.toggleTerminalPanel === 'function') {
+            window.toggleTerminalPanel();
+        } else if (window.terminalPanelInstance) {
+            window.terminalPanelInstance.toggle();
+        } else if (window.enhancedTerminal) {
             window.enhancedTerminal.toggle();
-            return;
-        }
-        
-        // Fallback to bottom panel
-        const panel = document.getElementById('bottom-panel') || document.getElementById('enhanced-terminal');
-        if (panel) {
-            if (panel.style.display === 'none') {
-                panel.style.display = 'flex';
+        } else {
+            // Fallback to bottom panel
+            const panel = document.getElementById('bottom-panel') || document.getElementById('enhanced-terminal');
+            if (panel) {
+                if (panel.style.display === 'none') {
+                    panel.style.display = 'flex';
+                } else {
+                    panel.style.display = 'none';
+                }
             } else {
-                panel.style.display = 'none';
+                console.warn('[HotkeyManager] Terminal panel not ready yet');
             }
         }
+    }
+    
+    toggleTerminal() {
+        // Deprecated - use toggleUnifiedTerminal instead
+        this.toggleUnifiedTerminal();
     }
     
     openTerminal(shell = 'powershell') {
@@ -947,6 +1031,34 @@ class HotkeyManager {
             this.register(combo, handler, label, action);
         });
     }
+    
+    destroy() {
+        if (this.refreshTimer) {
+            clearTimeout(this.refreshTimer);
+            this.refreshTimer = null;
+        }
+        this.shortcuts.clear();
+        this.priority = [];
+        document.removeEventListener('keydown', this.handleKeyPress, true);
+        const animStyle = document.getElementById('hotkey-animations');
+        if (animStyle) animStyle.remove();
+        console.log('[HotkeyManager] 🧹 Cleaned up');
+    }
+    
+    getHotkeyConfig() {
+        return clone(this.hotkeyConfig);
+    }
+    
+    updateHotkey(action, newCombo) {
+        if (!action || !newCombo) return false;
+        if (this.hotkeyConfig[action]) {
+            this.hotkeyConfig[action].combo = newCombo;
+            this.registerAllShortcuts();
+            console.log(`[HotkeyManager] ✅ Updated ${action} to ${newCombo}`);
+            return true;
+        }
+        return false;
+    }
 }
 
 // Initialize
@@ -970,4 +1082,11 @@ if (typeof module !== 'undefined' && module.exports) {
 console.log('[HotkeyManager] 📦 Hotkey manager module loaded');
 
 })(); // End IIFE
+
+// Cleanup on page unload
+window.addEventListener('beforeunload', () => {
+    if (window.hotkeyManager && typeof window.hotkeyManager.destroy === 'function') {
+        window.hotkeyManager.destroy();
+    }
+});
 

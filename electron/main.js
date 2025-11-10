@@ -18,7 +18,30 @@ const fs = require('fs');
 const http = require('http');
 const { spawn } = require('child_process');
 const { validateFsPath } = require('./security/path-utils');
-const windowStateKeeper = require('electron-window-state');
+
+// Try to load electron-window-state with fallback
+let windowStateKeeper;
+try {
+  windowStateKeeper = require('electron-window-state');
+} catch (error) {
+  console.warn('[BigDaddyG] ⚠️ electron-window-state not available, using fallback');
+  // Fallback implementation
+  windowStateKeeper = function(options) {
+    return {
+      x: undefined,
+      y: undefined,
+      width: options.defaultWidth || 1920,
+      height: options.defaultHeight || 1080,
+      isMaximized: false,
+      manage: function(window) {
+        // No-op in fallback mode
+        console.log('[BigDaddyG] Window state management disabled (fallback mode)');
+      },
+      saveState: function() {}
+    };
+  };
+}
+
 const { EmbeddedBrowser } = require('./browser-view');
 const SafeModeDetector = require('./safe-mode-detector');
 const memoryService = require('./memory-service');
@@ -30,6 +53,17 @@ const ExtensionManager = require('./marketplace/extension-manager');
 const SettingsImporter = require('./settings/settings-importer');
 const ApiKeyStore = require('./settings/api-key-store');
 const settingsService = require('./settings/settings-service');
+
+// Initialize Agent Core
+let agentCore = null;
+try {
+  const { AgentCore } = require('../packages/agent');
+  agentCore = new AgentCore({ dbPath: path.join(app.getPath('userData'), 'agent.db') });
+  console.log('[Agent] ✅ Agent core initialized');
+  console.log('[Agent] 🔗 Sandbox endpoint:', agentCore.getSandboxEndpoint());
+} catch (error) {
+  console.log('[Agent] ⚠️ Agent package not available (optional):', error.message);
+}
 
 let httpErrorLogPath = null;
 
@@ -985,7 +1019,7 @@ function createMainWindow() {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      sandbox: true,
+      sandbox: false,  // Changed to false to allow preload script to load
       webviewTag: false,
       preload: path.join(__dirname, 'preload.js'),
       webSecurity: true,
@@ -3454,6 +3488,61 @@ settingsService.on('updated', (payload) => {
       win.webContents.send('settings:updated', payload);
     }
   });
+});
+
+// ============================================================================
+// AGENT CORE HANDLERS
+// ============================================================================
+
+ipcMain.handle('agent:create-job', async (event, planMarkdown = '') => {
+  try {
+    if (!agentCore) {
+      throw new Error('Agent core not available');
+    }
+    const jobId = await agentCore.createJob(planMarkdown);
+    return { success: true, jobId };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('agent:update-job', async (event, jobId, state, updates = {}) => {
+  try {
+    if (!agentCore) {
+      throw new Error('Agent core not available');
+    }
+    const result = await agentCore.updateJobState(jobId, state, updates);
+    return { success: true, result };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('agent:get-job', async (event, jobId) => {
+  try {
+    if (!agentCore) {
+      throw new Error('Agent core not available');
+    }
+    const job = await agentCore.getJob(jobId);
+    return { success: true, job };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('agent:sandbox-status', async () => {
+  try {
+    if (!agentCore) {
+      return { success: true, available: false, endpoint: null };
+    }
+    return {
+      success: true,
+      available: agentCore.isSandboxAvailable(),
+      endpoint: agentCore.getSandboxEndpoint()
+    };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
 });
 
 // ============================================================================

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slider Test - BigDaddyG IDE</title>
+    <style>
+        :root {
+            --cursor-bg: #f5f5eb;
+            --cursor-bg-secondary: #eeeee0;
+            --cursor-border: #00d4ff30;
+            --cursor-text: #2d2d2d;
+            --cursor-text-secondary: #00a3b5;
+            --cursor-accent: #00d4ff;
+            --cursor-accent-hover: #00bfea;
+            --cursor-input-bg: #fffef8;
+            --cursor-input-border: #00d4ff80;
+            --app-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --app-font-size: 14px;
+        }
+
+        body {
+            font-family: var(--app-font-family);
+            font-size: var(--app-font-size);
+            background: var(--cursor-bg);
+            color: var(--cursor-text);
+            padding: 40px;
+            margin: 0;
+        }
+
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--cursor-bg-secondary);
+            border: 1px solid var(--cursor-border);
+            border-radius: 12px;
+            padding: 30px;
+        }
+
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--cursor-input-bg);
+            border: 1px solid var(--cursor-input-border);
+            border-radius: 8px;
+        }
+
+        .test-section h3 {
+            margin: 0 0 20px 0;
+            color: var(--cursor-text-secondary);
+        }
+
+        .slider-control {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .slider-control label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--cursor-text-secondary);
+        }
+
+        .slider-control input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--cursor-border);
+            outline: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .slider-control input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--cursor-accent);
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        .slider-control input[type="range"]::-webkit-slider-thumb:hover {
+            background: var(--cursor-accent-hover);
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.4);
+        }
+
+        .slider-control input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--cursor-accent);
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        .slider-control input[type="range"]::-moz-range-thumb:hover {
+            background: var(--cursor-accent-hover);
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.4);
+        }
+
+        .slider-control input[type="range"]:focus {
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.3);
+        }
+
+        .slider-control input[type="range"]:active::-webkit-slider-thumb {
+            transform: scale(1.2);
+            box-shadow: 0 6px 16px rgba(0, 212, 255, 0.6);
+        }
+
+        .slider-control input[type="range"]:active::-moz-range-thumb {
+            transform: scale(1.2);
+            box-shadow: 0 6px 16px rgba(0, 212, 255, 0.6);
+        }
+
+        .slider-value {
+            font-size: 12px;
+            color: var(--cursor-text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .slider-value strong {
+            color: var(--cursor-accent);
+            font-weight: 600;
+            min-width: 60px;
+            text-align: right;
+        }
+
+        .test-result {
+            padding: 15px;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid var(--cursor-accent);
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+
+        .test-result h4 {
+            margin: 0 0 10px 0;
+            color: var(--cursor-accent);
+        }
+
+        .status {
+            font-family: monospace;
+            font-size: 12px;
+            color: var(--cursor-text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🎛️ Slider Functionality Test</h1>
+        <p>Test all sliders to ensure they work properly in BigDaddyG IDE.</p>
+
+        <div class="test-section">
+            <h3>🎨 Appearance Settings</h3>
+            
+            <div class="slider-control">
+                <label>Font Size</label>
+                <input type="range" id="fontSize" min="10" max="28" step="1" value="14">
+                <div class="slider-value">
+                    Current: <strong id="fontSizeValue">14px</strong>
+                </div>
+            </div>
+
+            <div class="slider-control">
+                <label>UI Scale</label>
+                <input type="range" id="uiScale" min="0.8" max="1.4" step="0.05" value="1">
+                <div class="slider-value">
+                    Current scale: <strong id="uiScaleValue">1.00x</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🪟 Transparency Settings</h3>
+            
+            <div class="slider-control">
+                <label>Window Background Opacity</label>
+                <input type="range" id="windowOpacity" min="0.1" max="1" step="0.05" value="0.95">
+                <div class="slider-value">
+                    Current: <strong id="windowOpacityValue">95%</strong>
+                </div>
+            </div>
+
+            <div class="slider-control">
+                <label>Side Panels Opacity</label>
+                <input type="range" id="sidePanelsOpacity" min="0.1" max="1" step="0.05" value="0.92">
+                <div class="slider-value">
+                    Current: <strong id="sidePanelsOpacityValue">92%</strong>
+                </div>
+            </div>
+
+            <div class="slider-control">
+                <label>Chat & Floating Panels</label>
+                <input type="range" id="chatPanelsOpacity" min="0.1" max="1" step="0.05" value="0.9">
+                <div class="slider-value">
+                    Current: <strong id="chatPanelsOpacityValue">90%</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🧩 Layout Settings</h3>
+            
+            <div class="slider-control">
+                <label>Panel Spacing</label>
+                <input type="range" id="panelSpacing" min="4" max="32" step="2" value="12">
+                <div class="slider-value">
+                    Current gap: <strong id="panelSpacingValue">12px</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>⚙️ System Optimization</h3>
+            
+            <div class="slider-control">
+                <label>Worker Threads</label>
+                <input type="range" id="workerThreads" min="1" max="32" step="1" value="8">
+                <div class="slider-value">
+                    Current: <strong id="workerThreadsValue">8</strong>
+                </div>
+            </div>
+
+            <div class="slider-control">
+                <label>Max Workers</label>
+                <input type="range" id="maxWorkers" min="1" max="32" step="1" value="16">
+                <div class="slider-value">
+                    Current: <strong id="maxWorkersValue">16</strong>
+                </div>
+            </div>
+
+            <div class="slider-control">
+                <label>FPS Limit</label>
+                <input type="range" id="frameRateLimit" min="30" max="240" step="30" value="120">
+                <div class="slider-value">
+                    Current: <strong id="frameRateLimitValue">120 FPS</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-result">
+            <h4>✅ Test Results</h4>
+            <div class="status" id="testStatus">
+                Move the sliders above to test functionality...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Test slider functionality
+        const sliders = [
+            { id: 'fontSize', valueId: 'fontSizeValue', format: (v) => `${v}px` },
+            { id: 'uiScale', valueId: 'uiScaleValue', format: (v) => `${Number(v).toFixed(2)}x` },
+            { id: 'windowOpacity', valueId: 'windowOpacityValue', format: (v) => `${Math.round(v * 100)}%` },
+            { id: 'sidePanelsOpacity', valueId: 'sidePanelsOpacityValue', format: (v) => `${Math.round(v * 100)}%` },
+            { id: 'chatPanelsOpacity', valueId: 'chatPanelsOpacityValue', format: (v) => `${Math.round(v * 100)}%` },
+            { id: 'panelSpacing', valueId: 'panelSpacingValue', format: (v) => `${v}px` },
+            { id: 'workerThreads', valueId: 'workerThreadsValue', format: (v) => `${v}` },
+            { id: 'maxWorkers', valueId: 'maxWorkersValue', format: (v) => `${v}` },
+            { id: 'frameRateLimit', valueId: 'frameRateLimitValue', format: (v) => `${v} FPS` }
+        ];
+
+        const testStatus = document.getElementById('testStatus');
+        let testResults = {};
+
+        sliders.forEach(slider => {
+            const sliderEl = document.getElementById(slider.id);
+            const valueEl = document.getElementById(slider.valueId);
+
+            if (sliderEl && valueEl) {
+                // Test input event
+                sliderEl.addEventListener('input', (e) => {
+                    const value = parseFloat(e.target.value);
+                    valueEl.textContent = slider.format(value);
+                    
+                    testResults[slider.id] = {
+                        working: true,
+                        lastValue: value,
+                        lastUpdate: new Date().toLocaleTimeString()
+                    };
+                    
+                    updateTestStatus();
+                });
+
+                // Test change event
+                sliderEl.addEventListener('change', (e) => {
+                    const value = parseFloat(e.target.value);
+                    console.log(`${slider.id} changed to:`, value);
+                });
+
+                // Initialize
+                const initialValue = parseFloat(sliderEl.value);
+                valueEl.textContent = slider.format(initialValue);
+                testResults[slider.id] = { working: false, lastValue: initialValue };
+            }
+        });
+
+        function updateTestStatus() {
+            const workingCount = Object.values(testResults).filter(r => r.working).length;
+            const totalCount = sliders.length;
+            
+            if (workingCount === 0) {
+                testStatus.innerHTML = 'Move the sliders above to test functionality...';
+            } else if (workingCount === totalCount) {
+                testStatus.innerHTML = `✅ All ${totalCount} sliders are working correctly!<br>` +
+                    Object.entries(testResults)
+                        .filter(([_, r]) => r.working)
+                        .map(([id, r]) => `${id}: ${r.lastValue} (${r.lastUpdate})`)
+                        .join('<br>');
+            } else {
+                testStatus.innerHTML = `⚠️ ${workingCount}/${totalCount} sliders tested<br>` +
+                    Object.entries(testResults)
+                        .filter(([_, r]) => r.working)
+                        .map(([id, r]) => `${id}: ${r.lastValue} (${r.lastUpdate})`)
+                        .join('<br>');
+            }
+        }
+
+        // Initial status
+        updateTestStatus();
+
+        console.log('🎛️ Slider test page loaded');
+        console.log('📊 Testing', sliders.length, 'sliders');
+    </script>
+</body>
+</html>

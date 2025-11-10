@@ -10,6 +10,10 @@ class AgentPanelEnhanced extends EventEmitter {
         super();
         
         this.orchestraClient = orchestraClient;
+        this.orchestraReady = false;
+        
+        // Wait for Orchestra client to be ready
+        this.initializeOrchestraClient();
         
         // Agent state
         this.currentAgent = 'agent'; // agent, composer, coder, chat, plan
@@ -39,6 +43,80 @@ class AgentPanelEnhanced extends EventEmitter {
         this.maxAttachmentSize = 10 * 1024 * 1024 * 1024; // 10GB
         
         console.log('[Agent Panel Enhanced] Initialized');
+    }
+    
+    /**
+     * Initialize Orchestra client connection
+     */
+    async initializeOrchestraClient() {
+        // If client already provided and ready, use it
+        if (this.orchestraClient && typeof this.orchestraClient.sendMessage === 'function') {
+            this.orchestraReady = true;
+            console.log('[Agent Panel] Orchestra client ready');
+            return;
+        }
+        
+        // Wait for global Orchestra client to become available
+        const checkClient = () => {
+            // Check window.orchestraClient
+            if (window.orchestraClient && typeof window.orchestraClient.sendMessage === 'function') {
+                this.orchestraClient = window.orchestraClient;
+                this.orchestraReady = true;
+                console.log('[Agent Panel] Orchestra client connected');
+                return true;
+            }
+            
+            // Check status manager for Orchestra availability
+            if (window.statusManager && window.statusManager.isServiceRunning('orchestra')) {
+                // Try to create client
+                if (window.OrchestraClient) {
+                    this.orchestraClient = new window.OrchestraClient();
+                    this.orchestraReady = true;
+                    console.log('[Agent Panel] Orchestra client created');
+                    return true;
+                }
+            }
+            
+            return false;
+        };
+        
+        // Try immediately
+        if (!checkClient()) {
+            // Poll until available
+            const interval = setInterval(() => {
+                if (checkClient()) {
+                    clearInterval(interval);
+                    this.updateControlsState();
+                }
+            }, 500);
+            
+            // Timeout after 30 seconds
+            setTimeout(() => {
+                clearInterval(interval);
+                if (!this.orchestraReady) {
+                    console.warn('[Agent Panel] Orchestra client not available - some features disabled');
+                    this.updateControlsState();
+                }
+            }, 30000);
+        }
+    }
+    
+    /**
+     * Update UI controls based on Orchestra availability
+     */
+    updateControlsState() {
+        const buttons = document.querySelectorAll('.agent-quick-action, .btn-send');
+        buttons.forEach(btn => {
+            if (!this.orchestraReady) {
+                btn.disabled = true;
+                btn.title = 'Orchestra service not available';
+                btn.style.opacity = '0.5';
+            } else {
+                btn.disabled = false;
+                btn.title = '';
+                btn.style.opacity = '1';
+            }
+        });
     }
     
     /**
@@ -546,6 +624,11 @@ class AgentPanelEnhanced extends EventEmitter {
         
         // Send to Orchestra
         try {
+            // Check if Orchestra client is ready
+            if (!this.orchestraReady || !this.orchestraClient) {
+                throw new Error('Orchestra service not available. Please start Orchestra server.');
+            }
+            
             const response = await this.orchestraClient.sendMessage({
                 agent: this.currentAgent,
                 model: this.currentModel,

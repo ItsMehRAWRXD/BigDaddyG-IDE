@@ -84,6 +84,16 @@ function swapModel(modelId) {
     const previousModel = activeModel;
     activeModel = modelId;
     
+    // Update centralized model state if available
+    if (window.modelState) {
+        window.modelState.setActiveModel(modelId, model);
+    }
+    
+    // Notify status manager
+    if (window.statusManager) {
+        window.statusManager.updateStatus('model', true, { active: modelId, ...model });
+    }
+    
     // Show swap notification
     showSwapNotification(model, previousModel);
     
