@@ -44,7 +44,7 @@ class ConsolePanel {
             background: rgba(10, 10, 30, 0.98);
             backdrop-filter: blur(20px);
             border-top: 2px solid var(--cyan);
-            z-index: 99997;
+            z-index: ${window.panelManager?.zIndexLevels?.console || 10000};
             display: flex;
             flex-direction: column;
             transition: height 0.3s;
@@ -550,11 +550,19 @@ if (window.electron) {
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         window.consolePanelInstance = new ConsolePanel();
-        console.log('[ConsolePanel] ✅ Console panel initialized');
+        // Register with central panel manager
+        if (window.registerPanelInstance) {
+            window.registerPanelInstance('console', window.consolePanelInstance);
+        }
+        console.log('[ConsolePanel] ✅ Console panel initialized and registered');
     });
 } else {
     window.consolePanelInstance = new ConsolePanel();
-    console.log('[ConsolePanel] ✅ Console panel initialized');
+    // Register with central panel manager
+    if (window.registerPanelInstance) {
+        window.registerPanelInstance('console', window.consolePanelInstance);
+    }
+    console.log('[ConsolePanel] ✅ Console panel initialized and registered');
 }
 
 // Export
