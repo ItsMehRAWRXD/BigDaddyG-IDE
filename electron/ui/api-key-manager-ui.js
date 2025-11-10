@@ -98,6 +98,7 @@ class APIKeyManagerUI {
                         <li><strong>Azure OpenAI:</strong> <a href="https://portal.azure.com/" target="_blank">portal.azure.com</a></li>
                         <li><strong>Cohere:</strong> <a href="https://dashboard.cohere.com/api-keys" target="_blank">dashboard.cohere.com/api-keys</a></li>
                         <li><strong>Kimi (Moonshot):</strong> <a href="https://platform.moonshot.cn/console/api-keys" target="_blank">platform.moonshot.cn/console/api-keys</a></li>
+                        <li><strong>Cursor AI:</strong> Settings > API Keys in Cursor IDE (copy your key from there)</li>
                     </ul>
                 </div>
                 
@@ -203,6 +204,14 @@ class APIKeyManagerUI {
                 models: 'moonshot-v1-8k, moonshot-v1-32k, moonshot-v1-128k',
                 pricing: '$0.0002-$0.001 per 1K tokens',
                 icon: '🌙'
+            },
+            {
+                id: 'cursor',
+                name: 'Cursor AI',
+                description: 'Use your Cursor IDE AI agentically!',
+                models: 'gpt-4, gpt-3.5-turbo, claude-3-opus',
+                pricing: 'Use your existing Cursor subscription',
+                icon: '🎯'
             }
         ];
         

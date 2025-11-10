@@ -117,6 +117,17 @@ class AIProviderManager {
       defaultModel: 'moonshot-v1-8k'
     });
 
+    // Cursor AI
+    this.providers.set('cursor', {
+      name: 'Cursor AI',
+      type: 'cloud',
+      endpoint: 'https://api.cursor.sh/v1/chat/completions',
+      requiresKey: true,
+      keyId: 'cursor',
+      defaultModel: 'gpt-4',
+      description: 'Cursor AI models with streaming support'
+    });
+
     // Cohere
     this.providers.set('cohere', {
       name: 'Cohere',
@@ -304,6 +315,8 @@ class AIProviderManager {
         return this.chatDeepSeek(message, model, options);
       case 'kimi':
         return this.chatKimi(message, model, options);
+      case 'cursor':
+        return this.chatCursor(message, model, options);
       case 'cohere':
         return this.chatCohere(message, model, options);
       case 'azure':
@@ -322,6 +335,7 @@ class AIProviderManager {
       groq: 'mixtral-8x7b-32768',
       deepseek: 'deepseek-chat',
       kimi: 'moonshot-v1-8k',
+      cursor: 'gpt-4',
       cohere: 'command',
       azure: 'gpt-4o-mini'
     };
@@ -528,6 +542,34 @@ class AIProviderManager {
     }
     const content = data.choices?.[0]?.message?.content || '';
     return { response: content.trim(), provider: 'kimi', model: payload.model, raw: data };
+  }
+
+  async chatCursor(message, model, options = {}) {
+    const apiKey = this.getApiKey('cursor');
+    if (!apiKey) {
+      throw new Error('Cursor API key not configured. Get one from Settings > API Keys in Cursor IDE');
+    }
+    const payload = {
+      model: model || this.providers.get('cursor')?.defaultModel || 'gpt-4',
+      messages: [{ role: 'user', content: message }],
+      temperature: options.temperature ?? 0.7,
+      max_tokens: options.maxTokens ?? 2048,
+      stream: false
+    };
+    const res = await fetch('https://api.cursor.sh/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error?.message || 'Cursor API request failed');
+    }
+    const content = data.choices?.[0]?.message?.content || '';
+    return { response: content.trim(), provider: 'cursor', model: payload.model, raw: data };
   }
 
   async chatCohere(message, model, options = {}) {
