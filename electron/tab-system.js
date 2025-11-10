@@ -441,6 +441,112 @@ class TabSystem {
         this.createTab('Settings', '⚙️', fallback, 'settings');
     }
     
+    openMarketplaceTab() {
+        this.switchTab('marketplace-tab-content');
+        // Initialize marketplace if not already done
+        if (window.marketplaceUI && typeof window.marketplaceUI.initialize === 'function') {
+            window.marketplaceUI.initialize();
+        }
+    }
+    
+    openGameEditorTab() {
+        this.switchTab('game-editor-tab-content');
+        // Initialize game editor if not already done
+        if (window.visualGameEditor && typeof window.visualGameEditor.initialize === 'function') {
+            window.visualGameEditor.initialize();
+        }
+    }
+    
+    openImageGenTab() {
+        this.switchTab('image-gen-tab-content');
+        // Show image generation dialog
+        if (typeof showImageGenerationDialog === 'function') {
+            const container = document.getElementById('image-gen-tab-content');
+            if (container) {
+                container.innerHTML = '';
+                showImageGenerationDialog();
+                // Move dialog into tab instead of body
+                const dialog = document.getElementById('image-gen-dialog');
+                if (dialog) {
+                    container.appendChild(dialog);
+                    dialog.style.position = 'relative';
+                    dialog.style.height = '100%';
+                }
+            }
+        }
+    }
+    
+    openPerformanceTab() {
+        this.switchTab('performance-tab-content');
+        this.updatePerformanceStats();
+        // Update stats every second
+        if (!this.performanceInterval) {
+            this.performanceInterval = setInterval(() => {
+                if (document.getElementById('performance-tab-content').style.display !== 'none') {
+                    this.updatePerformanceStats();
+                }
+            }, 1000);
+        }
+    }
+    
+    openDebugTab() {
+        this.switchTab('debug-tab-content');
+        // Initialize advanced debugger if not already done
+        if (window.advancedDebugger && typeof window.advancedDebugger.show === 'function') {
+            const container = document.getElementById('debug-tab-content');
+            if (container) {
+                container.innerHTML = '';
+                window.advancedDebugger.show();
+                // Move debugger into tab
+                const debugPanel = document.getElementById('advanced-debugger');
+                if (debugPanel) {
+                    container.appendChild(debugPanel);
+                    debugPanel.style.position = 'relative';
+                    debugPanel.style.height = '100%';
+                }
+            }
+        }
+    }
+    
+    updatePerformanceStats() {
+        const container = document.getElementById('performance-stats');
+        if (!container) return;
+        
+        const stats = {
+            fps: window.performanceMonitor ? window.performanceMonitor.fps : 60,
+            memory: performance.memory ? (performance.memory.usedJSHeapSize / 1048576).toFixed(2) : 'N/A',
+            memoryLimit: performance.memory ? (performance.memory.jsHeapSizeLimit / 1048576).toFixed(2) : 'N/A',
+            tabs: document.querySelectorAll('.editor-tab').length,
+            activeSidebar: document.querySelector('.tab-content:not([style*="display: none"])')?.id || 'none',
+            extensions: window.extensionManager ? window.extensionManager.getActiveCount() : 0
+        };
+        
+        container.innerHTML = `
+            <div style="padding: 15px; background: rgba(0, 212, 255, 0.1); border-radius: 8px;">
+                <div style="font-size: 24px; color: var(--cyan); margin-bottom: 5px;">${stats.fps} FPS</div>
+                <div style="font-size: 12px; color: var(--cursor-text-secondary);">Frame Rate</div>
+            </div>
+            <div style="padding: 15px; background: rgba(0, 255, 136, 0.1); border-radius: 8px;">
+                <div style="font-size: 24px; color: var(--green); margin-bottom: 5px;">${stats.memory} MB</div>
+                <div style="font-size: 12px; color: var(--cursor-text-secondary);">Memory Used</div>
+            </div>
+            <div style="padding: 15px; background: rgba(168, 85, 247, 0.1); border-radius: 8px;">
+                <div style="font-size: 24px; color: var(--purple); margin-bottom: 5px;">${stats.tabs}</div>
+                <div style="font-size: 12px; color: var(--cursor-text-secondary);">Open Tabs</div>
+            </div>
+            <div style="padding: 15px; background: rgba(255, 107, 53, 0.1); border-radius: 8px;">
+                <div style="font-size: 24px; color: var(--orange); margin-bottom: 5px;">${stats.extensions}</div>
+                <div style="font-size: 12px; color: var(--cursor-text-secondary);">Active Extensions</div>
+            </div>
+            <div style="padding: 15px; background: rgba(0, 212, 255, 0.1); border-radius: 8px; grid-column: 1 / -1;">
+                <div style="font-size: 14px; color: var(--cyan); margin-bottom: 10px;">Memory Limit: ${stats.memoryLimit} MB</div>
+                <div style="width: 100%; height: 10px; background: rgba(0, 0, 0, 0.5); border-radius: 5px; overflow: hidden;">
+                    <div style="width: ${(parseFloat(stats.memory) / parseFloat(stats.memoryLimit) * 100).toFixed(1)}%; height: 100%; background: linear-gradient(90deg, var(--green), var(--orange)); transition: width 0.3s;"></div>
+                </div>
+            </div>
+        `;
+    }
+    
     // ========================================================================
     // CHAT MESSAGE HANDLING
     // ========================================================================

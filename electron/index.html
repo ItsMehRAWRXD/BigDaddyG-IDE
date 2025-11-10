@@ -686,25 +686,43 @@
                     <!-- Sidebar - Quick Launch Buttons -->
                     <div id="sidebar-buttons">
                         <button class="sidebar-quick-button secondary" onclick="if(window.tabSystem) window.tabSystem.openChatTab()">
-                            💬 Open Chat Tab <span class="shortcut">Ctrl+Shift+C</span>
+                            💬 Chat <span class="shortcut">Ctrl+Shift+C</span>
                         </button>
                         <button class="sidebar-quick-button" onclick="if(window.tabSystem) window.tabSystem.openExplorerTab()">
-                            📁 Open Explorer <span class="shortcut">Ctrl+Shift+E</span>
+                            📁 Explorer <span class="shortcut">Ctrl+Shift+E</span>
                         </button>
                         <button class="sidebar-quick-button" onclick="if(window.tabSystem) window.tabSystem.openGitHubTab()">
-                            🐙 Open GitHub <span class="shortcut">Ctrl+Shift+G</span>
+                            🐙 GitHub <span class="shortcut">Ctrl+Shift+G</span>
                         </button>
                         <button class="sidebar-quick-button" onclick="if(window.tabSystem) window.tabSystem.openAgentsTab()">
-                            🤖 Open Agents <span class="shortcut">Ctrl+Shift+A</span>
+                            🤖 Agents <span class="shortcut">Ctrl+Shift+A</span>
                         </button>
                         <button class="sidebar-quick-button" onclick="if(window.tabSystem) window.tabSystem.openTeamTab()">
-                            👥 Open Team <span class="shortcut">Ctrl+Shift+T</span>
+                            👥 Team <span class="shortcut">Ctrl+Shift+T</span>
                         </button>
                         <button class="sidebar-quick-button" onclick="if(window.tabSystem) window.tabSystem.openSettingsTab()">
-                            ⚙️ Open Settings <span class="shortcut">Ctrl+,</span>
+                            ⚙️ Settings <span class="shortcut">Ctrl+,</span>
+                        </button>
+                        <button class="sidebar-quick-button" onclick="if(window.tabSystem) window.tabSystem.openMarketplaceTab()">
+                            🛒 Marketplace <span class="shortcut">Ctrl+Shift+X</span>
+                        </button>
+                        <button class="sidebar-quick-button" onclick="if(window.tabSystem) window.tabSystem.openGameEditorTab()">
+                            🎮 Game Editor <span class="shortcut">Ctrl+Shift+J</span>
+                        </button>
+                        <button class="sidebar-quick-button" onclick="if(window.tabSystem) window.tabSystem.openImageGenTab()">
+                            🎨 Image Gen <span class="shortcut">Ctrl+Shift+I</span>
+                        </button>
+                        <button class="sidebar-quick-button" onclick="if(window.tabSystem) window.tabSystem.openPerformanceTab()">
+                            📊 Performance <span class="shortcut">Ctrl+Shift+M</span>
+                        </button>
+                        <button class="sidebar-quick-button" onclick="if(window.tabSystem) window.tabSystem.openDebugTab()">
+                            🐛 Debug <span class="shortcut">Ctrl+Shift+D</span>
                         </button>
                         <button class="sidebar-quick-button browser" onclick="if(window.browserPanel) window.browserPanel.show()">
-                            🌐 Open Browser <span class="shortcut">Ctrl+Shift+B</span>
+                            🌐 Browser <span class="shortcut">Ctrl+Shift+B</span>
+                        </button>
+                        <button class="sidebar-quick-button" onclick="if(window.commandPalette) window.commandPalette.show()">
+                            ⌨️ Commands <span class="shortcut">Ctrl+Shift+P</span>
                         </button>
                     </div>
                     
@@ -902,8 +920,35 @@
                     
                     <!-- SETTINGS TAB (Placeholder) -->
                     <div id="settings-tab-content" class="tab-content" style="display: none; flex: 1; overflow-y: auto; padding: 20px;">
-                        <h3 style="color: var(--cursor-jade-dark); margin-bottom: 20px;">⚙️ Settings</h3>
-                        <p style="color: var(--cursor-text-secondary);">Settings panel - coming soon!</p>
+                        <!-- Settings content will be injected by settings-panel.js -->
+                    </div>
+                    
+                    <!-- Marketplace Tab -->
+                    <div id="marketplace-tab-content" class="tab-content" style="display: none; flex: 1; overflow-y: auto; padding: 20px;">
+                        <!-- Marketplace UI will be injected by complete-marketplace-ui.js -->
+                    </div>
+                    
+                    <!-- Game Editor Tab -->
+                    <div id="game-editor-tab-content" class="tab-content" style="display: none; flex: 1; overflow: hidden;">
+                        <!-- Game editor will be injected by visual-game-editor.js -->
+                    </div>
+                    
+                    <!-- Image Generation Tab -->
+                    <div id="image-gen-tab-content" class="tab-content" style="display: none; flex: 1; overflow-y: auto; padding: 20px;">
+                        <!-- Image generation UI will be injected by image-generation.js -->
+                    </div>
+                    
+                    <!-- Performance Monitor Tab -->
+                    <div id="performance-tab-content" class="tab-content" style="display: none; flex: 1; overflow-y: auto; padding: 20px;">
+                        <h3 style="color: var(--cursor-jade-dark); margin-bottom: 20px;">📊 Performance Monitor</h3>
+                        <div id="performance-stats" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                            <!-- Performance stats will be injected here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Debug Panel Tab -->
+                    <div id="debug-tab-content" class="tab-content" style="display: none; flex: 1; overflow: hidden;">
+                        <!-- Advanced debugger UI will be injected by advanced-debugging-system.js -->
                     </div>
                     
                     <!-- TODO PANEL -->
@@ -1516,6 +1561,18 @@
     
     <!-- MASTER INITIALIZER - Ensures all systems are properly initialized and connected -->
     <script src="master-initializer.js"></script>
+    
+    <!-- NEW FEATURE MODULES -->
+    <script src="settings-panel.js"></script>
+    <script src="ui/complete-marketplace-ui.js"></script>
+    <script src="game-editor/visual-game-editor.js"></script>
+    <script src="game-editor/asset-preview-system.js"></script>
+    <script src="game-editor/shader-editor.js"></script>
+    <script src="game-editor/animation-timeline-editor.js"></script>
+    <script src="image-generation.js"></script>
+    <script src="command-palette.js"></script>
+    <script src="advanced-debugging-system.js"></script>
+    <script src="performance-optimizations.js"></script>
     
     <!-- INTEGRATION TEST SUITE (Optional - for testing) -->
     <!-- <script src="test-integration.js"></script> -->
