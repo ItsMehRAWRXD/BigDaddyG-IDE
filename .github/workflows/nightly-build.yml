@@ -13,46 +13,31 @@ on:
       - 'package.json'
 
 jobs:
-  build:
-    name: Build ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-    
+  build-linux:
+    name: Build Linux
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm install
-      
-      - name: Build app (Ubuntu)
-        if: matrix.os == 'ubuntu-latest'
+
+      - name: Build Linux
         run: npx electron-builder --linux AppImage deb rpm
-      
-      - name: Build app (Windows)
-        if: matrix.os == 'windows-latest'
-        run: npx electron-builder --win nsis portable
-      
-      - name: Build app (macOS)
-        if: matrix.os == 'macos-latest'
-        run: npx electron-builder --mac dmg zip
-      
-      - name: Get current date
+
+      - name: Get date
         id: date
         run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
         shell: bash
-      
-      - name: Upload artifacts (Linux)
-        if: matrix.os == 'ubuntu-latest'
+
+      - name: Upload Linux artifacts
         uses: actions/upload-artifact@v4
         with:
           name: BigDaddyG-Linux-${{ steps.date.outputs.date }}
@@ -61,18 +46,64 @@ jobs:
             dist/*.deb
             dist/*.rpm
           retention-days: 30
-      
-      - name: Upload artifacts (Windows)
-        if: matrix.os == 'windows-latest'
+
+  build-windows:
+    name: Build Windows
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Windows
+        run: npx electron-builder --win nsis portable
+
+      - name: Get date
+        id: date
+        shell: bash
+        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+      - name: Upload Windows artifacts
         uses: actions/upload-artifact@v4
         with:
           name: BigDaddyG-Windows-${{ steps.date.outputs.date }}
           path: |
             dist/*.exe
           retention-days: 30
-      
-      - name: Upload artifacts (macOS)
-        if: matrix.os == 'macos-latest'
+
+  build-macos:
+    name: Build macOS
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build macOS
+        run: npx electron-builder --mac dmg zip
+
+      - name: Get date
+        id: date
+        shell: bash
+        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+      - name: Upload macOS artifacts
         uses: actions/upload-artifact@v4
         with:
           name: BigDaddyG-macOS-${{ steps.date.outputs.date }}
@@ -80,35 +111,11 @@ jobs:
             dist/*.dmg
             dist/*.zip
           retention-days: 30
-      
-      - name: Create Release (on main branch push only)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: nightly-${{ steps.date.outputs.date }}
-          name: Nightly Build ${{ steps.date.outputs.date }}
-          body: |
-            🌙 Automated nightly build
-            
-            **What's New:**
-            - Latest changes from main branch
-            - All three phases integrated:
-              - 🐙 GitHub Integration
-              - 🤖 Background Agents
-              - 👥 Team Collaboration
-            
-            **Platform Support:**
-            - Windows: .exe installer & portable
-            - macOS: .dmg installer & .zip
-            - Linux: AppImage, .deb, .rpm
-            
-            **Setup Instructions:**
-            See README.md and setup guides in the repository.
-            
-            **Note:** This is an automated build. For stable releases, see the [Releases page](https://github.com/ItsMehRAWRXD/BigDaddyG-IDE/releases).
-          files: dist/*
-          draft: false
-          prerelease: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  release:
+    name: Nightly Release
+    runs-on: ubuntu-latest
+    needs: [build-linux, build-windows, build-macos]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Download Linux artifact
