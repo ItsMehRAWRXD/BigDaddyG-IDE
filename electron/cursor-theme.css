@@ -24,6 +24,14 @@
     --cursor-input-bg: #fffef8;        /* Cream input background */
     --cursor-input-border: #00d4ff80;  /* Jade input border */
     --cursor-shadow: rgba(0, 212, 255, 0.08); /* Jade shadow */
+
+    /* Runtime customizable variables */
+    --app-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    --app-monospace-font: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+    --app-font-size: 14px;
+    --app-line-height: 1.6;
+    --app-ui-scale: 1;
+    --panel-spacing: 12px;
 }
 
 * {
@@ -33,11 +41,13 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 
-                 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    font-family: var(--app-font-family);
+    font-size: var(--app-font-size);
+    line-height: var(--app-line-height);
     background: var(--cursor-bg);
     color: var(--cursor-text);
     overflow: hidden;
+    -webkit-font-smoothing: antialiased;
 }
 
 #app {
@@ -45,6 +55,7 @@ body {
     height: 100vh;
     display: flex;
     flex-direction: column;
+    gap: var(--panel-spacing);
 }
 
 /* ============================================================================
@@ -164,9 +175,12 @@ body {
    ============================================================================ */
 
 #main-container {
-    flex: 1;
     display: flex;
+    flex: 1;
     overflow: hidden;
+    gap: var(--panel-spacing);
+    align-items: stretch;
+    padding: 0 var(--panel-spacing);
 }
 
 /* Center Chat Panel (Replaces Monaco) */
@@ -298,12 +312,14 @@ body {
 
 /* Right Sidebar - File Explorer */
 #right-sidebar {
-    width: 300px;
-    background: var(--cursor-bg-secondary);
-    border-left: 1px solid var(--cursor-border);
+    flex: 0 0 var(--chat-sidebar-width, 380px);
+    max-width: var(--chat-sidebar-width, 380px);
+    background: var(--void);
+    border-left: 1px solid rgba(0, 212, 255, 0.2);
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    transition: all 0.3s ease;
+    min-width: 0;
 }
 
 .sidebar-header {
@@ -359,52 +375,33 @@ body {
 
 /* Bottom Panel - Terminal */
 #bottom-panel {
-    height: 250px;
-    background: var(--cursor-bg);
-    border-top: 1px solid var(--cursor-border);
     display: flex;
     flex-direction: column;
+    background: var(--void);
+    border-top: 1px solid rgba(0, 212, 255, 0.2);
+    margin: 0 var(--panel-spacing);
+    transition: max-height 0.3s ease;
+    max-height: 250px;
+    overflow: hidden;
 }
 
 #bottom-panel.collapsed {
-    height: 0;
-    border: none;
+    max-height: 0;
+    border-top: none;
+    display: none;
 }
 
-.bottom-tabs {
+#bottom-panel-tabs {
     display: flex;
-    gap: 2px;
-    background: var(--cursor-bg-secondary);
-    border-bottom: 1px solid var(--cursor-border);
-    padding: 0 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid rgba(0, 212, 255, 0.2);
 }
 
-.bottom-tab {
-    padding: 8px 16px;
-    cursor: pointer;
-    font-size: 12px;
-    color: var(--cursor-text-secondary);
-    border-bottom: 2px solid transparent;
-}
-
-.bottom-tab:hover {
-    color: var(--cursor-text);
-}
-
-.bottom-tab.active {
-    color: var(--cursor-accent);
-    border-bottom-color: var(--cursor-accent);
-    font-weight: 600;
-    background: var(--cursor-jade-light);
-    box-shadow: inset 0 -3px 0 var(--cursor-accent),
-                0 0 10px var(--cursor-jade-glow); /* Jade glow on active tab! */
-}
-
-.bottom-content {
+#bottom-panel-content {
     flex: 1;
+    padding: 15px;
     overflow-y: auto;
-    padding: 12px;
-    font-family: 'Consolas', 'Courier New', monospace;
+    font-family: var(--app-monospace-font);
     font-size: 12px;
 }
 
@@ -531,5 +528,19 @@ body {
     border-radius: 12px;
     font-size: 11px;
     font-weight: 500;
+}
+
+body.layout-no-overlap #floating-chat-panel,
+body.layout-no-overlap #terminal-panel {
+    display: none !important;
+}
+
+body.layout-no-overlap #bottom-panel {
+    display: flex;
+}
+
+body.layout-no-overlap #todo-panel-container {
+    bottom: 20px;
+    right: 20px;
 }
 

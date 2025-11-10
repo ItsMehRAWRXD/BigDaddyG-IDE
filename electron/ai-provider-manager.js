@@ -180,16 +180,32 @@ class AIProviderManager {
       if (result && result.success !== false) {
         const catalog = result.catalog || result.catalogue || {};
         this.modelCatalog = catalog;
-        this.ollamaDiskModels = (result.ollama && result.ollama.disk) || catalog.ollama || [];
-        if (result.ollama?.server) {
-          this.ollamaServerModels = result.ollama.server.map(model => ({
-            name: model.name,
-            size: model.size,
-            digest: model.digest,
-            modified: model.modified_at || model.modified
-          }));
+
+        const diskSource = result.ollama?.disk ?? catalog.ollama ?? [];
+        if (Array.isArray(diskSource)) {
+          this.ollamaDiskModels = diskSource;
+        } else if (Array.isArray(diskSource?.models)) {
+          this.ollamaDiskModels = diskSource.models;
+        } else {
+          this.ollamaDiskModels = [];
         }
-        this.orchestraModels = result.orchestra?.models || [];
+
+        const serverSource = result.ollama?.server ?? [];
+        if (Array.isArray(serverSource)) {
+          this.ollamaServerModels = serverSource
+            .filter(model => model && typeof model === 'object')
+            .map(model => ({
+              name: model.name,
+              size: model.size,
+              digest: model.digest,
+              modified: model.modified_at || model.modified
+            }));
+        } else {
+          this.ollamaServerModels = [];
+        }
+
+        const orchestraModels = result.orchestra?.models;
+        this.orchestraModels = Array.isArray(orchestraModels) ? orchestraModels : [];
         this.orchestraAvailable = result.orchestra?.available !== false;
       }
     } catch (error) {
@@ -214,12 +230,18 @@ class AIProviderManager {
       this.ollamaServerModels = [];
     }
 
-    const diskNames = this.ollamaDiskModels
-      .map(model => model.name || model.path || model.id)
-      .filter(Boolean);
-    const serverNames = this.ollamaServerModels
-      .map(model => model.name)
-      .filter(Boolean);
+    const diskNames = Array.isArray(this.ollamaDiskModels)
+      ? this.ollamaDiskModels
+          .filter(model => model && typeof model === 'object')
+          .map(model => model.name || model.path || model.id)
+          .filter(Boolean)
+      : [];
+    const serverNames = Array.isArray(this.ollamaServerModels)
+      ? this.ollamaServerModels
+          .filter(model => model && typeof model === 'object')
+          .map(model => model.name)
+          .filter(Boolean)
+      : [];
     this.ollamaModels = Array.from(new Set([...serverNames, ...diskNames]));
 
     console.log('[AI] Ollama models:', this.ollamaModels);

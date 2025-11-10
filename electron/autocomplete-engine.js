@@ -412,6 +412,17 @@ class AutocompleteEngine {
             signal: this.abortController.signal
         });
         
+        if (!response.ok) {
+            let errorBody = '';
+            try {
+                errorBody = await response.clone().text();
+            } catch (err) {
+                errorBody = '[body unavailable]';
+            }
+            console.error(`[Autocomplete] ❌ API error ${response.status}: ${errorBody}`);
+            throw new Error(`Autocomplete API HTTP ${response.status}`);
+        }
+
         const data = await response.json();
         
         if (data.response) {

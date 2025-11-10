@@ -467,6 +467,10 @@ async function sendAgentMessage() {
             })
         });
         
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+        
         const data = await response.json();
         
         // Remove thinking indicator
@@ -510,7 +514,14 @@ function addAgentUserMessage(message) {
     const msgEl = document.createElement('div');
     msgEl.className = 'agent-message user-message';
     msgEl.style.cssText = 'margin-bottom: 15px; padding: 15px; background: rgba(255, 107, 53, 0.1); border-left: 3px solid var(--orange); border-radius: 8px;';
-    msgEl.innerHTML = `<strong style="color: var(--orange); font-size: 14px;">You:</strong><br><br><div style="color: #ccc; font-size: 13px; line-height: 1.6;">${escapeHtml(message)}</div>`;
+    const header = document.createElement('strong');
+    header.style.cssText = 'color: var(--orange); font-size: 14px;';
+    header.textContent = 'You:';
+    const content = document.createElement('div');
+    content.style.cssText = 'color: #ccc; font-size: 13px; line-height: 1.6; margin-top: 10px;';
+    content.textContent = message;
+    msgEl.appendChild(header);
+    msgEl.appendChild(content);
     chatArea.appendChild(msgEl);
     chatArea.scrollTop = chatArea.scrollHeight;
 }
@@ -520,7 +531,14 @@ function addAgentAIMessage(message) {
     const msgEl = document.createElement('div');
     msgEl.className = 'agent-message ai-message';
     msgEl.style.cssText = 'margin-bottom: 15px; padding: 15px; background: rgba(0, 212, 255, 0.1); border-left: 3px solid var(--cyan); border-radius: 8px;';
-    msgEl.innerHTML = `<strong style="color: var(--cyan); font-size: 14px;">${AgentConfig.currentModel}:</strong><br><br><div style="color: #ccc; font-size: 13px; line-height: 1.6;">${formatMessage(message)}</div>`;
+    const header = document.createElement('strong');
+    header.style.cssText = 'color: var(--cyan); font-size: 14px;';
+    header.textContent = AgentConfig.currentModel + ':';
+    const content = document.createElement('div');
+    content.style.cssText = 'color: #ccc; font-size: 13px; line-height: 1.6; margin-top: 10px;';
+    content.appendChild(formatMessage(message));
+    msgEl.appendChild(header);
+    msgEl.appendChild(content);
     chatArea.appendChild(msgEl);
     chatArea.scrollTop = chatArea.scrollHeight;
 }
@@ -553,7 +571,14 @@ function addAgentErrorMessage(message) {
     const msgEl = document.createElement('div');
     msgEl.className = 'agent-message';
     msgEl.style.cssText = 'margin-bottom: 15px; padding: 15px; background: rgba(255, 71, 87, 0.1); border-left: 3px solid var(--red); border-radius: 8px;';
-    msgEl.innerHTML = `<strong style="color: var(--red); font-size: 14px;">Error:</strong><br><br><div style="color: #ccc; font-size: 13px;">${escapeHtml(message)}</div>`;
+    const header = document.createElement('strong');
+    header.style.cssText = 'color: var(--red); font-size: 14px;';
+    header.textContent = 'Error:';
+    const content = document.createElement('div');
+    content.style.cssText = 'color: #ccc; font-size: 13px; margin-top: 10px;';
+    content.textContent = message;
+    msgEl.appendChild(header);
+    msgEl.appendChild(content);
     chatArea.appendChild(msgEl);
     chatArea.scrollTop = chatArea.scrollHeight;
 }
@@ -565,18 +590,36 @@ function updateAgentContext() {
 }
 
 function formatMessage(message) {
-    // Convert markdown code blocks to HTML
-    message = message.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
-        return `<pre style="background: rgba(0,0,0,0.5); padding: 10px; border-radius: 5px; overflow-x: auto; margin: 10px 0;"><code>${escapeHtml(code.trim())}</code></pre>`;
+    const container = document.createElement('div');
+    const parts = message.split(/(```[\w]*\n[\s\S]*?```|`[^`]+`)/g);
+    
+    parts.forEach(part => {
+        if (part.startsWith('```')) {
+            const match = part.match(/```[\w]*\n([\s\S]*?)```/);
+            if (match) {
+                const pre = document.createElement('pre');
+                pre.style.cssText = 'background: rgba(0,0,0,0.5); padding: 10px; border-radius: 5px; overflow-x: auto; margin: 10px 0;';
+                const code = document.createElement('code');
+                code.textContent = match[1].trim();
+                pre.appendChild(code);
+                container.appendChild(pre);
+            }
+        } else if (part.startsWith('`') && part.endsWith('`')) {
+            const code = document.createElement('code');
+            code.style.cssText = 'background: rgba(0,0,0,0.5); padding: 2px 6px; border-radius: 3px; font-family: monospace;';
+            code.textContent = part.slice(1, -1);
+            container.appendChild(code);
+        } else {
+            const lines = part.split('\n');
+            lines.forEach((line, i) => {
+                const text = document.createTextNode(line);
+                container.appendChild(text);
+                if (i < lines.length - 1) container.appendChild(document.createElement('br'));
+            });
+        }
     });
     
-    // Convert inline code
-    message = message.replace(/`([^`]+)`/g, '<code style="background: rgba(0,0,0,0.5); padding: 2px 6px; border-radius: 3px; font-family: monospace;">$1</code>');
-    
-    // Convert line breaks
-    message = message.replace(/\n/g, '<br>');
-    
-    return message;
+    return container;
 }
 
 function parseReferences(message) {
@@ -593,12 +636,22 @@ function parseReferences(message) {
 
 async function readReferencedFile(filename) {
     try {
+        if (!filename || typeof filename !== 'string') {
+            return '// Invalid filename';
+        }
+        
+        // Sanitize filename to prevent path traversal
+        if (filename.includes('..') || filename.includes('~')) {
+            return '// Invalid file path';
+        }
+        
         // Use Electron API to read file
         if (window.electron && window.electron.readFile) {
             return await window.electron.readFile(filename);
         }
         return `// Could not read file: ${filename}`;
     } catch (error) {
+        console.error('[Agent] File read error:', error);
         return `// Error reading file: ${error.message}`;
     }
 }
@@ -609,17 +662,29 @@ function estimateTokens(text) {
 }
 
 function insertCodeToEditor(code) {
-    if (window.editor) {
-        const position = window.editor.getPosition();
-        window.editor.executeEdits('agent-insert', [{
-            range: new monaco.Range(position.lineNumber, position.column, position.lineNumber, position.column),
-            text: '\n' + code + '\n'
-        }]);
-        console.log('[Agent] ✅ Code inserted to editor');
+    try {
+        if (!code || typeof code !== 'string') {
+            console.error('[Agent] Invalid code to insert');
+            return;
+        }
+        
+        if (window.editor && window.monaco) {
+            const position = window.editor.getPosition();
+            if (position) {
+                window.editor.executeEdits('agent-insert', [{
+                    range: new window.monaco.Range(position.lineNumber, position.column, position.lineNumber, position.column),
+                    text: '\n' + code + '\n'
+                }]);
+                console.log('[Agent] ✅ Code inserted to editor');
+            }
+        }
+    } catch (error) {
+        console.error('[Agent] Error inserting code:', error);
     }
 }
 
 function escapeHtml(text) {
+    if (!text || typeof text !== 'string') return '';
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;

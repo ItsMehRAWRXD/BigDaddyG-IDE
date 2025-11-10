@@ -427,45 +427,18 @@ class TabSystem {
     }
     
     openSettingsTab() {
-        for (const [id, data] of this.tabs) {
-            if (data.type === 'settings') {
-                this.switchToTab(id);
-                return;
-            }
+        if (window.settingsPanel && typeof window.settingsPanel.open === 'function') {
+            window.settingsPanel.open(this);
+            return;
         }
-        
-        const content = `
-            <div style="max-width: 1000px; margin: 0 auto;">
-                <h2 style="color: var(--cursor-jade-dark); margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">
-                    <span style="font-size: 32px;">⚙️</span>
-                    <span>Settings</span>
-                </h2>
-                
-                <div style="background: var(--cursor-bg-secondary); border-radius: 12px; padding: 24px;">
-                    <h3 style="font-size: 16px; margin-bottom: 16px; color: var(--cursor-jade-dark);">Editor Settings</h3>
-                    <div style="display: flex; flex-direction: column; gap: 16px;">
-                        <label style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: var(--cursor-bg); border-radius: 6px;">
-                            <span style="color: var(--cursor-text);">Font Size</span>
-                            <input type="number" value="14" min="8" max="32" style="width: 80px; padding: 6px; background: var(--cursor-bg-tertiary); border: 1px solid var(--cursor-border); border-radius: 4px; color: var(--cursor-text);">
-                        </label>
-                        <label style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: var(--cursor-bg); border-radius: 6px;">
-                            <span style="color: var(--cursor-text);">Theme</span>
-                            <select style="width: 150px; padding: 6px; background: var(--cursor-bg-tertiary); border: 1px solid var(--cursor-border); border-radius: 4px; color: var(--cursor-text);">
-                                <option>Beige & Jade (Default)</option>
-                                <option>Dark</option>
-                                <option>Light</option>
-                            </select>
-                        </label>
-                        <label style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: var(--cursor-bg); border-radius: 6px;">
-                            <span style="color: var(--cursor-text);">Auto Save</span>
-                            <input type="checkbox" checked style="width: 20px; height: 20px;">
-                        </label>
-                    </div>
-                </div>
+
+        console.warn('[TabSystem] ⚠️ settingsPanel module unavailable, using fallback settings tab');
+        const fallback = `
+            <div class="settings-panel-root">
+                <div class="settings-panel-loading">Settings module unavailable.</div>
             </div>
         `;
-        
-        this.createTab('Settings', '⚙️', content, 'settings');
+        this.createTab('Settings', '⚙️', fallback, 'settings');
     }
     
     // ========================================================================

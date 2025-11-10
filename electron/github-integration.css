@@ -135,6 +135,35 @@
     margin-top: 12px;
 }
 
+.github-callout {
+    background: rgba(0, 122, 204, 0.1);
+    border: 1px solid rgba(0, 122, 204, 0.4);
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    color: #cde9ff;
+    line-height: 1.5;
+}
+
+.github-callout h4 {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    color: #fff;
+}
+
+.github-callout ol {
+    margin: 0 0 0 18px;
+    padding: 0;
+}
+
+.github-callout li {
+    margin-bottom: 6px;
+}
+
+.github-callout a {
+    color: #4cc9ff;
+}
+
 /* Buttons */
 .btn {
     padding: 8px 16px;

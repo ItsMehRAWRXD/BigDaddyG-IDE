@@ -19,6 +19,7 @@
         byType: {}, // event type counts
         byElement: new WeakMap() // element -> listener count
     };
+    const warnedElements = new WeakSet();
     
     // Store original methods
     const originalAddEventListener = EventTarget.prototype.addEventListener;
@@ -85,11 +86,12 @@
         // Warn if too many listeners on one element
         // Higher threshold for document (IDE has many global shortcuts/handlers)
         const threshold = element === document ? 200 : 50;
-        if (elementCount + 1 > threshold) {
+        if (elementCount + 1 > threshold && !warnedElements.has(element)) {
             console.warn(
                 `⚠️ Event Listener Warning: Element "${listenerInfo.elementId}" has ${elementCount + 1} listeners! Possible memory leak.`,
                 element
             );
+            warnedElements.add(element);
         }
         
         // Call original

@@ -13,6 +13,9 @@ let activeTab = 'welcome';
 let tabCounter = 0; // For generating unique tab IDs
 const MAX_TABS = 100; // Configurable limit (can be changed in settings)
 
+const WELCOME_STORAGE_KEY = 'bigdaddyg-welcome-dismissed';
+const FULLSCREEN_CLASS = 'ide-fullscreen';
+
 // Expose openTabs globally for tab-system.js to check file tabs
 window.openTabs = openTabs;
 
@@ -68,6 +71,35 @@ setTimeout(() => {
     }
 }, 100);
 
+function initWelcomeMessage() {
+    const welcomeEl = document.getElementById('welcome-message');
+    if (!welcomeEl) {
+        return;
+    }
+    
+    const dismissed = localStorage.getItem(WELCOME_STORAGE_KEY) === 'true';
+    if (dismissed) {
+        welcomeEl.remove();
+    }
+}
+
+function dismissWelcomeMessage() {
+    const welcomeEl = document.getElementById('welcome-message');
+    if (welcomeEl) {
+        welcomeEl.remove();
+    }
+    localStorage.setItem(WELCOME_STORAGE_KEY, 'true');
+}
+
+window.dismissWelcomeMessage = dismissWelcomeMessage;
+
+function handleFullscreenChange() {
+    const isFullscreen = Boolean(document.fullscreenElement);
+    document.body.classList.toggle(FULLSCREEN_CLASS, isFullscreen);
+}
+
+window.addEventListener('fullscreenchange', handleFullscreenChange);
+
 // Monaco Editor initialization - Called when Monaco loads from index.html
 window.onMonacoLoad = function() {
     console.log('[BigDaddyG] 🎨 Monaco loaded, initializing editor...');
@@ -115,6 +147,11 @@ if (typeof monaco !== 'undefined') {
 function initMonacoEditor() {
     console.log('[BigDaddyG] 🎨 Initializing Monaco Editor...');
     
+    const appearanceSettings = window.__appSettings?.appearance || {};
+    const editorFontSize = appearanceSettings.fontSize || 14;
+    const editorLineHeight = Math.round(editorFontSize * (appearanceSettings.lineHeight || 1.6));
+    const editorFontFamily = appearanceSettings.monospaceFont || appearanceSettings.fontFamily || 'Consolas, "Courier New", monospace';
+    
     // Define custom theme with jade/cyan selection
     monaco.editor.defineTheme('bigdaddyg-dark', {
         base: 'vs-dark',
@@ -140,8 +177,9 @@ function initMonacoEditor() {
         theme: 'bigdaddyg-dark', // Use custom theme
         
         // Editor options
-        fontSize: 14,
-        fontFamily: 'Consolas, "Courier New", monospace',
+        fontSize: editorFontSize,
+        lineHeight: editorLineHeight,
+        fontFamily: editorFontFamily,
         lineNumbers: 'on',
         roundedSelection: true,
         scrollBeyondLastLine: false, // OPTIMIZED: Reduce render area
@@ -1925,7 +1963,10 @@ window.removeAttachment = removeAttachment;
 
 // Initialize drag and drop when DOM is ready
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initDragAndDrop);
+document.addEventListener('DOMContentLoaded', () => {
+    initWelcomeMessage();
+    initDragAndDrop();
+});
 } else {
     initDragAndDrop();
 }

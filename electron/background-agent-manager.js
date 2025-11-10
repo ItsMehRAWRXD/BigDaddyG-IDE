@@ -200,19 +200,16 @@ class BackgroundAgentManager {
     // ============================================================================
     
     initializeUI() {
-        const sidebar = document.getElementById('right-sidebar') || 
-                        document.querySelector('.right-sidebar') || 
-                        document.querySelector('.sidebar');
+        const container = document.getElementById('agents-tab-content');
         
-        if (!sidebar) {
-            console.warn('Sidebar not found for agent panel');
+        if (!container) {
+            console.warn('Agents tab content container not found');
             return;
         }
         
-        const agentPanel = document.createElement('div');
-        agentPanel.id = 'agent-panel';
-        agentPanel.className = 'panel agent-panel';
-        agentPanel.innerHTML = `
+        this.container = container;
+        container.innerHTML = `
+        <div class="panel agent-panel" id="agent-panel">
             <div class="panel-header">
                 <h3>🤖 Background Agents</h3>
                 <button id="agent-clear-all-btn" class="btn btn-sm btn-secondary" style="display: none;">
@@ -250,9 +247,8 @@ class BackgroundAgentManager {
                     </div>
                 </div>
             </div>
+        </div>
         `;
-        
-        sidebar.appendChild(agentPanel);
         
         this.attachEventListeners();
     }
@@ -346,6 +342,10 @@ class BackgroundAgentManager {
         document.getElementById('agent-start-btn').disabled = true;
     }
     
+    sanitize(str) {
+        return String(str || '').replace(/[<>"'&]/g, (m) => ({'<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','&':'&amp;'}[m]));
+    }
+    
     updateAgentUI() {
         const agentList = document.getElementById('agent-list');
         if (!agentList) return;
@@ -357,29 +357,29 @@ class BackgroundAgentManager {
         
         agentList.innerHTML = this.agents.map(agent => {
             const icon = this.getAgentIcon(agent.type, agent.status);
-            const statusClass = `agent-status-${agent.status}`;
+            const statusClass = `agent-status-${this.sanitize(agent.status)}`;
             
             return `
-                <div class="agent-card ${statusClass}" data-agent-id="${agent.id}">
+                <div class="agent-card ${statusClass}" data-agent-id="${this.sanitize(agent.id)}">
                     <div class="agent-header">
                         <span class="agent-icon">${icon}</span>
-                        <span class="agent-type">${this.formatAgentType(agent.type)}</span>
+                        <span class="agent-type">${this.sanitize(this.formatAgentType(agent.type))}</span>
                         <span class="agent-status-badge ${statusClass}">
-                            ${agent.status}
+                            ${this.sanitize(agent.status)}
                         </span>
                     </div>
                     
                     <div class="agent-description">
-                        ${agent.description}
+                        ${this.sanitize(agent.description)}
                     </div>
                     
                     ${agent.status === 'running' ? `
                         <div class="agent-progress">
                             <div class="progress-bar">
-                                <div class="progress-fill" style="width: ${agent.progress}%"></div>
+                                <div class="progress-fill" style="width: ${Math.max(0, Math.min(100, parseFloat(agent.progress) || 0))}%"></div>
                             </div>
                             <div class="progress-text">
-                                ${agent.progressMessage || 'Working...'}
+                                ${this.sanitize(agent.progressMessage || 'Working...')}
                             </div>
                         </div>
                     ` : ''}
@@ -390,13 +390,13 @@ class BackgroundAgentManager {
                                 ⏱️ ${this.formatDuration(agent.duration)}
                             </div>
                             <div class="agent-actions">
-                                <button onclick="agentManager.viewResult(${agent.id})" class="btn btn-sm btn-primary">
+                                <button onclick="agentManager.viewResult(${this.sanitize(agent.id)})" class="btn btn-sm btn-primary">
                                     👁️ View Result
                                 </button>
-                                <button onclick="agentManager.applyResult(${agent.id})" class="btn btn-sm btn-success">
+                                <button onclick="agentManager.applyResult(${this.sanitize(agent.id)})" class="btn btn-sm btn-success">
                                     ✅ Apply
                                 </button>
-                                <button onclick="agentManager.clearAgent(${agent.id})" class="btn btn-sm btn-secondary">
+                                <button onclick="agentManager.clearAgent(${this.sanitize(agent.id)})" class="btn btn-sm btn-secondary">
                                     🗑️ Clear
                                 </button>
                             </div>
@@ -405,8 +405,8 @@ class BackgroundAgentManager {
                     
                     ${agent.status === 'error' ? `
                         <div class="agent-error">
-                            <div class="error-message">❌ ${agent.error.message}</div>
-                            <button onclick="agentManager.clearAgent(${agent.id})" class="btn btn-sm btn-secondary">
+                            <div class="error-message">❌ ${this.sanitize(agent.error?.message || 'Unknown error')}</div>
+                            <button onclick="agentManager.clearAgent(${this.sanitize(agent.id)})" class="btn btn-sm btn-secondary">
                                 🗑️ Clear
                             </button>
                         </div>
@@ -414,7 +414,7 @@ class BackgroundAgentManager {
                     
                     ${agent.status === 'running' ? `
                         <div class="agent-actions">
-                            <button onclick="agentManager.cancelAgent(${agent.id})" class="btn btn-sm btn-secondary">
+                            <button onclick="agentManager.cancelAgent(${this.sanitize(agent.id)})" class="btn btn-sm btn-secondary">
                                 ⏸️ Cancel
                             </button>
                         </div>
@@ -527,14 +527,14 @@ class BackgroundAgentManager {
         modal.innerHTML = `
             <div class="modal agent-result-modal">
                 <div class="modal-header">
-                    <h3>${this.getAgentIcon(agent.type, agent.status)} ${this.formatAgentType(agent.type)} Result</h3>
+                    <h3>${this.getAgentIcon(agent.type, agent.status)} ${this.sanitize(this.formatAgentType(agent.type))} Result</h3>
                     <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
                 </div>
                 
                 <div class="modal-body">
                     <div class="result-section">
                         <h4>Description</h4>
-                        <p>${agent.description}</p>
+                        <p>${this.sanitize(agent.description)}</p>
                     </div>
                     
                     <div class="result-section">
@@ -546,7 +546,7 @@ class BackgroundAgentManager {
                 </div>
                 
                 <div class="modal-footer">
-                    <button onclick="agentManager.applyResult(${agent.id}); this.closest('.modal-overlay').remove();" class="btn btn-success">
+                    <button onclick="agentManager.applyResult(${this.sanitize(agent.id)}); this.closest('.modal-overlay').remove();" class="btn btn-success">
                         ✅ Apply Result
                     </button>
                     <button onclick="this.closest('.modal-overlay').remove()" class="btn btn-secondary">
@@ -567,13 +567,13 @@ class BackgroundAgentManager {
                 return `
                     <div class="result-section">
                         <h4>Explanation</h4>
-                        <p>${result.explanation}</p>
+                        <p>${this.sanitize(result.explanation)}</p>
                     </div>
                     
                     <div class="result-section">
                         <h4>Changes</h4>
                         <ul>
-                            ${result.changes.map(c => `<li>${c}</li>`).join('')}
+                            ${result.changes.map(c => `<li>${this.sanitize(c)}</li>`).join('')}
                         </ul>
                     </div>
                     
@@ -587,7 +587,7 @@ class BackgroundAgentManager {
                 return `
                     <div class="result-section">
                         <h4>Explanation</h4>
-                        <p>${result.explanation}</p>
+                        <p>${this.sanitize(result.explanation)}</p>
                     </div>
                     
                     <div class="result-section">
@@ -610,7 +610,7 @@ class BackgroundAgentManager {
                     <div class="result-section">
                         <h4>Improvements</h4>
                         <ul>
-                            ${result.improvements.map(i => `<li>${i}</li>`).join('')}
+                            ${result.improvements.map(i => `<li>${this.sanitize(i)}</li>`).join('')}
                         </ul>
                     </div>
                     
@@ -644,7 +644,7 @@ class BackgroundAgentManager {
                     <div class="result-section">
                         <h4>Optimizations Applied</h4>
                         <ul>
-                            ${result.optimizations.map(o => `<li>${o}</li>`).join('')}
+                            ${result.optimizations.map(o => `<li>${this.sanitize(o)}</li>`).join('')}
                         </ul>
                     </div>
                     

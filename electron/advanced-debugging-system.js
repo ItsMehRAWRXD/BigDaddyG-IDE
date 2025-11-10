@@ -448,7 +448,27 @@ Respond in JSON format:
 
     async evaluateExpression(expression, context) {
         try {
-            return eval(expression);
+            if (!context || typeof expression !== 'string' || !expression) {
+                return 'Error: Invalid expression or context';
+            }
+            
+            // Sanitize: only allow alphanumeric, dots, and brackets for property access
+            if (!/^[a-zA-Z_$][a-zA-Z0-9_$.\[\]]*$/.test(expression)) {
+                return 'Error: Invalid expression format';
+            }
+            
+            // Safe property access without eval
+            const parts = expression.split('.');
+            let value = context;
+            
+            for (const part of parts) {
+                if (value === null || value === undefined) {
+                    return 'Error: Cannot access property of null/undefined';
+                }
+                value = value[part];
+            }
+            
+            return value !== undefined ? value : 'Error: Variable not found in context';
         } catch (error) {
             return `Error: ${error.message}`;
         }
@@ -465,8 +485,12 @@ Respond in JSON format:
                 })
             });
 
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
             const data = await response.json();
-            const jsonMatch = data.response.match(/\{[\s\S]*\}/);
+            const jsonMatch = data.response?.match(/\{[\s\S]*\}/);
             
             if (jsonMatch) {
                 return JSON.parse(jsonMatch[0]);
@@ -474,6 +498,7 @@ Respond in JSON format:
             
             return null;
         } catch (error) {
+            console.error('[AdvancedDebugger] AI Analysis error:', error);
             return null;
         }
     }
@@ -486,38 +511,86 @@ Respond in JSON format:
         const container = document.getElementById('breakpoints-list');
         if (!container) return;
 
-        container.innerHTML = Array.from(this.breakpoints.values()).map(bp => `
-            <div class="breakpoint-item">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span style="color: var(--cyan); font-weight: bold;">${bp.file}:${bp.line}</span>
-                    <span style="color: #888; font-size: 10px;">Hits: ${bp.hitCount}</span>
-                </div>
-                <div style="color: #fff; margin-top: 4px; font-size: 11px;">${bp.condition || 'Always'}</div>
-                ${bp.aiSuggestions?.length ? `
-                    <div style="margin-top: 6px; padding: 6px; background: rgba(0, 255, 136, 0.05); border-radius: 3px;">
-                        <div style="color: var(--green); font-size: 10px;">💡 AI Suggestions:</div>
-                        ${bp.aiSuggestions.map(s => `<div style="color: #ccc; font-size: 10px;">• ${s}</div>`).join('')}
-                    </div>
-                ` : ''}
-            </div>
-        `).join('');
+        container.textContent = '';
+        Array.from(this.breakpoints.values()).forEach(bp => {
+            const item = document.createElement('div');
+            item.className = 'breakpoint-item';
+            
+            const header = document.createElement('div');
+            header.style.cssText = 'display: flex; justify-content: space-between; align-items: center;';
+            
+            const location = document.createElement('span');
+            location.style.cssText = 'color: var(--cyan); font-weight: bold;';
+            location.textContent = `${bp.file}:${bp.line}`;
+            
+            const hits = document.createElement('span');
+            hits.style.cssText = 'color: #888; font-size: 10px;';
+            hits.textContent = `Hits: ${bp.hitCount}`;
+            
+            header.appendChild(location);
+            header.appendChild(hits);
+            item.appendChild(header);
+            
+            const condition = document.createElement('div');
+            condition.style.cssText = 'color: #fff; margin-top: 4px; font-size: 11px;';
+            condition.textContent = bp.condition || 'Always';
+            item.appendChild(condition);
+            
+            if (bp.aiSuggestions?.length) {
+                const suggestions = document.createElement('div');
+                suggestions.style.cssText = 'margin-top: 6px; padding: 6px; background: rgba(0, 255, 136, 0.05); border-radius: 3px;';
+                
+                const title = document.createElement('div');
+                title.style.cssText = 'color: var(--green); font-size: 10px;';
+                title.textContent = '💡 AI Suggestions:';
+                suggestions.appendChild(title);
+                
+                bp.aiSuggestions.forEach(s => {
+                    const sug = document.createElement('div');
+                    sug.style.cssText = 'color: #ccc; font-size: 10px;';
+                    sug.textContent = `• ${s}`;
+                    suggestions.appendChild(sug);
+                });
+                
+                item.appendChild(suggestions);
+            }
+            
+            container.appendChild(item);
+        });
     }
 
     updateVariablesUI() {
         const container = document.getElementById('variables-list');
         if (!container) return;
 
-        container.innerHTML = Array.from(this.variables.values()).map(variable => `
-            <div class="variable-item">
-                <div style="display: flex; justify-content: space-between;">
-                    <span style="color: var(--cyan);">${variable.name}</span>
-                    <span style="color: #888; font-size: 10px;">${variable.type}</span>
-                </div>
-                <div style="color: #fff; margin-top: 4px; font-size: 10px; word-break: break-all;">
-                    ${JSON.stringify(variable.value).substring(0, 100)}${JSON.stringify(variable.value).length > 100 ? '...' : ''}
-                </div>
-            </div>
-        `).join('');
+        container.textContent = '';
+        Array.from(this.variables.values()).forEach(variable => {
+            const item = document.createElement('div');
+            item.className = 'variable-item';
+            
+            const header = document.createElement('div');
+            header.style.cssText = 'display: flex; justify-content: space-between;';
+            
+            const name = document.createElement('span');
+            name.style.cssText = 'color: var(--cyan);';
+            name.textContent = variable.name;
+            
+            const type = document.createElement('span');
+            type.style.cssText = 'color: #888; font-size: 10px;';
+            type.textContent = variable.type;
+            
+            header.appendChild(name);
+            header.appendChild(type);
+            item.appendChild(header);
+            
+            const value = document.createElement('div');
+            value.style.cssText = 'color: #fff; margin-top: 4px; font-size: 10px; word-break: break-all;';
+            const valueStr = JSON.stringify(variable.value);
+            value.textContent = valueStr.substring(0, 100) + (valueStr.length > 100 ? '...' : '');
+            item.appendChild(value);
+            
+            container.appendChild(item);
+        });
     }
 
     updatePerformanceUI(metrics) {
@@ -553,30 +626,66 @@ Respond in JSON format:
                            (analysis.performance?.length || 0) + 
                            (analysis.security?.length || 0);
 
-        container.innerHTML = `
-            <div style="text-align: center; margin-bottom: 15px;">
-                <div style="font-size: 24px; color: var(--cyan);">${totalIssues}</div>
-                <div style="font-size: 11px; color: #888;">Issues Detected</div>
-            </div>
+        container.textContent = '';
+        
+        const summary = document.createElement('div');
+        summary.style.cssText = 'text-align: center; margin-bottom: 15px;';
+        
+        const count = document.createElement('div');
+        count.style.cssText = 'font-size: 24px; color: var(--cyan);';
+        count.textContent = totalIssues.toString();
+        
+        const label = document.createElement('div');
+        label.style.cssText = 'font-size: 11px; color: #888;';
+        label.textContent = 'Issues Detected';
+        
+        summary.appendChild(count);
+        summary.appendChild(label);
+        container.appendChild(summary);
+        
+        if (analysis.debuggingStrategy) {
+            const strategy = document.createElement('div');
+            strategy.style.cssText = 'margin-bottom: 15px; padding: 10px; background: rgba(0, 255, 136, 0.05); border-radius: 6px;';
             
-            ${analysis.debuggingStrategy ? `
-                <div style="margin-bottom: 15px; padding: 10px; background: rgba(0, 255, 136, 0.05); border-radius: 6px;">
-                    <div style="color: var(--green); font-size: 12px; font-weight: bold; margin-bottom: 6px;">🎯 Debugging Strategy</div>
-                    <div style="color: #ccc; font-size: 11px;">${analysis.debuggingStrategy}</div>
-                </div>
-            ` : ''}
+            const title = document.createElement('div');
+            title.style.cssText = 'color: var(--green); font-size: 12px; font-weight: bold; margin-bottom: 6px;';
+            title.textContent = '🎯 Debugging Strategy';
             
-            ${analysis.recommendedBreakpoints?.length ? `
-                <div style="margin-bottom: 15px;">
-                    <div style="color: var(--cyan); font-size: 12px; font-weight: bold; margin-bottom: 8px;">📍 Recommended Breakpoints</div>
-                    ${analysis.recommendedBreakpoints.map(bp => `
-                        <div style="padding: 6px; background: rgba(0, 0, 0, 0.2); border-radius: 4px; margin-bottom: 4px; font-size: 11px;">
-                            <span style="color: var(--orange);">Line ${bp.line}:</span> ${bp.reason}
-                        </div>
-                    `).join('')}
-                </div>
-            ` : ''}
-        `;
+            const content = document.createElement('div');
+            content.style.cssText = 'color: #ccc; font-size: 11px;';
+            content.textContent = analysis.debuggingStrategy;
+            
+            strategy.appendChild(title);
+            strategy.appendChild(content);
+            container.appendChild(strategy);
+        }
+        
+        if (analysis.recommendedBreakpoints?.length) {
+            const section = document.createElement('div');
+            section.style.cssText = 'margin-bottom: 15px;';
+            
+            const title = document.createElement('div');
+            title.style.cssText = 'color: var(--cyan); font-size: 12px; font-weight: bold; margin-bottom: 8px;';
+            title.textContent = '📍 Recommended Breakpoints';
+            section.appendChild(title);
+            
+            analysis.recommendedBreakpoints.forEach(bp => {
+                const item = document.createElement('div');
+                item.style.cssText = 'padding: 6px; background: rgba(0, 0, 0, 0.2); border-radius: 4px; margin-bottom: 4px; font-size: 11px;';
+                
+                const lineSpan = document.createElement('span');
+                lineSpan.style.cssText = 'color: var(--orange);';
+                lineSpan.textContent = `Line ${bp.line}: `;
+                
+                const reason = document.createTextNode(bp.reason);
+                
+                item.appendChild(lineSpan);
+                item.appendChild(reason);
+                section.appendChild(item);
+            });
+            
+            container.appendChild(section);
+        }
     }
 
     switchTab(tabName) {
@@ -677,33 +786,92 @@ Respond in JSON format:
         const fixmes = placeholders.filter(p => p.type === 'FIXME').length;
         const notImplemented = placeholders.filter(p => p.type === 'NOT_IMPLEMENTED').length;
 
-        container.innerHTML = `
-            <div style="text-align: center; margin-bottom: 15px;">
-                <div style="font-size: 24px; color: var(--orange);">${totalIssues}</div>
-                <div style="font-size: 11px; color: #888;">Placeholders Found</div>
-            </div>
+        // Clear container safely
+        container.textContent = '';
+        
+        // Create summary section
+        const summaryDiv = document.createElement('div');
+        summaryDiv.style.cssText = 'text-align: center; margin-bottom: 15px;';
+        
+        const issuesCount = document.createElement('div');
+        issuesCount.style.cssText = 'font-size: 24px; color: var(--orange);';
+        issuesCount.textContent = totalIssues.toString();
+        
+        const issuesLabel = document.createElement('div');
+        issuesLabel.style.cssText = 'font-size: 11px; color: #888;';
+        issuesLabel.textContent = 'Placeholders Found';
+        
+        summaryDiv.appendChild(issuesCount);
+        summaryDiv.appendChild(issuesLabel);
+        container.appendChild(summaryDiv);
+        
+        // Create placeholder summary
+        const summarySection = document.createElement('div');
+        summarySection.style.cssText = 'margin-bottom: 15px; padding: 10px; background: rgba(255, 165, 0, 0.05); border-radius: 6px;';
+        
+        const summaryTitle = document.createElement('div');
+        summaryTitle.style.cssText = 'color: var(--orange); font-size: 12px; font-weight: bold; margin-bottom: 6px;';
+        summaryTitle.textContent = '🔍 Placeholder Summary';
+        summarySection.appendChild(summaryTitle);
+        
+        const todoCount = document.createElement('div');
+        todoCount.style.cssText = 'color: #ccc; font-size: 11px; margin-bottom: 4px;';
+        todoCount.textContent = `📝 TODOs: ${todos}`;
+        summarySection.appendChild(todoCount);
+        
+        const fixmeCount = document.createElement('div');
+        fixmeCount.style.cssText = 'color: #ccc; font-size: 11px; margin-bottom: 4px;';
+        fixmeCount.textContent = `🔧 FIXMEs: ${fixmes}`;
+        summarySection.appendChild(fixmeCount);
+        
+        const notImplCount = document.createElement('div');
+        notImplCount.style.cssText = 'color: #ccc; font-size: 11px; margin-bottom: 4px;';
+        notImplCount.textContent = `❌ Not Implemented: ${notImplemented}`;
+        summarySection.appendChild(notImplCount);
+        
+        container.appendChild(summarySection);
+        
+        // Create issues list if any
+        if (placeholders.length > 0) {
+            const issuesSection = document.createElement('div');
+            issuesSection.style.cssText = 'margin-bottom: 15px;';
             
-            <div style="margin-bottom: 15px; padding: 10px; background: rgba(255, 165, 0, 0.05); border-radius: 6px;">
-                <div style="color: var(--orange); font-size: 12px; font-weight: bold; margin-bottom: 6px;">🔍 Placeholder Summary</div>
-                <div style="color: #ccc; font-size: 11px; margin-bottom: 4px;">📝 TODOs: ${todos}</div>
-                <div style="color: #ccc; font-size: 11px; margin-bottom: 4px;">🔧 FIXMEs: ${fixmes}</div>
-                <div style="color: #ccc; font-size: 11px; margin-bottom: 4px;">❌ Not Implemented: ${notImplemented}</div>
-            </div>
+            const issuesTitle = document.createElement('div');
+            issuesTitle.style.cssText = 'color: var(--cyan); font-size: 12px; font-weight: bold; margin-bottom: 8px;';
+            issuesTitle.textContent = '🎯 Issues Found';
+            issuesSection.appendChild(issuesTitle);
             
-            ${placeholders.length > 0 ? `
-                <div style="margin-bottom: 15px;">
-                    <div style="color: var(--cyan); font-size: 12px; font-weight: bold; margin-bottom: 8px;">🎯 Issues Found</div>
-                    ${placeholders.slice(0, 5).map(p => `
-                        <div style="padding: 6px; background: rgba(0, 0, 0, 0.2); border-radius: 4px; margin-bottom: 4px; font-size: 11px;">
-                            <span style="color: var(--orange);">Line ${p.line}:</span> ${p.type} - ${p.content.substring(0, 50)}${p.content.length > 50 ? '...' : ''}
-                        </div>
-                    `).join('')}
-                    ${placeholders.length > 5 ? `<div style="font-size: 10px; color: #888; text-align: center; margin-top: 8px;">... and ${placeholders.length - 5} more</div>` : ''}
-                </div>
-            ` : ''}
+            placeholders.slice(0, 5).forEach(p => {
+                const issueDiv = document.createElement('div');
+                issueDiv.style.cssText = 'padding: 6px; background: rgba(0, 0, 0, 0.2); border-radius: 4px; margin-bottom: 4px; font-size: 11px;';
+                
+                const lineSpan = document.createElement('span');
+                lineSpan.style.cssText = 'color: var(--orange);';
+                lineSpan.textContent = `Line ${p.line}: `;
+                
+                const contentText = document.createTextNode(`${p.type} - ${p.content.substring(0, 50)}${p.content.length > 50 ? '...' : ''}`);
+                
+                issueDiv.appendChild(lineSpan);
+                issueDiv.appendChild(contentText);
+                issuesSection.appendChild(issueDiv);
+            });
             
-            <button onclick="window.advancedDebugger.scanForPlaceholders()" style="width: 100%; padding: 8px; background: var(--orange); color: black; border: none; border-radius: 4px; margin-top: 10px;">Enhanced Scan</button>
-        `;
+            if (placeholders.length > 5) {
+                const moreDiv = document.createElement('div');
+                moreDiv.style.cssText = 'font-size: 10px; color: #888; text-align: center; margin-top: 8px;';
+                moreDiv.textContent = `... and ${placeholders.length - 5} more`;
+                issuesSection.appendChild(moreDiv);
+            }
+            
+            container.appendChild(issuesSection);
+        }
+        
+        // Create scan button
+        const scanBtn = document.createElement('button');
+        scanBtn.style.cssText = 'width: 100%; padding: 8px; background: var(--orange); color: black; border: none; border-radius: 4px; margin-top: 10px;';
+        scanBtn.textContent = 'Enhanced Scan';
+        scanBtn.onclick = () => window.advancedDebugger?.scanForPlaceholders();
+        container.appendChild(scanBtn);
     }
 
     // ========================================================================

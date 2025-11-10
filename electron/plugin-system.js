@@ -13,6 +13,7 @@ class PluginSystem {
         this.apis = new Map();
         this.pluginDir = null;
         this.initialized = false;
+        this.pendingActivations = new Map();
         
         // Plugin API version
         this.API_VERSION = '1.0.0';
@@ -146,7 +147,7 @@ class PluginSystem {
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             message,
-                            model: options.model || 'BigDaddyG:Latest',
+            model: options.model || 'bigdaddyg:latest',
                             parameters: options.parameters || {}
                         })
                     });
@@ -269,6 +270,7 @@ class PluginSystem {
      * Load a plugin from manifest
      */
     async loadPlugin(manifest) {
+        let plugin = null;
         try {
             const pluginId = manifest.id;
             
@@ -283,7 +285,7 @@ class PluginSystem {
             }
             
             // Create plugin instance
-            const plugin = {
+            plugin = {
                 id: pluginId,
                 name: manifest.name,
                 version: manifest.version,
@@ -305,6 +307,14 @@ class PluginSystem {
             
             // Register plugin
             this.plugins.set(pluginId, plugin);
+
+            if (this.pendingActivations.has(pluginId)) {
+                const pending = this.pendingActivations.get(pluginId) || [];
+                for (const activateFn of pending) {
+                    await this.performActivation(plugin, activateFn);
+                }
+                this.pendingActivations.delete(pluginId);
+            }
             
             console.log(`[PluginSystem] ✅ Loaded plugin: ${manifest.name} v${manifest.version}`);
             
@@ -317,12 +327,19 @@ class PluginSystem {
             console.error('[PluginSystem] ❌ Failed to load plugin:', error);
             
             // Mark plugin as failed but don't crash the system
-            this.plugins.set(pluginId, {
+            const failedPlugin = plugin ? {
                 ...plugin,
                 failed: true,
                 failureReason: error.message,
                 loadAttempts: (plugin.loadAttempts || 0) + 1
-            });
+            } : {
+                id: manifest?.id || 'unknown',
+                name: manifest?.name || 'Unknown Plugin',
+                failed: true,
+                failureReason: error.message,
+                loadAttempts: 1
+            };
+            this.plugins.set(failedPlugin.id, failedPlugin);
             
             // Show user-friendly notification
             if (window.showNotification) {
@@ -418,32 +435,43 @@ class PluginSystem {
         const plugin = this.plugins.get(pluginId);
         
         if (!plugin) {
-            console.error(`[PluginSystem] Plugin ${pluginId} not found`);
+            if (!this.pendingActivations.has(pluginId)) {
+                this.pendingActivations.set(pluginId, []);
+            }
+            this.pendingActivations.get(pluginId).push(activateFn);
+            console.warn(`[PluginSystem] ⚠️ Plugin ${pluginId} not registered yet. Deferring activation.`);
             return;
         }
         
+        await this.performActivation(plugin, activateFn);
+    }
+
+    async performActivation(plugin, activateFn) {
+        if (!plugin) return;
+        const pluginId = plugin.id;
         try {
-            // Call plugin's activate function with timeout
-            const timeout = new Promise((_, reject) => 
+            const timeout = new Promise((_, reject) =>
                 setTimeout(() => reject(new Error('Plugin activation timeout (10s)')), 10000)
             );
-            
+
             await Promise.race([
                 activateFn(plugin.apis),
                 timeout
             ]);
-            
+
             plugin.activated = true;
+            plugin.enabled = true;
+            plugin.failed = false;
+            plugin.failureReason = null;
             console.log(`[PluginSystem] ✅ Activated plugin: ${plugin.name}`);
-            
+
+            await this.trigger('plugin:activated', { plugin });
         } catch (error) {
             console.error(`[PluginSystem] ❌ Failed to activate plugin ${pluginId}:`, error);
             plugin.failed = true;
             plugin.failureReason = error.message;
-            
-            // Disable failed plugin
             plugin.enabled = false;
-            
+
             if (window.showNotification) {
                 window.showNotification(
                     `Plugin "${plugin.name}" failed to activate`,

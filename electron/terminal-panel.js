@@ -5,18 +5,42 @@
  */
 
 // Browser/Node compatibility
-const spawn_term = typeof require !== 'undefined' ? require('child_process').spawn : null;
+const childProcessModule = typeof require !== 'undefined' ? require('child_process') : null;
+const spawn_term = childProcessModule?.spawn || null;
+const execSync_term = childProcessModule?.execSync || null;
 const fs_term = typeof require !== 'undefined' ? require('fs') : null;
 const path_term = typeof require !== 'undefined' ? require('path') : null;
+const os_term = typeof require !== 'undefined' ? require('os') : null;
+
+const runtimeProcess = typeof process !== 'undefined' ? process : null;
+const runtimePlatform = runtimeProcess?.platform || (typeof navigator !== 'undefined' && /win/i.test(navigator.platform) ? 'win32' : 'linux');
+const runtimeCwd = runtimeProcess && typeof runtimeProcess.cwd === 'function' ? runtimeProcess.cwd() : (path_term ? path_term.resolve('/') : '/');
 
 // ============================================================================
 // TERMINAL PANEL CONFIGURATION
 // ============================================================================
 
+const TerminalShellDefinitions = (() => {
+    if (runtimePlatform === 'win32') {
+        return [
+            { id: 'pwsh', label: 'PowerShell 7 (pwsh)', command: 'pwsh.exe', args: ['-NoLogo'], prompt: 'PS' },
+            { id: 'powershell', label: 'Windows PowerShell', command: 'powershell.exe', args: ['-NoLogo'], prompt: 'PS' },
+            { id: 'cmd', label: 'Command Prompt (cmd)', command: 'cmd.exe', args: [], prompt: 'CMD' }
+        ];
+    }
+    
+    const defaultShell = (runtimeProcess && runtimeProcess.env && runtimeProcess.env.SHELL) || 'bash';
+    
+    return [
+        { id: 'bash', label: 'Bash', command: defaultShell, args: ['-l'], prompt: 'bash' },
+        { id: 'zsh', label: 'Zsh', command: 'zsh', args: ['-l'], prompt: 'zsh' },
+        { id: 'sh', label: 'POSIX sh', command: 'sh', args: ['-l'], prompt: 'sh' }
+    ];
+})();
+
 const TerminalConfig = {
-    defaultShell: process.platform === 'win32' ? 'powershell.exe' : 'bash',
-    shellArgs: process.platform === 'win32' ? [] : ['-l'],
-    cwd: process.cwd(),
+    defaultShellId: TerminalShellDefinitions[0]?.id || (runtimePlatform === 'win32' ? 'pwsh' : 'bash'),
+    cwd: runtimeCwd,
     
     // Visual
     fontSize: 13,
@@ -49,6 +73,9 @@ class TerminalPanel {
         this.debugLogs = [];
         this.outputLogs = [];
         this.problems = [];
+        this.shells = Array.isArray(TerminalShellDefinitions) && TerminalShellDefinitions.length > 0
+            ? TerminalShellDefinitions
+            : [{ id: 'default', label: 'System Shell', command: runtimePlatform === 'win32' ? 'cmd.exe' : 'sh', args: [], prompt: '>' }];
         
         this.init();
     }
@@ -66,6 +93,10 @@ class TerminalPanel {
     }
     
     createPanel() {
+        if (this.panel) {
+            this.panel.remove();
+        }
+        
         const panel = document.createElement('div');
         panel.id = 'terminal-panel';
         panel.style.cssText = `
@@ -83,7 +114,9 @@ class TerminalPanel {
             transition: height 0.3s;
             box-shadow: 0 -5px 30px rgba(0,212,255,0.3);
             overflow: hidden;
+            color: var(--cursor-text);
         `;
+        panel.dataset.visible = 'false';
         
         panel.innerHTML = `
             <!-- Header -->
@@ -310,9 +343,11 @@ class TerminalPanel {
         `;
         
         document.body.appendChild(panel);
+        this.panel = panel;
         
         // Create first terminal
         this.createTerminal();
+        this.isVisible = false;
     }
     
     // ========================================================================
@@ -343,9 +378,17 @@ class TerminalPanel {
         `;
         
         terminalView.innerHTML = `
+            <div class="terminal-toolbar" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; gap: 12px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 11px; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.5px;">Shell</span>
+                    <select class="terminal-shell-select" style="background: rgba(0,0,0,0.6); color: var(--cyan); border: 1px solid rgba(0,212,255,0.4); padding: 4px 8px; border-radius: 4px; font-size: 12px;">
+                    </select>
+                </div>
+                <div class="terminal-status" style="font-size: 11px; color: var(--cursor-text-muted);">Initializing shell...</div>
+            </div>
             <div class="terminal-output"></div>
             <div class="terminal-input-line">
-                <span class="terminal-prompt">PS $PWD&gt; </span>
+                <span class="terminal-prompt"></span>
                 <input type="text" class="terminal-input" autocomplete="off" spellcheck="false" />
             </div>
         `;
@@ -382,7 +425,10 @@ class TerminalPanel {
         
         document.getElementById('terminal-tabs').appendChild(terminalTab);
         
-        // Setup input handler
+        const shellSelect = terminalView.querySelector('.terminal-shell-select');
+        const statusElement = terminalView.querySelector('.terminal-status');
+        const promptElement = terminalView.querySelector('.terminal-prompt');
+        
         const input = terminalView.querySelector('.terminal-input');
         input.onkeydown = (e) => {
             if (e.key === 'Enter') {
@@ -390,25 +436,42 @@ class TerminalPanel {
                 input.value = '';
             } else if (e.key === 'ArrowUp') {
                 e.preventDefault();
-                // TODO: Command history
+                this.handleHistoryNavigation(id, -1, input);
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                this.handleHistoryNavigation(id, 1, input);
             }
         };
         
         // Store terminal
         this.terminals.set(id, {
-            id: id,
-            name: name,
+            id,
+            name,
             element: terminalView,
             output: [],
             process: null,
-            cwd: TerminalConfig.cwd
+            cwd: TerminalConfig.cwd,
+            shellId: null,
+            shellSelect,
+            statusElement,
+            promptElement,
+            promptText: '>',
+            history: [],
+            historyIndex: -1
         });
+        
+        if (promptElement) {
+            promptElement.textContent = '[>] ';
+        }
+        
+        this.initializeTerminalShell(id);
         
         // Show welcome
         this.writeTerminal(id, `\x1b[32mWelcome to BigDaddyG Terminal\x1b[0m\n`);
         this.writeTerminal(id, `\x1b[36mType commands or use the tabs above to navigate\x1b[0m\n`);
         this.writeTerminal(id, `\n`);
         
+        this.activeTerminalId = id;
         return id;
     }
     
@@ -417,6 +480,8 @@ class TerminalPanel {
         this.terminals.forEach((term, termId) => {
             term.element.style.display = termId === id ? 'block' : 'none';
         });
+
+        this.activeTerminalId = id;
         
         // Update tab styles
         document.querySelectorAll('.terminal-tab').forEach(tab => {
@@ -431,32 +496,141 @@ class TerminalPanel {
         const terminal = this.terminals.get(terminalId);
         if (!terminal) return;
         
-        // Write command to terminal
-        this.writeTerminal(terminalId, `\x1b[33mPS ${terminal.cwd}\x1b[0m> ${command}\n`);
+        const value = (command ?? '').toString();
+        const promptLabel = terminal.promptText || '>';
+        this.writeTerminal(terminalId, `\x1b[33m[${promptLabel}]\x1b[0m ${value}\n`);
         
-        // Handle special commands
-        if (command.trim() === 'clear' || command.trim() === 'cls') {
-            this.clearTerminal(terminalId);
+        if (!terminal.history) {
+            terminal.history = [];
+        }
+        if (value.trim()) {
+            terminal.history.push(value);
+        }
+        terminal.historyIndex = terminal.history.length;
+        
+        if (!this.ensureShell(terminalId)) {
+            this.writeTerminal(terminalId, `\x1b[31mUnable to start interactive shell.\x1b[0m\n`);
             return;
         }
         
-        if (command.trim().startsWith('cd ')) {
-            const newPath = command.substring(3).trim();
-            terminal.cwd = path.resolve(terminal.cwd, newPath);
+        if (!terminal.process || !terminal.process.stdin) {
+            this.writeTerminal(terminalId, `\x1b[31mShell stdin unavailable.\x1b[0m\n`);
             return;
         }
         
-        // Execute command in PowerShell
-        const isWindows = process.platform === 'win32';
-        const shell = isWindows ? 'powershell.exe' : 'bash';
-        const shellArgs = isWindows ? ['-Command'] : ['-c'];
+        try {
+            const newline = os_term?.EOL || '\n';
+            terminal.process.stdin.write(value + newline);
+        } catch (error) {
+            this.writeTerminal(terminalId, `\x1b[31mFailed to send command: ${error.message}\x1b[0m\n`);
+        }
+    }
+    
+    ensureShell(terminalId) {
+        const terminal = this.terminals.get(terminalId);
+        if (!terminal) return false;
         
-        const proc = spawn(shell, [...shellArgs, command], {
+        if (terminal.process && !terminal.process.killed) {
+            return true;
+        }
+        
+        const shellId = terminal.shellId || this.getDefaultShellId();
+        this.launchShell(terminalId, shellId, false);
+        return Boolean(terminal.process && !terminal.process.killed);
+    }
+    
+    getDefaultShellId() {
+        const preferred = TerminalConfig.defaultShellId;
+        const match = this.shells.find(shell => shell.id === preferred);
+        return match ? match.id : (this.shells[0]?.id || 'default');
+    }
+    
+    initializeTerminalShell(terminalId) {
+        const terminal = this.terminals.get(terminalId);
+        if (!terminal) return;
+        
+        const select = terminal.shellSelect;
+        if (select) {
+            select.innerHTML = '';
+            this.shells.forEach(shell => {
+                const option = document.createElement('option');
+                option.value = shell.id;
+                option.textContent = shell.label;
+                select.appendChild(option);
+            });
+            
+            select.onchange = (e) => {
+                this.launchShell(terminalId, e.target.value, true);
+            };
+        }
+        
+        const defaultShell = this.getDefaultShellId();
+        if (select && select.value !== defaultShell) {
+            select.value = defaultShell;
+        }
+        
+        this.launchShell(terminalId, defaultShell, false);
+    }
+    
+    launchShell(terminalId, shellId, userInitiated = false) {
+        const terminal = this.terminals.get(terminalId);
+        if (!terminal) return;
+        
+        const shell = this.shells.find(s => s.id === shellId) || this.shells[0];
+        if (!shell) {
+            this.writeTerminal(terminalId, '\x1b[31mNo shell definitions available.\x1b[0m\n');
+            return;
+        }
+        
+        if (!spawn_term) {
+            this.writeTerminal(terminalId, '\x1b[31mNative shell access is not available in this environment.\x1b[0m\n');
+            return;
+        }
+        
+        if (terminal.process && !terminal.process.killed) {
+            try {
+                terminal.process.kill();
+            } catch (error) {
+                console.warn('Failed to kill previous shell:', error);
+            }
+            terminal.process = null;
+        }
+        
+        if (terminal.shellSelect && terminal.shellSelect.value !== shell.id) {
+            terminal.shellSelect.value = shell.id;
+        }
+        
+        if (terminal.statusElement) {
+            terminal.statusElement.textContent = `Starting ${shell.label}...`;
+        }
+        
+        if (userInitiated) {
+            this.writeTerminal(terminalId, `\x1b[36mSwitching to ${shell.label}...\x1b[0m\n`);
+        }
+        
+        try {
+            const env = runtimeProcess?.env ? { ...runtimeProcess.env } : { };
+            const proc = spawn_term(shell.command, shell.args, {
             cwd: terminal.cwd,
-            shell: true
+                stdio: 'pipe',
+                env
         });
         
         terminal.process = proc;
+            terminal.shellId = shell.id;
+            terminal.promptText = shell.prompt || '>';
+            
+            if (terminal.promptElement) {
+                terminal.promptElement.textContent = `[${terminal.promptText}] `;
+            }
+            
+            if (terminal.statusElement) {
+                terminal.statusElement.textContent = `${shell.label} ready`;
+            }
+            
+            if (proc.stdin && proc.stdin.setDefaultEncoding) {
+                proc.stdin.setDefaultEncoding('utf-8');
+            }
         
         proc.stdout.on('data', (data) => {
             this.writeTerminal(terminalId, data.toString());
@@ -466,12 +640,50 @@ class TerminalPanel {
             this.writeTerminal(terminalId, `\x1b[31m${data.toString()}\x1b[0m`);
         });
         
-        proc.on('close', (code) => {
-            if (code !== 0) {
-                this.writeTerminal(terminalId, `\x1b[31mProcess exited with code ${code}\x1b[0m\n`);
-            }
+            proc.on('error', (error) => {
+                this.writeTerminal(terminalId, `\x1b[31mShell error (${shell.label}): ${error.message}\x1b[0m\n`);
+                if (terminal.statusElement) {
+                    terminal.statusElement.textContent = `${shell.label} error`;
+                }
+            });
+            
+            proc.on('exit', (code) => {
+                this.writeTerminal(terminalId, `\x1b[31m${shell.label} exited with code ${code}\x1b[0m\n`);
             terminal.process = null;
-        });
+                if (terminal.statusElement) {
+                    terminal.statusElement.textContent = `${shell.label} stopped`;
+                }
+            });
+            
+        } catch (error) {
+            this.writeTerminal(terminalId, `\x1b[31mFailed to start ${shell.label}: ${error.message}\x1b[0m\n`);
+            if (terminal.statusElement) {
+                terminal.statusElement.textContent = `${shell.label} unavailable`;
+            }
+        }
+    }
+    
+    handleHistoryNavigation(terminalId, direction, inputElement) {
+        const terminal = this.terminals.get(terminalId);
+        if (!terminal || !terminal.history || terminal.history.length === 0) return;
+        
+        if (typeof terminal.historyIndex !== 'number') {
+            terminal.historyIndex = terminal.history.length;
+        }
+        
+        let nextIndex = terminal.historyIndex + direction;
+        if (nextIndex < 0) nextIndex = 0;
+        if (nextIndex > terminal.history.length) nextIndex = terminal.history.length;
+        terminal.historyIndex = nextIndex;
+        
+        if (terminal.historyIndex === terminal.history.length) {
+            inputElement.value = '';
+        } else {
+            inputElement.value = terminal.history[terminal.historyIndex] || '';
+        }
+        
+        const len = inputElement.value.length;
+        inputElement.setSelectionRange(len, len);
     }
     
     writeTerminal(terminalId, text) {
@@ -526,27 +738,29 @@ class TerminalPanel {
     }
     
     async updateGitStatus() {
+        if (!execSync_term) {
+            return;
+        }
+        
         try {
             // Check if git is available
-            const { execSync } = require('child_process');
-            
             // Get git status
-            const status = execSync('git status --porcelain', { 
-                cwd: process.cwd(),
+            const status = execSync_term('git status --porcelain', { 
+                cwd: TerminalConfig.cwd,
                 encoding: 'utf8',
                 timeout: 2000
             }).trim();
             
             // Get current branch
-            const branch = execSync('git branch --show-current', {
-                cwd: process.cwd(),
+            const branch = execSync_term('git branch --show-current', {
+                cwd: TerminalConfig.cwd,
                 encoding: 'utf8',
                 timeout: 2000
             }).trim();
             
             // Get recent commits
-            const commits = execSync('git log --oneline -10', {
-                cwd: process.cwd(),
+            const commits = execSync_term('git log --oneline -10', {
+                cwd: TerminalConfig.cwd,
                 encoding: 'utf8',
                 timeout: 2000
             }).trim();
@@ -892,91 +1106,52 @@ class TerminalPanel {
     }
     
     toggle() {
-        this.isVisible = !this.isVisible;
-        const panel = document.getElementById('terminal-panel');
-        const mainContainer = document.getElementById('main-container');
-        
-        if (panel) {
-            if (this.isVisible) {
-                // Show terminal
-                panel.style.display = 'flex';
-                panel.style.height = '400px';
-                
-                // Push main content up
-                if (mainContainer) {
-                    mainContainer.classList.add('terminal-open');
-                }
-                
-                console.log('[TerminalPanel] ✅ Terminal opened - Full screen mode OFF');
-            } else {
-                // Hide terminal
-                panel.style.height = '0px';
-                
-                // Give main content full space
-                if (mainContainer) {
-                    mainContainer.classList.remove('terminal-open');
-                }
-                
-                // Use setTimeout to hide after animation
-                setTimeout(() => {
-                    if (!this.isVisible) {
-                        panel.style.display = 'none';
-                    }
-                }, 300);
-                
-                console.log('[TerminalPanel] ✅ Terminal closed - Full screen mode ON');
-            }
+        if (!this.panel) {
+            this.createPanel();
         }
-        
-        // Update toggle button
-        const toggleBtn = document.getElementById('terminal-toggle');
-        if (toggleBtn) {
-            toggleBtn.textContent = this.isVisible ? '⌨️' : '⌨️';
+        if (this.isVisible) {
+            this.minimize(true);
+            } else {
+            this.show();
+        }
+        if (window.panelManager?.panels?.terminal) {
+            window.panelManager.panels.terminal.visible = this.isVisible;
         }
     }
     
-    minimize() {
+    minimize(force = false) {
+        if (!this.panel) return;
         this.isVisible = false;
-        const panel = document.getElementById('terminal-panel');
-        const mainContainer = document.getElementById('main-container');
-        
-        if (panel) {
-            panel.style.height = '0px';
-            
-            // Give main content full space
-            if (mainContainer) {
-                mainContainer.classList.remove('terminal-open');
-            }
-            
+        this.panel.dataset.visible = 'false';
+        this.panel.style.height = '0px';
             setTimeout(() => {
-                if (!this.isVisible) {
-                    panel.style.display = 'none';
+            if (!this.isVisible && this.panel) {
+                this.panel.style.display = 'none';
                 }
             }, 300);
-            
-            console.log('[TerminalPanel] ⬇️ Terminal minimized - FULL SCREEN code editor!');
+        console.log('[TerminalPanel] ⬇️ Terminal minimized');
+        if (!force && window.panelManager?.panels?.terminal) {
+            window.panelManager.panels.terminal.visible = false;
         }
     }
     
     show() {
-        this.isVisible = true;
-        const panel = document.getElementById('terminal-panel');
-        const mainContainer = document.getElementById('main-container');
-        
-        if (panel) {
-            panel.style.display = 'flex';
-            
-            // Push main content up
-            if (mainContainer) {
-                mainContainer.classList.add('terminal-open');
-            }
-            
-            setTimeout(() => {
-                panel.style.height = '400px';
-            }, 10);
-            
-            console.log('[TerminalPanel] ⬆️ Terminal shown');
+        if (!this.panel) {
+            this.createPanel();
         }
+        this.panel.style.display = 'flex';
+        this.panel.dataset.visible = 'true';
+            setTimeout(() => {
+            if (this.panel) {
+                this.panel.style.height = '400px';
+            }
+            }, 10);
+        this.isVisible = true;
+            console.log('[TerminalPanel] ⬆️ Terminal shown');
+        if (window.panelManager?.panels?.terminal) {
+            window.panelManager.panels.terminal.visible = true;
+        }
+        this.focusActiveTerminal();
     }
     
     // ========================================================================
@@ -991,12 +1166,18 @@ class TerminalPanel {
     
     setupKeyboardShortcuts() {
         document.addEventListener('keydown', (e) => {
-            // Ctrl+J - Toggle terminal panel (like Cursor)
             if (e.ctrlKey && e.key === 'j') {
                 e.preventDefault();
                 this.toggle();
             }
         });
+    }
+
+    focusActiveTerminal() {
+        const active = this.terminals.get(this.activeTerminalId);
+        if (!active) return;
+        const input = active.element.querySelector('.terminal-input');
+        input?.focus();
     }
 }
 

@@ -9,7 +9,7 @@
 
 class ConsolePanel {
     constructor() {
-        this.isVisible = true;
+        this.isVisible = false;
         this.orchestraRunning = false;
         this.logs = [];
         this.maxLogs = 1000;
@@ -29,6 +29,10 @@ class ConsolePanel {
     }
     
     createPanel() {
+        if (this.panel) {
+            this.panel.remove();
+        }
+
         const panel = document.createElement('div');
         panel.id = 'console-panel';
         panel.style.cssText = `
@@ -36,16 +40,19 @@ class ConsolePanel {
             bottom: 0;
             left: 0;
             right: 0;
-            height: 300px;
+            height: 0;
             background: rgba(10, 10, 30, 0.98);
             backdrop-filter: blur(20px);
             border-top: 2px solid var(--cyan);
-            z-index: 99999;
-            display: none;
+            z-index: 99997;
+            display: flex;
             flex-direction: column;
-            transition: height 0.3s, transform 0.3s ease;
+            transition: height 0.3s;
             box-shadow: 0 -5px 30px rgba(0,212,255,0.3);
+            overflow: hidden;
+            color: var(--cursor-text);
         `;
+        panel.dataset.visible = 'false';
         
         panel.innerHTML = `
             <!-- Header -->
@@ -132,7 +139,7 @@ class ConsolePanel {
                     ">🗑️ Clear</button>
                     
                     <!-- Close Button -->
-                    <button onclick="window.menuBar?.toggleConsolePanel()" style="
+                    <button onclick="toggleConsolePanel()" style="
                         padding: 6px 12px;
                         background: rgba(255,71,87,0.2);
                         border: 1px solid var(--red);
@@ -165,6 +172,8 @@ class ConsolePanel {
         `;
         
         document.body.appendChild(panel);
+        this.panel = panel;
+        this.isVisible = false;
         
         // Add pulse animation
         const style = document.createElement('style');
@@ -399,22 +408,42 @@ class ConsolePanel {
     }
     
     toggle() {
-        this.isVisible = !this.isVisible;
-        const panel = document.getElementById('console-panel');
-        if (panel) {
-            if (this.isVisible) {
-                panel.style.height = '300px';
-            } else {
-                panel.style.height = '0px';
-                panel.style.overflow = 'hidden';
+        if (!this.panel) {
+            this.createPanel();
+        }
+        if (this.isVisible) {
+            this.hide();
+        } else {
+            this.show();
+        }
+        return this.isVisible;
+    }
+
+    show() {
+        if (!this.panel) return;
+        this.panel.style.display = 'flex';
+        this.panel.dataset.visible = 'true';
+        setTimeout(() => {
+            if (this.panel) {
+                this.panel.style.height = '320px';
             }
-        }
-        
-        // Update toggle button icon
-        const toggleBtn = document.getElementById('console-toggle');
-        if (toggleBtn) {
-            toggleBtn.textContent = this.isVisible ? '⛶' : '◉';
-        }
+        }, 10);
+        this.isVisible = true;
+        this.updateDisplay();
+        console.log('[ConsolePanel] ✅ Console panel shown');
+    }
+
+    hide() {
+        if (!this.panel) return;
+        this.panel.dataset.visible = 'false';
+        this.panel.style.height = '0px';
+        setTimeout(() => {
+            if (this.panel && this.panel.dataset.visible === 'false') {
+                this.panel.style.display = 'none';
+            }
+        }, 300);
+        this.isVisible = false;
+        console.log('[ConsolePanel] ✅ Console panel hidden');
     }
     
     switchTab(tab) {
@@ -456,7 +485,7 @@ function toggleConsolePanel() {
     if (!consolePanelInstance) {
         consolePanelInstance = new ConsolePanel();
     }
-    consolePanelInstance.toggle();
+    return consolePanelInstance.toggle();
 }
 
 function switchConsoleTab(tab) {

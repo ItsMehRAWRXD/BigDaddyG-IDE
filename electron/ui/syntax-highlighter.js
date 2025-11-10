@@ -7,12 +7,19 @@ class SyntaxHighlighter {
     this.editor = editor;
     this.decorations = [];
     this.errorCache = new Map();
+    this.enabled = true;
+    this._changeDisposable = null;
+    this._defaultTheme = (monaco && monaco.editor && typeof monaco.editor.getTheme === 'function'
+      ? monaco.editor.getTheme()
+      : 'vs-dark');
     this.init();
   }
 
   init() {
-    this.editor.onDidChangeModelContent(() => {
-      this.analyzeCode();
+    this._changeDisposable = this.editor.onDidChangeModelContent(() => {
+      if (this.enabled) {
+        this.analyzeCode();
+      }
     });
 
     // Custom theme
@@ -30,9 +37,47 @@ class SyntaxHighlighter {
     });
 
     monaco.editor.setTheme('ai-enhanced');
+    this.analyzeCode();
+  }
+
+  isEnabled() {
+    return this.enabled;
+  }
+
+  setEnabled(enabled) {
+    if (this.enabled === enabled) {
+      return;
+    }
+
+    this.enabled = enabled;
+
+    if (!enabled) {
+      this.clearDecorations();
+      monaco.editor.setTheme(this._defaultTheme);
+    } else {
+      monaco.editor.setTheme('ai-enhanced');
+      this.analyzeCode();
+    }
+  }
+
+  toggle() {
+    this.setEnabled(!this.enabled);
+    return this.enabled;
+  }
+
+  highlight() {
+    if (this.enabled) {
+      this.analyzeCode();
+    } else {
+      this.clearDecorations();
+    }
   }
 
   analyzeCode() {
+    if (!this.enabled) {
+      return;
+    }
+
     const model = this.editor.getModel();
     const code = model.getValue();
     
@@ -124,6 +169,13 @@ class SyntaxHighlighter {
 
   clearDecorations() {
     this.decorations = this.editor.deltaDecorations(this.decorations, []);
+  }
+
+  destroy() {
+    if (this._changeDisposable && typeof this._changeDisposable.dispose === 'function') {
+      this._changeDisposable.dispose();
+    }
+    this.clearDecorations();
   }
 }
 

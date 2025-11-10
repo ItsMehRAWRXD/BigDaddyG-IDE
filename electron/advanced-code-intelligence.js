@@ -390,10 +390,17 @@ Respond with JSON array of suggestions.`;
         // Add header with close button
         const header = document.createElement('div');
         header.style.cssText = 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--cursor-border);';
-        header.innerHTML = `
-            <h3 style="margin: 0; color: var(--cursor-jade-dark); font-size: 14px;">🧠 Code Intelligence</h3>
-            <button onclick="this.parentElement.parentElement.style.display='none'" style="background: none; border: none; color: var(--cursor-text-secondary); cursor: pointer; font-size: 16px;">×</button>
-        `;
+        const h3 = document.createElement('h3');
+        h3.style.cssText = 'margin: 0; color: var(--cursor-jade-dark); font-size: 14px;';
+        h3.textContent = '🧠 Code Intelligence';
+        
+        const closeBtn = document.createElement('button');
+        closeBtn.style.cssText = 'background: none; border: none; color: var(--cursor-text-secondary); cursor: pointer; font-size: 16px;';
+        closeBtn.textContent = '×';
+        closeBtn.onclick = () => panel.style.display = 'none';
+        
+        header.appendChild(h3);
+        header.appendChild(closeBtn);
         panel.appendChild(header);
 
         // Add content area
@@ -411,76 +418,157 @@ Respond with JSON array of suggestions.`;
 
         const totalIssues = analysis.security.length + analysis.performance.length + analysis.quality.length;
 
-        content.innerHTML = `
-            <!-- Summary -->
-            <div style="background: var(--cursor-bg-tertiary); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                    <span style="font-weight: 600; color: var(--cursor-text);">Analysis Summary</span>
-                    <span style="background: ${totalIssues === 0 ? 'var(--cursor-jade-dark)' : totalIssues < 5 ? 'orange' : 'var(--cursor-error)'}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px;">
-                        ${totalIssues} issues
-                    </span>
-                </div>
-                <div style="font-size: 12px; color: var(--cursor-text-secondary);">
-                    Complexity: <span style="color: ${analysis.complexity.rating === 'LOW' ? 'var(--cursor-jade-dark)' : analysis.complexity.rating === 'MEDIUM' ? 'orange' : 'var(--cursor-error)'};">${analysis.complexity.score} (${analysis.complexity.rating})</span>
-                </div>
-            </div>
-
-            <!-- Issues by Category -->
-            ${this.renderIssueCategory('Security', analysis.security, '🔒', 'var(--cursor-error)')}
-            ${this.renderIssueCategory('Performance', analysis.performance, '⚡', 'orange')}
-            ${this.renderIssueCategory('Quality', analysis.quality, '✨', 'var(--cursor-jade-dark)')}
-            
-            <!-- AI Suggestions -->
-            ${analysis.suggestions.length > 0 ? `
-                <div style="margin-top: 12px;">
-                    <h4 style="margin: 0 0 8px 0; color: var(--cursor-jade-dark); font-size: 12px; display: flex; align-items: center; gap: 6px;">
-                        🤖 AI Suggestions
-                    </h4>
-                    ${analysis.suggestions.map(s => `
-                        <div style="background: var(--cursor-bg-tertiary); padding: 8px; border-radius: 6px; margin-bottom: 6px; font-size: 11px;">
-                            <div style="color: var(--cursor-text); margin-bottom: 4px;">${s.message}</div>
-                            ${s.fix ? `<div style="color: var(--cursor-text-secondary); font-style: italic;">💡 ${s.fix}</div>` : ''}
-                        </div>
-                    `).join('')}
-                </div>
-            ` : ''}
-
-            <!-- Actions -->
-            <div style="margin-top: 12px; display: flex; gap: 8px;">
-                <button onclick="codeIntelligence.fixAllIssues()" style="flex: 1; background: var(--cursor-jade-dark); color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 11px;">
-                    🔧 Auto-fix
-                </button>
-                <button onclick="codeIntelligence.exportReport()" style="flex: 1; background: var(--cursor-accent); color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 11px;">
-                    📊 Export
-                </button>
-            </div>
-        `;
+        // Clear content safely
+        content.textContent = '';
+        
+        // Create summary section
+        const summaryDiv = document.createElement('div');
+        summaryDiv.style.cssText = 'background: var(--cursor-bg-tertiary); padding: 12px; border-radius: 8px; margin-bottom: 12px;';
+        
+        const summaryHeader = document.createElement('div');
+        summaryHeader.style.cssText = 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;';
+        
+        const summaryTitle = document.createElement('span');
+        summaryTitle.style.cssText = 'font-weight: 600; color: var(--cursor-text);';
+        summaryTitle.textContent = 'Analysis Summary';
+        
+        const issuesBadge = document.createElement('span');
+        const badgeColor = totalIssues === 0 ? 'var(--cursor-jade-dark)' : totalIssues < 5 ? 'orange' : 'var(--cursor-error)';
+        issuesBadge.style.cssText = `background: ${badgeColor}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px;`;
+        issuesBadge.textContent = `${totalIssues} issues`;
+        
+        summaryHeader.appendChild(summaryTitle);
+        summaryHeader.appendChild(issuesBadge);
+        
+        const complexityDiv = document.createElement('div');
+        complexityDiv.style.cssText = 'font-size: 12px; color: var(--cursor-text-secondary);';
+        const complexityColor = analysis.complexity.rating === 'LOW' ? 'var(--cursor-jade-dark)' : analysis.complexity.rating === 'MEDIUM' ? 'orange' : 'var(--cursor-error)';
+        complexityDiv.innerHTML = `Complexity: <span style="color: ${complexityColor};">${analysis.complexity.score} (${analysis.complexity.rating})</span>`;
+        
+        summaryDiv.appendChild(summaryHeader);
+        summaryDiv.appendChild(complexityDiv);
+        content.appendChild(summaryDiv);
+        
+        // Add issue categories
+        this.renderIssueCategorySafe(content, 'Security', analysis.security, '🔒', 'var(--cursor-error)');
+        this.renderIssueCategorySafe(content, 'Performance', analysis.performance, '⚡', 'orange');
+        this.renderIssueCategorySafe(content, 'Quality', analysis.quality, '✨', 'var(--cursor-jade-dark)');
+        
+        // Add AI suggestions
+        if (analysis.suggestions.length > 0) {
+            this.renderAISuggestionsSafe(content, analysis.suggestions);
+        }
+        
+        // Add action buttons
+        this.renderActionButtonsSafe(content);
 
         // Show panel
         panel.style.display = 'block';
     }
 
-    renderIssueCategory(title, issues, icon, color) {
-        if (issues.length === 0) return '';
-
-        return `
-            <div style="margin-bottom: 12px;">
-                <h4 style="margin: 0 0 8px 0; color: ${color}; font-size: 12px; display: flex; align-items: center; gap: 6px;">
-                    ${icon} ${title} (${issues.length})
-                </h4>
-                ${issues.slice(0, 3).map(issue => `
-                    <div style="background: var(--cursor-bg-tertiary); padding: 8px; border-radius: 6px; margin-bottom: 6px; border-left: 3px solid ${color};">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                            <span style="font-size: 11px; font-weight: 600; color: var(--cursor-text);">${issue.message}</span>
-                            <span style="background: ${color}; color: white; padding: 1px 6px; border-radius: 8px; font-size: 9px;">${issue.severity}</span>
-                        </div>
-                        <div style="font-size: 10px; color: var(--cursor-text-secondary); margin-bottom: 4px;">Line ${issue.line}</div>
-                        ${issue.fix ? `<div style="font-size: 10px; color: var(--cursor-jade-dark); font-style: italic;">💡 ${issue.fix}</div>` : ''}
-                    </div>
-                `).join('')}
-                ${issues.length > 3 ? `<div style="font-size: 10px; color: var(--cursor-text-secondary); text-align: center;">... and ${issues.length - 3} more</div>` : ''}
-            </div>
-        `;
+    renderIssueCategorySafe(container, title, issues, icon, color) {
+        if (issues.length === 0) return;
+        
+        const categoryDiv = document.createElement('div');
+        categoryDiv.style.cssText = 'margin-bottom: 12px;';
+        
+        const categoryHeader = document.createElement('h4');
+        categoryHeader.style.cssText = `margin: 0 0 8px 0; color: ${color}; font-size: 12px; display: flex; align-items: center; gap: 6px;`;
+        categoryHeader.textContent = `${icon} ${title} (${issues.length})`;
+        categoryDiv.appendChild(categoryHeader);
+        
+        issues.slice(0, 3).forEach(issue => {
+            const issueDiv = document.createElement('div');
+            issueDiv.style.cssText = `background: var(--cursor-bg-tertiary); padding: 8px; border-radius: 6px; margin-bottom: 6px; border-left: 3px solid ${color};`;
+            
+            const issueHeader = document.createElement('div');
+            issueHeader.style.cssText = 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;';
+            
+            const messageSpan = document.createElement('span');
+            messageSpan.style.cssText = 'font-size: 11px; font-weight: 600; color: var(--cursor-text);';
+            messageSpan.textContent = issue.message;
+            
+            const severitySpan = document.createElement('span');
+            severitySpan.style.cssText = `background: ${color}; color: white; padding: 1px 6px; border-radius: 8px; font-size: 9px;`;
+            severitySpan.textContent = issue.severity;
+            
+            issueHeader.appendChild(messageSpan);
+            issueHeader.appendChild(severitySpan);
+            issueDiv.appendChild(issueHeader);
+            
+            const lineDiv = document.createElement('div');
+            lineDiv.style.cssText = 'font-size: 10px; color: var(--cursor-text-secondary); margin-bottom: 4px;';
+            lineDiv.textContent = `Line ${issue.line}`;
+            issueDiv.appendChild(lineDiv);
+            
+            if (issue.fix) {
+                const fixDiv = document.createElement('div');
+                fixDiv.style.cssText = 'font-size: 10px; color: var(--cursor-jade-dark); font-style: italic;';
+                fixDiv.textContent = `💡 ${issue.fix}`;
+                issueDiv.appendChild(fixDiv);
+            }
+            
+            categoryDiv.appendChild(issueDiv);
+        });
+        
+        if (issues.length > 3) {
+            const moreDiv = document.createElement('div');
+            moreDiv.style.cssText = 'font-size: 10px; color: var(--cursor-text-secondary); text-align: center;';
+            moreDiv.textContent = `... and ${issues.length - 3} more`;
+            categoryDiv.appendChild(moreDiv);
+        }
+        
+        container.appendChild(categoryDiv);
+    }
+    
+    renderAISuggestionsSafe(container, suggestions) {
+        const suggestionsDiv = document.createElement('div');
+        suggestionsDiv.style.cssText = 'margin-top: 12px;';
+        
+        const suggestionsHeader = document.createElement('h4');
+        suggestionsHeader.style.cssText = 'margin: 0 0 8px 0; color: var(--cursor-jade-dark); font-size: 12px; display: flex; align-items: center; gap: 6px;';
+        suggestionsHeader.textContent = '🤖 AI Suggestions';
+        suggestionsDiv.appendChild(suggestionsHeader);
+        
+        suggestions.forEach(s => {
+            const suggestionDiv = document.createElement('div');
+            suggestionDiv.style.cssText = 'background: var(--cursor-bg-tertiary); padding: 8px; border-radius: 6px; margin-bottom: 6px; font-size: 11px;';
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.style.cssText = 'color: var(--cursor-text); margin-bottom: 4px;';
+            messageDiv.textContent = s.message;
+            suggestionDiv.appendChild(messageDiv);
+            
+            if (s.fix) {
+                const fixDiv = document.createElement('div');
+                fixDiv.style.cssText = 'color: var(--cursor-text-secondary); font-style: italic;';
+                fixDiv.textContent = `💡 ${s.fix}`;
+                suggestionDiv.appendChild(fixDiv);
+            }
+            
+            suggestionsDiv.appendChild(suggestionDiv);
+        });
+        
+        container.appendChild(suggestionsDiv);
+    }
+    
+    renderActionButtonsSafe(container) {
+        const actionsDiv = document.createElement('div');
+        actionsDiv.style.cssText = 'margin-top: 12px; display: flex; gap: 8px;';
+        
+        const fixBtn = document.createElement('button');
+        fixBtn.style.cssText = 'flex: 1; background: var(--cursor-jade-dark); color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 11px;';
+        fixBtn.textContent = '🔧 Auto-fix';
+        fixBtn.onclick = () => window.codeIntelligence?.fixAllIssues();
+        
+        const exportBtn = document.createElement('button');
+        exportBtn.style.cssText = 'flex: 1; background: var(--cursor-accent); color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 11px;';
+        exportBtn.textContent = '📊 Export';
+        exportBtn.onclick = () => window.codeIntelligence?.exportReport();
+        
+        actionsDiv.appendChild(fixBtn);
+        actionsDiv.appendChild(exportBtn);
+        container.appendChild(actionsDiv);
     }
 
     async fixAllIssues() {

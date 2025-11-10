@@ -309,16 +309,13 @@ body {
 
 /* Right Sidebar */
 #right-sidebar {
-    width: 400px;
+    width: 420px;
     background: var(--void);
     border-left: 1px solid rgba(0, 212, 255, 0.2);
     display: flex;
     flex-direction: column;
     transition: all 0.3s ease;
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding-top: 10px;
-    padding-bottom: 20px;
+    overflow: hidden;
 }
 
 #right-sidebar.collapsed {
@@ -329,6 +326,91 @@ body {
     overflow: hidden !important;
     pointer-events: none !important;
     transition: all 0.3s ease !important;
+}
+
+body.ide-fullscreen #right-sidebar {
+    width: 0 !important;
+    min-width: 0 !important;
+    border: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+body.ide-fullscreen #main-container {
+    gap: 0;
+}
+
+body.ide-fullscreen #editor-container {
+    width: 100%;
+}
+
+#right-sidebar .sidebar-layout {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+#sidebar-buttons {
+    flex: 0 0 220px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    background: var(--cursor-bg-secondary);
+    border-right: 1px solid var(--cursor-border);
+    overflow-y: auto;
+}
+
+#sidebar-tab-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-width: 0;
+}
+
+.sidebar-quick-button {
+    width: 100%;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+    background: none;
+    border: 1px solid var(--cursor-border);
+    color: var(--cursor-text);
+    transition: all 0.2s ease;
+}
+
+.sidebar-quick-button.secondary {
+    background: linear-gradient(135deg, rgba(119, 221, 190, 0.2), rgba(77, 192, 181, 0.2));
+    border-color: var(--cursor-jade-light);
+    color: var(--cursor-jade-dark);
+}
+
+.sidebar-quick-button.browser {
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 255, 136, 0.2));
+    border-color: var(--cyan);
+    color: var(--cyan);
+}
+
+.sidebar-quick-button span.shortcut {
+    float: right;
+    font-size: 10px;
+    opacity: 0.7;
+}
+
+.sidebar-quick-button:hover {
+    background: var(--cursor-bg-tertiary);
+}
+
+.sidebar-quick-button.secondary:hover {
+    background: linear-gradient(135deg, rgba(119, 221, 190, 0.3), rgba(77, 192, 181, 0.3));
+}
+
+.sidebar-quick-button.browser:hover {
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.3), rgba(0, 255, 136, 0.3));
 }
 
 #ai-chat-header {
@@ -359,6 +441,35 @@ body {
     border-radius: 5px;
     font-size: 12px;
     line-height: 1.6;
+}
+
+.welcome-message {
+    position: relative;
+    padding-right: 40px;
+}
+
+.welcome-dismiss {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    background: rgba(0, 212, 255, 0.12);
+    color: var(--cyan);
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.welcome-dismiss:hover {
+    background: rgba(0, 212, 255, 0.25);
+    border-color: var(--cyan);
 }
 
 .user-message {

@@ -438,22 +438,10 @@ class MenuBar {
     }
     
     toggleConsolePanel() {
-        const consolePanel = document.getElementById('console-panel');
-        if (consolePanel) {
-            const isHidden = consolePanel.style.display === 'none';
-            if (isHidden) {
-                consolePanel.style.display = 'flex';
-                consolePanel.classList.remove('hidden');
-                localStorage.setItem('consolePanelVisible', 'true');
-                window.showNotification?.('🖥️ Console & Output', 'Shown', 'info', 1500);
-            } else {
-                consolePanel.classList.add('hidden');
-                setTimeout(() => {
-                    consolePanel.style.display = 'none';
-                }, 300); // Wait for animation
-                localStorage.setItem('consolePanelVisible', 'false');
-                window.showNotification?.('🖥️ Console & Output', 'Hidden', 'info', 1500);
-            }
+        if (typeof window.toggleConsolePanel === 'function') {
+            const result = window.toggleConsolePanel();
+            const visible = window.consolePanelInstance?.isVisible ?? Boolean(result);
+            window.showNotification?.('🖥️ Console & Output', visible ? 'Shown' : 'Hidden', 'info', 1500);
         }
         console.log('[MenuBar] 🖥️ Toggle Console Panel');
     }
@@ -484,6 +472,11 @@ class MenuBar {
     
     goToLine() {
         if (window.editor) {
+            try {
+                window.editor.focus();
+            } catch (error) {
+                console.warn('[MenuBar] ⚠️ Unable to focus editor before Go to Line:', error);
+            }
             window.editor.trigger('keyboard', 'editor.action.gotoLine');
         }
     }
@@ -608,17 +601,7 @@ Built with ❤️ for power users
                 }
             }
             
-            // Restore console panel visibility (default hidden)
-            const consolePanelVisible = localStorage.getItem('consolePanelVisible');
-            const consolePanel = document.getElementById('console-panel');
-            if (consolePanel) {
-                if (consolePanelVisible !== 'true') {
-                    // Default to hidden
-                    consolePanel.style.display = 'none';
-                } else {
-                    consolePanel.style.display = 'flex';
-                }
-            }
+            // Bottom dock manages persistence for console/terminal/browser
         }, 1000); // Wait for panels to be created
     }
 }

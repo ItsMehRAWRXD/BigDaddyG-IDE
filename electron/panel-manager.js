@@ -13,7 +13,7 @@ class PanelManager {
         this.panels = {
             explorer: { element: 'sidebar', visible: true, hotkey: 'Ctrl+B' },
             chat: { element: 'right-sidebar', visible: true, hotkey: 'Ctrl+Shift+/' },
-            terminal: { element: 'terminal-panel', visible: false, hotkey: 'Ctrl+J' }
+            terminal: { element: null, visible: false, hotkey: 'Ctrl+J' }
         };
         
         console.log('[PanelManager] 🎯 Initializing panel manager...');
@@ -107,7 +107,13 @@ class PanelManager {
             console.warn(`[PanelManager] ⚠️ Panel "${panelName}" not found`);
             return false;
         }
-        
+
+        if (panelName === 'terminal') {
+            window.toggleTerminalPanel?.();
+            panel.visible = Boolean(window.terminalPanelInstance?.isVisible);
+            return true;
+        }
+
         const element = document.getElementById(panel.element);
         if (!element) {
             console.warn(`[PanelManager] ⚠️ Element "${panel.element}" not found for panel "${panelName}"`);
@@ -127,6 +133,16 @@ class PanelManager {
             element.style.pointerEvents = 'auto';
             console.log(`[PanelManager] ✅ ${panelName} shown`);
             window.showNotification?.(`✅ ${panelName}`, 'Shown', 'info', 1500);
+
+            if (panelName === 'chat') {
+                const chatInput = document.getElementById('ai-input');
+                if (chatInput) {
+                    setTimeout(() => {
+                        chatInput.focus();
+                        chatInput.selectionStart = chatInput.selectionEnd = chatInput.value.length;
+                    }, 0);
+                }
+            }
         } else {
             element.classList.add('collapsed');
             // Force hiding with inline styles (overrides everything)
@@ -140,14 +156,6 @@ class PanelManager {
         }
         
         // Special handling for terminal (needs to update main-container)
-        if (panelName === 'terminal' && window.terminalPanelInstance) {
-            if (panel.visible) {
-                window.terminalPanelInstance.show();
-            } else {
-                window.terminalPanelInstance.minimize();
-            }
-        }
-        
         return true;
         } catch (error) {
             console.error(`[PanelManager] Error toggling ${panelName}:`, error);

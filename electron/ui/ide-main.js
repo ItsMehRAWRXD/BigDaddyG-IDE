@@ -32,6 +32,7 @@ class IDEMain {
                     <div class="toolbar">
                         <div id="model-selector"></div>
                         <div class="toolbar-actions">
+                            <button id="syntax-toggle" title="Toggle syntax highlighting">🎨 Syntax</button>
                             <button id="theme-toggle">🌙</button>
                             <button id="settings-btn">⚙️</button>
                             <button id="fullscreen-btn">⛶</button>
@@ -154,6 +155,28 @@ class IDEMain {
         this.addListener(document.getElementById('theme-toggle'), 'click', () => {
             this.toggleTheme();
         });
+
+        // Syntax highlighting toggle
+        const syntaxToggleBtn = document.getElementById('syntax-toggle');
+        const syntaxHighlighter = this.components.get('syntaxHighlighter');
+        const updateSyntaxToggleUi = () => {
+            if (!syntaxToggleBtn || !syntaxHighlighter?.isEnabled) return;
+            const enabled = syntaxHighlighter.isEnabled();
+            syntaxToggleBtn.classList.toggle('inactive', !enabled);
+            syntaxToggleBtn.setAttribute('aria-pressed', enabled ? 'true' : 'false');
+            syntaxToggleBtn.textContent = enabled ? '🎨 Syntax On' : '🎨 Syntax Off';
+            syntaxToggleBtn.title = enabled ? 'Disable syntax highlighting' : 'Enable syntax highlighting';
+        };
+
+        if (syntaxToggleBtn && syntaxHighlighter?.toggle) {
+            updateSyntaxToggleUi();
+            this.addListener(syntaxToggleBtn, 'click', () => {
+                syntaxHighlighter.toggle();
+                updateSyntaxToggleUi();
+                const state = syntaxHighlighter.isEnabled() ? 'enabled' : 'disabled';
+                this.log(`Syntax highlighting ${state}`, 'info');
+            });
+        }
 
         // Clear log
         this.addListener(document.getElementById('clear-log'), 'click', () => {

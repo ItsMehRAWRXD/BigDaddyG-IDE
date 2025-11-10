@@ -11,8 +11,121 @@
 const spawn = typeof require !== 'undefined' ? require('child_process').spawn : null;
 const fs = typeof require !== 'undefined' ? require('fs').promises : null;
 const path = typeof require !== 'undefined' ? require('path') : null;
-// Note: agentic-security-hardening module optional - safety features work without it
-const AgenticSecurityHardening = null; // Removed - not available in browser context
+
+let AgenticSecurityHardening;
+
+if (typeof require === 'function') {
+    try {
+        ({ AgenticSecurityHardening } = require('./agentic-security-hardening'));
+    } catch (error) {
+        console.warn('[Agentic Executor] ⚠️ Falling back to minimal security hardening:', error.message);
+    }
+}
+
+function tokenizeCommand(command) {
+    const tokens = [];
+    let current = '';
+    let quote = null;
+    let escapeNext = false;
+
+    for (let i = 0; i < command.length; i++) {
+        const char = command[i];
+
+        if (escapeNext) {
+            current += char;
+            escapeNext = false;
+            continue;
+        }
+
+        if (char === '\\') {
+            escapeNext = true;
+            continue;
+        }
+
+        if (quote) {
+            if (char === quote) {
+                quote = null;
+            } else {
+                current += char;
+            }
+            continue;
+        }
+
+        if (char === '"' || char === '\'') {
+            quote = char;
+            continue;
+        }
+
+        if (/\s/.test(char)) {
+            if (current) {
+                tokens.push(current);
+                current = '';
+            }
+            continue;
+        }
+
+        current += char;
+    }
+
+    if (quote) {
+        throw new Error('Command contains an unterminated quoted string');
+    }
+
+    if (escapeNext) {
+        throw new Error('Command ends with an unfinished escape sequence');
+    }
+
+    if (current) {
+        tokens.push(current);
+    }
+
+    return tokens;
+}
+
+if (!AgenticSecurityHardening) {
+    class FallbackSecurityHardening {
+        constructor(safetyLevel) {
+            this.safetyLevel = safetyLevel;
+            this.blockedBinaries = ['rm', 'del', 'format', 'fdisk', 'dd', 'mkfs'];
+            this.secretPatterns = [
+                /password[=:]\s*[^\s]+/gi,
+                /token[=:]\s*[^\s]+/gi,
+                /key[=:]\s*[^\s]+/gi,
+                /secret[=:]\s*[^\s]+/gi
+            ];
+        }
+
+        async validateCommand(command) {
+            if (!command || typeof command !== 'string') {
+                throw new Error('Invalid command');
+            }
+
+            if (/[;&|`$(){}\[\]<>]/.test(command)) {
+                throw new Error('Command contains dangerous characters');
+            }
+
+            return command.trim();
+        }
+
+        isBlockedBinary(command) {
+            const firstWord = command.split(' ')[0].toLowerCase();
+            return this.blockedBinaries.includes(firstWord);
+        }
+
+        scrubSecrets(command) {
+            if (!command || typeof command !== 'string') {
+                return '';
+            }
+            let scrubbed = command;
+            this.secretPatterns.forEach(pattern => {
+                scrubbed = scrubbed.replace(pattern, '[REDACTED]');
+            });
+            return scrubbed;
+        }
+    }
+
+    AgenticSecurityHardening = FallbackSecurityHardening;
+}
 
 // ============================================================================
 // AGENTIC EXECUTOR CONFIGURATION
@@ -74,7 +187,13 @@ const AgenticConfig = {
         'dd', 'fdisk', 'mkfs',           // Disk operations
         'chmod 777', 'chown',            // Permission changes
         'sudo', 'su',                    // Privilege escalation
-        'curl | sh', 'wget | sh'         // Remote execution
+        'curl | sh', 'wget | sh',        // Remote execution
+        'taskkill', 'net user', 'icacls', // Windows dangerous
+        'sc delete', 'wmic', 'bcdedit',
+        'reg delete', 'regedit', 'shutdown',
+        'diskpart', 'attrib', 'cacls',   // More Windows dangerous
+        'cipher', 'sfc', 'dism',         // System modification
+        'netsh', 'route', 'arp'          // Network modification
     ],
     
     // Auto-retry settings
@@ -88,6 +207,32 @@ const AgenticConfig = {
     logAllCommands: true,
     logToFile: true
 };
+
+async function fetchWithTimeout(resource, options = {}, timeoutMs = 10000) {
+    if (typeof AbortController === 'undefined') {
+        return fetch(resource, options);
+    }
+
+    const controller = new AbortController();
+    const mergedOptions = {
+        ...options,
+        signal: controller.signal
+    };
+
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+    try {
+        const response = await fetch(resource, mergedOptions);
+        return response;
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            throw new Error('Request timed out');
+        }
+        throw error;
+    } finally {
+        clearTimeout(timeoutId);
+    }
+}
 
 // ============================================================================
 // AGENTIC EXECUTOR CLASS
@@ -179,27 +324,35 @@ class AgenticExecutor {
      * Plan a task into executable steps
      */
     async planTask(task) {
-        // Query BigDaddyG to create a plan
-        const response = await fetch('http://localhost:11441/api/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                message: `Break down this task into executable steps. Be specific about files to create and commands to run:\n\n${task}`,
-                model: 'BigDaddyG:Latest',
-                mode: 'Plan'
-            })
-        });
-        
-        const data = await response.json();
-        
-        // Parse the plan
-        const steps = this.parsePlan(data.response);
-        
-        return {
-            task,
-            steps,
-            timestamp: Date.now()
-        };
+        try {
+            const response = await fetchWithTimeout('http://localhost:11441/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: `Break down this task into executable steps. Be specific about files to create and commands to run:\n\n${task}`,
+                    model: 'BigDaddyG:Latest',
+                    mode: 'Plan'
+                })
+            }, 10000);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            
+            // Parse the plan
+            const steps = this.parsePlan(data.response);
+            
+            return {
+                task,
+                steps,
+                timestamp: Date.now()
+            };
+        } catch (error) {
+            console.error('[Agentic Executor] Planning failed:', error);
+            throw new Error(`Failed to plan task: ${error.message}`);
+        }
     }
     
     /**
@@ -326,9 +479,17 @@ class AgenticExecutor {
     async executeCommand(command, onProgress) {
         console.log(`[Agentic Executor] 💻 Command: ${command}`);
         
-        // SECURITY: Validate command with hardening layer
+        if (!spawn) {
+            return {
+                success: false,
+                error: 'Command execution is unavailable in this environment',
+                output: ''
+            };
+        }
+
+        let secureCommand;
         try {
-            command = await this.security.validateCommand(command);
+            secureCommand = await this.security.validateCommand(command);
         } catch (error) {
             console.error(`[Agentic Executor] 🛡️ Security blocked: ${error.message}`);
             return {
@@ -337,20 +498,20 @@ class AgenticExecutor {
                 output: ''
             };
         }
-        
-        // Check for blocked binaries
-        if (this.security.isBlockedBinary(command)) {
-            console.error(`[Agentic Executor] 🚫 Blocked binary: ${command}`);
+
+        const sanitizedCommand = this.sanitizeCommand(secureCommand);
+
+        if (this.security.isBlockedBinary(sanitizedCommand)) {
+            console.error(`[Agentic Executor] 🚫 Blocked binary: ${sanitizedCommand}`);
             return {
                 success: false,
                 error: 'Binary blocked by security policy',
                 output: ''
             };
         }
-        
-        // Safety check
-        if (!this.isSafeToExecute(command)) {
-            const confirmed = await this.requestPermission(command);
+
+        if (!this.isSafeToExecute(sanitizedCommand)) {
+            const confirmed = await this.requestPermission(sanitizedCommand);
             if (!confirmed) {
                 return {
                     success: false,
@@ -361,37 +522,56 @@ class AgenticExecutor {
         }
         
         // Log command (with secret scrubbing)
-        this.logCommand(command);
+        this.logCommand(sanitizedCommand);
         
-        onProgress({ type: 'command', command });
+        onProgress({ type: 'command', command: sanitizedCommand });
         
         return new Promise((resolve) => {
-            const parts = command.split(' ');
-            const cmd = parts[0];
-            const args = parts.slice(1);
-            
+            let commandParts;
+            try {
+                commandParts = this.parseCommandParts(sanitizedCommand);
+            } catch (error) {
+                resolve({
+                    success: false,
+                    output: '',
+                    error: error.message,
+                    exitCode: -1
+                });
+                return;
+            }
+
+            const { cmd, args } = commandParts;
             const proc = spawn(cmd, args, {
                 cwd: this.workingDirectory,
-                shell: true,
-                timeout: AgenticConfig.commandTimeout
+                shell: false,
+                stdio: ['pipe', 'pipe', 'pipe']
             });
-            
+
             let stdout = '';
             let stderr = '';
+
+            const timeoutMs = Math.min(AgenticConfig.commandTimeout, 60000);
+            const timeoutHandle = setTimeout(() => {
+                if (!proc.killed) {
+                    stderr += `\n[Agentic Executor] Command timed out after ${timeoutMs}ms`;
+                    proc.kill('SIGKILL');
+                }
+            }, timeoutMs);
             
-            proc.stdout.on('data', (data) => {
+            proc.stdout?.on('data', (data) => {
                 const text = data.toString();
                 stdout += text;
                 onProgress({ type: 'output', data: text });
             });
             
-            proc.stderr.on('data', (data) => {
+            proc.stderr?.on('data', (data) => {
                 const text = data.toString();
                 stderr += text;
                 onProgress({ type: 'error_output', data: text });
             });
             
             proc.on('close', (code) => {
+                clearTimeout(timeoutHandle);
                 if (code === 0) {
                     resolve({
                         success: true,
@@ -410,6 +590,7 @@ class AgenticExecutor {
             });
             
             proc.on('error', (error) => {
+                clearTimeout(timeoutHandle);
                 resolve({
                     success: false,
                     output: stdout,
@@ -465,8 +646,8 @@ class AgenticExecutor {
      */
     async requestPermission(command) {
         // In Electron, show dialog
-        if (window.electron) {
-            return await window.electron.showMessageBox({
+        if (window?.electron?.showMessageBox) {
+            const result = await window.electron.showMessageBox({
                 type: 'question',
                 buttons: ['Allow', 'Deny'],
                 defaultId: 1,
@@ -474,6 +655,7 @@ class AgenticExecutor {
                 message: 'Allow AI to execute this command?',
                 detail: command
             });
+            return result?.response === 0;
         }
         
         // Fallback to confirm
@@ -484,31 +666,52 @@ class AgenticExecutor {
      * Generate file content using AI
      */
     async generateFileContent(filename, context) {
-        const response = await fetch('http://localhost:11441/api/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                message: `Generate the complete content for ${filename}. Context: ${context}\n\nOnly output the raw file content, no explanations.`,
-                model: 'BigDaddyG:Code'
-            })
-        });
-        
-        const data = await response.json();
-        
-        // Extract code block if present
-        const codeMatch = data.response.match(/```[\w]*\n([\s\S]*?)```/);
-        if (codeMatch) {
-            return codeMatch[1];
+        try {
+            const response = await fetchWithTimeout('http://localhost:11441/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: `Generate the complete content for ${filename}. Context: ${context}\n\nOnly output the raw file content, no explanations.`,
+                    model: 'BigDaddyG:Code'
+                })
+            }, 15000);
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+
+            const codeMatch = data.response.match(/```[\w]*\n([\s\S]*?)```/);
+            if (codeMatch) {
+                return codeMatch[1];
+            }
+
+            return data.response;
+        } catch (error) {
+            throw new Error(`Failed to generate file content: ${error.message}`);
         }
-        
-        return data.response;
     }
     
     /**
      * Write file to disk
      */
     async writeFile(filename, content) {
+        // SECURITY: Validate filename to prevent path traversal
+        if (!this.isValidFilename(filename)) {
+            throw new Error('Invalid filename - potential path traversal detected');
+        }
+        
         const fullPath = path.join(this.workingDirectory, filename);
+        
+        // SECURITY: Ensure path is within working directory
+        const resolvedPath = path.resolve(fullPath);
+        const resolvedWorkingDir = path.resolve(this.workingDirectory);
+        
+        if (!resolvedPath.startsWith(resolvedWorkingDir)) {
+            throw new Error('Path traversal attempt detected');
+        }
+        
         await fs.writeFile(fullPath, content, 'utf8');
         console.log(`[Agentic Executor] 📝 Created file: ${filename}`);
     }
@@ -521,27 +724,35 @@ class AgenticExecutor {
         
         onProgress({ type: 'fixing', step, error: failedResult.error });
         
-        // Ask BigDaddyG to fix the issue
-        const response = await fetch('http://localhost:11441/api/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                message: `This step failed:\n\nStep: ${step.description}\nError: ${failedResult.error}\nOutput: ${failedResult.output}\n\nHow do I fix this? Provide the corrected command or code.`,
-                model: 'BigDaddyG:Latest',
-                mode: 'Debug'
-            })
-        });
-        
-        const data = await response.json();
-        
-        // Try to extract and execute fix
-        const fixedCommand = this.extractCommand(data.response);
-        if (fixedCommand) {
-            const result = await this.executeCommand(fixedCommand, onProgress);
-            return result.success;
+        try {
+            const response = await fetchWithTimeout('http://localhost:11441/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: `This step failed:\n\nStep: ${step.description}\nError: ${failedResult.error}\nOutput: ${failedResult.output}\n\nHow do I fix this? Provide the corrected command or code.`,
+                    model: 'BigDaddyG:Latest',
+                    mode: 'Debug'
+                })
+            }, 15000);
+
+            if (!response.ok) {
+                console.error('[Agentic Executor] Fix request failed:', response.status, response.statusText);
+                return false;
+            }
+
+            const data = await response.json();
+            
+            const fixedCommand = this.extractCommand(data.response);
+            if (fixedCommand) {
+                const result = await this.executeCommand(fixedCommand, onProgress);
+                return result.success;
+            }
+            
+            return false;
+        } catch (error) {
+            console.error('[Agentic Executor] Fix request error:', error);
+            return false;
         }
-        
-        return false;
     }
     
     /**
@@ -568,23 +779,34 @@ class AgenticExecutor {
      */
     async verifyTask(task, onProgress) {
         onProgress({ type: 'verifying' });
-        
-        const response = await fetch('http://localhost:11441/api/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                message: `Verify if this task was completed successfully:\n\nTask: ${task}\n\nSteps completed:\n${this.currentSession.steps.map(s => `- ${s.step}: ${s.success ? 'SUCCESS' : 'FAILED'}`).join('\n')}\n\nWas the task completed? Answer YES or NO and explain.`,
-                model: 'BigDaddyG:Latest'
-            })
-        });
-        
-        const data = await response.json();
-        const success = /yes/i.test(data.response);
-        
-        return {
-            success,
-            explanation: data.response
-        };
+        try {
+            const response = await fetchWithTimeout('http://localhost:11441/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: `Verify if this task was completed successfully:\n\nTask: ${task}\n\nSteps completed:\n${this.currentSession.steps.map(s => `- ${s.step}: ${s.success ? 'SUCCESS' : 'FAILED'}`).join('\n')}\n\nWas the task completed? Answer YES or NO and explain.`,
+                    model: 'BigDaddyG:Latest'
+                })
+            }, 10000);
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            const success = /yes/i.test(data.response);
+
+            return {
+                success,
+                explanation: data.response
+            };
+        } catch (error) {
+            console.error('[Agentic Executor] Verification failed:', error);
+            return {
+                success: false,
+                explanation: `Verification failed: ${error.message}`
+            };
+        }
     }
     
     /**
@@ -632,6 +854,54 @@ class AgenticExecutor {
         return this.executionHistory;
     }
     
+    /**
+     * Validate filename for security
+     */
+    isValidFilename(filename) {
+        // Check for path traversal attempts
+        if (filename.includes('..') || filename.includes('\\..\\') || filename.includes('/../')) {
+            return false;
+        }
+        
+        // Check for absolute paths
+        if (path.isAbsolute(filename)) {
+            return false;
+        }
+        
+        // Check for dangerous characters
+        if (/[<>:"|?*\x00-\x1f]/.test(filename)) {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Sanitize command for safer execution
+     */
+    sanitizeCommand(command) {
+        // Remove null bytes and control characters
+        return command.replace(/[\x00-\x1F\x7F]/g, '').trim();
+    }
+
+    parseCommandParts(command) {
+        const tokens = tokenizeCommand(command);
+        if (tokens.length === 0) {
+            throw new Error('Command is empty after sanitization');
+        }
+
+        const [cmd, ...args] = tokens;
+        if (!cmd || cmd.length > 256) {
+            throw new Error('Invalid command executable');
+        }
+
+        if (/[;&|`$<>]/.test(cmd)) {
+            throw new Error('Command executable contains prohibited characters');
+        }
+
+        return { cmd, args };
+    }
+    
     getCurrentSession() {
         return this.currentSession;
     }
@@ -640,6 +910,66 @@ class AgenticExecutor {
         this.workingDirectory = dir;
         console.log(`[Agentic Executor] 📁 Working directory: ${dir}`);
     }
+}
+
+function tokenizeCommand(command) {
+    const tokens = [];
+    let current = '';
+    let quote = null;
+    let escapeNext = false;
+
+    for (let i = 0; i < command.length; i++) {
+        const char = command[i];
+
+        if (escapeNext) {
+            current += char;
+            escapeNext = false;
+            continue;
+        }
+
+        if (char === '\\') {
+            escapeNext = true;
+            continue;
+        }
+
+        if (quote) {
+            if (char === quote) {
+                quote = null;
+            } else {
+                current += char;
+            }
+            continue;
+        }
+
+        if (char === '"' || char === '\'') {
+            quote = char;
+            continue;
+        }
+
+        if (/\s/.test(char)) {
+            if (current) {
+                tokens.push(current);
+                current = '';
+            }
+            continue;
+        }
+
+        current += char;
+    }
+
+    if (quote) {
+        throw new Error('Command contains an unterminated quoted string');
+    }
+
+    if (escapeNext) {
+        throw new Error('Command ends with an unfinished escape sequence');
+    }
+
+    if (current) {
+        tokens.push(current);
+    }
+
+    return tokens;
 }
 
 // ============================================================================

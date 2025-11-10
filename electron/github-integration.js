@@ -18,6 +18,7 @@ class GitHubIntegration {
         // GitHub OAuth App credentials
         // NOTE: These are CLIENT_ID (public, safe to expose)
         this.clientId = 'Ov23liYour_GitHub_App_Client_ID'; // Replace with your GitHub OAuth App Client ID
+        this.container = null;
         
         // State management
         this.token = localStorage.getItem('github_token');
@@ -29,11 +30,27 @@ class GitHubIntegration {
         this.initializeUI();
     }
     
+    showSetupCallout() {
+        const setupWarning = document.getElementById('github-setup-warning');
+        if (setupWarning) {
+            setupWarning.style.display = 'block';
+        }
+    }
+    
     // ============================================================================
     // AUTHENTICATION
     // ============================================================================
     
+    isClientConfigured() {
+        return Boolean(this.clientId && !/your[_-]?github[_-]?app[_-]?client[_-]?id/i.test(this.clientId));
+    }
+    
     async authenticate() {
+        if (!this.isClientConfigured()) {
+            this.showNotification('Configure GitHub OAuth client ID in github-integration.js before connecting.', 'warning');
+            this.showSetupCallout();
+            return;
+        }
         try {
             console.log('🔐 Starting GitHub authentication...');
             
@@ -414,22 +431,29 @@ class GitHubIntegration {
     // ============================================================================
     
     initializeUI() {
-        // Create GitHub panel in sidebar
-        const sidebar = document.getElementById('right-sidebar') || 
-                        document.querySelector('.right-sidebar') || 
-                        document.querySelector('.sidebar');
+        const container = document.getElementById('github-tab-content');
         
-        if (!sidebar) {
-            console.warn('Sidebar not found, creating GitHub panel separately');
+        if (!container) {
+            console.warn('GitHub tab content container not found');
             return;
         }
         
-        const githubPanel = document.createElement('div');
-        githubPanel.id = 'github-panel';
-        githubPanel.className = 'panel github-panel';
-        githubPanel.innerHTML = `
+        this.container = container;
+        container.innerHTML = `
+        <div class="panel github-panel" id="github-panel">
             <div class="panel-header">
                 <h3>🐙 GitHub Integration</h3>
+            </div>
+            
+            <div id="github-setup-warning" class="github-callout" style="display: none;">
+                <h4>Configure GitHub OAuth</h4>
+                <p>To enable direct GitHub integration:</p>
+                <ol>
+                    <li>Create a GitHub OAuth app (Device Flow) at <a href="https://github.com/settings/developers" target="_blank">GitHub Developer Settings</a>.</li>
+                    <li>Copy the <strong>Client ID</strong> into <code>github-integration.js</code> (<code>this.clientId</code>).</li>
+                    <li>Reload the IDE and click <em>Connect GitHub</em>.</li>
+                </ol>
+                <p style="margin-top:8px;">Need help? See <code>GITHUB-INTEGRATION-SETUP.md</code>.</p>
             </div>
             
             <div class="panel-content">
@@ -484,9 +508,8 @@ class GitHubIntegration {
                     </div>
                 </div>
             </div>
+        </div>
         `;
-        
-        sidebar.appendChild(githubPanel);
         
         // Attach event listeners
         this.attachEventListeners();
@@ -547,14 +570,33 @@ class GitHubIntegration {
         const authSection = document.getElementById('github-auth-section');
         const connectedSection = document.getElementById('github-connected-section');
         const usernameDisplay = document.getElementById('github-username-display');
+        const setupWarning = document.getElementById('github-setup-warning');
+        const authBtn = document.getElementById('github-auth-btn');
+        
+        const configured = this.isClientConfigured();
+        
+        if (!configured) {
+            if (setupWarning) setupWarning.style.display = 'block';
+            if (authSection) authSection.style.display = 'block';
+            if (connectedSection) connectedSection.style.display = 'none';
+            if (authBtn) {
+                authBtn.disabled = true;
+                authBtn.textContent = 'Configure GitHub OAuth';
+            }
+            return;
+        }
+        
+        if (setupWarning) setupWarning.style.display = 'none';
+        if (authBtn) {
+            authBtn.disabled = false;
+            authBtn.textContent = '🔐 Connect GitHub';
+        }
         
         if (this.token && this.username) {
-            // Show connected state
             if (authSection) authSection.style.display = 'none';
             if (connectedSection) connectedSection.style.display = 'block';
             if (usernameDisplay) usernameDisplay.textContent = this.username;
         } else {
-            // Show auth state
             if (authSection) authSection.style.display = 'block';
             if (connectedSection) connectedSection.style.display = 'none';
         }

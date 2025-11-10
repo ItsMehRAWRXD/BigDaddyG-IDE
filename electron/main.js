@@ -17,6 +17,7 @@ const path = require('path');
 const fs = require('fs');
 const http = require('http');
 const { spawn } = require('child_process');
+const { validateFsPath } = require('./security/path-utils');
 const windowStateKeeper = require('electron-window-state');
 const { EmbeddedBrowser } = require('./browser-view');
 const SafeModeDetector = require('./safe-mode-detector');
@@ -28,6 +29,74 @@ const MarketplaceClient = require('./marketplace/marketplace-client');
 const ExtensionManager = require('./marketplace/extension-manager');
 const SettingsImporter = require('./settings/settings-importer');
 const ApiKeyStore = require('./settings/api-key-store');
+const settingsService = require('./settings/settings-service');
+
+let httpErrorLogPath = null;
+
+function ensureHttpLogPath() {
+  if (httpErrorLogPath) {
+    return httpErrorLogPath;
+  }
+
+  try {
+    const logsDir = path.join(app.getPath('userData'), 'logs');
+    if (!fs.existsSync(logsDir)) {
+      fs.mkdirSync(logsDir, { recursive: true });
+    }
+    httpErrorLogPath = path.join(logsDir, 'http-errors.log');
+  } catch (error) {
+    console.error('[HTTP Logger] ❌ Failed to initialise log directory:', error);
+    httpErrorLogPath = null;
+  }
+
+  return httpErrorLogPath;
+}
+
+function logHttpFailure({ url, method = 'GET', status = null, body = '', context = 'main', error = null }) {
+  const logFile = ensureHttpLogPath();
+  if (!logFile) {
+    return;
+  }
+
+  const entry = {
+    timestamp: new Date().toISOString(),
+    context,
+    method,
+    url,
+    status,
+    error,
+    body: typeof body === 'string' ? body.slice(0, 2000) : body
+  };
+
+  const line = JSON.stringify(entry);
+
+  fs.appendFile(logFile, line + '\n', (err) => {
+    if (err) {
+      console.error('[HTTP Logger] ❌ Failed to write entry:', err);
+    }
+  });
+}
+
+async function fetchWithLogging(url, options = {}, context = 'main-fetch') {
+  const method = (options && options.method) || 'GET';
+  try {
+    const response = await fetch(url, options);
+    if (!response.ok) {
+      let body = '';
+      try {
+        const clone = response.clone();
+        body = await clone.text();
+      } catch (error) {
+        body = '[unavailable]';
+      }
+      logHttpFailure({ url, method, status: response.status, body, context });
+    }
+    return response;
+  } catch (error) {
+    logHttpFailure({ url, method, error: error.message || String(error), context });
+    throw error;
+  }
+}
 
 let mainWindow;
 let orchestraServer = null;
@@ -44,6 +113,13 @@ let marketplaceInitPromise = null;
 let apiKeyStore = null;
 let modelInterfaceInstance = null;
 let bigDaddyGCore = null;
+let orchestraAutoStartTimer = null;
+let orchestraRestartTimer = null;
+let orchestraManuallyStopped = false;
+
+if (!global.modelDiscoveryCache) {
+  global.modelDiscoveryCache = null;
+}
 
 const FEATURED_MARKETPLACE_PATH = path.join(__dirname, 'marketplace', 'featured.json');
 
@@ -185,7 +261,7 @@ class ModelInterface {
       await this.initialize();
     }
     try {
-      const response = await fetch('http://localhost:11441/api/models');
+      const response = await fetchWithLogging('http://localhost:11441/api/models', {}, 'orchestra:list-models');
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
@@ -229,15 +305,16 @@ async function listOrchestraModels() {
 
 // Apply performance optimizations BEFORE app.whenReady()
 try {
-  app.commandLine.appendSwitch('disable-gpu-vsync'); // Disable vsync for high refresh
+  const maxMemory = Math.min(8192, Math.max(2048, require('os').totalmem() / (1024 * 1024 * 4)));
+  app.commandLine.appendSwitch('disable-gpu-vsync');
   app.commandLine.appendSwitch('disable-frame-rate-limit');
-  app.commandLine.appendSwitch('max-gum-fps', '600'); // Support up to 600fps
+  app.commandLine.appendSwitch('max-gum-fps', '240');
   app.commandLine.appendSwitch('disable-gpu');
   app.commandLine.appendSwitch('disable-software-rasterizer', 'false');
-  app.commandLine.appendSwitch('js-flags', '--max-old-space-size=8192');
+  app.commandLine.appendSwitch('js-flags', `--max-old-space-size=${Math.floor(maxMemory)}`);
   console.log('[BigDaddyG] ✅ Performance optimizations applied');
 } catch (error) {
-  console.log('[BigDaddyG] ⚠️ Some performance optimizations failed:', error.message);
+  console.error('[BigDaddyG] ❌ Performance optimization error:', error.message);
 }
 
 console.log('[BigDaddyG] ⚡ Performance optimizations ready');
@@ -249,14 +326,20 @@ console.log('[BigDaddyG] 🎯 Target: 240 FPS');
 
 app.whenReady().then(async () => {
   console.log('[BigDaddyG] 🚀 Starting Electron app...');
-  
+
+  settingsService.initialize(app);
+
   // Initialize BigDaddyG Core
   bigDaddyGCore = await getBigDaddyGCore();
 
   bigDaddyGCore.attachNativeClient(nativeOllamaClient);
   
   // Start Orchestra server
-  startOrchestraServer();
+  if (isOrchestraAutoStartEnabled()) {
+    orchestraAutoStartTimer = scheduleOrchestraAutoStart('startup', getOrchestraAutoStartDelay(), 'auto');
+  } else {
+    console.log('[BigDaddyG] 🎼 Orchestra auto-start disabled by configuration');
+  }
   
   // Start Remote Log Server
   startRemoteLogServer();
@@ -286,9 +369,7 @@ app.whenReady().then(async () => {
 
 app.on('window-all-closed', () => {
   // Stop Orchestra server
-  if (orchestraServer) {
-    orchestraServer.kill();
-  }
+  stopOrchestraServer();
   
   // Stop Remote Log Server
   if (remoteLogServer) {
@@ -304,16 +385,115 @@ app.on('window-all-closed', () => {
 // ORCHESTRA SERVER
 // ============================================================================
 
-function startOrchestraServer() {
-  if (orchestraServer && !orchestraServer.killed) {
-    console.log('[BigDaddyG] ⚠️ Orchestra server already running');
-    return;
+function notifyOrchestraStatus(payload = {}) {
+  const windows = BrowserWindow.getAllWindows();
+  windows.forEach((win) => {
+    if (win && !win.isDestroyed()) {
+      win.webContents.send('orchestra-status', payload);
+    }
+  });
+}
+
+function getOrchestraConfig() {
+  const defaults = {
+    autoStart: true,
+    autoRestart: true,
+    autoStartDelayMs: 1500,
+  };
+
+  try {
+    const config = settingsService.get('services.orchestra') || {};
+    const autoStart = config.autoStart !== undefined ? Boolean(config.autoStart) : defaults.autoStart;
+    const autoRestart = config.autoRestart !== undefined ? Boolean(config.autoRestart) : defaults.autoRestart;
+    const rawDelay = Number(config.autoStartDelayMs);
+    const autoStartDelayMs =
+      Number.isFinite(rawDelay) && rawDelay >= 0 ? rawDelay : defaults.autoStartDelayMs;
+
+    return { autoStart, autoRestart, autoStartDelayMs };
+  } catch (error) {
+    console.warn('[Orchestra] Unable to load orchestra configuration:', error.message);
+    return { ...defaults };
   }
-  
-  console.log('[BigDaddyG] 🎼 Starting Orchestra server...');
-  
-  // Try multiple possible paths
-  const possiblePaths = [
+}
+
+function isOrchestraAutoStartEnabled() {
+  return getOrchestraConfig().autoStart;
+}
+
+function isOrchestraAutoRestartEnabled() {
+  return getOrchestraConfig().autoRestart;
+}
+
+function getOrchestraAutoStartDelay() {
+  return getOrchestraConfig().autoStartDelayMs;
+}
+
+function scheduleOrchestraAutoStart(reason = 'auto', delayOverride, timerType = 'auto') {
+  const config = getOrchestraConfig();
+  if (!config.autoStart && !config.autoRestart) {
+    return null;
+  }
+
+  const delay = typeof delayOverride === 'number' && Number.isFinite(delayOverride) && delayOverride >= 0
+    ? delayOverride
+    : config.autoStartDelayMs;
+
+  if (!Number.isFinite(delay) || delay < 0) {
+    return null;
+  }
+
+  const timer = setTimeout(() => {
+    if (timerType === 'auto') {
+      orchestraAutoStartTimer = null;
+    } else if (timerType === 'restart') {
+      orchestraRestartTimer = null;
+    }
+    startOrchestraServer({ auto: true, source: reason });
+  }, delay);
+
+  if (typeof timer.unref === 'function') {
+    timer.unref();
+  }
+
+  return timer;
+}
+
+function startOrchestraServer(options = {}) {
+  const { auto = false, source = 'manual' } = options;
+  const invocationSource = source || 'manual';
+
+  if (orchestraServer) {
+    const isProcessLike = typeof orchestraServer.killed === 'boolean';
+    const isRunning = isProcessLike ? !orchestraServer.killed : true;
+    if (isRunning) {
+      const message = `[BigDaddyG] ⚠️ Orchestra server already running (requested by ${invocationSource})`;
+      console.log(message);
+      notifyOrchestraStatus({ running: true, alreadyRunning: true, source: invocationSource });
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send('orchestra-log', { type: 'info', message });
+      }
+      return { started: false, reason: 'already-running' };
+    }
+  }
+
+  clearTimeout(orchestraAutoStartTimer);
+  orchestraAutoStartTimer = null;
+  clearTimeout(orchestraRestartTimer);
+  orchestraRestartTimer = null;
+
+  orchestraManuallyStopped = false;
+
+  const logToRenderer = (type, message) => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send('orchestra-log', { type, message });
+    }
+  };
+
+  const startMessage = `[BigDaddyG] 🎼 Starting Orchestra server (${invocationSource})...`;
+  console.log(startMessage);
+  logToRenderer('info', `🎼 Starting Orchestra server (${invocationSource})...`);
+
+  const searchPaths = [
     path.join(__dirname, '..', 'server', 'Orchestra-Server.js'),
     path.join(process.resourcesPath, 'app', 'server', 'Orchestra-Server.js'),
     path.join(app.getAppPath(), 'server', 'Orchestra-Server.js'),
@@ -321,158 +501,152 @@ function startOrchestraServer() {
   ];
   
   let serverPath = null;
-  let serverCwd = null;
   
-  for (const tryPath of possiblePaths) {
-    console.log(`[BigDaddyG] 🔍 Checking: ${tryPath}`);
+  for (const tryPath of searchPaths) {
     if (fs.existsSync(tryPath)) {
       serverPath = tryPath;
-      serverCwd = path.dirname(tryPath);
-      console.log(`[BigDaddyG] ✅ Found Orchestra at: ${serverPath}`);
       break;
     }
   }
   
   if (!serverPath) {
-    console.error('[BigDaddyG] ❌ Orchestra-Server.js not found!');
-    console.error('[BigDaddyG] ❌ Searched paths:', possiblePaths);
-    if (mainWindow) {
-      mainWindow.webContents.send('orchestra-log', {
-        type: 'error',
-        message: '❌ Orchestra-Server.js not found! Please ensure it is bundled with the app.'
-      });
+    const errorMessage = 'Orchestra-Server.js not found';
+    console.error('[BigDaddyG] ❌', errorMessage);
+    logToRenderer('error', `❌ ${errorMessage}`);
+    notifyOrchestraStatus({ running: false, error: errorMessage, source: invocationSource });
+
+    if (auto || isOrchestraAutoStartEnabled()) {
+      const retryDelay = Math.min(getOrchestraAutoStartDelay() * 2, 15000);
+      orchestraRestartTimer = scheduleOrchestraAutoStart('retry-missing', retryDelay, 'restart');
     }
+
+    return { started: false, reason: 'not-found', error: errorMessage };
+  }
+
+  try {
+    const resolvedModule = require.resolve(serverPath);
+    delete require.cache[resolvedModule];
+  } catch (ignore) {
+    // Module not yet cached – nothing to remove.
+  }
+
+  try {
+    const orchestraModule = require(serverPath);
+    const instance =
+      (typeof orchestraModule?.start === 'function' && orchestraModule.start()) ||
+      orchestraModule?.server ||
+      null;
+
+    if (!instance) {
+      throw new Error('Invalid orchestra server module export');
+    }
+
+    orchestraServer = instance;
+
+    const registerLifecycleHandlers = (target) => {
+      if (!target) {
     return;
   }
   
-  // FIX: Run server directly in main process instead of spawning
-  // Spawning with Electron executable causes it to load as Electron app
-  try {
-    // Require and run the server directly
-    console.log('[BigDaddyG] 🎼 Loading Orchestra server module...');
-    require(serverPath);
-    console.log('[BigDaddyG] ✅ Orchestra server loaded and running!');
-    return; // Don't set up spawn handlers
+      const dispatchShutdown = (detail = {}) => {
+        if (typeof target.removeListener === 'function') {
+          target.removeListener('error', errorHandler);
+        }
+        orchestraServer = null;
+        notifyOrchestraStatus({ running: false, source: invocationSource, ...detail });
+
+        if (!orchestraManuallyStopped && isOrchestraAutoRestartEnabled()) {
+          const restartDelay = Math.min(getOrchestraAutoStartDelay() * 2, 15000);
+          orchestraRestartTimer = scheduleOrchestraAutoStart('restart', restartDelay, 'restart');
+        }
+
+        orchestraManuallyStopped = false;
+      };
+
+      const errorHandler = (error) => {
+        console.error('[Orchestra] Server error:', error);
+        logToRenderer('error', `❌ Orchestra server error: ${error.message || error}`);
+        notifyOrchestraStatus({ running: false, error: error.message, source: invocationSource });
+
+        if (!orchestraManuallyStopped && isOrchestraAutoRestartEnabled()) {
+          const restartDelay = Math.min(getOrchestraAutoStartDelay() * 2, 15000);
+          orchestraRestartTimer = scheduleOrchestraAutoStart('error', restartDelay, 'restart');
+        }
+      };
+
+      if (typeof target.on === 'function') {
+        target.on('error', errorHandler);
+      }
+
+      if (typeof target.once === 'function') {
+        target.once('close', (code) => dispatchShutdown({ closed: true, code }));
+        target.once('exit', (code) => dispatchShutdown({ exited: true, code }));
+      } else if (typeof target.on === 'function') {
+        target.on('close', (code) => dispatchShutdown({ closed: true, code }));
+      }
+    };
+
+    registerLifecycleHandlers(orchestraServer);
+
+    logToRenderer('success', '✅ Orchestra server ready');
+    notifyOrchestraStatus({ running: true, autoStarted: auto, source: invocationSource });
+    console.log('[BigDaddyG] ✅ Orchestra server ready');
+    return { started: true, reason: 'started' };
   } catch (error) {
     console.error('[BigDaddyG] ❌ Failed to load Orchestra:', error);
-    return;
-  }
-  
-  /* OLD SPAWN CODE - Causes infinite loop with Electron
-  orchestraServer = spawn(process.execPath, [serverPath], {
-    cwd: serverCwd,
-    stdio: 'pipe',
-    env: { ...process.env, NODE_ENV: 'production' }
-  });
-  
-  // Event handlers only apply if using spawn (which we don't)
-  if (orchestraServer) {
-    orchestraServer.stdout.on('data', (data) => {
-      const message = data.toString().trim();
-      console.log(`[Orchestra] ${message}`);
-      
-      if (mainWindow) {
-        mainWindow.webContents.send('orchestra-log', {
-          type: 'output',
-          message: message
-        });
-      }
-    });
-    
-    orchestraServer.stderr.on('data', (data) => {
-      const message = data.toString().trim();
-      
-      // Check if port is already in use
-      if (message.includes('EADDRINUSE') || message.includes('address already in use')) {
-        console.log('[Orchestra] Port 11441 already in use - server already running, this is OK');
-        
-        if (mainWindow) {
-          mainWindow.webContents.send('orchestra-status', {
-            running: true,
-            alreadyRunning: true
-          });
-        }
-        
-        // Kill this duplicate process
-        if (orchestraServer) {
-          orchestraServer.kill();
-          orchestraServer = null;
-        }
-        return;
-      }
-      
-      console.error(`[Orchestra Error] ${message}`);
-      
-      if (mainWindow) {
-        mainWindow.webContents.send('orchestra-log', {
-          type: 'error',
-          message: message
-        });
-      }
-    });
-    
-    orchestraServer.on('close', (code) => {
-      console.log(`[Orchestra] Process exited with code ${code}`);
-      orchestraServer = null;
-      
-      if (mainWindow) {
-        mainWindow.webContents.send('orchestra-status', {
-          running: false,
-          code: code
-        });
-      }
-    });
-    
-    orchestraServer.on('error', (error) => {
-      console.error('[Orchestra] Failed to start:', error);
-      
-      if (mainWindow) {
-        mainWindow.webContents.send('orchestra-log', {
-          type: 'error',
-          message: `Failed to start: ${error.message}`
-        });
-      }
-    });
-    
-    console.log('[BigDaddyG] ✅ Orchestra server process started');
-  }
-  */
-  
-  // Notify renderer that orchestra loaded directly (not spawned)
-  if (mainWindow) {
-    setTimeout(() => {
-      mainWindow.webContents.send('orchestra-status', {
-        running: true,
-        loadedDirectly: true
-      });
-    }, 1000);
+    logToRenderer('error', `❌ Failed to load Orchestra: ${error.message || error}`);
+    notifyOrchestraStatus({ running: false, error: error.message, source: invocationSource });
+
+    if (auto || isOrchestraAutoStartEnabled()) {
+      const retryDelay = Math.min(getOrchestraAutoStartDelay() * 2, 15000);
+      orchestraRestartTimer = scheduleOrchestraAutoStart('retry', retryDelay, 'restart');
+    }
+
+    return { started: false, reason: 'load-failed', error: error.message };
   }
 }
 
 function stopOrchestraServer() {
-  if (!orchestraServer || orchestraServer.killed) {
+  if (!orchestraServer) {
     console.log('[BigDaddyG] ⚠️ Orchestra server not running');
     return;
   }
+
+  orchestraManuallyStopped = true;
+  clearTimeout(orchestraAutoStartTimer);
+  orchestraAutoStartTimer = null;
+  clearTimeout(orchestraRestartTimer);
+  orchestraRestartTimer = null;
   
   console.log('[BigDaddyG] 🛑 Stopping Orchestra server...');
   
+  const isProcessLike = typeof orchestraServer.kill === 'function';
+  const hasClose = typeof orchestraServer.close === 'function';
+
+  if (isProcessLike) {
   orchestraServer.kill('SIGTERM');
   
-  // Force kill after 5 seconds if still running
   setTimeout(() => {
     if (orchestraServer && !orchestraServer.killed) {
       orchestraServer.kill('SIGKILL');
       console.log('[BigDaddyG] ⚡ Force-killed Orchestra server');
     }
   }, 5000);
+  } else if (hasClose) {
+    try {
+      orchestraServer.close();
+    } catch (error) {
+      console.error('[BigDaddyG] ❌ Failed to close Orchestra server gracefully:', error);
+    }
+  }
   
   orchestraServer = null;
-  
-  if (mainWindow) {
-    mainWindow.webContents.send('orchestra-status', {
-      running: false,
-      stopped: true
+  notifyOrchestraStatus({ running: false, stopped: true, source: 'manual-stop' });
+
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send('orchestra-log', {
+      type: 'info',
+      message: '🛑 Orchestra server stopped manually'
     });
   }
 }
@@ -586,7 +760,11 @@ async function listOllamaModels() {
     const timeout = setTimeout(() => controller.abort(), 4000);
 
     try {
-        const response = await fetch('http://localhost:11434/api/tags', { signal: controller.signal });
+    const response = await fetchWithLogging(
+      'http://localhost:11434/api/tags',
+      { signal: controller.signal },
+      'ollama:list-models'
+    );
         clearTimeout(timeout);
 
         if (!response.ok) {
@@ -610,15 +788,79 @@ async function getOllamaStatus() {
     }
 }
 
+function sanitizeModelIdentifier(model) {
+    if (typeof model !== 'string') {
+        throw new Error('Model name must be a string');
+    }
+
+    const trimmed = model.trim();
+    if (!trimmed) {
+        throw new Error('Model name is required');
+    }
+
+    if (trimmed.length > 128) {
+        throw new Error('Model name too long');
+    }
+
+    const pattern = /^[A-Za-z0-9._:@\/-]+$/;
+    if (!pattern.test(trimmed)) {
+        throw new Error('Model name contains invalid characters');
+    }
+
+    return trimmed;
+}
+
+function sanitizeCliArgument(arg) {
+    if (typeof arg !== 'string') {
+        throw new Error('CLI argument must be a string');
+    }
+
+    const trimmed = arg.trim();
+    if (!trimmed) {
+        throw new Error('CLI argument cannot be empty');
+    }
+
+    if (trimmed.length > 200) {
+        throw new Error('CLI argument too long');
+    }
+
+    const pattern = /^[A-Za-z0-9._:@\/=-]+$/;
+    if (!pattern.test(trimmed)) {
+        throw new Error(`CLI argument contains invalid characters: ${arg}`);
+    }
+
+    return trimmed;
+}
+
+function sanitizeCliArguments(args) {
+    if (!Array.isArray(args)) {
+        throw new Error('CLI arguments must be an array');
+    }
+
+    return args.map(sanitizeCliArgument);
+}
+
 function runOllamaCommand(args) {
     return new Promise((resolve) => {
         try {
-            const proc = spawn('ollama', args, {
-                shell: process.platform === 'win32'
+            const sanitizedArgs = sanitizeCliArguments(args);
+            const binary = process.platform === 'win32' ? 'ollama.exe' : 'ollama';
+
+            const proc = spawn(binary, sanitizedArgs, {
+                shell: false,
+                stdio: ['ignore', 'pipe', 'pipe']
             });
 
             let stdout = '';
             let stderr = '';
+
+            const timeoutMs = 60000;
+            const timeoutHandle = setTimeout(() => {
+                if (!proc.killed) {
+                    stderr += `\n[Ollama] Command timed out after ${timeoutMs}ms`;
+                    proc.kill('SIGKILL');
+                }
+            }, timeoutMs);
 
             proc.stdout.on('data', (data) => {
                 stdout += data.toString();
@@ -629,6 +871,7 @@ function runOllamaCommand(args) {
             });
 
             proc.on('close', (code) => {
+                clearTimeout(timeoutHandle);
                 if (code === 0) {
                     resolve({ success: true, output: stdout.trim(), error: stderr.trim() });
                 } else {
@@ -638,6 +881,7 @@ function runOllamaCommand(args) {
             });
 
             proc.on('error', (error) => {
+                clearTimeout(timeoutHandle);
                 resolve({ success: false, error: error.message });
             });
         } catch (error) {
@@ -739,15 +983,16 @@ function createMainWindow() {
     backgroundColor: '#0a0a1e',
     
     webPreferences: {
-      nodeIntegration: false,  // Disable - causes conflicts with Monaco AMD
-      contextIsolation: true,  // Enable - Monaco needs this for __$__isRecorded
-      sandbox: false,  // CRITICAL: Disable sandbox to prevent bootstrap realm error
-      webviewTag: true,  // Enable webview for integrated browser
+      nodeIntegration: false,
+      contextIsolation: true,
+      sandbox: true,
+      webviewTag: false,
       preload: path.join(__dirname, 'preload.js'),
       webSecurity: true,
       allowRunningInsecureContent: false,
       enableRemoteModule: false,
-      worldSafeExecuteJavaScript: true
+      worldSafeExecuteJavaScript: true,
+      experimentalFeatures: false
     },
     
     frame: false,  // No default frame - we'll use custom title bar
@@ -765,8 +1010,10 @@ function createMainWindow() {
   console.log(`[BigDaddyG] 🛡️ Safe Mode: ${safeModeDetector.getConfig().SafeMode.enabled}`);
   mainWindow.loadFile(path.join(__dirname, htmlFile));
   
-  // Open DevTools ALWAYS for debugging white screen
-  mainWindow.webContents.openDevTools({ mode: 'detach' }); // Detach so it's in separate window
+  // Open DevTools only in development
+  if (process.env.NODE_ENV === 'development') {
+    mainWindow.webContents.openDevTools({ mode: 'detach' });
+  }
   
   // Log any page load errors
   mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
@@ -799,6 +1046,13 @@ function createMainWindow() {
   
   mainWindow.webContents.on('did-finish-load', () => {
     console.log('[BigDaddyG] ✅ Page loaded successfully');
+
+    try {
+      const snapshot = settingsService.getAll();
+      mainWindow.webContents.send('settings:bootstrap', snapshot);
+    } catch (error) {
+      console.error('[SettingsService] ❌ Failed to send bootstrap settings:', error);
+    }
     
     // Wait 2 seconds, then check if content rendered
     setTimeout(() => {
@@ -1330,10 +1584,105 @@ ipcMain.handle('marketplace:update-all', async () => {
   }
 });
 
+// Path validation function
+function getAllowedBasePaths() {
+  const bases = new Set([path.resolve(process.cwd())]);
+
+  const appReady = app && typeof app.isReady === 'function' ? app.isReady() : true;
+
+  if (!appReady) {
+    return Array.from(bases);
+  }
+
+  try {
+    const appPath = app.getAppPath();
+    if (appPath) {
+      bases.add(path.resolve(appPath));
+    }
+  } catch (error) {
+    console.warn('[Security] Unable to resolve app path:', error.message);
+  }
+
+  ['userData', 'documents', 'desktop', 'downloads'].forEach((key) => {
+    try {
+      const candidate = app.getPath(key);
+      if (candidate) {
+        bases.add(path.resolve(candidate));
+      }
+    } catch (error) {
+      console.warn(`[Security] Unable to resolve app path for '${key}':`, error.message);
+    }
+  });
+
+  return Array.from(bases);
+}
+
+function expandAllowedPaths(basePaths, targetPath, { includeParentRoots = false } = {}) {
+  const expanded = new Set(basePaths);
+
+  if (targetPath && typeof targetPath === 'string') {
+    try {
+      const resolved = path.resolve(targetPath);
+      expanded.add(resolved);
+
+      const parsed = path.parse(resolved);
+      if (parsed && parsed.root) {
+        expanded.add(parsed.root);
+      }
+
+      if (includeParentRoots && parsed && parsed.dir) {
+        const segments = resolved.split(path.sep);
+        let current = parsed.root;
+        for (let i = 1; i < segments.length - 1; i += 1) {
+          const segment = segments[i];
+          if (!segment) continue;
+          current = path.join(current, segment);
+          expanded.add(current);
+        }
+      }
+    } catch (error) {
+      console.warn('[Security] Failed to expand allowed paths for', targetPath, error.message);
+    }
+  }
+
+  return Array.from(expanded);
+}
+
+function validateFilePath(filePath, { mustExist = true, label = 'File path' } = {}) {
+  return validateFsPath(filePath, {
+    allowedBasePaths: expandAllowedPaths(getAllowedBasePaths(), filePath, { includeParentRoots: true }),
+    allowFiles: true,
+    allowDirectories: false,
+    mustExist,
+    label,
+  });
+}
+
+function validateDirectoryPath(dirPath, { mustExist = true, label = 'Directory path' } = {}) {
+  return validateFsPath(dirPath, {
+    allowedBasePaths: expandAllowedPaths(getAllowedBasePaths(), dirPath, { includeParentRoots: true }),
+    allowFiles: false,
+    allowDirectories: true,
+    mustExist,
+    label,
+  });
+}
+
+function validateFileSystemPath(targetPath, { mustExist = true, label = 'Path' } = {}) {
+  return validateFsPath(targetPath, {
+    allowedBasePaths: expandAllowedPaths(getAllowedBasePaths(), targetPath, { includeParentRoots: true }),
+    allowFiles: true,
+    allowDirectories: true,
+    mustExist,
+    label,
+  });
+}
+
 ipcMain.handle('read-file', async (event, filePath) => {
   const fs = require('fs').promises;
   try {
-    const content = await fs.readFile(filePath, 'utf-8');
+    const validatedPath = validateFilePath(filePath, { mustExist: true });
+    const content = await fs.readFile(validatedPath, 'utf-8');
     return { success: true, content };
   } catch (error) {
     return { success: false, error: error.message };
@@ -1343,7 +1692,19 @@ ipcMain.handle('read-file', async (event, filePath) => {
 ipcMain.handle('write-file', async (event, filePath, content) => {
   const fs = require('fs').promises;
   try {
-    await fs.writeFile(filePath, content, 'utf-8');
+    const validatedPath = validateFilePath(filePath, { mustExist: false });
+    
+    // Additional validation for content
+    if (typeof content !== 'string') {
+      throw new Error('Content must be a string');
+    }
+    
+    // Limit file size to prevent abuse
+    if (content.length > 10 * 1024 * 1024) { // 10MB limit
+      throw new Error('File content too large (max 10MB)');
+    }
+    
+    await fs.writeFile(validatedPath, content, 'utf-8');
     return { success: true };
   } catch (error) {
     return { success: false, error: error.message };
@@ -1426,12 +1787,13 @@ ipcMain.handle('open-folder-dialog', async () => {
 ipcMain.handle('read-dir', async (event, dirPath) => {
   const fs = require('fs').promises;
   try {
-    const entries = await fs.readdir(dirPath, { withFileTypes: true });
+    const validatedDir = validateDirectoryPath(dirPath);
+    const entries = await fs.readdir(validatedDir, { withFileTypes: true });
     const files = entries.map(entry => ({
       name: entry.name,
       isDirectory: entry.isDirectory(),
       isFile: entry.isFile(),
-      path: path.join(dirPath, entry.name)
+      path: path.join(validatedDir, entry.name)
     }));
     return { success: true, files };
   } catch (error) {
@@ -1443,7 +1805,8 @@ ipcMain.handle('read-dir', async (event, dirPath) => {
 ipcMain.handle('get-file-stats', async (event, filePath) => {
   const fs = require('fs').promises;
   try {
-    const stats = await fs.stat(filePath);
+    const validatedPath = validateFileSystemPath(filePath, { label: 'File path' });
+    const stats = await fs.stat(validatedPath);
     return { 
       success: true, 
       stats: {
@@ -1463,10 +1826,17 @@ ipcMain.handle('get-file-stats', async (event, filePath) => {
 ipcMain.handle('file-exists', async (event, filePath) => {
   const fs = require('fs').promises;
   try {
-    await fs.access(filePath);
+    const validatedPath = validateFileSystemPath(filePath, {
+      mustExist: false,
+      label: 'File path',
+    });
+    await fs.access(validatedPath);
     return { success: true, exists: true };
   } catch (error) {
+    if (error && (error.code === 'ENOENT' || /does not exist/i.test(error.message))) {
     return { success: true, exists: false };
+    }
+    return { success: false, error: error.message };
   }
 });
 
@@ -1498,8 +1868,29 @@ ipcMain.handle('get-log-file-path', async () => {
 
 ipcMain.handle('write-log-file', async (event, filePath, content) => {
   try {
+    const logsBase = (() => {
+      if (app && typeof app.getPath === 'function') {
+        try {
+          return path.join(app.getPath('userData'), 'logs');
+        } catch (error) {
+          console.warn('[Main] Falling back to process cwd for logs:', error.message);
+        }
+      }
+      return path.join(process.cwd(), 'logs');
+    })();
+
+    const resolvedLogPath = validateFsPath(filePath, {
+      allowedBasePaths: [logsBase],
+      allowFiles: true,
+      allowDirectories: false,
+      mustExist: false,
+      label: 'Log file path',
+    });
+
+    await fs.promises.mkdir(path.dirname(resolvedLogPath), { recursive: true });
+
     // Append to log file
-    await fs.promises.appendFile(filePath, content, 'utf8');
+    await fs.promises.appendFile(resolvedLogPath, content, 'utf8');
     return { success: true };
   } catch (error) {
     console.error('[Main] Failed to write log file:', error);
@@ -1515,8 +1906,26 @@ ipcMain.handle('write-log-file', async (event, filePath, content) => {
 ipcMain.handle('search-files', async (event, query, options = {}) => {
   const fs = require('fs').promises;
   const results = [];
-  const searchPath = options.path || app.getAppPath();
-  const maxResults = options.maxResults || 1001;
+  
+  // Validate search parameters
+  if (!query || typeof query !== 'string' || query.length < 2) {
+    return { success: false, error: 'Query must be at least 2 characters' };
+  }
+  
+  if (query.length > 100) {
+    return { success: false, error: 'Query too long (max 100 characters)' };
+  }
+  
+  let searchPath;
+  try {
+    const requestedPath = options.path || app.getAppPath();
+    searchPath = validateDirectoryPath(requestedPath, { label: 'Search path' });
+  } catch (error) {
+    return { success: false, error: `Invalid search path: ${error.message}` };
+  }
+  
+  const maxResults = Math.min(options.maxResults || 100, 500); // Limit to 500 results
+  const maxDepth = Math.min(options.maxDepth || 5, 10); // Limit depth to 10
   const searchContent = options.searchContent !== false; // Default true
   
   async function searchDirectory(dirPath, depth = 0) {
@@ -1530,6 +1939,14 @@ ipcMain.handle('search-files', async (event, query, options = {}) => {
         if (results.length >= maxResults) break;
         
         const fullPath = path.join(dirPath, entry.name);
+        let safePath;
+        try {
+          safePath = validateFileSystemPath(fullPath, {
+            label: 'Search entry path',
+          });
+        } catch (validationError) {
+          continue;
+        }
         
         // Skip node_modules, .git, etc.
         if (entry.name.startsWith('.') || entry.name === 'node_modules') continue;
@@ -1538,7 +1955,7 @@ ipcMain.handle('search-files', async (event, query, options = {}) => {
           // Search by filename
           if (entry.name.toLowerCase().includes(query.toLowerCase())) {
             results.push({
-              path: fullPath,
+              path: safePath,
               name: entry.name,
               type: 'file',
               matchType: 'filename'
@@ -1546,12 +1963,12 @@ ipcMain.handle('search-files', async (event, query, options = {}) => {
           } else if (searchContent) {
             // Search file content (for text files only)
             try {
-              const stats = await fs.stat(fullPath);
+              const stats = await fs.stat(safePath);
               if (stats.size < 10 * 1024 * 1024) { // Only search files under 10MB for content
-                const content = await fs.readFile(fullPath, 'utf-8');
+                const content = await fs.readFile(safePath, 'utf-8');
                 if (content.toLowerCase().includes(query.toLowerCase())) {
                   results.push({
-                    path: fullPath,
+                    path: safePath,
                     name: entry.name,
                     type: 'file',
                     matchType: 'content'
@@ -1563,7 +1980,7 @@ ipcMain.handle('search-files', async (event, query, options = {}) => {
             }
           }
         } else if (entry.isDirectory()) {
-          await searchDirectory(fullPath, depth + 1);
+          await searchDirectory(safePath, depth + 1);
         }
       }
     } catch (error) {
@@ -1592,20 +2009,28 @@ ipcMain.handle('read-dir-recursive', async (event, dirPath, maxDepth = 100) => {
       
       for (const entry of entries) {
         const fullPath = path.join(currentPath, entry.name);
+        let safePath;
+        try {
+          safePath = validateFileSystemPath(fullPath, {
+            label: 'Recursive entry path',
+          });
+        } catch (validationError) {
+          continue;
+        }
         
         // Skip hidden files and node_modules
         if (entry.name.startsWith('.') || entry.name === 'node_modules') continue;
         
         results.push({
           name: entry.name,
-          path: fullPath,
+          path: safePath,
           isDirectory: entry.isDirectory(),
           isFile: entry.isFile(),
           depth: depth
         });
         
         if (entry.isDirectory()) {
-          await traverse(fullPath, depth + 1);
+          await traverse(safePath, depth + 1);
         }
       }
     } catch (error) {
@@ -1614,7 +2039,8 @@ ipcMain.handle('read-dir-recursive', async (event, dirPath, maxDepth = 100) => {
   }
   
   try {
-    await traverse(dirPath);
+    const rootPath = validateDirectoryPath(dirPath, { label: 'Directory path' });
+    await traverse(rootPath);
     return { success: true, files: results, count: results.length };
   } catch (error) {
     return { success: false, error: error.message };
@@ -1627,8 +2053,9 @@ ipcMain.handle('read-file-chunked', async (event, filePath, chunkSize = 1024 * 1
   const chunks = [];
   
   try {
-    const stats = await fs.promises.stat(filePath);
-    const stream = fs.createReadStream(filePath, { encoding: 'utf-8', highWaterMark: chunkSize });
+    const validatedPath = validateFilePath(filePath, { label: 'File path' });
+    const stats = await fs.promises.stat(validatedPath);
+    const stream = fs.createReadStream(validatedPath, { encoding: 'utf-8', highWaterMark: chunkSize });
     
     return new Promise((resolve, reject) => {
       stream.on('data', (chunk) => {
@@ -1656,7 +2083,15 @@ ipcMain.handle('read-file-chunked', async (event, filePath, chunkSize = 1024 * 1
 // Scan workspace for file search (used by command palette)
 ipcMain.handle('scanWorkspace', async (event, options = {}) => {
   const fs = require('fs').promises;
-  const workspacePath = options.path || process.cwd();
+  let workspacePath;
+  try {
+    workspacePath = validateDirectoryPath(options.path || process.cwd(), {
+      label: 'Workspace path',
+    });
+  } catch (error) {
+    console.error('[FileSystem] ❌ Workspace scan validation error:', error);
+    return [];
+  }
   const maxFiles = options.maxFiles || 500;
   const maxDepth = options.maxDepth || 5;
   const files = [];
@@ -1675,17 +2110,25 @@ ipcMain.handle('scanWorkspace', async (event, options = {}) => {
         if (skipDirs.includes(entry.name) || entry.name.startsWith('.')) continue;
         
         const fullPath = path.join(dirPath, entry.name);
+        let safePath;
+        try {
+          safePath = validateFileSystemPath(fullPath, {
+            label: 'Workspace entry path',
+          });
+        } catch (validationError) {
+          continue;
+        }
         
         files.push({
           name: entry.name,
-          path: fullPath,
+          path: safePath,
           isDirectory: entry.isDirectory(),
           isFile: entry.isFile(),
           depth: depth
         });
         
         if (entry.isDirectory() && depth < maxDepth) {
-          await scan(fullPath, depth + 1);
+          await scan(safePath, depth + 1);
         }
       }
     } catch (error) {
@@ -1711,11 +2154,12 @@ ipcMain.handle('read-multiple-files', async (event, filePaths) => {
   
   for (const filePath of filePaths) {
     try {
-      const content = await fs.readFile(filePath, 'utf-8');
-      const stats = await fs.stat(filePath);
+      const validatedPath = validateFilePath(filePath, { label: 'File path' });
+      const content = await fs.readFile(validatedPath, 'utf-8');
+      const stats = await fs.stat(validatedPath);
       results.push({
-        path: filePath,
-        name: path.basename(filePath),
+        path: validatedPath,
+        name: path.basename(validatedPath),
         content: content,
         size: stats.size,
         success: true
@@ -1737,7 +2181,14 @@ ipcMain.handle('read-multiple-files', async (event, filePaths) => {
 ipcMain.handle('find-by-pattern', async (event, pattern, startPath) => {
   const fs = require('fs').promises;
   const results = [];
-  const searchPath = startPath || app.getAppPath();
+  let searchPath;
+  try {
+    searchPath = validateDirectoryPath(startPath || app.getAppPath(), {
+      label: 'Pattern search path',
+    });
+  } catch (error) {
+    return { success: false, error: `Invalid start path: ${error.message}` };
+  }
   
   // Simple glob matching (*.js, *.txt, etc.)
   function matchesPattern(filename, pattern) {
@@ -1755,15 +2206,23 @@ ipcMain.handle('find-by-pattern', async (event, pattern, startPath) => {
         if (entry.name.startsWith('.') || entry.name === 'node_modules') continue;
         
         const fullPath = path.join(dirPath, entry.name);
+        let safePath;
+        try {
+          safePath = validateFileSystemPath(fullPath, {
+            label: 'Pattern search entry',
+          });
+        } catch (validationError) {
+          continue;
+        }
         
         if (entry.isFile() && matchesPattern(entry.name, pattern)) {
           results.push({
-            path: fullPath,
+            path: safePath,
             name: entry.name,
-            directory: dirPath
+            directory: path.dirname(safePath)
           });
         } else if (entry.isDirectory()) {
-          await findFiles(fullPath, depth + 1);
+          await findFiles(safePath, depth + 1);
         }
       }
     } catch (error) {
@@ -1965,16 +2424,9 @@ ipcMain.handle('apikeys:set', async (event, { provider, key, metadata = {} }) =>
 
 ipcMain.handle('apikeys:delete', async (event, provider) => {
   try {
-    if (!provider) {
-      throw new Error('Provider is required');
-    }
-
-    const store = await ensureApiKeyStore();
-    const removed = await store.remove(provider);
-
-    return { success: true, removed };
+    await apiKeyStore.deleteKey(provider);
+    return { success: true };
   } catch (error) {
-    console.error('[API Keys] Delete error:', error);
     return { success: false, error: error.message };
   }
 });
@@ -1983,48 +2435,266 @@ ipcMain.handle('apikeys:delete', async (event, provider) => {
 // MODEL DISCOVERY (ORCHESTRA + OLLAMA)
 // ============================================================================
 
-async function discoverModels() {
-  const catalog = {
-    ollama: [],
-    orchestra: [],
-    bigdaddyg: null
+function normalizeModelStatus(model, status = {}) {
+  return {
+    ...model,
+    loaded: Boolean(status.loaded),
+    cached: Boolean(status.cached),
+    orchestraReady: Boolean(status.loaded || status.cached),
+    error: status.error,
   };
-
-  try {
-    const ollamaModels = await listOllamaModels();
-    catalog.ollama = ollamaModels;
-  } catch (error) {
-    console.warn('[Models] Failed to discover Ollama models:', error.message);
-  }
-
-  try {
-    const orchestraResult = await listOrchestraModels();
-    catalog.orchestra = orchestraResult.models || [];
-  } catch (error) {
-    console.warn('[Models] Failed to discover Orchestra models:', error.message);
-  }
-
-  return catalog;
 }
 
-ipcMain.handle('models:discover', async () => {
+ipcMain.handle('models:discover', async (event, options = {}) => {
   try {
-    const catalog = await discoverModels();
-    const orchestra = await listOrchestraModels();
-    const ollamaServer = await listOllamaModels();
+    console.log('[Models] Discovering BigDaddyG models...');
+
+    const coreInstance = bigDaddyGCore || (await getBigDaddyGCore());
+    const allModels = await coreInstance.listModels();
+
+    const bigdaddygModels = allModels.filter(
+      (model) => model.type === 'bigdaddyg' || model.isCustom || model.family === 'bigdaddyg'
+    );
+
+    const ollamaModels = allModels.filter((model) => model.type === 'ollama' || model.source === 'ollama-api');
+    const customModels = allModels.filter((model) => model.isCustom || model.source === 'custom');
+
+    const modelStatuses = await Promise.all(
+      bigdaddygModels.map(async (model) => {
+        try {
+          const status = await nativeOllamaClient.checkModelStatus(model.name);
+          return normalizeModelStatus(model, status);
+        } catch (error) {
+          return normalizeModelStatus(model, { error: error.message });
+        }
+      })
+    );
+
+    if (options.loadPriorityModels) {
+      const priorityModels = modelStatuses.filter((m) => m.priority && !m.loaded && m.available !== false);
+      await Promise.allSettled(
+        priorityModels.map((model) =>
+          nativeOllamaClient
+            .loadModel(model.name)
+            .catch((err) => console.error(`[Models] Failed to load priority model ${model.name}:`, err))
+        )
+      );
+    }
+
+    const discoveryResult = {
+      success: true,
+      timestamp: new Date().toISOString(),
+      orchestra: {
+        available: true,
+        connected: true,
+        version: '1.0.0',
+        models: {
+          total: bigdaddygModels.length,
+          loaded: modelStatuses.filter((m) => m.loaded).length,
+          available: modelStatuses.filter((m) => m.available !== false).length,
+          list: modelStatuses.map((model) => ({
+            name: model.name,
+            id: model.id,
+            size: model.size,
+            type: model.type,
+            family: model.family,
+            description: model.description,
+            loaded: model.loaded,
+            cached: model.cached,
+            available: model.available,
+            lastUsed: model.lastUsed,
+            priority: model.priority || false,
+            capabilities: model.capabilities || [],
+            parameters: model.parameters || {},
+            orchestraReady: model.orchestraReady,
+            error: model.error,
+          })),
+        },
+      },
+      catalog: {
+        bigdaddyg: {
+          total: bigdaddygModels.length,
+          models: bigdaddygModels.map((model) => ({
+            name: model.name,
+            id: model.id,
+            size: model.size,
+            type: model.type,
+            family: model.family,
+            description: model.description,
+            loaded: model.loaded,
+            available: model.available,
+            capabilities: model.capabilities || [],
+            parameters: model.parameters || {},
+            metadata: model.metadata || {},
+          })),
+        },
+        ollama: {
+          total: ollamaModels.length,
+          models: ollamaModels,
+        },
+        custom: {
+          total: customModels.length,
+          models: customModels,
+        },
+      },
+      statistics: {
+        totalModels: allModels.length,
+        loadedModels: modelStatuses.filter((m) => m.loaded).length,
+        cachedModels: modelStatuses.filter((m) => m.cached).length,
+        availableModels: modelStatuses.filter((m) => m.available !== false).length,
+        totalSize: allModels.reduce((sum, m) => sum + (m.size || 0), 0),
+        averageModelSize:
+          allModels.length > 0
+            ? allModels.reduce((sum, m) => sum + (m.size || 0), 0) / allModels.length
+            : 0,
+      },
+    };
+
+    global.modelDiscoveryCache = discoveryResult;
+
+    console.log(
+      `[Models] Discovery complete: ${bigdaddygModels.length} BigDaddyG models indexed (loaded: ${discoveryResult.orchestra.models.loaded})`
+    );
+
+    return discoveryResult;
+  } catch (error) {
+    console.error('[Models] Model discovery failed:', error);
+
+    return {
+      success: false,
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+      orchestra: {
+        available: false,
+        connected: false,
+        error: error.message,
+      },
+      catalog: {
+        bigdaddyg: { total: 0, models: [] },
+        ollama: { total: 0, models: [] },
+        custom: { total: 0, models: [] },
+      },
+      statistics: {
+        totalModels: 0,
+        loadedModels: 0,
+        cachedModels: 0,
+        availableModels: 0,
+        totalSize: 0,
+        averageModelSize: 0,
+      },
+    };
+  }
+});
+
+ipcMain.handle('models:load', async (event, modelName, options = {}) => {
+  try {
+    console.log(`[Models] Loading model: ${modelName}`);
+
+    const result = await nativeOllamaClient.loadModel(modelName, options);
+
+    if (global.modelDiscoveryCache?.orchestra?.models?.list) {
+      const model = global.modelDiscoveryCache.orchestra.models.list.find((m) => m.name === modelName);
+      if (model) {
+        model.loaded = true;
+        model.orchestraReady = true;
+      }
+    }
 
     return {
       success: true,
-      catalog,
-      orchestra,
-      ollama: {
-        server: ollamaServer,
-        disk: catalog.ollama || []
-      }
+      model: result,
     };
   } catch (error) {
-    console.error('[Models] Discover error:', error);
-    return { success: false, error: error.message };
+    console.error(`[Models] Failed to load model ${modelName}:`, error);
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+});
+
+ipcMain.handle('models:unload', async (event, modelName) => {
+  try {
+    console.log(`[Models] Unloading model: ${modelName}`);
+
+    await nativeOllamaClient.unloadModel(modelName);
+
+    if (global.modelDiscoveryCache?.orchestra?.models?.list) {
+      const model = global.modelDiscoveryCache.orchestra.models.list.find((m) => m.name === modelName);
+      if (model) {
+        model.loaded = false;
+        model.orchestraReady = model.cached;
+      }
+    }
+
+    return {
+      success: true,
+      message: `Model ${modelName} unloaded successfully`,
+    };
+  } catch (error) {
+    console.error(`[Models] Failed to unload model ${modelName}:`, error);
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+});
+
+ipcMain.handle('models:info', async (event, modelName) => {
+  try {
+    const coreInstance = bigDaddyGCore || (await getBigDaddyGCore());
+    const info = await coreInstance.getModelInfo(modelName);
+    return {
+      success: true,
+      info,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+});
+
+ipcMain.handle('models:stats', async () => {
+  try {
+    const coreInstance = bigDaddyGCore || (await getBigDaddyGCore());
+    const stats = {
+      client: {
+        initialized: nativeOllamaClient.initialized,
+        activeModels: nativeOllamaClient.getActiveModels(),
+        cacheStats: nativeOllamaClient.getCacheStats(),
+        loadedModels: nativeOllamaClient.getLoadedModels().length,
+        usage: nativeOllamaClient.getStats(),
+      },
+      discovery: global.modelDiscoveryCache || null,
+      core: coreInstance?.getStats() || null,
+    };
+
+    return {
+      success: true,
+      stats,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+});
+
+ipcMain.handle('models:clear-cache', async () => {
+  try {
+    nativeOllamaClient.clearCache();
+    return {
+      success: true,
+      message: 'Cache cleared successfully',
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message,
+    };
   }
 });
 
@@ -2053,11 +2723,7 @@ ipcMain.handle('ollama:status', async () => {
 
 ipcMain.handle('ollama:pull-model', async (event, modelName) => {
   try {
-    const model = (modelName || '').trim();
-    if (!model) {
-      throw new Error('Model name is required');
-    }
-
+    const model = sanitizeModelIdentifier(modelName);
     const result = await runOllamaCommand(['pull', model]);
     return { ...result, model };
   } catch (error) {
@@ -2068,11 +2734,7 @@ ipcMain.handle('ollama:pull-model', async (event, modelName) => {
 
 ipcMain.handle('ollama:delete-model', async (event, modelName) => {
   try {
-    const model = (modelName || '').trim();
-    if (!model) {
-      throw new Error('Model name is required');
-    }
-
+    const model = sanitizeModelIdentifier(modelName);
     const result = await runOllamaCommand(['rm', model]);
     return { ...result, model };
   } catch (error) {
@@ -2083,11 +2745,7 @@ ipcMain.handle('ollama:delete-model', async (event, modelName) => {
 
 ipcMain.handle('ollama:show-model', async (event, modelName) => {
   try {
-    const model = (modelName || '').trim();
-    if (!model) {
-      throw new Error('Model name is required');
-    }
-
+    const model = sanitizeModelIdentifier(modelName);
     const result = await runOllamaCommand(['show', model]);
     return { ...result, model };
   } catch (error) {
@@ -2306,9 +2964,10 @@ ipcMain.handle('orchestra:status', async () => {
 // Create directory
 ipcMain.handle('createDirectory', async (event, dirPath) => {
   try {
-    console.log('[FileSystem] Creating directory:', dirPath);
+    const validatedDir = validateDirectoryPath(dirPath, { mustExist: false });
+    console.log('[FileSystem] Creating directory:', validatedDir);
     
-    fs.mkdirSync(dirPath, { recursive: true });
+    fs.mkdirSync(validatedDir, { recursive: true });
     
     return { success: true };
   } catch (error) {
@@ -2320,12 +2979,16 @@ ipcMain.handle('createDirectory', async (event, dirPath) => {
 // Delete file or directory
 ipcMain.handle('deleteItem', async (event, itemPath, isDirectory = false) => {
   try {
-    console.log('[FileSystem] Deleting:', itemPath, '(isDirectory:', isDirectory, ')');
+    const validatedPath = isDirectory
+      ? validateDirectoryPath(itemPath)
+      : validateFilePath(itemPath);
+
+    console.log('[FileSystem] Deleting:', validatedPath, '(isDirectory:', isDirectory, ')');
     
     if (isDirectory) {
-      fs.rmSync(itemPath, { recursive: true, force: true });
+      fs.rmSync(validatedPath, { recursive: true, force: true });
     } else {
-      fs.unlinkSync(itemPath);
+      fs.unlinkSync(validatedPath);
     }
     
     return { success: true };
@@ -2338,16 +3001,22 @@ ipcMain.handle('deleteItem', async (event, itemPath, isDirectory = false) => {
 // Copy file or directory
 ipcMain.handle('copyItem', async (event, sourcePath, destPath) => {
   try {
-    console.log('[FileSystem] Copying:', sourcePath, 'to', destPath);
+    const validatedSource = validateFileSystemPath(sourcePath, { label: 'Source path' });
+    const validatedDestination = validateFileSystemPath(destPath, {
+      mustExist: false,
+      label: 'Destination path',
+    });
+
+    console.log('[FileSystem] Copying:', validatedSource, 'to', validatedDestination);
     
-    const stats = fs.statSync(sourcePath);
+    const stats = fs.statSync(validatedSource);
     
     if (stats.isDirectory()) {
       // Copy directory recursively
-      fs.cpSync(sourcePath, destPath, { recursive: true });
+      fs.cpSync(validatedSource, validatedDestination, { recursive: true });
     } else {
       // Copy file
-      fs.copyFileSync(sourcePath, destPath);
+      fs.copyFileSync(validatedSource, validatedDestination);
     }
     
     return { success: true };
@@ -2360,9 +3029,15 @@ ipcMain.handle('copyItem', async (event, sourcePath, destPath) => {
 // Move/Rename file or directory
 ipcMain.handle('moveItem', async (event, sourcePath, destPath) => {
   try {
-    console.log('[FileSystem] Moving:', sourcePath, 'to', destPath);
+    const validatedSource = validateFileSystemPath(sourcePath, { label: 'Source path' });
+    const validatedDestination = validateFileSystemPath(destPath, {
+      mustExist: false,
+      label: 'Destination path',
+    });
+
+    console.log('[FileSystem] Moving:', validatedSource, 'to', validatedDestination);
     
-    fs.renameSync(sourcePath, destPath);
+    fs.renameSync(validatedSource, validatedDestination);
     
     return { success: true };
   } catch (error) {
@@ -2374,7 +3049,8 @@ ipcMain.handle('moveItem', async (event, sourcePath, destPath) => {
 // Get file/directory stats
 ipcMain.handle('getStats', async (event, itemPath) => {
   try {
-    const stats = fs.statSync(itemPath);
+    const validatedPath = validateFileSystemPath(itemPath, { label: 'Item path' });
+    const stats = fs.statSync(validatedPath);
     
     return {
       success: true,
@@ -2397,98 +3073,204 @@ ipcMain.handle('getStats', async (event, itemPath) => {
 // TERMINAL EXECUTION
 // ============================================================================
 
+// Command validation and sanitization
+function validateCommand(command) {
+  if (!command || typeof command !== 'string') {
+    throw new Error('Command must be a non-empty string');
+  }
+  
+  if (command.length > 1000) {
+    throw new Error('Command too long (max 1000 characters)');
+  }
+  
+  // Check for dangerous patterns
+  const dangerousPatterns = [
+    /[;&|`$(){}\[\]<>]/,  // Command injection chars
+    /\\x[0-9a-fA-F]{2}/,  // Hex encoding
+    /\\u[0-9a-fA-F]{4}/,  // Unicode encoding
+    /\$\{.*\}/,           // Variable expansion
+    /\$\(.*\)/            // Command substitution
+  ];
+  
+  for (const pattern of dangerousPatterns) {
+    if (pattern.test(command)) {
+      throw new Error('Command contains dangerous characters or patterns');
+    }
+  }
+  
+  return command.trim();
+}
+
+function validateShell(shell) {
+  const allowedShells = ['powershell', 'cmd', 'bash'];
+  if (!allowedShells.includes(shell)) {
+    throw new Error(`Shell '${shell}' not allowed`);
+  }
+  return shell;
+}
+
+function validateCwd(cwd) {
+  if (!cwd || typeof cwd !== 'string') {
+    return process.cwd();
+  }
+  
+  // Resolve and validate path
+  const resolvedCwd = path.resolve(cwd);
+  
+  // Check if path exists and is a directory
+  try {
+    const stats = fs.statSync(resolvedCwd);
+    if (!stats.isDirectory()) {
+      throw new Error('Working directory must be a directory');
+    }
+  } catch (error) {
+    throw new Error(`Invalid working directory: ${error.message}`);
+  }
+  
+  return resolvedCwd;
+}
+
 ipcMain.handle('execute-command', async (event, { command, shell = 'powershell', cwd = process.cwd() }) => {
   const { spawn } = require('child_process');
   
-  console.log(`[Terminal] Executing: ${command} (shell: ${shell}, cwd: ${cwd})`);
-  
-  return new Promise((resolve) => {
-    let output = '';
-    let error = '';
+  try {
+    // Validate inputs
+    const validatedCommand = validateCommand(command);
+    const validatedShell = validateShell(shell);
+    const validatedCwd = validateCwd(cwd);
     
-    // Select shell command
-    let shellCmd, shellArgs;
-    switch (shell) {
-      case 'powershell':
-        shellCmd = 'powershell.exe';
-        shellArgs = ['-NoProfile', '-NonInteractive', '-Command', command];
-        break;
-      case 'cmd':
-        shellCmd = 'cmd.exe';
-        shellArgs = ['/c', command];
-        break;
-      case 'bash':
-        shellCmd = 'bash';
-        shellArgs = ['-c', command];
-        break;
-      case 'wsl':
-        shellCmd = 'wsl.exe';
-        shellArgs = ['-e', 'bash', '-c', command];
-        break;
-      default:
-        shellCmd = 'powershell.exe';
-        shellArgs = ['-NoProfile', '-NonInteractive', '-Command', command];
-    }
+    console.log(`[Terminal] Executing: ${validatedCommand} (shell: ${validatedShell}, cwd: ${validatedCwd})`);
     
-    const proc = spawn(shellCmd, shellArgs, { cwd, shell: false });
-    
-    proc.stdout.on('data', (data) => {
-      output += data.toString();
-      event.sender.send('terminal-output', { output: data.toString(), isError: false });
-    });
-    
-    proc.stderr.on('data', (data) => {
-      error += data.toString();
-      event.sender.send('terminal-output', { output: data.toString(), isError: true });
-    });
-    
-    proc.on('close', (code) => {
-      event.sender.send('terminal-exit', { code });
-      resolve({
-        output,
-        error,
-        code,
-        cwd: proc.spawnargs.cwd || cwd
+    return new Promise((resolve) => {
+      let output = '';
+      let error = '';
+      
+      // Select shell command with restricted options
+      let shellCmd, shellArgs;
+      switch (validatedShell) {
+        case 'powershell':
+          shellCmd = 'powershell.exe';
+          shellArgs = ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Restricted', '-Command', validatedCommand];
+          break;
+        case 'cmd':
+          shellCmd = 'cmd.exe';
+          shellArgs = ['/c', validatedCommand];
+          break;
+        case 'bash':
+          shellCmd = 'bash';
+          shellArgs = ['--noprofile', '--norc', '-c', validatedCommand];
+          break;
+        default:
+          shellCmd = 'powershell.exe';
+          shellArgs = ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Restricted', '-Command', validatedCommand];
+      }
+      
+      const proc = spawn(shellCmd, shellArgs, { 
+        cwd: validatedCwd, 
+        shell: false,
+        timeout: 30000, // 30 second timeout
+        stdio: ['pipe', 'pipe', 'pipe']
+      });
+      
+      proc.stdout?.on('data', (data) => {
+        output += data.toString();
+        event.sender.send('terminal-output', { output: data.toString(), isError: false });
+      });
+      
+      proc.stderr?.on('data', (data) => {
+        error += data.toString();
+        event.sender.send('terminal-output', { output: data.toString(), isError: true });
+      });
+      
+      proc.on('close', (code) => {
+        event.sender.send('terminal-exit', { code });
+        resolve({
+          output,
+          error,
+          code,
+          cwd: validatedCwd
+        });
+      });
+      
+      proc.on('error', (err) => {
+        error = err.message;
+        resolve({
+          output,
+          error,
+          code: 1,
+          cwd: validatedCwd
+        });
       });
     });
-    
-    proc.on('error', (err) => {
-      error = err.message;
-      resolve({
-        output,
-        error,
-        code: 1,
-        cwd
-      });
-    });
-  });
+  } catch (validationError) {
+    console.error('[Terminal] Command validation failed:', validationError.message);
+    return {
+      output: '',
+      error: `Security validation failed: ${validationError.message}`,
+      code: 1,
+      cwd
+    };
+  }
 });
 
 // ============================================================================
 // PROGRAM LAUNCHING & SYSTEM INTEGRATION
 // ============================================================================
 
+// Validate program path for security
+function validateProgramPath(programPath) {
+  if (!programPath || typeof programPath !== 'string') {
+    throw new Error('Program path must be a non-empty string');
+  }
+  
+  // Check for path traversal attempts
+  if (programPath.includes('..') || programPath.includes('\\..\\') || programPath.includes('/../')) {
+    throw new Error('Path traversal attempt detected');
+  }
+  
+  // Resolve absolute path
+  const resolvedPath = path.resolve(programPath);
+  
+  // Check if file exists
+  if (!fs.existsSync(resolvedPath)) {
+    throw new Error('Program not found');
+  }
+  
+  // Check if it's a file
+  const stats = fs.statSync(resolvedPath);
+  if (!stats.isFile()) {
+    throw new Error('Path must point to a file');
+  }
+  
+  // Check file extension (allow only safe executables)
+  const ext = path.extname(resolvedPath).toLowerCase();
+  const allowedExtensions = ['.exe', '.msi', '.app', '.deb', '.rpm', '.dmg'];
+  
+  if (!allowedExtensions.includes(ext)) {
+    throw new Error(`File type '${ext}' not allowed for execution`);
+  }
+  
+  return resolvedPath;
+}
+
 // Launch external program
 ipcMain.handle('launchProgram', async (event, programPath) => {
   try {
     console.log('[System] Launching program:', programPath);
     
-    const { exec } = require('child_process');
     const { shell } = require('electron');
     
-    // Use shell.openPath for cross-platform compatibility
-    if (fs.existsSync(programPath)) {
-      const result = await shell.openPath(programPath);
-      
-      if (result === '') {
-        console.log('[System] ✅ Program launched successfully');
-        return { success: true };
-      } else {
-        console.error('[System] ❌ Failed to launch:', result);
-        return { success: false, error: result };
-      }
+    // Validate program path
+    const validatedPath = validateProgramPath(programPath);
+    
+    const result = await shell.openPath(validatedPath);
+    
+    if (result === '') {
+      console.log('[System] ✅ Program launched successfully');
+      return { success: true };
     } else {
-      return { success: false, error: 'Program not found' };
+      console.error('[System] ❌ Failed to launch:', result);
+      return { success: false, error: result };
     }
   } catch (error) {
     console.error('[System] Launch error:', error);
@@ -2499,12 +3281,17 @@ ipcMain.handle('launchProgram', async (event, programPath) => {
 // Open in system explorer/finder
 ipcMain.handle('openInExplorer', async (event, itemPath) => {
   try {
-    console.log('[System] Opening in explorer:', itemPath);
+    const validatedPath = validateFileSystemPath(itemPath, {
+      mustExist: true,
+      label: 'Explorer path',
+    });
+
+    console.log('[System] Opening in explorer:', validatedPath);
     const { shell } = require('electron');
     
-    if (fs.existsSync(itemPath)) {
+    if (fs.existsSync(validatedPath)) {
       // Show item in folder (works on Windows, macOS, Linux)
-      shell.showItemInFolder(itemPath);
+      shell.showItemInFolder(validatedPath);
       return { success: true };
     } else {
       return { success: false, error: 'Path not found' };
@@ -2515,13 +3302,46 @@ ipcMain.handle('openInExplorer', async (event, itemPath) => {
   }
 });
 
+// Validate URL for security
+function validateUrl(url) {
+  if (!url || typeof url !== 'string') {
+    throw new Error('URL must be a non-empty string');
+  }
+  
+  try {
+    const urlObj = new URL(url);
+    
+    // Only allow safe protocols
+    const allowedProtocols = ['http:', 'https:', 'mailto:', 'tel:'];
+    if (!allowedProtocols.includes(urlObj.protocol)) {
+      throw new Error(`Protocol '${urlObj.protocol}' not allowed`);
+    }
+    
+    // Block localhost and private IPs for security
+    if (urlObj.hostname === 'localhost' || 
+        urlObj.hostname === '127.0.0.1' ||
+        urlObj.hostname.startsWith('192.168.') ||
+        urlObj.hostname.startsWith('10.') ||
+        urlObj.hostname.startsWith('172.')) {
+      throw new Error('Local and private URLs not allowed');
+    }
+    
+    return urlObj.href;
+  } catch (error) {
+    throw new Error(`Invalid URL: ${error.message}`);
+  }
+}
+
 // Open URL in default browser
 ipcMain.handle('openUrl', async (event, url) => {
   try {
     console.log('[System] Opening URL:', url);
     const { shell } = require('electron');
     
-    await shell.openExternal(url);
+    // Validate URL
+    const validatedUrl = validateUrl(url);
+    
+    await shell.openExternal(validatedUrl);
     return { success: true };
   } catch (error) {
     console.error('[System] Open URL error:', error);
@@ -2580,18 +3400,18 @@ ipcMain.on('window-close', () => {
 
 ipcMain.handle('bigdaddyg:generate', async (event, model, prompt, options) => {
   try {
-    const response = await bigDaddyGCore.processRequest(model, prompt, options);
-    return { success: true, ...response };
+    const response = await nativeOllamaClient.generate(model, prompt, options || {});
+    return { success: true, response };
   } catch (error) {
+    console.error('[BigDaddyG] Native generate failed:', error);
     return { success: false, error: error.message };
   }
 });
 
 ipcMain.handle('bigdaddyg:stats', async () => {
   try {
-    const coreStats = bigDaddyGCore.getStats();
-    const nativeStats = nativeOllamaClient.getStats();
-    return { success: true, core: coreStats, native: nativeStats };
+    const stats = nativeOllamaClient.getStats();
+    return { success: true, stats };
   } catch (error) {
     return { success: false, error: error.message };
   }
@@ -2599,7 +3419,6 @@ ipcMain.handle('bigdaddyg:stats', async () => {
 
 ipcMain.handle('bigdaddyg:clear-cache', async () => {
   try {
-    bigDaddyGCore.clearCache();
     nativeOllamaClient.clearCache();
     return { success: true };
   } catch (error) {
@@ -2607,6 +3426,120 @@ ipcMain.handle('bigdaddyg:clear-cache', async () => {
   }
 });
 
+ipcMain.handle('native-ollama-node:generate', async (event, model, prompt, options = {}) => {
+  try {
+    const response = await nativeOllamaClient.generate(model, prompt, options);
+    return { success: true, response };
+  } catch (error) {
+    console.error('[NativeOllama] Generation failed:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('native-ollama-node:stats', async () => {
+  try {
+    const stats = nativeOllamaClient.getStats();
+    return { success: true, stats };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
 console.log('[BigDaddyG] ⚡ Native Ollama Node.js client registered');
 console.log('[BigDaddyG] 🌌 Main process initialized');
+
+settingsService.on('updated', (payload) => {
+  BrowserWindow.getAllWindows().forEach((win) => {
+    if (win && !win.isDestroyed()) {
+      win.webContents.send('settings:updated', payload);
+    }
+  });
+});
+
+// ============================================================================
+// SETTINGS SERVICE
+// ============================================================================
+
+ipcMain.handle('settings:get-all', async () => {
+  try {
+    return { success: true, settings: settingsService.getAll() };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('settings:get-defaults', async () => {
+  try {
+    return { success: true, settings: settingsService.getDefaults() };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('settings:get', async (event, pathString) => {
+  try {
+    if (typeof pathString !== 'string') {
+      throw new Error('Path must be a string');
+    }
+    return { success: true, value: settingsService.get(pathString) };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('settings:set', async (event, pathString, value, options = {}) => {
+  try {
+    if (typeof pathString !== 'string') {
+      throw new Error('Path must be a string');
+    }
+    const settings = settingsService.set(pathString, value, options);
+    return { success: true, settings };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('settings:update', async (event, patch, options = {}) => {
+  try {
+    if (!patch || typeof patch !== 'object') {
+      throw new Error('Patch must be an object');
+    }
+    const settings = settingsService.update(patch, options);
+    return { success: true, settings };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('settings:reset', async (event, section = null, options = {}) => {
+  try {
+    const settings = settingsService.reset(section, options);
+    return { success: true, settings };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('settings:hotkeys:get', async () => {
+  try {
+    return { success: true, hotkeys: settingsService.getHotkeys() };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('settings:hotkeys:set', async (event, action, combo, options = {}) => {
+  try {
+    if (typeof action !== 'string' || !action) {
+      throw new Error('Action is required');
+    }
+    if (typeof combo !== 'string' || !combo) {
+      throw new Error('Combo is required');
+    }
+    const updated = settingsService.setHotkey(action, combo, options);
+    return { success: true, hotkey: updated };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
 

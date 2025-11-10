@@ -7,15 +7,16 @@
     "start": "electron main.js",
     "dev": "electron main.js --dev",
     "demo": "electron main.js --demo",
-    "test": "node test-runner.js",
-    "test:ci": "CI=true node test-runner.js",
+    "test": "node --test __tests__/**/*.test.js",
+    "test:ci": "CI=true node --test __tests__/**/*.test.js",
     "test:ollama": "node -e \"require('./automated-ide-tester.js'); testOllama();\"",
     "benchmark": "node -e \"require('./benchmark-suite.js'); runBenchmarks();\"",
     "lint": "eslint agentic-auto-fixer.js plugins/first-party-linter.js",
     "build": "electron-builder",
     "dist": "electron-builder --publish=never",
     "pack": "electron-builder --dir",
-    "postinstall": "electron-builder install-app-deps"
+    "postinstall": "electron-builder install-app-deps",
+    "test:legacy": "node test-runner.js"
   },
   "keywords": [
     "ide",

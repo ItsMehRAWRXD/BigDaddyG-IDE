@@ -1,0 +1,159 @@
+{
+  "name": "bigdaddyg-ide",
+  "displayName": "BigDaddyG AI Assistant",
+  "description": "100% Agentic AI coding assistant with voice support and self-healing",
+  "version": "2.1.0",
+  "publisher": "bigdaddyg",
+  "icon": "icon.png",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Programming Languages", "Machine Learning", "Other"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "bigdaddyg.chat",
+        "title": "BigDaddyG: Open Chat",
+        "icon": "$(comment-discussion)"
+      },
+      {
+        "command": "bigdaddyg.voiceCode",
+        "title": "BigDaddyG: Start Voice Coding",
+        "icon": "$(mic)"
+      },
+      {
+        "command": "bigdaddyg.fixCode",
+        "title": "BigDaddyG: Auto-Fix Code",
+        "icon": "$(wrench)"
+      },
+      {
+        "command": "bigdaddyg.explainCode",
+        "title": "BigDaddyG: Explain Code"
+      },
+      {
+        "command": "bigdaddyg.generateTests",
+        "title": "BigDaddyG: Generate Tests"
+      },
+      {
+        "command": "bigdaddyg.refactor",
+        "title": "BigDaddyG: Refactor Code"
+      },
+      {
+        "command": "bigdaddyg.selectModel",
+        "title": "BigDaddyG: Select AI Model"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "bigdaddyg",
+          "title": "BigDaddyG AI",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "bigdaddyg": [
+        {
+          "id": "bigdaddyg.chatView",
+          "name": "Chat",
+          "type": "webview"
+        },
+        {
+          "id": "bigdaddyg.agentView",
+          "name": "Agents",
+          "type": "tree"
+        },
+        {
+          "id": "bigdaddyg.historyView",
+          "name": "History",
+          "type": "tree"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "BigDaddyG",
+      "properties": {
+        "bigdaddyg.apiEndpoint": {
+          "type": "string",
+          "default": "http://localhost:11434",
+          "description": "BigDaddyG API endpoint"
+        },
+        "bigdaddyg.defaultModel": {
+          "type": "string",
+          "default": "bigdaddyg:latest",
+          "description": "Default AI model"
+        },
+        "bigdaddyg.enableVoice": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable voice coding"
+        },
+        "bigdaddyg.autoFix": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable automatic code fixing"
+        },
+        "bigdaddyg.agenticMode": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable full agentic capabilities"
+        }
+      }
+    },
+    "keybindings": [
+      {
+        "command": "bigdaddyg.chat",
+        "key": "ctrl+shift+g",
+        "mac": "cmd+shift+g"
+      },
+      {
+        "command": "bigdaddyg.voiceCode",
+        "key": "ctrl+shift+v",
+        "mac": "cmd+shift+v"
+      },
+      {
+        "command": "bigdaddyg.fixCode",
+        "key": "ctrl+shift+f",
+        "mac": "cmd+shift+f"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "bigdaddyg.explainCode",
+          "group": "bigdaddyg@1",
+          "when": "editorHasSelection"
+        },
+        {
+          "command": "bigdaddyg.refactor",
+          "group": "bigdaddyg@2",
+          "when": "editorHasSelection"
+        },
+        {
+          "command": "bigdaddyg.generateTests",
+          "group": "bigdaddyg@3"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^2.22.0",
+    "typescript": "^5.3.0"
+  },
+  "dependencies": {
+    "ws": "^8.14.2",
+    "node-fetch": "^2.7.0"
+  }
+}

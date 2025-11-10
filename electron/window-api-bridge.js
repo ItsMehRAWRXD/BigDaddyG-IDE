@@ -110,26 +110,62 @@ if (!window.displayFindings) {
         
         const findings = data.findings || [];
         
-        panel.innerHTML = `
-            <div style="padding: 15px; background: rgba(0, 0, 0, 0.5); border-bottom: 2px solid var(--red); display: flex; justify-content: space-between; align-items: center;">
-                <h3 style="margin: 0; color: var(--red); font-size: 16px;">🐛 Code Issues</h3>
-                <button onclick="document.getElementById('code-issues-panel').remove()" style="background: none; border: none; color: #888; font-size: 20px; cursor: pointer;">×</button>
-            </div>
-            <div style="max-height: 400px; overflow-y: auto; padding: 15px;">
-                ${findings.length === 0 ? `
-                    <div style="text-align: center; padding: 40px 20px; color: var(--green);">
-                        <div style="font-size: 48px; margin-bottom: 10px;">✅</div>
-                        <div style="font-size: 14px; font-weight: bold;">No Issues Found!</div>
-                    </div>
-                ` : findings.map(finding => `
-                    <div onclick="window.monacoEditor?.revealLineInCenter(${finding.startLine})" style="margin-bottom: 12px; padding: 12px; background: rgba(0, 0, 0, 0.3); border-left: 3px solid var(--red); border-radius: 6px; cursor: pointer;">
-                        <div style="color: var(--red); font-weight: bold; font-size: 13px; margin-bottom: 6px;">${finding.title}</div>
-                        <div style="color: #888; font-size: 11px; margin-bottom: 6px;">Line ${finding.startLine}</div>
-                        <div style="color: #fff; font-size: 12px;">${finding.description}</div>
-                    </div>
-                `).join('')}
-            </div>
-        `;
+        panel.textContent = '';
+        
+        const header = document.createElement('div');
+        header.style.cssText = 'padding: 15px; background: rgba(0, 0, 0, 0.5); border-bottom: 2px solid var(--red); display: flex; justify-content: space-between; align-items: center;';
+        const title = document.createElement('h3');
+        title.style.cssText = 'margin: 0; color: var(--red); font-size: 16px;';
+        title.textContent = '🐛 Code Issues';
+        const closeBtn = document.createElement('button');
+        closeBtn.style.cssText = 'background: none; border: none; color: #888; font-size: 20px; cursor: pointer;';
+        closeBtn.textContent = '×';
+        closeBtn.onclick = () => panel.remove();
+        header.appendChild(title);
+        header.appendChild(closeBtn);
+        panel.appendChild(header);
+        
+        const content = document.createElement('div');
+        content.style.cssText = 'max-height: 400px; overflow-y: auto; padding: 15px;';
+        
+        if (findings.length === 0) {
+            const noIssues = document.createElement('div');
+            noIssues.style.cssText = 'text-align: center; padding: 40px 20px; color: var(--green);';
+            const icon = document.createElement('div');
+            icon.style.cssText = 'font-size: 48px; margin-bottom: 10px;';
+            icon.textContent = '✅';
+            const msg = document.createElement('div');
+            msg.style.cssText = 'font-size: 14px; font-weight: bold;';
+            msg.textContent = 'No Issues Found!';
+            noIssues.appendChild(icon);
+            noIssues.appendChild(msg);
+            content.appendChild(noIssues);
+        } else {
+            findings.forEach(finding => {
+                const item = document.createElement('div');
+                item.style.cssText = 'margin-bottom: 12px; padding: 12px; background: rgba(0, 0, 0, 0.3); border-left: 3px solid var(--red); border-radius: 6px; cursor: pointer;';
+                item.onclick = () => window.monacoEditor?.revealLineInCenter(finding.startLine);
+                
+                const titleEl = document.createElement('div');
+                titleEl.style.cssText = 'color: var(--red); font-weight: bold; font-size: 13px; margin-bottom: 6px;';
+                titleEl.textContent = finding.title;
+                
+                const lineEl = document.createElement('div');
+                lineEl.style.cssText = 'color: #888; font-size: 11px; margin-bottom: 6px;';
+                lineEl.textContent = `Line ${finding.startLine}`;
+                
+                const descEl = document.createElement('div');
+                descEl.style.cssText = 'color: #fff; font-size: 12px;';
+                descEl.textContent = finding.description;
+                
+                item.appendChild(titleEl);
+                item.appendChild(lineEl);
+                item.appendChild(descEl);
+                content.appendChild(item);
+            });
+        }
+        
+        panel.appendChild(content);
         
         console.log('[WindowAPI] ✅ Displayed', findings.length, 'findings');
     };

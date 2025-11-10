@@ -28,13 +28,37 @@ class ChatHistoryManager {
         }
         
         if (!this.currentChat) {
-            this.createNewChat();
+            this.createNewChat({ render: false });
         }
         
-        // Render past chats UI
+        // Setup UI integration
+        this.setupUIIntegration();
+        
+        // Render UI with current chat
         this.renderPastChats();
+        this.loadChatIntoUI(this.currentChat);
         
         console.log('[ChatHistory] ✅ Chat history ready');
+    }
+    
+    setupUIIntegration() {
+        // Auto-save on window close
+        window.addEventListener('beforeunload', () => this.saveChats());
+        
+        // Resume chat on focus
+        window.addEventListener('focus', () => {
+            if (this.currentChat) {
+                this.loadChatIntoUI(this.currentChat);
+            }
+        });
+        
+        // Setup keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'n') {
+                e.preventDefault();
+                this.createNewChat();
+            }
+        });
     }
     
     loadChats() {
@@ -59,12 +83,13 @@ class ChatHistoryManager {
         }
     }
     
-    createNewChat() {
+    createNewChat(options = {}) {
+        const now = new Date();
         const chat = {
-            id: Date.now().toString(),
+            id: now.getTime().toString(),
             title: 'New Chat',
-            created: new Date().toISOString(),
-            updated: new Date().toISOString(),
+            created: now.toISOString(),
+            updated: now.toISOString(),
             messages: [],
             unreadCount: 0
         };
@@ -74,7 +99,11 @@ class ChatHistoryManager {
         localStorage.setItem(this.currentChatKey, chat.id);
         this.saveChats();
         this.renderPastChats();
-        this.clearCurrentChatUI();
+        
+        if (options.render !== false) {
+            this.clearChatUI();
+            this.loadChatIntoUI(chat);
+        }
         
         console.log('[ChatHistory] ✨ New chat created:', chat.id);
         return chat;
@@ -100,39 +129,72 @@ class ChatHistoryManager {
         this.saveChats();
         
         // Render chat
+        this.clearChatUI();
         this.loadChatIntoUI(chat);
         this.renderPastChats();
         
         console.log('[ChatHistory] 📖 Switched to chat:', chatId);
     }
     
-    addMessage(role, content, attachments = null, error = false) {
+    addMessage(role, content, attachmentsOrOptions = null, errorFlag = false) {
         if (!this.currentChat) {
-            this.createNewChat();
+            this.createNewChat({ render: false });
         }
         
+        let options = {};
+        if (attachmentsOrOptions && typeof attachmentsOrOptions === 'object' && !Array.isArray(attachmentsOrOptions)) {
+            options = { ...attachmentsOrOptions };
+        } else {
+            options.attachments = attachmentsOrOptions;
+            options.error = errorFlag;
+        }
+        
+        const {
+            attachments = null,
+            error = false,
+            source = 'right-sidebar',
+            render = true,
+            html = null,
+            metadata = null,
+            timestamp = new Date().toISOString()
+        } = options;
+        
         const message = {
-            id: Date.now().toString() + Math.random(),
-            role, // 'user' or 'assistant'
+            id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            role,
             content,
-            attachments,
-            error,
-            timestamp: new Date().toISOString(),
-            isUnread: false // User just sent/received it
+            html,
+            attachments: this.normalizeAttachments(attachments),
+            error: Boolean(error),
+            timestamp,
+            source,
+            metadata: metadata ? { ...metadata } : undefined
         };
         
         this.currentChat.messages.push(message);
-        this.currentChat.updated = new Date().toISOString();
+        this.currentChat.updated = timestamp;
         
-        // Auto-generate title from first user message
-        if (this.currentChat.messages.length === 1 && role === 'user') {
+        if (role === 'user' && this.currentChat.messages.length === 1) {
             this.currentChat.title = content.substring(0, 50) + (content.length > 50 ? '...' : '');
         }
         
+        // Auto-save and render
         this.saveChats();
         this.renderPastChats();
         
+        if (render) {
+            this.appendMessageToUI(message, { scroll: true });
+        }
+        
         return message;
+    }
+    
+    resumeChat(chatId = null) {
+        const targetChat = chatId ? this.chats.find(c => c.id === chatId) : this.currentChat;
+        if (targetChat) {
+            this.switchToChat(targetChat.id);
+            console.log('[ChatHistory] 🔄 Chat resumed:', targetChat.id);
+        }
     }
     
     markMessageAsUnread(messageId) {
@@ -323,45 +385,64 @@ class ChatHistoryManager {
         return date.toLocaleDateString();
     }
     
-    clearCurrentChatUI() {
-        const container = document.getElementById('ai-chat-messages');
-        if (container) {
-            container.innerHTML = `
-                <div style="padding: 40px 20px; text-align: center; color: var(--cursor-text-secondary); font-size: 13px; line-height: 1.8;">
-                    <div style="font-size: 48px; margin-bottom: 20px;">💬</div>
-                    <div style="font-weight: 600; font-size: 16px; margin-bottom: 10px; color: var(--cursor-jade-dark);">
-                        Welcome to BigDaddyG IDE!
-                    </div>
-                    <div style="font-size: 12px;">
-                        ✨ Features:<br>
-                        • 🎤 Voice coding (say "Hey BigDaddy")<br>
-                        • 📚 Deep research engine<br>
-                        • 1M context window<br>
-                        • 🐝 200 parallel mini-agents<br>
-                        • 📁 Browse ALL drives (C:, D:, USB)<br><br>
-                        Ask me anything! Or try:<br>
-                        • "Create a REST API"<br>
-                        • "Debug this code"<br>
-                        • "Optimize performance"
-                    </div>
-                </div>
-            `;
-        }
+    normalizeAttachments(attachments) {
+        if (!attachments || !Array.isArray(attachments)) return null;
+        return attachments.map((att) => ({
+            name: att?.name || att?.filename || 'attachment',
+            size: att?.size || 0,
+            type: att?.type || att?.mime || '',
+        }));
+    }
+
+    getActiveContainers() {
+        const containers = [];
+        const sidebar = document.getElementById('ai-chat-messages');
+        if (sidebar) containers.push(sidebar);
+        const center = document.getElementById('center-chat-messages');
+        if (center) containers.push(center);
+        return containers;
+    }
+
+    clearChatUI() {
+        const containers = this.getActiveContainers();
+        containers.forEach((container) => {
+            container.innerHTML = '';
+        });
+    }
+
+    appendMessageToUI(message, options = {}) {
+        const containers = options.targets || this.getActiveContainers();
+        if (containers.length === 0) return;
+
+        containers.forEach((container) => {
+            const element = this.createMessageElement(message, container.id);
+            if (element) {
+                container.appendChild(element);
+                if (options.scroll !== false) {
+                    container.scrollTop = container.scrollHeight;
+                }
+            }
+        });
     }
     
     loadChatIntoUI(chat) {
-        const container = document.getElementById('ai-chat-messages');
-        if (!container) return;
-        
-        container.innerHTML = '';
-        
-        chat.messages.forEach(msg => {
-            const msgEl = this.createMessageElement(msg);
-            container.appendChild(msgEl);
+        const containers = this.getActiveContainers();
+        containers.forEach((container) => {
+            container.innerHTML = '';
         });
         
-        // Scroll to bottom
-        container.scrollTop = container.scrollHeight;
+        if (!chat || !chat.messages) {
+            this.showEmptyState(containers);
+            return;
+        }
+        
+        chat.messages.forEach((msg) => {
+            this.appendMessageToUI(msg, { targets: containers, scroll: false });
+        });
+        
+        containers.forEach((container) => {
+            container.scrollTop = container.scrollHeight;
+        });
     }
     
     createMessageElement(message) {
@@ -430,17 +511,58 @@ class ChatHistoryManager {
     getCurrentChat() {
         return this.currentChat;
     }
+
+    showEmptyState(containers = this.getActiveContainers()) {
+        const placeholder = `
+            <div style="padding: 40px 20px; text-align: center; color: var(--cursor-text-secondary); font-size: 13px; line-height: 1.8;">
+                <div style="font-size: 48px; margin-bottom: 20px;">💬</div>
+                <div style="font-weight: 600; font-size: 16px; margin-bottom: 10px; color: var(--cursor-jade-dark);">
+                    Welcome to BigDaddyG IDE!
+                </div>
+                <div style="font-size: 12px; margin-bottom: 20px;">
+                    • 🎤 Voice coding (say "Hey BigDaddy")<br>
+                    • 📚 Deep research engine<br>
+                    • 1M context window<br>
+                    • 🐝 200 parallel mini-agents<br>
+                    • 📁 Browse ALL drives (C:, D:, USB)
+                </div>
+                <button onclick="chatHistory.createNewChat()" style="background: var(--cursor-accent); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px;">
+                    Start New Chat
+                </button>
+            </div>
+        `;
+        containers.forEach((container) => {
+            container.innerHTML = placeholder;
+        });
+    }
+    
+    getResumeData() {
+        return {
+            currentChatId: this.currentChat?.id,
+            totalChats: this.chats.length,
+            totalMessages: this.chats.reduce((sum, chat) => sum + chat.messages.length, 0),
+            lastActivity: this.currentChat?.updated
+        };
+    }
 }
 
-// Initialize chat history
+// Initialize chat history with resume capability
 window.chatHistory = null;
 
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        window.chatHistory = new ChatHistoryManager();
-    });
-} else {
+function initializeChatHistory() {
     window.chatHistory = new ChatHistoryManager();
+    
+    // Auto-resume last chat on startup
+    const resumeData = window.chatHistory.getResumeData();
+    if (resumeData.currentChatId) {
+        console.log('[ChatHistory] 🔄 Resuming chat session:', resumeData);
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeChatHistory);
+} else {
+    initializeChatHistory();
 }
 
 // Export

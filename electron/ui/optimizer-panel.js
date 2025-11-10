@@ -154,13 +154,15 @@ class OptimizerPanel {
     const grid = document.getElementById('system-info-grid');
     if (!grid) return;
     
+    const sanitize = (str) => String(str || '').replace(/[<>"'&]/g, (m) => ({'<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','&':'&amp;'}[m]));
+    
     grid.innerHTML = `
       <div class="info-card">
         <div class="info-icon">🖥️</div>
         <div class="info-content">
           <div class="info-label">CPU</div>
-          <div class="info-value">${info.cpu.model}</div>
-          <div class="info-detail">${info.cpu.physicalCores}C/${info.cpu.threads}T @ ${info.cpu.speed}MHz</div>
+          <div class="info-value">${sanitize(info.cpu.model)}</div>
+          <div class="info-detail">${sanitize(info.cpu.physicalCores)}C/${sanitize(info.cpu.threads)}T @ ${sanitize(info.cpu.speed)}MHz</div>
           ${info.cpu.cache.L3 ? `<div class="info-detail">L3 Cache: ${Math.round(info.cpu.cache.L3 / 1024)}MB</div>` : ''}
         </div>
       </div>
@@ -169,9 +171,9 @@ class OptimizerPanel {
         <div class="info-icon">💾</div>
         <div class="info-content">
           <div class="info-label">RAM</div>
-          <div class="info-value">${info.memory.totalGB}GB ${info.memory.type}</div>
-          <div class="info-detail">${info.memory.speed ? `${info.memory.speed}MHz` : ''}</div>
-          <div class="info-detail">Usage: ${info.memory.usagePercent}%</div>
+          <div class="info-value">${sanitize(info.memory.totalGB)}GB ${sanitize(info.memory.type)}</div>
+          <div class="info-detail">${info.memory.speed ? `${sanitize(info.memory.speed)}MHz` : ''}</div>
+          <div class="info-detail">Usage: ${sanitize(info.memory.usagePercent)}%</div>
         </div>
       </div>
       
@@ -179,8 +181,8 @@ class OptimizerPanel {
         <div class="info-icon">🎮</div>
         <div class="info-content">
           <div class="info-label">GPU</div>
-          <div class="info-value">${info.gpu.vendor}</div>
-          <div class="info-detail">${info.gpu.model}</div>
+          <div class="info-value">${sanitize(info.gpu.vendor)}</div>
+          <div class="info-detail">${sanitize(info.gpu.model)}</div>
           ${info.gpu.vram ? `<div class="info-detail">VRAM: ${Math.round(info.gpu.vram / (1024**3))}GB</div>` : ''}
         </div>
       </div>
@@ -257,10 +259,10 @@ class OptimizerPanel {
           <tbody>
             ${Object.entries(comparison).map(([key, diff]) => `
               <tr>
-                <td class="setting-name">${this.formatSettingName(key)}</td>
-                <td class="current-value">${this.formatValue(diff.current)}</td>
-                <td class="optimal-value">${this.formatValue(diff.optimal)}</td>
-                <td class="impact">${this.getImpact(key, diff)}</td>
+                <td class="setting-name">${this.sanitize(this.formatSettingName(key))}</td>
+                <td class="current-value">${this.sanitize(this.formatValue(diff.current))}</td>
+                <td class="optimal-value">${this.sanitize(this.formatValue(diff.optimal))}</td>
+                <td class="impact">${this.sanitize(this.getImpact(key, diff))}</td>
               </tr>
             `).join('')}
           </tbody>
@@ -398,10 +400,14 @@ class OptimizerPanel {
     return key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
   }
   
+  sanitize(str) {
+    return String(str || '').replace(/[<>"'&]/g, (m) => ({'<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','&':'&amp;'}[m]));
+  }
+  
   formatValue(value) {
     if (typeof value === 'boolean') return value ? '✅' : '❌';
     if (typeof value === 'object') return JSON.stringify(value);
-    return value.toString();
+    return String(value);
   }
   
   getImpact(key, diff) {

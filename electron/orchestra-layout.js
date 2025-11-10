@@ -710,15 +710,20 @@ class OrchestraLayout {
             // Include uploaded files
             const files = session.files || [];
             
+            const basePayload = {
+                message,
+                model,
+                sessionId: session.id,
+                files: files.map(f => ({ name: f.name, content: f.content }))
+            };
+            const requestBody = window.enhancedUserMessage?.augmentRequest
+                ? window.enhancedUserMessage.augmentRequest(basePayload)
+                : basePayload;
+            
             const response = await fetch('http://localhost:11441/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    message,
-                    model,
-                    sessionId: session.id,
-                    files: files.map(f => ({ name: f.name, content: f.content }))
-                })
+                body: JSON.stringify(requestBody)
             });
             
             const data = await response.json();

@@ -661,33 +661,34 @@
             
             <!-- Right Sidebar - Tabbed Interface -->
             <div id="right-sidebar">
-                <!-- Sidebar - Quick Launch Buttons -->
-                <div id="sidebar-buttons" style="display: flex; flex-direction: column; background: var(--cursor-bg-secondary); border-bottom: 2px solid var(--cursor-border); padding: 12px; gap: 8px;">
-                    <button onclick="if(window.tabSystem) window.tabSystem.openChatTab()" style="width: 100%; background: linear-gradient(135deg, rgba(119, 221, 190, 0.2), rgba(77, 192, 181, 0.2)); border: 1px solid var(--cursor-jade-light); color: var(--cursor-jade-dark); padding: 12px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; text-align: left; transition: all 0.2s;" onmouseover="this.style.background='linear-gradient(135deg, rgba(119, 221, 190, 0.3), rgba(77, 192, 181, 0.3))';" onmouseout="this.style.background='linear-gradient(135deg, rgba(119, 221, 190, 0.2), rgba(77, 192, 181, 0.2))';">
-                        💬 Open Chat Tab <span style="float: right; font-size: 10px; opacity: 0.7;">Ctrl+Shift+C</span>
-                    </button>
-                    <button onclick="if(window.tabSystem) window.tabSystem.openExplorerTab()" style="width: 100%; background: none; border: 1px solid var(--cursor-border); color: var(--cursor-text); padding: 12px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; text-align: left; transition: all 0.2s;" onmouseover="this.style.background='var(--cursor-bg-tertiary)';" onmouseout="this.style.background='none';">
-                        📁 Open Explorer <span style="float: right; font-size: 10px; opacity: 0.7;">Ctrl+Shift+E</span>
-                    </button>
-                    <button onclick="if(window.tabSystem) window.tabSystem.openGitHubTab()" style="width: 100%; background: none; border: 1px solid var(--cursor-border); color: var(--cursor-text); padding: 12px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; text-align: left; transition: all 0.2s;" onmouseover="this.style.background='var(--cursor-bg-tertiary)';" onmouseout="this.style.background='none';">
-                        🐙 Open GitHub <span style="float: right; font-size: 10px; opacity: 0.7;">Ctrl+Shift+G</span>
-                    </button>
-                    <button onclick="if(window.tabSystem) window.tabSystem.openAgentsTab()" style="width: 100%; background: none; border: 1px solid var(--cursor-border); color: var(--cursor-text); padding: 12px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; text-align: left; transition: all 0.2s;" onmouseover="this.style.background='var(--cursor-bg-tertiary)';" onmouseout="this.style.background='none';">
-                        🤖 Open Agents <span style="float: right; font-size: 10px; opacity: 0.7;">Ctrl+Shift+A</span>
-                    </button>
-                    <button onclick="if(window.tabSystem) window.tabSystem.openTeamTab()" style="width: 100%; background: none; border: 1px solid var(--cursor-border); color: var(--cursor-text); padding: 12px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; text-align: left; transition: all 0.2s;" onmouseover="this.style.background='var(--cursor-bg-tertiary)';" onmouseout="this.style.background='none';">
-                        👥 Open Team <span style="float: right; font-size: 10px; opacity: 0.7;">Ctrl+Shift+T</span>
-                    </button>
-                    <button onclick="if(window.tabSystem) window.tabSystem.openSettingsTab()" style="width: 100%; background: none; border: 1px solid var(--cursor-border); color: var(--cursor-text); padding: 12px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; text-align: left; transition: all 0.2s;" onmouseover="this.style.background='var(--cursor-bg-tertiary)';" onmouseout="this.style.background='none';">
-                        ⚙️ Open Settings <span style="float: right; font-size: 10px; opacity: 0.7;">Ctrl+,</span>
-                    </button>
-                    <button onclick="if(window.browserPanel) window.browserPanel.show()" style="width: 100%; background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 255, 136, 0.2)); border: 1px solid var(--cyan); color: var(--cyan); padding: 12px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; text-align: left; transition: all 0.2s;" onmouseover="this.style.background='linear-gradient(135deg, rgba(0, 212, 255, 0.3), rgba(0, 255, 136, 0.3))';" onmouseout="this.style.background='linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 255, 136, 0.2))';">
-                        🌐 Open Browser <span style="float: right; font-size: 10px; opacity: 0.7;">Ctrl+Shift+B</span>
-                    </button>
-                </div>
-                
-                <!-- Tab Content Areas -->
-                <div id="sidebar-tab-content" style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+                <div class="sidebar-layout">
+                    <!-- Sidebar - Quick Launch Buttons -->
+                    <div id="sidebar-buttons">
+                        <button class="sidebar-quick-button secondary" onclick="if(window.tabSystem) window.tabSystem.openChatTab()">
+                            💬 Open Chat Tab <span class="shortcut">Ctrl+Shift+C</span>
+                        </button>
+                        <button class="sidebar-quick-button" onclick="if(window.tabSystem) window.tabSystem.openExplorerTab()">
+                            📁 Open Explorer <span class="shortcut">Ctrl+Shift+E</span>
+                        </button>
+                        <button class="sidebar-quick-button" onclick="if(window.tabSystem) window.tabSystem.openGitHubTab()">
+                            🐙 Open GitHub <span class="shortcut">Ctrl+Shift+G</span>
+                        </button>
+                        <button class="sidebar-quick-button" onclick="if(window.tabSystem) window.tabSystem.openAgentsTab()">
+                            🤖 Open Agents <span class="shortcut">Ctrl+Shift+A</span>
+                        </button>
+                        <button class="sidebar-quick-button" onclick="if(window.tabSystem) window.tabSystem.openTeamTab()">
+                            👥 Open Team <span class="shortcut">Ctrl+Shift+T</span>
+                        </button>
+                        <button class="sidebar-quick-button" onclick="if(window.tabSystem) window.tabSystem.openSettingsTab()">
+                            ⚙️ Open Settings <span class="shortcut">Ctrl+,</span>
+                        </button>
+                        <button class="sidebar-quick-button browser" onclick="if(window.browserPanel) window.browserPanel.show()">
+                            🌐 Open Browser <span class="shortcut">Ctrl+Shift+B</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Tab Content Areas -->
+                    <div id="sidebar-tab-content">
                     
                     <!-- CHAT TAB (Active by default) -->
                     <div id="chat-tab-content" class="tab-content" style="flex: 1; display: flex; flex-direction: column;">
@@ -811,7 +812,8 @@
                 </div>
                 
                 <div id="ai-chat-messages">
-                    <div class="ai-message">
+                    <div class="ai-message welcome-message" id="welcome-message">
+                        <button class="welcome-dismiss" onclick="dismissWelcomeMessage()" title="Dismiss welcome message">✕</button>
                         <strong style="color: var(--cyan);">BigDaddyG:</strong><br><br>
                         Welcome to BigDaddyG IDE Professional Edition! 🌌<br><br>
                         I'm your AI copilot, trained on 200K lines of assembly and security code.<br><br>
@@ -1041,6 +1043,8 @@
     <script src="ui-enhancer.js"></script>
     
     <script src="renderer.js"></script>
+    <script src="settings-applier.js"></script>
+    <script src="settings-panel.js"></script>
     
     <!-- AGENTIC GLOBAL API - Expose all operations for AI control -->
     <script src="agentic-global-api.js"></script>
@@ -1379,8 +1383,14 @@
     <!-- IDE INITIALIZER - Final validation and system check (MUST BE LAST) -->
     <script src="ide-initializer.js"></script>
     
+    <!-- INTEGRATION UPDATES - Seamless UI integration for layout and chat history -->
+    <script src="integration-updates.js"></script>
+    
     <!-- DEMO LAUNCHER - Comprehensive visual showcase of all features -->
     <script src="demo-launcher.js"></script>
+    
+    <!-- INTEGRATION TEST SUITE (Optional - for testing) -->
+    <!-- <script src="test-integration.js"></script> -->
 </body>
 </html>
 

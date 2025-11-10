@@ -21,7 +21,6 @@ class WebBrowser {
     }
     
     init() {
-        // Create browser UI
         this.createBrowserUI();
         
         // Register keyboard shortcuts
@@ -32,6 +31,10 @@ class WebBrowser {
     }
     
     createBrowserUI() {
+        if (this.browserContainer) {
+            this.browserContainer.remove();
+        }
+
         // Create browser container (hidden by default)
         const browserContainer = document.createElement('div');
         browserContainer.id = 'web-browser-container';
@@ -47,7 +50,7 @@ class WebBrowser {
             flex-direction: column;
             pointer-events: auto;
         `;
-        
+
         // Create browser toolbar
         const toolbar = document.createElement('div');
         toolbar.className = 'browser-toolbar';
@@ -103,20 +106,13 @@ class WebBrowser {
         toolbar.appendChild(bookmarkBtn);
         toolbar.appendChild(closeBtn);
         
-        // Create webview for browser content
-        const webviewContainer = document.createElement('div');
-        webviewContainer.style.cssText = `
-            flex: 1;
-            position: relative;
-            background: #fff;
-        `;
-        
         const webview = document.createElement('webview');
         webview.id = 'browser-webview';
         webview.src = this.currentUrl;
         webview.style.cssText = `
+            flex: 1;
             width: 100%;
-            height: 100%;
+            border: none;
         `;
         
         // Enable dev tools, node integration, etc
@@ -140,11 +136,8 @@ class WebBrowser {
             console.log('[WebBrowser] 📄 Title:', e.title);
         });
         
-        webviewContainer.appendChild(webview);
-        
-        // Assemble browser
         browserContainer.appendChild(toolbar);
-        browserContainer.appendChild(webviewContainer);
+        browserContainer.appendChild(webview);
         
         document.body.appendChild(browserContainer);
         
@@ -179,20 +172,36 @@ class WebBrowser {
         if (url) {
             this.navigate(url);
         }
+        if (!this.browserContainer) {
+            this.createBrowserUI();
+        }
         this.browserContainer.style.display = 'flex';
+        this.isVisible = true;
+        if (this.addressBar) {
+            setTimeout(() => {
+                this.addressBar.focus({ preventScroll: true });
+                this.addressBar.select();
+            }, 0);
+        }
         console.log('[WebBrowser] 🌐 Browser opened');
     }
     
     closeBrowser() {
-        this.browserContainer.style.display = 'none';
+        if (this.browserContainer) {
+            this.browserContainer.style.display = 'none';
+        }
+        this.isVisible = false;
         console.log('[WebBrowser] 🌐 Browser closed');
     }
     
     toggleBrowser() {
-        if (this.browserContainer.style.display === 'none') {
-            this.openBrowser();
-        } else {
+        if (!this.browserContainer) {
+            this.createBrowserUI();
+        }
+        if (this.browserContainer.style.display === 'flex') {
             this.closeBrowser();
+        } else {
+            this.openBrowser();
         }
     }
     
@@ -228,7 +237,25 @@ class WebBrowser {
     }
     
     refresh() {
-        this.webview.reload();
+        if (!this.webview) return;
+        if (typeof this.webview.reload === 'function') {
+            try {
+                this.webview.reload();
+                return;
+            } catch (error) {
+                console.warn('[WebBrowser] ⚠️ Failed to reload via webview.reload:', error);
+            }
+        }
+
+        if (this.webview.contentWindow && typeof this.webview.contentWindow.location?.reload === 'function') {
+            this.webview.contentWindow.location.reload();
+        } else if (this.webview.src) {
+            const current = this.webview.src;
+            this.webview.src = '';
+            this.webview.src = current;
+        } else {
+            console.warn('[WebBrowser] ⚠️ Cannot reload browser view');
+        }
     }
     
     goHome() {
@@ -297,7 +324,7 @@ class WebBrowser {
             }
             
             // Escape - Close browser
-            if (e.key === 'Escape' && this.browserContainer.style.display !== 'none') {
+            if (e.key === 'Escape' && this.isVisible) {
                 e.preventDefault();
                 this.closeBrowser();
             }

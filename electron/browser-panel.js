@@ -1,8 +1,3 @@
-/**
- * Browser Panel - Integrated Web Browser for BigDaddyG IDE
- * Combines BrowserView and webview for maximum compatibility
- */
-
 class BrowserPanel {
     constructor() {
         this.isVisible = false;

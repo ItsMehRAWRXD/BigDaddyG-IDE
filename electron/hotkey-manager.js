@@ -6,29 +6,150 @@
 (function() {
 'use strict';
 
+const DEFAULT_HOTKEYS = {
+    'ide.newFile':      { combo: 'Ctrl+N',                description: 'New File',                 category: 'File' },
+    'ide.openFile':     { combo: 'Ctrl+O',                description: 'Open File',                category: 'File' },
+    'ide.saveFile':     { combo: 'Ctrl+S',                description: 'Save File',                category: 'File' },
+    'ide.saveFileAs':   { combo: 'Ctrl+Shift+S',          description: 'Save As',                  category: 'File' },
+    'ide.saveAll':      { combo: 'Ctrl+K Ctrl+S',         description: 'Save All Files',           category: 'File' },
+
+    'tabs.next':        { combo: 'Ctrl+Tab',              description: 'Next Tab',                 category: 'Tabs' },
+    'tabs.previous':    { combo: 'Ctrl+Shift+Tab',        description: 'Previous Tab',             category: 'Tabs' },
+    'tabs.close':       { combo: 'Ctrl+W',                description: 'Close Tab',                category: 'Tabs' },
+    'tabs.closeAll':    { combo: 'Ctrl+Shift+W',          description: 'Close All Tabs',           category: 'Tabs' },
+    'tabs.switch.1':    { combo: 'Ctrl+1',                description: 'Switch to Tab 1',          category: 'Tabs' },
+    'tabs.switch.2':    { combo: 'Ctrl+2',                description: 'Switch to Tab 2',          category: 'Tabs' },
+    'tabs.switch.3':    { combo: 'Ctrl+3',                description: 'Switch to Tab 3',          category: 'Tabs' },
+    'tabs.switch.4':    { combo: 'Ctrl+4',                description: 'Switch to Tab 4',          category: 'Tabs' },
+    'tabs.switch.5':    { combo: 'Ctrl+5',                description: 'Switch to Tab 5',          category: 'Tabs' },
+    'tabs.switch.6':    { combo: 'Ctrl+6',                description: 'Switch to Tab 6',          category: 'Tabs' },
+    'tabs.switch.7':    { combo: 'Ctrl+7',                description: 'Switch to Tab 7',          category: 'Tabs' },
+    'tabs.switch.8':    { combo: 'Ctrl+8',                description: 'Switch to Tab 8',          category: 'Tabs' },
+    'tabs.switch.9':    { combo: 'Ctrl+9',                description: 'Switch to Tab 9',          category: 'Tabs' },
+    'tabs.previousAlt': { combo: 'Alt+ArrowLeft',         description: 'Previous Tab (Alt)',       category: 'Tabs' },
+    'tabs.nextAlt':     { combo: 'Alt+ArrowRight',        description: 'Next Tab (Alt)',           category: 'Tabs' },
+
+    'center.chat':      { combo: 'Ctrl+Shift+C',          description: 'Open Chat Tab',            category: 'Center Tabs' },
+    'center.explorer':  { combo: 'Ctrl+Shift+E',          description: 'Open Explorer Tab',        category: 'Center Tabs' },
+    'center.github':    { combo: 'Ctrl+Shift+G',          description: 'Open GitHub Tab',          category: 'Center Tabs' },
+    'center.agents':    { combo: 'Ctrl+Shift+A',          description: 'Open Agents Tab',          category: 'Center Tabs' },
+    'center.team':      { combo: 'Ctrl+Shift+T',          description: 'Open Team Tab',            category: 'Center Tabs' },
+    'center.settings':  { combo: 'Ctrl+,',                description: 'Open Settings Tab',        category: 'Center Tabs' },
+
+    'chat.toggleFloating': { combo: 'Ctrl+L',             description: 'Toggle Floating Chat',     category: 'Chat' },
+    'chat.sendMessage':    { combo: 'Ctrl+Enter',         description: 'Send AI Message',          category: 'Chat' },
+    'chat.stop':           { combo: 'Ctrl+Shift+X',       description: 'Stop AI Execution',        category: 'Chat' },
+
+    'terminal.toggle':  { combo: 'Ctrl+J',                description: 'Toggle Terminal',          category: 'Terminal' },
+    'console.toggle':   { combo: 'Ctrl+Shift+U',          description: 'Toggle Console Panel',     category: 'Terminal' },
+    'browser.toggle':   { combo: 'Ctrl+Shift+B',          description: 'Toggle Browser',           category: 'Terminal' },
+
+    'voice.start':      { combo: 'Ctrl+Shift+V',          description: 'Start Voice Coding',       category: 'Voice' },
+    'palette.open':     { combo: 'Ctrl+Shift+P',          description: 'Enhanced Command Palette', category: 'Productivity' },
+
+    'modals.close':     { combo: 'Escape',                description: 'Close Modals',             category: 'General' },
+
+    'editor.find':      { combo: 'Ctrl+F',                description: 'Find',                     category: 'Editor' },
+    'editor.replace':   { combo: 'Ctrl+H',                description: 'Find & Replace',           category: 'Editor' },
+    'editor.toggleComment': { combo: 'Ctrl+/',            description: 'Toggle Comment',           category: 'Editor' }
+};
+
+function clone(value) {
+    if (Array.isArray(value)) return value.map(clone);
+    if (value && typeof value === 'object') {
+        return Object.keys(value).reduce((acc, key) => {
+            acc[key] = clone(value[key]);
+            return acc;
+        }, {});
+    }
+    return value;
+}
+
 class HotkeyManager {
     constructor() {
         this.shortcuts = new Map();
         this.priority = [];
-        this.init();
+        this.hotkeyConfig = clone(DEFAULT_HOTKEYS);
+        this.settingsApi = window.electron?.settings || null;
+        this.refreshTimer = null;
+        this.ready = false;
+
+        this.init().catch((error) => {
+            console.error('[HotkeyManager] ❌ Failed to initialize:', error);
+        });
     }
     
-    init() {
+    async init() {
         console.log('[HotkeyManager] ⌨️ Initializing hotkey manager...');
-        
-        // Register all shortcuts
+
+        await this.reloadHotkeys();
         this.registerAllShortcuts();
         
-        // Single event listener for ALL shortcuts
         document.addEventListener('keydown', (e) => this.handleKeyPress(e), true);
         
+        this.ready = true;
         console.log('[HotkeyManager] ✅ Hotkey manager ready');
         this.listAllShortcuts();
+
+        if (this.settingsApi) {
+            this.settingsApi.onBootstrap((snapshot) => {
+                if (snapshot?.hotkeys) {
+                    this.hotkeyConfig = clone(snapshot.hotkeys);
+                    this.registerAllShortcuts();
+                    this.listAllShortcuts();
+                }
+            });
+
+            this.settingsApi.onDidChange((event) => this.onSettingsChanged(event));
+        }
+    }
+    
+    async reloadHotkeys() {
+        if (this.settingsApi) {
+            try {
+                const res = await this.settingsApi.getHotkeys();
+                if (res?.success && res.hotkeys) {
+                    this.hotkeyConfig = clone(res.hotkeys);
+                    return;
+                }
+            } catch (error) {
+                console.warn('[HotkeyManager] ⚠️ Failed to fetch hotkeys from settings service:', error);
+            }
+        }
+        this.hotkeyConfig = clone(DEFAULT_HOTKEYS);
+    }
+
+    scheduleRefreshHotkeys() {
+        if (this.refreshTimer) return;
+        this.refreshTimer = setTimeout(async () => {
+            this.refreshTimer = null;
+            await this.reloadHotkeys();
+            this.registerAllShortcuts();
+            this.listAllShortcuts();
+        }, 100);
+    }
+
+    onSettingsChanged(event) {
+        if (!event) return;
+        if (event.type === 'hotkey') {
+            this.scheduleRefreshHotkeys();
+            return;
+        }
+
+        if (event.type === 'reset') {
+            if (!event.section || event.section.startsWith('hotkeys')) {
+                this.scheduleRefreshHotkeys();
+            }
+            return;
+        }
+
+        if (event.type === 'update' && event.changes && event.changes.hotkeys) {
+            this.scheduleRefreshHotkeys();
+        }
     }
     
     registerTabShortcuts() {
-        // Register center tab shortcuts - these check for tabSystem at runtime
-        this.register('Ctrl+Shift+C', () => {
+        this.bindHotkey('center.chat', () => {
             if (window.tabSystem && typeof window.tabSystem.openChatTab === 'function') {
                 window.tabSystem.openChatTab();
             } else {
@@ -36,7 +157,7 @@ class HotkeyManager {
             }
         }, 'Open Chat Tab');
         
-        this.register('Ctrl+Shift+E', () => {
+        this.bindHotkey('center.explorer', () => {
             if (window.tabSystem && typeof window.tabSystem.openExplorerTab === 'function') {
                 window.tabSystem.openExplorerTab();
             } else {
@@ -44,7 +165,7 @@ class HotkeyManager {
             }
         }, 'Open Explorer Tab');
         
-        this.register('Ctrl+Shift+G', () => {
+        this.bindHotkey('center.github', () => {
             if (window.tabSystem && typeof window.tabSystem.openGitHubTab === 'function') {
                 window.tabSystem.openGitHubTab();
             } else {
@@ -52,7 +173,7 @@ class HotkeyManager {
             }
         }, 'Open GitHub Tab');
         
-        this.register('Ctrl+Shift+A', () => {
+        this.bindHotkey('center.agents', () => {
             if (window.tabSystem && typeof window.tabSystem.openAgentsTab === 'function') {
                 window.tabSystem.openAgentsTab();
             } else {
@@ -60,7 +181,7 @@ class HotkeyManager {
             }
         }, 'Open Agents Tab');
         
-        this.register('Ctrl+Shift+T', () => {
+        this.bindHotkey('center.team', () => {
             if (window.tabSystem && typeof window.tabSystem.openTeamTab === 'function') {
                 window.tabSystem.openTeamTab();
             } else {
@@ -68,7 +189,7 @@ class HotkeyManager {
             }
         }, 'Open Team Tab');
         
-        this.register('Ctrl+,', () => {
+        this.bindHotkey('center.settings', () => {
             if (window.tabSystem && typeof window.tabSystem.openSettingsTab === 'function') {
                 window.tabSystem.openSettingsTab();
             } else {
@@ -78,63 +199,64 @@ class HotkeyManager {
     }
     
     registerAllShortcuts() {
+        this.shortcuts.clear();
+
         // ========================================================================
         // FILE OPERATIONS
         // ========================================================================
-        this.register('Ctrl+N', () => {
+        this.bindHotkey('ide.newFile', () => {
             if (typeof createNewFile === 'function') {
                 createNewFile();
             }
         }, 'New File');
         
-        this.register('Ctrl+O', () => {
+        this.bindHotkey('ide.openFile', () => {
             if (typeof openFileDialog === 'function') {
                 openFileDialog();
             }
         }, 'Open File');
         
-        this.register('Ctrl+S', () => {
+        this.bindHotkey('ide.saveFile', () => {
             if (typeof saveCurrentFile === 'function') {
                 saveCurrentFile();
             }
         }, 'Save File');
         
-        this.register('Ctrl+Shift+S', () => {
+        this.bindHotkey('ide.saveFileAs', () => {
             if (typeof saveFileAs === 'function') {
                 saveFileAs();
             }
         }, 'Save As');
         
-        this.register('Ctrl+K Ctrl+S', () => {
+        this.bindHotkey('ide.saveAll', () => {
             if (typeof saveAllFiles === 'function') {
                 saveAllFiles();
             }
         }, 'Save All Files');
-        
+
         // ========================================================================
         // TAB OPERATIONS
         // ========================================================================
-        this.register('Ctrl+Tab', () => {
+        this.bindHotkey('tabs.next', () => {
             if (typeof nextTab === 'function') nextTab();
         }, 'Next Tab');
         
-        this.register('Ctrl+Shift+Tab', () => {
+        this.bindHotkey('tabs.previous', () => {
             if (typeof previousTab === 'function') previousTab();
         }, 'Previous Tab');
         
-        this.register('Ctrl+W', () => {
+        this.bindHotkey('tabs.close', () => {
             if (typeof closeTab === 'function' && window.activeTab) {
                 closeTab({ stopPropagation: () => {} }, window.activeTab);
             }
         }, 'Close Tab');
         
-        this.register('Ctrl+Shift+W', () => {
+        this.bindHotkey('tabs.closeAll', () => {
             if (typeof closeAllTabs === 'function') closeAllTabs();
         }, 'Close All Tabs');
         
-        // Ctrl+1-9 for tab switching
         for (let i = 1; i <= 9; i++) {
-            this.register(`Ctrl+${i}`, () => {
+            this.bindHotkey(`tabs.switch.${i}`, () => {
                 const tabs = Object.keys(window.openTabs || {});
                 if (tabs[i - 1]) {
                     if (typeof switchTab === 'function') switchTab(tabs[i - 1]);
@@ -142,28 +264,28 @@ class HotkeyManager {
             }, `Switch to Tab ${i}`);
         }
         
-        // Alt+Left/Right for tab navigation
-        this.register('Alt+ArrowLeft', () => {
+        this.bindHotkey('tabs.previousAlt', () => {
             if (typeof previousTab === 'function') previousTab();
         }, 'Previous Tab (Alt)');
         
-        this.register('Alt+ArrowRight', () => {
+        this.bindHotkey('tabs.nextAlt', () => {
             if (typeof nextTab === 'function') nextTab();
         }, 'Next Tab (Alt)');
         
         // ========================================================================
-        // CENTER TABS (Tab System) - These will be registered when tabSystem is ready
+        // CENTER TABS (Tab System)
         // ========================================================================
         this.registerTabShortcuts();
         
         // ========================================================================
         // FLOATING CHAT
         // ========================================================================
-        this.register('Ctrl+L', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
+        this.bindHotkey('chat.toggleFloating', (e) => {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
             
-            // Try multiple methods to ensure chat opens
             if (window.floatingChat && typeof window.floatingChat.toggle === 'function') {
                 window.floatingChat.toggle();
                 console.log('[HotkeyManager] 💬 Floating chat toggled');
@@ -171,7 +293,6 @@ class HotkeyManager {
                 window.handleCtrlL();
             } else {
                 console.warn('[HotkeyManager] ⚠️ Floating chat not available - initializing...');
-                // Try to initialize floating chat if not available
                 if (typeof FloatingChat !== 'undefined') {
                     window.floatingChat = new FloatingChat();
                     setTimeout(() => {
@@ -184,8 +305,7 @@ class HotkeyManager {
         // ========================================================================
         // AI CHAT
         // ========================================================================
-        this.register('Ctrl+Enter', (e) => {
-            // Check if we're in any AI input field
+        this.bindHotkey('chat.sendMessage', (e) => {
             const activeEl = document.activeElement;
             const isAIInput = activeEl && (
                 activeEl.id === 'ai-input' ||
@@ -197,41 +317,62 @@ class HotkeyManager {
             );
             
             if (isAIInput) {
-                e.preventDefault();
-                e.stopPropagation();
+                if (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
                 if (typeof sendToAI === 'function') {
                     sendToAI();
                 } else if (window.floatingChat && activeEl.id === 'floating-chat-input') {
-                    // Try floating chat's send method
                     const sendBtn = document.querySelector('#floating-chat-send');
                     if (sendBtn) sendBtn.click();
                 }
             }
         }, 'Send AI Message');
         
-        // ========================================================================
-        // TERMINAL
-        // ========================================================================
-        this.register('Ctrl+J', () => {
-            const panel = document.getElementById('bottom-panel');
-            if (panel) {
-                panel.classList.toggle('collapsed');
-            }
-        }, 'Toggle Terminal');
-        
-        // ========================================================================
-        // AI RESPONSE STOP
-        // ========================================================================
-        this.register('Ctrl+Shift+X', () => {
+        this.bindHotkey('chat.stop', () => {
             if (window.aiResponseHandler) {
                 window.aiResponseHandler.stopCurrentExecution();
             }
         }, 'Stop AI Execution');
         
         // ========================================================================
-        // VOICE CODING
+        // TERMINAL
         // ========================================================================
-        this.register('Ctrl+Shift+V', () => {
+        this.bindHotkey('terminal.toggle', () => {
+            if (typeof window.toggleTerminalPanel === 'function') {
+                window.toggleTerminalPanel();
+            } else if (window.terminalPanelInstance) {
+                window.terminalPanelInstance.toggle();
+            } else {
+                console.warn('[HotkeyManager] Terminal panel not ready yet');
+            }
+        }, 'Toggle Terminal');
+
+        this.bindHotkey('console.toggle', () => {
+            if (typeof window.toggleConsolePanel === 'function') {
+                window.toggleConsolePanel();
+            } else if (window.consolePanelInstance) {
+                window.consolePanelInstance.toggle();
+            } else {
+                console.warn('[HotkeyManager] Console panel not ready yet');
+            }
+        }, 'Toggle Console Panel');
+
+        this.bindHotkey('browser.toggle', () => {
+            if (window.webBrowser && typeof window.webBrowser.toggleBrowser === 'function') {
+                window.webBrowser.toggleBrowser();
+            } else if (window.browserPanel && typeof window.browserPanel.toggle === 'function') {
+                window.browserPanel.toggle();
+            } else {
+                console.warn('[HotkeyManager] Browser panel not ready yet');
+            }
+        }, 'Toggle Browser');
+        
+        // ========================================================================
+        // VOICE CODING & COMMAND PALETTE
+        // ========================================================================
+        this.bindHotkey('voice.start', () => {
             if (typeof startVoiceCoding === 'function') {
                 startVoiceCoding();
             } else if (window.voiceCodingEngine) {
@@ -239,26 +380,23 @@ class HotkeyManager {
             }
         }, 'Start Voice Coding');
         
-        this.register('Ctrl+Shift+P', () => {
-            // Enhanced command palette with file search
+        this.bindHotkey('palette.open', () => {
             console.log('[HotkeyManager] 💡 Opening enhanced command palette...');
             if (window.commandPalette) {
                 window.commandPalette.show();
             } else {
-                this.showCommandPalette(); // Fallback
+                this.showCommandPalette();
             }
         }, 'Enhanced Command Palette');
         
         // ========================================================================
         // ESCAPE KEY (Close modals, etc.)
         // ========================================================================
-        this.register('Escape', () => {
-            // Close floating chat
+        this.bindHotkey('modals.close', () => {
             if (window.floatingChat && window.floatingChat.isOpen) {
                 window.floatingChat.close();
             }
             
-            // Close error log modal
             const errorModal = document.getElementById('error-log-modal');
             if (errorModal) errorModal.remove();
         }, 'Close Modals');
@@ -266,13 +404,13 @@ class HotkeyManager {
         // ========================================================================
         // FIND & REPLACE
         // ========================================================================
-        this.register('Ctrl+F', () => {
+        this.bindHotkey('editor.find', () => {
             if (window.editor) {
                 window.editor.getAction('actions.find').run();
             }
         }, 'Find');
         
-        this.register('Ctrl+H', () => {
+        this.bindHotkey('editor.replace', () => {
             if (window.editor) {
                 window.editor.getAction('editor.action.startFindReplaceAction').run();
             }
@@ -281,25 +419,35 @@ class HotkeyManager {
         // ========================================================================
         // COMMENT TOGGLE
         // ========================================================================
-        this.register('Ctrl+/', () => {
+        this.bindHotkey('editor.toggleComment', () => {
             if (window.editor) {
                 window.editor.getAction('editor.action.commentLine').run();
             }
         }, 'Toggle Comment');
     }
     
-    register(combo, handler, description) {
+    register(combo, handler, description, action) {
+        if (!combo) return;
         const normalized = this.normalizeCombo(combo);
+        if (!normalized) return;
         this.shortcuts.set(normalized, {
             handler,
             description,
-            combo: combo
+            combo,
+            action: action || null
         });
     }
     
     normalizeCombo(combo) {
-        // Normalize combo string to key format
-        const parts = combo.split('+').map(p => p.trim());
+        if (!combo) return null;
+        let normalizedCombo = combo.trim();
+        if (normalizedCombo.includes(' ')) {
+            // Basic support: use the last chord of the sequence
+            const parts = normalizedCombo.split(' ');
+            normalizedCombo = parts[parts.length - 1];
+        }
+
+        const parts = normalizedCombo.split('+').map(p => p.trim());
         const key = parts.pop().toLowerCase();
         const modifiers = parts.map(p => p.toLowerCase()).sort().join('+');
         return `${modifiers ? modifiers + '+' : ''}${key}`;
@@ -350,47 +498,26 @@ class HotkeyManager {
     
     isInputField(element) {
         if (!element) return false;
-        const tag = element.tagName.toLowerCase();
+        const tag = typeof element.tagName === 'string' ? element.tagName.toLowerCase() : '';
         return tag === 'input' || tag === 'textarea' || element.contentEditable === 'true';
     }
     
     listAllShortcuts() {
         console.log('[HotkeyManager] 📋 Registered shortcuts:');
         console.log(`[HotkeyManager] 📊 Total: ${this.shortcuts.size} shortcuts`);
-        const categories = {
-            'File Operations': [],
-            'Tab Management': [],
-            'Center Tabs': [],
-            'AI & Chat': [],
-            'Terminal': [],
-            'Voice Coding': [],
-            'Code Editor': [],
-            'Other': []
-        };
-        
-        for (const [key, shortcut] of this.shortcuts) {
-            const combo = shortcut.combo;
-            let category = 'Other';
-            
-            if (combo.startsWith('Ctrl+N') || combo.startsWith('Ctrl+O') || combo.startsWith('Ctrl+S') || combo.includes('Save')) {
-                category = 'File Operations';
-            } else if (combo.includes('Tab') || combo.startsWith('Ctrl+W') || combo.includes('Alt+Arrow') || combo.includes('Ctrl+1')) {
-                category = 'Tab Management';
-            } else if (combo.startsWith('Ctrl+Shift+C') || combo.startsWith('Ctrl+Shift+E') || combo.startsWith('Ctrl+Shift+G') || combo.startsWith('Ctrl+Shift+A') || combo.startsWith('Ctrl+Shift+T') || combo === 'Ctrl+,') {
-                category = 'Center Tabs';
-            } else if (combo.includes('Chat') || combo.includes('Enter') || combo.includes('AI') || combo.includes('Ctrl+L')) {
-                category = 'AI & Chat';
-            } else if (combo.includes('Terminal') || combo === 'Ctrl+J' || combo === 'Ctrl+`') {
-                category = 'Terminal';
-            } else if (combo.includes('Voice') || combo.includes('Shift+V')) {
-                category = 'Voice Coding';
-            } else if (combo.includes('Find') || combo.includes('Comment') || combo.includes('Ctrl+F') || combo.includes('Ctrl+H') || combo === 'Ctrl+/') {
-                category = 'Code Editor';
-            }
-            
-            categories[category].push(`  ${combo.padEnd(20)} → ${shortcut.description}`);
+
+        const categories = {};
+
+        for (const [, shortcut] of this.shortcuts) {
+            const action = shortcut.action;
+            const config = (action && (this.hotkeyConfig[action] || DEFAULT_HOTKEYS[action])) || {};
+            const category = config.category || 'Other';
+            const label = shortcut.description || config.description || action || shortcut.combo;
+
+            if (!categories[category]) categories[category] = [];
+            categories[category].push(`  ${String(shortcut.combo).padEnd(20)} → ${label}`);
         }
-        
+
         for (const [cat, list] of Object.entries(categories)) {
             if (list.length > 0) {
                 console.log(`\n${cat}:`);
@@ -507,19 +634,20 @@ class HotkeyManager {
                     ${index === 0 ? 'background: rgba(0, 212, 255, 0.1);' : ''}
                 `;
                 
+                const sanitize = (str) => String(str || '').replace(/[<>"'&]/g, (m) => ({'<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','&':'&amp;'}[m]));
                 const icon = cmd.type === 'file' ? (cmd.isDirectory ? '📁' : '📄') : '⚡';
-                const pathInfo = cmd.path ? `<div style="color: #666; font-size: 10px; margin-top: 2px;">${cmd.path}</div>` : '';
+                const pathInfo = cmd.path ? `<div style="color: #666; font-size: 10px; margin-top: 2px;">${sanitize(cmd.path)}</div>` : '';
                 
                 item.innerHTML = `
                     <div style="flex: 1; min-width: 0;">
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <span style="font-size: 14px;">${icon}</span>
-                            <div style="color: #fff; font-size: 13px; font-weight: ${cmd.type === 'file' ? '500' : '600'};">${cmd.name}</div>
+                            <div style="color: #fff; font-size: 13px; font-weight: ${cmd.type === 'file' ? '500' : '600'};">${sanitize(cmd.name)}</div>
                         </div>
-                        ${cmd.description ? `<div style="color: #888; font-size: 11px; margin-top: 2px;">${cmd.description}</div>` : ''}
+                        ${cmd.description ? `<div style="color: #888; font-size: 11px; margin-top: 2px;">${sanitize(cmd.description)}</div>` : ''}
                         ${pathInfo}
                     </div>
-                    ${cmd.shortcut ? `<kbd style="background: rgba(0, 0, 0, 0.5); padding: 4px 8px; border-radius: 4px; font-size: 11px; color: var(--cyan);">${cmd.shortcut}</kbd>` : ''}
+                    ${cmd.shortcut ? `<kbd style="background: rgba(0, 0, 0, 0.5); padding: 4px 8px; border-radius: 4px; font-size: 11px; color: var(--cyan);">${sanitize(cmd.shortcut)}</kbd>` : ''}
                 `;
                 
                 item.onclick = () => {
@@ -644,8 +772,9 @@ class HotkeyManager {
     }
     
     showShortcuts() {
+        const sanitize = (str) => String(str || '').replace(/[<>"'&]/g, (m) => ({'<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','&':'&amp;'}[m]));
         const shortcuts = Array.from(this.shortcuts.entries()).map(([key, data]) => 
-            `<tr><td style="padding: 8px; border: 1px solid rgba(0, 212, 255, 0.2);">${data.combo}</td><td style="padding: 8px; border: 1px solid rgba(0, 212, 255, 0.2);">${data.description || 'No description'}</td></tr>`
+            `<tr><td style="padding: 8px; border: 1px solid rgba(0, 212, 255, 0.2);">${sanitize(data.combo)}</td><td style="padding: 8px; border: 1px solid rgba(0, 212, 255, 0.2);">${sanitize(data.description || 'No description')}</td></tr>`
         ).join('');
         
         const modal = document.createElement('div');
@@ -663,23 +792,36 @@ class HotkeyManager {
             padding: 20px;
         `;
         
-        modal.innerHTML = `
-            <div style="background: rgba(10, 10, 30, 0.98); border: 1px solid var(--cyan); border-radius: 12px; padding: 30px; max-width: 800px; width: 100%; max-height: 80vh; overflow-y: auto;">
-                <h2 style="margin: 0 0 20px 0; color: var(--cyan);">⌨️ Keyboard Shortcuts</h2>
-                <table style="width: 100%; border-collapse: collapse; color: #fff; font-size: 13px;">
-                    <thead>
-                        <tr>
-                            <th style="padding: 8px; border: 1px solid rgba(0, 212, 255, 0.2); text-align: left; background: rgba(0, 0, 0, 0.3);">Shortcut</th>
-                            <th style="padding: 8px; border: 1px solid rgba(0, 212, 255, 0.2); text-align: left; background: rgba(0, 0, 0, 0.3);">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${shortcuts}
-                    </tbody>
-                </table>
-                <button onclick="this.parentElement.parentElement.remove()" style="margin-top: 20px; padding: 10px 20px; background: var(--cyan); color: #000; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Close</button>
-            </div>
+        const container = document.createElement('div');
+        container.style.cssText = 'background: rgba(10, 10, 30, 0.98); border: 1px solid var(--cyan); border-radius: 12px; padding: 30px; max-width: 800px; width: 100%; max-height: 80vh; overflow-y: auto;';
+        
+        const title = document.createElement('h2');
+        title.style.cssText = 'margin: 0 0 20px 0; color: var(--cyan);';
+        title.textContent = '⌨️ Keyboard Shortcuts';
+        
+        const table = document.createElement('table');
+        table.style.cssText = 'width: 100%; border-collapse: collapse; color: #fff; font-size: 13px;';
+        table.innerHTML = `
+            <thead>
+                <tr>
+                    <th style="padding: 8px; border: 1px solid rgba(0, 212, 255, 0.2); text-align: left; background: rgba(0, 0, 0, 0.3);">Shortcut</th>
+                    <th style="padding: 8px; border: 1px solid rgba(0, 212, 255, 0.2); text-align: left; background: rgba(0, 0, 0, 0.3);">Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${shortcuts}
+            </tbody>
         `;
+        
+        const closeBtn = document.createElement('button');
+        closeBtn.style.cssText = 'margin-top: 20px; padding: 10px 20px; background: var(--cyan); color: #000; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;';
+        closeBtn.textContent = 'Close';
+        closeBtn.onclick = () => modal.remove();
+        
+        container.appendChild(title);
+        container.appendChild(table);
+        container.appendChild(closeBtn);
+        modal.appendChild(container);
         
         modal.onclick = (e) => {
             if (e.target === modal) {
@@ -778,10 +920,32 @@ class HotkeyManager {
         setTimeout(() => {
             const input = document.getElementById('terminal-input');
             if (input) {
-                input.value = command;
+                input.value = String(command).replace(/[<>"'&]/g, '');
                 input.focus();
             }
         }, 100);
+    }
+
+    bindHotkey(action, handler, description) {
+        const config = this.hotkeyConfig[action] || DEFAULT_HOTKEYS[action];
+        if (!config || !config.combo) {
+            return;
+        }
+
+        const combos = String(config.combo)
+            .split(',')
+            .map((value) => value.trim())
+            .filter(Boolean);
+
+        const label = description || config.description || action;
+
+        combos.forEach((combo) => {
+            if (!combo) return;
+            if (combo.includes(' ')) {
+                console.warn(`[HotkeyManager] ⚠️ Chord hotkeys (“${combo}”) are not fully supported yet.`);
+            }
+            this.register(combo, handler, label, action);
+        });
     }
 }
 

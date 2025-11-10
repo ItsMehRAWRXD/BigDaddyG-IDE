@@ -1,7 +1,7 @@
 /**
  * BigDaddyG IDE - Plugin Marketplace
  * Browse, install, and manage plugins
- * Hotkey: Ctrl+Shift+P (Plugins/Extensions)
+ * Hotkey: Ctrl+Shift+M (Plugins/Extensions)
  */
 
 (function() {
@@ -21,6 +21,7 @@ class PluginMarketplace {
         this.catalog = [];
         this.searchResults = null;
         this.installedExtensions = new Map();
+        this.installedPlugins = new Set();
         this.stateById = new Map();
         this.loading = false;
         this.searchTimeout = null;
@@ -84,7 +85,7 @@ class PluginMarketplace {
         // Create marketplace panel
         this.createPanel();
         
-        // Register hotkey (Ctrl+Shift+P)
+        // Register hotkey (Ctrl+Shift+M)
         this.registerHotkeys();
         
         if (this.backendAvailable && window.electron?.marketplace?.onEvent) {
@@ -100,7 +101,7 @@ class PluginMarketplace {
             console.error('[PluginMarketplace] Failed to load catalog on init:', error);
         }
         
-        console.log('[PluginMarketplace] ✅ Plugin marketplace ready (Ctrl+Shift+P)');
+        console.log('[PluginMarketplace] ✅ Plugin marketplace ready (Ctrl+Shift+M)');
     }
     
     createPanel() {
@@ -133,7 +134,7 @@ class PluginMarketplace {
                 <div style="display: flex; align-items: center; gap: 12px;">
                     <span style="font-size: 20px;">🛒</span>
                     <span style="font-weight: 600; font-size: 15px; color: var(--cursor-jade-dark);">Plugin Marketplace</span>
-                    <span style="font-size: 11px; color: var(--cursor-text-secondary); background: rgba(119, 221, 190, 0.1); padding: 3px 8px; border-radius: 12px;">Ctrl+Shift+P</span>
+                    <span style="font-size: 11px; color: var(--cursor-text-secondary); background: rgba(119, 221, 190, 0.1); padding: 3px 8px; border-radius: 12px;">Ctrl+Shift+M</span>
                 </div>
                 <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end;">
                     <button onclick="pluginMarketplace.showApiKeyManager()" style="background: rgba(119, 221, 190, 0.12); border: 1px solid var(--cursor-jade-light); color: var(--cursor-jade-dark); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.2s;">
@@ -211,7 +212,7 @@ class PluginMarketplace {
                     <span id="plugin-count">0 plugins available</span>
                 </div>
                 <div style="font-size: 11px; color: var(--cursor-text-secondary);">
-                    💡 Press <kbd style="background: rgba(119, 221, 190, 0.2); padding: 2px 6px; border-radius: 3px;">Ctrl+Shift+P</kbd> to toggle
+                    💡 Press <kbd style="background: rgba(119, 221, 190, 0.2); padding: 2px 6px; border-radius: 3px;">Ctrl+Shift+M</kbd> to toggle
                 </div>
             </div>
         `;
@@ -220,16 +221,16 @@ class PluginMarketplace {
     }
     
     registerHotkeys() {
-        // Register Ctrl+Shift+P for Plugin Marketplace
+        // Register Ctrl+Shift+M for Plugin Marketplace
         if (window.hotkeyManager) {
-            window.hotkeyManager.register('plugin-marketplace', 'Ctrl+Shift+P', () => {
+            window.hotkeyManager.register('plugin-marketplace', 'Ctrl+Shift+M', () => {
                 this.toggle();
             }, 'Open Plugin Marketplace');
-            console.log('[PluginMarketplace] ✅ Hotkey registered: Ctrl+Shift+P');
+            console.log('[PluginMarketplace] ✅ Hotkey registered: Ctrl+Shift+M');
         } else {
             // Fallback if hotkey manager not available
             document.addEventListener('keydown', (e) => {
-                if (e.ctrlKey && e.shiftKey && e.key === 'P') {
+                if (e.ctrlKey && e.shiftKey && (e.key === 'M' || e.key === 'm')) {
                     e.preventDefault();
                     this.toggle();
                 }
@@ -286,7 +287,19 @@ class PluginMarketplace {
                     sourceExtensions = featuredResponse.extensions || [];
                 }
 
-                this.plugins = sourceExtensions.map((ext) => {
+                const safeExtensions = (sourceExtensions || []).filter(ext => {
+                    if (!ext || typeof ext !== 'object') {
+                        console.warn('[PluginMarketplace] ⚠️ Skipping invalid marketplace entry:', ext);
+                        return false;
+                    }
+                    if (!ext.publisher || !ext.name) {
+                        console.warn('[PluginMarketplace] ⚠️ Extension missing publisher/name:', ext);
+                        return false;
+                    }
+                    return true;
+                });
+
+                this.plugins = safeExtensions.map((ext) => {
                     const plugin = this.transformMarketplaceExtension(ext);
                     plugin.installed = this.installedPlugins.has(plugin.id);
                     plugin.state = this.stateById.get(plugin.id) || null;
@@ -297,7 +310,8 @@ class PluginMarketplace {
                 this.renderPlugins();
                 return;
             } catch (error) {
-                console.error('[PluginMarketplace] Marketplace fetch failed:', error);
+                const message = error?.message || error?.statusText || JSON.stringify(error);
+                console.error('[PluginMarketplace] Marketplace fetch failed:', message);
                 this.backendAvailable = false;
                 this.showNotification('Marketplace service unavailable. Showing offline catalog.', 'error');
             }
@@ -649,6 +663,31 @@ class PluginMarketplace {
     }
 
     transformMarketplaceExtension(ext) {
+        if (!ext || typeof ext !== 'object') {
+            const fallbackId = `unknown-${Date.now()}`;
+            return {
+                id: fallbackId,
+                name: ext?.displayName || ext?.name || 'Unknown Plugin',
+                version: ext?.version || '0.0.0',
+                author: ext?.publisher || 'Unknown',
+                description: ext?.shortDescription || '',
+                category: 'other',
+                icon: '🧩',
+                iconUrl: ext?.icon || '',
+                downloads: ext?.installCount || 0,
+                rating: ext?.averageRating || 0,
+                ratingCount: ext?.ratingCount || 0,
+                tags: [],
+                installed: false,
+                featured: false,
+                state: null,
+                marketplace: {
+                    categories: [],
+                    raw: ext || {}
+                }
+            };
+        }
+
         const id = `${ext.publisher}.${ext.name}`;
         const categories = (ext.raw?.categories || []).map(cat => String(cat).toLowerCase());
         return {

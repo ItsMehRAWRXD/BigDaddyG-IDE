@@ -5,6 +5,23 @@
 
 const { contextBridge, ipcRenderer } = require('electron');
 
+// Input validation helpers
+const validateString = (input, maxLength = 1000) => {
+  if (typeof input !== 'string') return '';
+  return input.substring(0, maxLength);
+};
+
+const validatePath = (path) => {
+  if (typeof path !== 'string') return '';
+  // Basic path validation - remove dangerous characters
+  return path.replace(/[<>"|?*]/g, '').substring(0, 500);
+};
+
+const validateOptions = (options) => {
+  if (!options || typeof options !== 'object') return {};
+  return options;
+};
+
 // Expose protected methods to renderer process
 contextBridge.exposeInMainWorld('electron', {
   // Window controls
@@ -13,21 +30,21 @@ contextBridge.exposeInMainWorld('electron', {
   closeWindow: () => ipcRenderer.send('window-close'),
   
   // File system operations
-  readFile: (filePath) => ipcRenderer.invoke('read-file', filePath),
-  writeFile: (filePath, content) => ipcRenderer.invoke('write-file', filePath, content),
-  openFileDialog: (options) => ipcRenderer.invoke('open-file-dialog', options),
-  saveFileDialog: (options) => ipcRenderer.invoke('save-file-dialog', options),
+  readFile: (filePath) => ipcRenderer.invoke('read-file', validatePath(filePath)),
+  writeFile: (filePath, content) => ipcRenderer.invoke('write-file', validatePath(filePath), validateString(content, 1000000)),
+  openFileDialog: (options) => ipcRenderer.invoke('open-file-dialog', validateOptions(options)),
+  saveFileDialog: (options) => ipcRenderer.invoke('save-file-dialog', validateOptions(options)),
   openFolderDialog: () => ipcRenderer.invoke('open-folder-dialog'),
-  readDir: (dirPath) => ipcRenderer.invoke('read-dir', dirPath),
-  getFileStats: (filePath) => ipcRenderer.invoke('get-file-stats', filePath),
-  fileExists: (filePath) => ipcRenderer.invoke('file-exists', filePath),
+  readDir: (dirPath) => ipcRenderer.invoke('read-dir', validatePath(dirPath)),
+  getFileStats: (filePath) => ipcRenderer.invoke('get-file-stats', validatePath(filePath)),
+  fileExists: (filePath) => ipcRenderer.invoke('file-exists', validatePath(filePath)),
   getPluginDir: () => ipcRenderer.invoke('plugin:get-directory'),
   
   // Agentic file system operations (unlimited)
   scanWorkspace: (options) => ipcRenderer.invoke('scanWorkspace', options),
-  searchFiles: (query, options) => ipcRenderer.invoke('search-files', query, options),
-  readDirRecursive: (dirPath, maxDepth) => ipcRenderer.invoke('read-dir-recursive', dirPath, maxDepth),
-  readFileChunked: (filePath, chunkSize) => ipcRenderer.invoke('read-file-chunked', filePath, chunkSize),
+  searchFiles: (query, options) => ipcRenderer.invoke('search-files', validateString(query, 200), validateOptions(options)),
+  readDirRecursive: (dirPath, maxDepth) => ipcRenderer.invoke('read-dir-recursive', validatePath(dirPath), Math.min(maxDepth || 10, 20)),
+  readFileChunked: (filePath, chunkSize) => ipcRenderer.invoke('read-file-chunked', validatePath(filePath), Math.min(chunkSize || 1024, 10485760)),
   readMultipleFiles: (filePaths) => ipcRenderer.invoke('read-multiple-files', filePaths),
   findByPattern: (pattern, startPath) => ipcRenderer.invoke('find-by-pattern', pattern, startPath),
   
@@ -105,6 +122,27 @@ contextBridge.exposeInMainWorld('electron', {
     discover: () => ipcRenderer.invoke('models:discover')
   },
   
+  settings: {
+    getAll: () => ipcRenderer.invoke('settings:get-all'),
+    getDefaults: () => ipcRenderer.invoke('settings:get-defaults'),
+    get: (pathString) => ipcRenderer.invoke('settings:get', pathString),
+    set: (pathString, value, options) => ipcRenderer.invoke('settings:set', pathString, value, options),
+    update: (patch, options) => ipcRenderer.invoke('settings:update', patch, options),
+    reset: (section, options) => ipcRenderer.invoke('settings:reset', section, options),
+    getHotkeys: () => ipcRenderer.invoke('settings:hotkeys:get'),
+    setHotkey: (action, combo, options) => ipcRenderer.invoke('settings:hotkeys:set', action, combo, options),
+    onDidChange: (callback) => {
+      if (typeof callback !== 'function') return () => {};
+      const listener = (_, payload) => callback(payload);
+      ipcRenderer.on('settings:updated', listener);
+      return () => ipcRenderer.removeListener('settings:updated', listener);
+    },
+    onBootstrap: (callback) => {
+      if (typeof callback !== 'function') return;
+      ipcRenderer.once('settings:bootstrap', (_, payload) => callback(payload));
+    }
+  },
+  
   // Memory bridge
   memory: {
     getStats: () => ipcRenderer.invoke('memory:getStats'),
@@ -124,7 +162,11 @@ contextBridge.exposeInMainWorld('electron', {
   getSystemInfo: () => ipcRenderer.invoke('getSystemInfo'),
   
   // Terminal execution
-  executeCommand: (command, shell, cwd) => ipcRenderer.invoke('execute-command', { command, shell, cwd }),
+  executeCommand: (command, shell, cwd) => ipcRenderer.invoke('execute-command', { 
+    command: validateString(command, 500), 
+    shell: validateString(shell, 50), 
+    cwd: validatePath(cwd) 
+  }),
   onTerminalOutput: (callback) => ipcRenderer.on('terminal-output', (_, data) => callback(data)),
   onTerminalExit: (callback) => ipcRenderer.on('terminal-exit', (_, data) => callback(data)),
   

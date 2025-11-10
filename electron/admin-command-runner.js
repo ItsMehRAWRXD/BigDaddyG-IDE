@@ -18,10 +18,65 @@ class AdminCommandRunner {
     this.dangerousCommands = [
       'rm -rf', 'del /f /s /q', 'format', 'mkfs',
       'dd if=', 'fdisk', 'parted', 'diskpart',
-      'reg delete', 'regedit', 'shutdown', 'reboot'
+      'reg delete', 'regedit', 'shutdown', 'reboot',
+      'taskkill', 'net user', 'icacls', 'sc delete',
+      'wmic', 'bcdedit', 'attrib', 'cacls',
+      'cipher', 'sfc', 'dism', 'powercfg',
+      'netsh', 'route', 'arp', 'ipconfig /release'
     ];
     
+    // Command validation patterns
+    this.commandValidationPatterns = {
+      allowedChars: /^[a-zA-Z0-9\s\-_\.\\\/:"'=]+$/,
+      suspiciousPatterns: [
+        /[;&|`$(){}\[\]<>]/,  // Command injection chars
+        /\\x[0-9a-fA-F]{2}/,  // Hex encoding
+        /\\u[0-9a-fA-F]{4}/,  // Unicode encoding
+        /\\[0-7]{3}/,         // Octal encoding
+        /\$\{.*\}/,           // Variable expansion
+        /\$\(.*\)/            // Command substitution
+      ]
+    };
+    
     this.init();
+  }
+
+  hasElectronApiMethod(methodName) {
+    return (
+      typeof window !== 'undefined' &&
+      window.electronAPI &&
+      typeof window.electronAPI[methodName] === 'function'
+    );
+  }
+
+  sanitizeExecutionOptions(options = {}) {
+    const normalizedOptions = options && typeof options === 'object' ? options : {};
+    const sanitized = {};
+    const allowedShells = ['powershell', 'cmd', 'bash'];
+
+    if (normalizedOptions.shell) {
+      if (!allowedShells.includes(normalizedOptions.shell)) {
+        throw new Error(`Shell '${normalizedOptions.shell}' is not permitted`);
+      }
+      sanitized.shell = normalizedOptions.shell;
+    }
+
+    if (normalizedOptions.cwd) {
+      if (typeof normalizedOptions.cwd !== 'string' || normalizedOptions.cwd.length > 260 || normalizedOptions.cwd.includes('\0')) {
+        throw new Error('Invalid working directory');
+      }
+      sanitized.cwd = normalizedOptions.cwd;
+    }
+
+    if (normalizedOptions.timeout) {
+      const timeoutNumber = Number(normalizedOptions.timeout);
+      if (!Number.isFinite(timeoutNumber) || timeoutNumber <= 0) {
+        throw new Error('Timeout must be a positive number');
+      }
+      sanitized.timeout = Math.min(timeoutNumber, 60000);
+    }
+
+    return sanitized;
   }
   
   init() {
@@ -39,6 +94,13 @@ class AdminCommandRunner {
   
   async checkAdminStatus() {
     try {
+      // Validate electronAPI exists and has required methods
+      if (!window.electronAPI || typeof window.electronAPI.isElevated !== 'function') {
+        console.warn('[AdminRunner] electronAPI not available or incomplete');
+        this.isElevated = false;
+        return;
+      }
+      
       this.isElevated = await window.electronAPI.isElevated();
       this.updateAdminIndicator();
       
@@ -113,9 +175,18 @@ class AdminCommandRunner {
   
   interceptCommandExecution() {
     // Find existing command execution functions and wrap them
-    const originalExecute = window.executeCommand;
+    const originalExecute = typeof window.executeCommand === 'function' ? window.executeCommand : null;
     
     window.executeCommand = async (command, options = {}) => {
+      // Validate and sanitize command input
+      const validationResult = this.validateCommand(command);
+      if (!validationResult.isValid) {
+        return { error: `Command validation failed: ${validationResult.reason}`, cancelled: true };
+      }
+      
+      // Sanitize command to prevent injection
+      command = this.sanitizeCommand(command);
+      
       // Check if admin mode is enabled
       const useAdmin = this.adminMode || options.admin;
       
@@ -130,7 +201,7 @@ class AdminCommandRunner {
       // Log command with privilege level
       this.addToHistory(command, useAdmin);
       
-      // Execute with appropriate privileges
+      // Execute with appropriate privileges using sanitized command
       if (useAdmin) {
         return this.executeAsAdmin(command, options);
       } else {
@@ -158,13 +229,24 @@ class AdminCommandRunner {
   
   async executeAsAdmin(command, options = {}) {
     try {
+      // Validate electronAPI exists
+      if (!this.hasElectronApiMethod('executeElevated')) {
+        throw new Error('electronAPI not available for elevated execution');
+      }
+      
       console.log(`[AdminRunner] Executing as admin: ${command}`);
       
-      const result = await window.electronAPI.executeElevated(command, {
-        shell: options.shell || 'powershell',
-        cwd: options.cwd,
-        timeout: options.timeout || 30000
-      });
+      // Additional validation for admin commands
+      const sanitizedCommand = this.sanitizeCommand(command);
+      const sanitizedOptions = this.sanitizeExecutionOptions(options);
+
+      const payload = {
+        shell: sanitizedOptions.shell || 'powershell',
+        cwd: sanitizedOptions.cwd,
+        timeout: sanitizedOptions.timeout || 30000
+      };
+
+      const result = await window.electronAPI.executeElevated(sanitizedCommand, payload);
       
       return result;
     } catch (error) {
@@ -177,10 +259,16 @@ class AdminCommandRunner {
     try {
       console.log(`[AdminRunner] Executing as user: ${command}`);
       
+      if (!this.hasElectronApiMethod('execute')) {
+        throw new Error('electronAPI not available for standard execution');
+      }
+
+      const sanitizedOptions = this.sanitizeExecutionOptions(options);
+
       const result = await window.electronAPI.execute(command, {
-        shell: options.shell || 'powershell',
-        cwd: options.cwd,
-        timeout: options.timeout || 30000
+        shell: sanitizedOptions.shell || 'powershell',
+        cwd: sanitizedOptions.cwd,
+        timeout: sanitizedOptions.timeout || 30000
       });
       
       return result;
@@ -193,9 +281,17 @@ class AdminCommandRunner {
   setAdminMode(enabled) {
     this.adminMode = enabled;
     
-    // Update UI
-    document.getElementById('admin-mode-toggle').checked = enabled;
-    document.getElementById('admin-warning').style.display = enabled ? 'block' : 'none';
+    // Update UI with null checks
+    const toggleElement = document.getElementById('admin-mode-toggle');
+    const warningElement = document.getElementById('admin-warning');
+    
+    if (toggleElement) {
+      toggleElement.checked = enabled;
+    }
+    
+    if (warningElement) {
+      warningElement.style.display = enabled ? 'block' : 'none';
+    }
     
     // Update terminal prompt
     this.updateTerminalPrompt();
@@ -213,6 +309,10 @@ class AdminCommandRunner {
       if (!confirmed) return;
       
       // Request restart with elevation
+      if (!this.hasElectronApiMethod('restartAsAdmin')) {
+        throw new Error('electronAPI not available for elevation');
+      }
+
       await window.electronAPI.restartAsAdmin();
       
     } catch (error) {
@@ -225,7 +325,11 @@ class AdminCommandRunner {
     const icon = document.getElementById('admin-icon');
     const text = document.getElementById('admin-text');
     const indicator = document.getElementById('admin-indicator');
-    
+
+    if (!icon || !text || !indicator) {
+      return;
+    }
+
     if (this.isElevated) {
       icon.textContent = '👑';
       text.textContent = 'Administrator';
@@ -248,9 +352,22 @@ class AdminCommandRunner {
   }
   
   isDangerousCommand(command) {
-    return this.dangerousCommands.some(dangerous => 
-      command.toLowerCase().includes(dangerous.toLowerCase())
+    const lowerCommand = command.toLowerCase().trim();
+    
+    // Check against dangerous command patterns
+    const isDangerous = this.dangerousCommands.some(dangerous => {
+      const pattern = dangerous.toLowerCase();
+      // Check for exact matches and word boundaries
+      return lowerCommand.includes(pattern) || 
+             new RegExp(`\\b${pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`).test(lowerCommand);
+    });
+    
+    // Additional checks for suspicious patterns
+    const hasSuspiciousPattern = this.commandValidationPatterns.suspiciousPatterns.some(pattern => 
+      pattern.test(command)
     );
+    
+    return isDangerous || hasSuspiciousPattern;
   }
   
   async showDangerousCommandWarning(command) {
@@ -282,6 +399,31 @@ class AdminCommandRunner {
   
   clearHistory() {
     this.commandHistory = [];
+  }
+  
+  validateCommand(command) {
+    if (!command || typeof command !== 'string') {
+      return { isValid: false, reason: 'Command must be a non-empty string' };
+    }
+    
+    // Check command length
+    if (command.length > 1000) {
+      return { isValid: false, reason: 'Command too long (max 1000 characters)' };
+    }
+    
+    // Check for suspicious patterns
+    for (const pattern of this.commandValidationPatterns.suspiciousPatterns) {
+      if (pattern.test(command)) {
+        return { isValid: false, reason: 'Command contains suspicious characters or patterns' };
+      }
+    }
+    
+    return { isValid: true };
+  }
+  
+  sanitizeCommand(command) {
+    // Basic sanitization - remove null bytes and control characters
+    return command.replace(/[\x00-\x1F\x7F]/g, '').trim();
   }
   
   injectStyles() {
