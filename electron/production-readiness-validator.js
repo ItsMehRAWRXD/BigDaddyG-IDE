@@ -246,10 +246,10 @@ class ProductionReadinessValidator {
     }
     
     /**
-     * Validate Game Dev Features (28 features)
+     * Validate Game Dev Features (32 features)
      */
     async validateGameDev() {
-        console.log('🎮 Validating Game Dev Features (28 features)');
+        console.log('🎮 Validating Game Dev Features (32 features)');
         console.log('─'.repeat(80));
         
         const features = [
@@ -271,16 +271,20 @@ class ProductionReadinessValidator {
             { name: 'Game loop', pattern: /gameloop|game.*loop/ },
             { name: 'State machines', pattern: /state.*machine/ },
             { name: 'Object pooling', pattern: /pool/ },
-            { name: 'Asset browser', pattern: /asset.*browser/ },
-            { name: 'Texture preview', pattern: /texture.*preview/ },
-            { name: '3D model viewer', pattern: /model.*viewer|3d.*preview/ },
-            { name: 'Shader editor', pattern: /shader/ },
-            { name: 'Animation tools', pattern: /animation/ },
-            { name: 'Scene hierarchy', pattern: /hierarchy/ },
-            { name: 'Game console', pattern: /game.*console/ },
+            { name: 'Visual Game Editor', file: 'game-editor/visual-game-editor.js' },
+            { name: 'Asset browser', pattern: /asset-browser|asset.*browser/ },
+            { name: 'Asset Preview System', file: 'game-editor/asset-preview-system.js' },
+            { name: 'Texture preview', pattern: /previewImage|texture.*preview/ },
+            { name: '3D model viewer', pattern: /previewModel|model.*viewer|3d.*preview/ },
+            { name: 'Shader editor', file: 'game-editor/shader-editor.js' },
+            { name: 'Animation tools', file: 'game-editor/animation-timeline-editor.js' },
+            { name: 'Scene hierarchy', pattern: /scene-hierarchy|hierarchy/ },
+            { name: 'Game console', pattern: /game-console|game.*console/ },
             { name: 'Performance profiler', pattern: /profiler/ },
+            { name: '3D/2D Viewport', pattern: /game-viewport|viewport/ },
             { name: 'Debugging tools', pattern: /breakpoint|debugger/ },
-            { name: 'Hot reload', pattern: /hot.*reload/ }
+            { name: 'Hot reload', pattern: /hot.*reload/ },
+            { name: 'Game editor tester', file: 'test-visual-game-editors.js' }
         ];
         
         for (const feature of features) {
@@ -625,7 +629,7 @@ class ProductionReadinessValidator {
                 }
             }
             
-            // Search in all JS files
+            // Search in all JS files in electron dir
             const allFiles = fs.readdirSync(this.electronDir)
                 .filter(f => f.endsWith('.js'))
                 .slice(0, 50); // Limit search
@@ -638,6 +642,24 @@ class ProductionReadinessValidator {
                     }
                 } catch (e) {
                     // Skip
+                }
+            }
+            
+            // Search in game-editor directory
+            const gameEditorDir = path.join(this.electronDir, 'game-editor');
+            if (fs.existsSync(gameEditorDir)) {
+                const gameEditorFiles = fs.readdirSync(gameEditorDir)
+                    .filter(f => f.endsWith('.js'));
+                
+                for (const file of gameEditorFiles) {
+                    try {
+                        const content = fs.readFileSync(path.join(gameEditorDir, file), 'utf8');
+                        if (feature.pattern.test(content)) {
+                            return true;
+                        }
+                    } catch (e) {
+                        // Skip
+                    }
                 }
             }
         }
@@ -658,7 +680,7 @@ class ProductionReadinessValidator {
             { name: 'Monaco Editor', data: this.results.monaco, target: 15 },
             { name: 'AI Features', data: this.results.ai, target: 25 },
             { name: 'Agentic Features', data: this.results.agentic, target: 20 },
-            { name: 'Game Development', data: this.results.gamedev, target: 28 },
+            { name: 'Game Development', data: this.results.gamedev, target: 32 },
             { name: 'Marketplace', data: this.results.marketplace, target: 36 },
             { name: 'UI Components', data: this.results.ui, target: 20 },
             { name: 'Performance', data: this.results.performance, target: 15 },
