@@ -11,6 +11,10 @@ class AgentPanelCursorStyle extends EventEmitter {
         
         this.orchestraClient = orchestraClient;
         this.voiceCoding = voiceCoding;
+        this.orchestraReady = false;
+        
+        // Initialize Orchestra client
+        this.initializeOrchestraClient();
         
         // Agent modes (like Cursor)
         this.agents = [
@@ -61,6 +65,118 @@ class AgentPanelCursorStyle extends EventEmitter {
         this.attachments = [];
         
         console.log('[Agent Panel Cursor-Style] Initialized');
+    }
+    
+    /**
+     * Initialize Orchestra client connection
+     */
+    async initializeOrchestraClient() {
+        // If client already provided and ready, use it
+        if (this.orchestraClient && typeof this.orchestraClient.sendMessage === 'function') {
+            this.orchestraReady = await this.orchestraClient.isReady();
+            console.log('[Agent Panel Cursor-Style] Orchestra client ready');
+            this.updateControlsState();
+            return;
+        }
+        
+        // Wait for global Orchestra client to become available
+        const checkClient = () => {
+            // Check window.orchestraClient
+            if (window.orchestraClient && typeof window.orchestraClient.sendMessage === 'function') {
+                this.orchestraClient = window.orchestraClient;
+                this.orchestraReady = window.orchestraClient.isReady();
+                console.log('[Agent Panel Cursor-Style] Orchestra client connected');
+                return true;
+            }
+            
+            // Try to create client if OrchestraClient class is available
+            if (window.OrchestraClient) {
+                this.orchestraClient = new window.OrchestraClient();
+                console.log('[Agent Panel Cursor-Style] Orchestra client created');
+                return true;
+            }
+            
+            return false;
+        };
+        
+        // Try immediately
+        if (!checkClient()) {
+            // Poll until available
+            const interval = setInterval(() => {
+                if (checkClient()) {
+                    clearInterval(interval);
+                    this.updateControlsState();
+                }
+            }, 500);
+            
+            // Timeout after 30 seconds
+            setTimeout(() => {
+                clearInterval(interval);
+                if (!this.orchestraReady) {
+                    console.warn('[Agent Panel Cursor-Style] Orchestra client not available - some features disabled');
+                    this.updateControlsState();
+                }
+            }, 30000);
+        }
+    }
+    
+    /**
+     * Update UI controls based on Orchestra availability
+     */
+    updateControlsState() {
+        const buttons = document.querySelectorAll('.agent-quick-action, .ai-send-btn, button[onclick*="agentPanel.sendMessage"]');
+        buttons.forEach(btn => {
+            if (!this.orchestraReady) {
+                btn.disabled = true;
+                btn.title = 'AI backend not available - Please start Ollama or Orchestra server';
+                btn.style.opacity = '0.5';
+                btn.style.cursor = 'not-allowed';
+            } else {
+                btn.disabled = false;
+                btn.title = '';
+                btn.style.opacity = '1';
+                btn.style.cursor = 'pointer';
+            }
+        });
+    }
+    
+    /**
+     * Show error toast notification
+     */
+    showErrorToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'error-toast';
+        toast.style.cssText = `
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: linear-gradient(135deg, #ff4757, #ff6b81);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(255, 71, 87, 0.4);
+            z-index: 10000;
+            font-size: 14px;
+            font-weight: 600;
+            max-width: 400px;
+            animation: slideIn 0.3s ease-out;
+        `;
+        toast.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="font-size: 20px;">⚠️</span>
+                <div>
+                    <div style="margin-bottom: 4px;">${message}</div>
+                    <div style="font-size: 11px; opacity: 0.9;">Check that Ollama or Orchestra server is running</div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.animation = 'slideOut 0.3s ease-in';
+            setTimeout(() => toast.remove(), 300);
+        }, 5000);
     }
     
     /**
@@ -483,6 +599,13 @@ class AgentPanelCursorStyle extends EventEmitter {
         const message = input.value.trim();
         if (!message) return;
         
+        // Check if Orchestra client is ready before sending
+        if (!this.orchestraReady || !this.orchestraClient) {
+            this.showErrorToast('AI backend not available');
+            console.error('[Agent Panel Cursor-Style] Cannot send message - Orchestra client not ready');
+            return;
+        }
+        
         // Add user message
         this.messages.push({
             role: 'user',
@@ -528,6 +651,25 @@ class AgentPanelCursorStyle extends EventEmitter {
             this.messages.push({
                 role: 'assistant',
                 content: processedContent,
+                timestamp: new Date()
+            });
+            
+            this.updateView();
+            this.scrollToBottom();
+            
+        } catch (error) {
+            console.error('[Agent Panel Cursor-Style] Send message error:', error);
+            this.showErrorToast('Failed to send message: ' + error.message);
+            
+            // Add error message to chat
+            this.messages.push({
+                role: 'error',
+                content: 'Error: ' + error.message,
+                timestamp: new Date()
+            });
+            this.updateView();
+        }
+    }
                 thinking: response.thinking,
                 codeInserted: response.codeInserted,
                 timestamp: new Date()

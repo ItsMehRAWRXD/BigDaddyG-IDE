@@ -109,14 +109,76 @@ class AgentPanelEnhanced extends EventEmitter {
         buttons.forEach(btn => {
             if (!this.orchestraReady) {
                 btn.disabled = true;
-                btn.title = 'Orchestra service not available';
+                btn.title = 'Orchestra service not available - Please start Ollama or Orchestra server';
                 btn.style.opacity = '0.5';
+                btn.style.cursor = 'not-allowed';
             } else {
                 btn.disabled = false;
                 btn.title = '';
                 btn.style.opacity = '1';
+                btn.style.cursor = 'pointer';
             }
         });
+        
+        // Update connection status indicator
+        this.updateConnectionIndicator();
+    }
+    
+    /**
+     * Update connection status indicator in UI
+     */
+    updateConnectionIndicator() {
+        const indicator = document.getElementById('orchestra-connection-status');
+        if (indicator) {
+            if (this.orchestraReady) {
+                indicator.className = 'connection-status connected';
+                indicator.innerHTML = '<span class="status-dot"></span> Connected';
+                indicator.title = 'Orchestra AI backend is connected';
+            } else {
+                indicator.className = 'connection-status disconnected';
+                indicator.innerHTML = '<span class="status-dot"></span> Disconnected';
+                indicator.title = 'Orchestra AI backend is not available. Please start Ollama or Orchestra server.';
+            }
+        }
+    }
+    
+    /**
+     * Show error toast notification
+     */
+    showErrorToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'error-toast';
+        toast.style.cssText = `
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: linear-gradient(135deg, #ff4757, #ff6b81);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(255, 71, 87, 0.4);
+            z-index: 10000;
+            font-size: 14px;
+            font-weight: 600;
+            max-width: 400px;
+            animation: slideIn 0.3s ease-out;
+        `;
+        toast.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="font-size: 20px;">⚠️</span>
+                <div>
+                    <div style="margin-bottom: 4px;">${message}</div>
+                    <div style="font-size: 11px; opacity: 0.9;">Check that Ollama or Orchestra server is running</div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.animation = 'slideOut 0.3s ease-in';
+            setTimeout(() => toast.remove(), 300);
+        }, 5000);
     }
     
     /**
@@ -143,8 +205,8 @@ class AgentPanelEnhanced extends EventEmitter {
                 <div class="agent-status">
                     <span class="agent-icon">🤖</span>
                     <span class="agent-label">Agent</span>
-                    <span class="agent-state ${this.isPinned ? 'pinned' : 'ready'}">
-                        ${this.isPinned ? 'Pinned' : 'Ready'}
+                    <span id="orchestra-connection-status" class="connection-status ${this.orchestraReady ? 'connected' : 'disconnected'}">
+                        <span class="status-dot"></span> ${this.orchestraReady ? 'Connected' : 'Disconnected'}
                     </span>
                 </div>
                 
@@ -171,6 +233,51 @@ class AgentPanelEnhanced extends EventEmitter {
                     </button>
                 </div>
             </div>
+            <style>
+                .connection-status {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                    padding: 4px 10px;
+                    border-radius: 12px;
+                    font-size: 11px;
+                    font-weight: 600;
+                }
+                .connection-status.connected {
+                    background: rgba(0, 255, 136, 0.1);
+                    color: #00ff88;
+                }
+                .connection-status.disconnected {
+                    background: rgba(255, 71, 87, 0.1);
+                    color: #ff4757;
+                }
+                .status-dot {
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    display: inline-block;
+                }
+                .connection-status.connected .status-dot {
+                    background: #00ff88;
+                    box-shadow: 0 0 8px #00ff88;
+                    animation: pulse 2s infinite;
+                }
+                .connection-status.disconnected .status-dot {
+                    background: #ff4757;
+                }
+                @keyframes pulse {
+                    0%, 100% { opacity: 1; }
+                    50% { opacity: 0.5; }
+                }
+                @keyframes slideIn {
+                    from { transform: translateX(400px); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(400px); opacity: 0; }
+                }
+            </style>
         `;
     }
     
@@ -607,6 +714,13 @@ class AgentPanelEnhanced extends EventEmitter {
         const message = input.value.trim();
         if (!message && this.attachedFiles.length === 0) return;
         
+        // Check if Orchestra client is ready before sending
+        if (!this.orchestraReady || !this.orchestraClient) {
+            this.showErrorToast('AI backend not available');
+            console.error('[Agent Panel] Cannot send message - Orchestra client not ready');
+            return;
+        }
+        
         // Add user message
         this.messages.push({
             role: 'user',
@@ -624,11 +738,6 @@ class AgentPanelEnhanced extends EventEmitter {
         
         // Send to Orchestra
         try {
-            // Check if Orchestra client is ready
-            if (!this.orchestraReady || !this.orchestraClient) {
-                throw new Error('Orchestra service not available. Please start Orchestra server.');
-            }
-            
             const response = await this.orchestraClient.sendMessage({
                 agent: this.currentAgent,
                 model: this.currentModel,
@@ -657,7 +766,15 @@ class AgentPanelEnhanced extends EventEmitter {
             
         } catch (error) {
             console.error('[Agent Panel] Error sending message:', error);
-            this.showError('Failed to send message: ' + error.message);
+            this.showErrorToast('Failed to send message: ' + error.message);
+            
+            // Add error message to chat
+            this.messages.push({
+                role: 'error',
+                content: 'Error: ' + error.message,
+                timestamp: new Date()
+            });
+            this.updateView();
         }
     }
     
