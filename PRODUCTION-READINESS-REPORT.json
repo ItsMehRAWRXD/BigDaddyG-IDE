@@ -2,8 +2,8 @@
   "results": {
     "core": {
       "total": 20,
-      "ready": 16,
-      "issues": 4
+      "ready": 18,
+      "issues": 2
     },
     "monaco": {
       "total": 15,
@@ -17,8 +17,8 @@
     },
     "agentic": {
       "total": 20,
-      "ready": 15,
-      "issues": 5
+      "ready": 18,
+      "issues": 2
     },
     "gamedev": {
       "total": 32,
@@ -62,20 +62,12 @@
     }
   },
   "totalFeatures": 224,
-  "totalReady": 193,
-  "totalIssues": 31,
-  "overallPercentage": "86.2",
+  "totalReady": 198,
+  "totalIssues": 26,
+  "overallPercentage": "88.4",
   "status": "⚠️ MOSTLY READY - Some features need attention",
   "criticalIssues": [],
   "warnings": [
-    {
-      "category": "Core",
-      "feature": "Settings manager"
-    },
-    {
-      "category": "Core",
-      "feature": "Theme system"
-    },
     {
       "category": "Core",
       "feature": "Context menu"
