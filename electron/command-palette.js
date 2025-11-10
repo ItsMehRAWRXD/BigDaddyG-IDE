@@ -43,6 +43,12 @@ class CommandPalette {
             // AI Commands
             { name: 'AI: Open Chat', action: () => this.openAIChat(), category: 'ai' },
             { name: 'AI: Generate Code', action: () => this.generateCode(), category: 'ai' },
+            
+            // Extensions & Marketplace
+            { name: 'Marketplace: Browse Plugins', action: () => this.openMarketplace(), category: 'extensions', shortcut: 'Ctrl+Shift+M' },
+            { name: 'Marketplace: Model Catalog', action: () => this.openModelCatalog(), category: 'extensions' },
+            { name: 'Marketplace: API Keys', action: () => this.openApiKeyManager(), category: 'extensions' },
+            { name: 'Marketplace: Installed Plugins', action: () => this.showInstalledPlugins(), category: 'extensions' },
         ];
     }
 
@@ -292,7 +298,8 @@ class CommandPalette {
                     item: cmd,
                     title: cmd.name,
                     subtitle: this.getCategoryName(category),
-                    icon: this.getCategoryIcon(category)
+                    icon: this.getCategoryIcon(category),
+                    shortcut: cmd.shortcut || null
                 });
             });
         }
@@ -338,12 +345,15 @@ class CommandPalette {
         element.className = 'result-item';
         element.dataset.index = index;
         
+        const shortcutHtml = item.shortcut ? `<div class="result-shortcut">${item.shortcut}</div>` : '';
+        
         element.innerHTML = `
             <div class="result-icon">${item.icon}</div>
             <div class="result-content">
                 <div class="result-title">${item.title}</div>
                 <div class="result-subtitle">${item.subtitle}</div>
             </div>
+            ${shortcutHtml}
         `;
 
         element.addEventListener('click', () => {
@@ -606,6 +616,52 @@ class CommandPalette {
         }, 100);
     }
 
+    openMarketplace() {
+        // Call the global openMarketplace function from plugin-marketplace.js
+        if (typeof window.openMarketplace === 'function') {
+            window.openMarketplace();
+        } else {
+            console.warn('[CommandPalette] openMarketplace not available yet');
+            alert('Plugin Marketplace is loading. Please try again in a moment.');
+        }
+    }
+
+    openModelCatalog() {
+        // Call the global openModelCatalog function from plugin-marketplace.js
+        if (typeof window.openModelCatalog === 'function') {
+            window.openModelCatalog();
+        } else {
+            console.warn('[CommandPalette] openModelCatalog not available yet');
+            alert('Model Catalog is loading. Please try again in a moment.');
+        }
+    }
+
+    openApiKeyManager() {
+        // Open marketplace then show API key manager
+        if (window.pluginMarketplace) {
+            window.pluginMarketplace.open();
+            setTimeout(() => {
+                window.pluginMarketplace.showApiKeyManager();
+            }, 300);
+        } else {
+            console.warn('[CommandPalette] Plugin marketplace not initialized');
+            alert('Plugin Marketplace is loading. Please try again in a moment.');
+        }
+    }
+
+    showInstalledPlugins() {
+        // Open marketplace and show installed plugins
+        if (window.pluginMarketplace) {
+            window.pluginMarketplace.open();
+            setTimeout(() => {
+                window.pluginMarketplace.showInstalledPlugins();
+            }, 300);
+        } else {
+            console.warn('[CommandPalette] Plugin marketplace not initialized');
+            alert('Plugin Marketplace is loading. Please try again in a moment.');
+        }
+    }
+
     openFileInEditor(file) {
         if (window.electron && window.electron.openFile) {
             window.electron.openFile(file.path);
@@ -621,6 +677,7 @@ class CommandPalette {
             terminal: 'Terminal',
             view: 'View',
             ai: 'AI Assistant',
+            extensions: 'Extensions & Marketplace',
             files: 'Files',
             other: 'Commands'
         };
@@ -633,6 +690,7 @@ class CommandPalette {
             terminal: '⚡',
             view: '👁️',
             ai: '🤖',
+            extensions: '🛒',
             other: '⚙️'
         };
         return icons[category] || '⚙️';
