@@ -116,6 +116,27 @@ class AIProviderManager {
       keyId: 'kimi',
       defaultModel: 'moonshot-v1-8k'
     });
+
+    // Cohere
+    this.providers.set('cohere', {
+      name: 'Cohere',
+      type: 'cloud',
+      endpoint: 'https://api.cohere.ai/v1/chat',
+      requiresKey: true,
+      keyId: 'cohere',
+      defaultModel: 'command'
+    });
+
+    // Azure OpenAI
+    this.providers.set('azure', {
+      name: 'Azure OpenAI',
+      type: 'cloud',
+      endpoint: null, // Set by user (deployment-specific)
+      requiresKey: true,
+      keyId: 'azure',
+      defaultModel: 'gpt-4o-mini',
+      requiresEndpoint: true
+    });
   }
 
   async loadApiKeys() {
@@ -283,6 +304,10 @@ class AIProviderManager {
         return this.chatDeepSeek(message, model, options);
       case 'kimi':
         return this.chatKimi(message, model, options);
+      case 'cohere':
+        return this.chatCohere(message, model, options);
+      case 'azure':
+        return this.chatAzure(message, model, options);
       default:
         throw new Error(`Unknown AI provider: ${provider}`);
     }
@@ -296,7 +321,9 @@ class AIProviderManager {
       gemini: 'gemini-1.5-flash',
       groq: 'mixtral-8x7b-32768',
       deepseek: 'deepseek-chat',
-      kimi: 'moonshot-v1-8k'
+      kimi: 'moonshot-v1-8k',
+      cohere: 'command',
+      azure: 'gpt-4o-mini'
     };
     return defaults[provider] || 'llama3.2';
   }
@@ -501,6 +528,70 @@ class AIProviderManager {
     }
     const content = data.choices?.[0]?.message?.content || '';
     return { response: content.trim(), provider: 'kimi', model: payload.model, raw: data };
+  }
+
+  async chatCohere(message, model, options = {}) {
+    const apiKey = this.getApiKey('cohere');
+    if (!apiKey) {
+      throw new Error('Cohere API key not configured');
+    }
+    const payload = {
+      model: model || this.providers.get('cohere')?.defaultModel || 'command',
+      message: message,
+      temperature: options.temperature ?? 0.7,
+      max_tokens: options.maxTokens ?? 1024
+    };
+    const res = await fetch('https://api.cohere.ai/v1/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.message || 'Cohere request failed');
+    }
+    const content = data.text || '';
+    return { response: content.trim(), provider: 'cohere', model: payload.model, raw: data };
+  }
+
+  async chatAzure(message, model, options = {}) {
+    const apiKey = this.getApiKey('azure');
+    const endpoint = this.getApiKey('azure-endpoint'); // Store endpoint separately
+    
+    if (!apiKey) {
+      throw new Error('Azure OpenAI API key not configured');
+    }
+    if (!endpoint) {
+      throw new Error('Azure OpenAI endpoint not configured (save as "azure-endpoint")');
+    }
+    
+    const payload = {
+      messages: [{ role: 'user', content: message }],
+      temperature: options.temperature ?? 0.7,
+      max_tokens: options.maxTokens ?? 1024
+    };
+    
+    // Azure uses deployment name in URL
+    const deploymentName = model || options.deploymentName || 'gpt-4o-mini';
+    const url = `${endpoint}/openai/deployments/${deploymentName}/chat/completions?api-version=2023-05-15`;
+    
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'api-key': apiKey
+      },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error?.message || 'Azure OpenAI request failed');
+    }
+    const content = data.choices?.[0]?.message?.content || '';
+    return { response: content.trim(), provider: 'azure', model: deploymentName, raw: data };
   }
 
   async chatExtension(provider, message, options) {
