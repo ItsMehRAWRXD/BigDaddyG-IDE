@@ -1,0 +1,91 @@
+{
+  "results": {
+    "visual": {
+      "tested": 12,
+      "present": 11,
+      "missing": 1
+    },
+    "interactions": {
+      "tested": 5,
+      "working": 3,
+      "broken": 2
+    },
+    "workflows": {
+      "tested": 14,
+      "complete": 11,
+      "incomplete": 3
+    },
+    "synchronization": {
+      "tested": 5,
+      "synced": 5,
+      "desynced": 0
+    },
+    "navigation": {
+      "tested": 8,
+      "working": 7,
+      "broken": 1
+    },
+    "ux": {
+      "tested": 14,
+      "good": 9,
+      "poor": 5
+    }
+  },
+  "issues": [
+    {
+      "severity": "MEDIUM",
+      "description": "Status Bar visual element missing",
+      "type": "issue"
+    }
+  ],
+  "warnings": [
+    {
+      "description": "Settings Panel missing some UI functions or event handlers",
+      "type": "warning"
+    },
+    {
+      "description": "Chat UI missing some UI functions or event handlers",
+      "type": "warning"
+    },
+    {
+      "description": "File Opening Flow may have broken flow",
+      "type": "warning"
+    },
+    {
+      "description": "Settings Update Flow may have broken flow",
+      "type": "warning"
+    },
+    {
+      "description": "AI Chat Flow may have broken flow",
+      "type": "warning"
+    },
+    {
+      "description": "Menu Navigation navigation may be missing",
+      "type": "warning"
+    },
+    {
+      "description": "UI may not be responsive: Media Queries missing",
+      "type": "warning"
+    },
+    {
+      "description": "Accessibility concern: ARIA Labels missing",
+      "type": "warning"
+    },
+    {
+      "description": "Accessibility concern: Alt Text missing",
+      "type": "warning"
+    },
+    {
+      "description": "Accessibility concern: Semantic HTML missing",
+      "type": "warning"
+    },
+    {
+      "description": "Accessibility concern: Keyboard Navigation missing",
+      "type": "warning"
+    }
+  ],
+  "recommendations": [],
+  "uxScore": "79.3",
+  "grade": "C",
+  "userReady": false
+}
