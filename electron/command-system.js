@@ -716,15 +716,15 @@ ${context}
     // ========================================================================
     
     showProgress(message) {
-        this.displayMessage('Command', message, '⏳', 'info');
+        this.displayMessage('Command', this.escapeHtml(message), '⏳', 'info');
     }
     
     showSuccess(message) {
-        this.displayMessage('Command', message, '✅', 'success');
+        this.displayMessage('Command', this.escapeHtml(message), '✅', 'success');
     }
     
     showError(message) {
-        this.displayMessage('Error', message, '❌', 'error');
+        this.displayMessage('Error', this.escapeHtml(message), '❌', 'error');
     }
     
     displayMessage(title, content, icon = '💬', type = 'info') {
@@ -759,7 +759,7 @@ ${context}
         msgDiv.innerHTML = `
             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; user-select: none;">
                 <span style="font-size: 16px;">${icon}</span>
-                <span style="font-weight: 600; color: ${borderColors[type]};">${title}</span>
+                <span style="font-weight: 600; color: ${borderColors[type]};">${this.escapeHtml(title)}</span>
                 <span style="font-size: 10px; color: var(--cursor-text-secondary);">${new Date().toLocaleTimeString()}</span>
             </div>
             <div style="color: var(--cursor-text); font-size: 13px; line-height: 1.6; white-space: pre-wrap; user-select: text;">
