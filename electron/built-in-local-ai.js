@@ -1,12 +1,13 @@
 /**
  * BigDaddyG IDE - Built-In Local AI Engine
- * Eliminates dependency on Ollama or any 3rd party software
- * Provides local AI inference directly in the IDE
+ * NOW USES YOUR CUSTOM OLLAMA MODELS AGENTICALLY OFFLINE!
+ * Falls back to rule-based AI if Ollama not available
  */
 
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
+const http = require('http');
 
 class BuiltInLocalAI {
     constructor() {
@@ -15,16 +16,23 @@ class BuiltInLocalAI {
         this.currentModel = null;
         this.modelDir = path.join(__dirname, '..', 'ai-models');
         
+        // Ollama configuration
+        this.ollamaUrl = process.env.OLLAMA_URL || 'http://localhost:11434';
+        this.ollamaAvailable = false;
+        this.ollamaModels = [];
+        this.customOllamaModels = [];
+        
         // Ensure model directory exists
         if (!fs.existsSync(this.modelDir)) {
             fs.mkdirSync(this.modelDir, { recursive: true });
         }
         
-        console.log('[Built-In AI] Initialized');
+        console.log('[Built-In AI] Initialized - will check for custom Ollama models');
     }
     
     /**
      * Initialize the local AI engine
+     * NOW DETECTS AND USES YOUR CUSTOM OLLAMA MODELS!
      */
     async initialize() {
         if (this.isInitialized) {
@@ -32,23 +40,101 @@ class BuiltInLocalAI {
         }
         
         try {
-            // Check if we have any models
-            const models = this.listInstalledModels();
+            console.log('[Built-In AI] 🔍 Checking for custom Ollama models...');
             
-            if (models.length === 0) {
-                console.log('[Built-In AI] No models found, using lightweight fallback');
-                await this.initializeFallbackModel();
+            // Try to connect to Ollama server
+            const ollamaCheck = await this.checkOllamaAvailability();
+            
+            if (ollamaCheck.available) {
+                console.log(`[Built-In AI] ✅ Ollama available with ${ollamaCheck.models.length} models!`);
+                this.ollamaAvailable = true;
+                this.ollamaModels = ollamaCheck.models;
+                this.customOllamaModels = ollamaCheck.models.filter(m => 
+                    !['llama2', 'llama3', 'codellama', 'mistral'].includes(m.name.split(':')[0])
+                );
+                
+                // Use first available model (prefer custom models)
+                if (this.customOllamaModels.length > 0) {
+                    this.currentModel = {
+                        name: this.customOllamaModels[0].name,
+                        type: 'ollama-custom',
+                        size: this.customOllamaModels[0].size
+                    };
+                    console.log(`[Built-In AI] 🎯 Using custom Ollama model: ${this.currentModel.name}`);
+                } else if (this.ollamaModels.length > 0) {
+                    this.currentModel = {
+                        name: this.ollamaModels[0].name,
+                        type: 'ollama',
+                        size: this.ollamaModels[0].size
+                    };
+                    console.log(`[Built-In AI] 🦙 Using Ollama model: ${this.currentModel.name}`);
+                }
             } else {
-                console.log(`[Built-In AI] Found ${models.length} installed models`);
-                this.currentModel = models[0];
+                console.log('[Built-In AI] ⚠️ Ollama not available, using rule-based fallback');
+                await this.initializeFallbackModel();
             }
             
             this.isInitialized = true;
-            return { success: true, message: 'Initialized successfully', models };
+            return { 
+                success: true, 
+                message: 'Initialized successfully',
+                ollamaAvailable: this.ollamaAvailable,
+                ollamaModels: this.ollamaModels.length,
+                customModels: this.customOllamaModels.length,
+                currentModel: this.currentModel
+            };
         } catch (error) {
             console.error('[Built-In AI] Initialization error:', error);
-            return { success: false, error: error.message };
+            await this.initializeFallbackModel();
+            this.isInitialized = true;
+            return { success: false, error: error.message, fallback: true };
         }
+    }
+    
+    /**
+     * Check if Ollama is available and get models
+     */
+    async checkOllamaAvailability() {
+        return new Promise((resolve) => {
+            const options = {
+                hostname: 'localhost',
+                port: 11434,
+                path: '/api/tags',
+                method: 'GET',
+                timeout: 2000
+            };
+            
+            const req = http.request(options, (res) => {
+                let data = '';
+                
+                res.on('data', (chunk) => {
+                    data += chunk;
+                });
+                
+                res.on('end', () => {
+                    try {
+                        const parsed = JSON.parse(data);
+                        resolve({
+                            available: true,
+                            models: parsed.models || []
+                        });
+                    } catch {
+                        resolve({ available: false, models: [] });
+                    }
+                });
+            });
+            
+            req.on('error', () => {
+                resolve({ available: false, models: [] });
+            });
+            
+            req.on('timeout', () => {
+                req.destroy();
+                resolve({ available: false, models: [] });
+            });
+            
+            req.end();
+        });
     }
     
     /**
@@ -66,6 +152,7 @@ class BuiltInLocalAI {
     
     /**
      * Generate response to prompt
+     * USES YOUR CUSTOM OLLAMA MODELS AGENTICALLY!
      */
     async generate(prompt, options = {}) {
         if (!this.isInitialized) {
@@ -76,24 +163,98 @@ class BuiltInLocalAI {
             maxTokens = 1000,
             temperature = 0.7,
             stream = false,
-            context = []
+            context = [],
+            model = null
         } = options;
         
         try {
-            // Use appropriate model based on availability
-            if (this.currentModel && this.currentModel.type === 'transformer') {
+            // Priority: Custom Ollama Models > Regular Ollama > Rule-Based
+            if (this.ollamaAvailable && (this.currentModel.type === 'ollama-custom' || this.currentModel.type === 'ollama')) {
+                console.log(`[Built-In AI] 🎯 Using ${this.currentModel.type}: ${this.currentModel.name}`);
+                return await this.generateWithOllama(prompt, options);
+            } else if (this.currentModel && this.currentModel.type === 'transformer') {
                 return await this.generateWithTransformer(prompt, options);
             } else {
+                console.log('[Built-In AI] 📋 Using rule-based fallback');
                 return await this.generateWithRuleBased(prompt, options);
             }
         } catch (error) {
             console.error('[Built-In AI] Generation error:', error);
-            return {
-                success: false,
-                error: error.message,
-                fallback: this.generateFallbackResponse(prompt)
-            };
+            // Try fallback
+            console.log('[Built-In AI] Falling back to rule-based AI');
+            return await this.generateWithRuleBased(prompt, options);
         }
+    }
+    
+    /**
+     * Generate with your custom Ollama models (OFFLINE!)
+     */
+    async generateWithOllama(prompt, options = {}) {
+        const modelName = options.model || this.currentModel.name;
+        
+        return new Promise((resolve) => {
+            const postData = JSON.stringify({
+                model: modelName,
+                prompt: prompt,
+                stream: false,
+                options: {
+                    temperature: options.temperature || 0.7,
+                    num_predict: options.maxTokens || 1000
+                }
+            });
+            
+            const reqOptions = {
+                hostname: 'localhost',
+                port: 11434,
+                path: '/api/generate',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Content-Length': Buffer.byteLength(postData)
+                },
+                timeout: 30000
+            };
+            
+            const req = http.request(reqOptions, (res) => {
+                let data = '';
+                
+                res.on('data', (chunk) => {
+                    data += chunk;
+                });
+                
+                res.on('end', () => {
+                    try {
+                        const parsed = JSON.parse(data);
+                        resolve({
+                            success: true,
+                            response: parsed.response,
+                            model: modelName,
+                            type: this.currentModel.type,
+                            tokens: parsed.eval_count,
+                            duration: parsed.total_duration,
+                            custom: this.currentModel.type === 'ollama-custom'
+                        });
+                    } catch (error) {
+                        console.error('[Built-In AI] Ollama parse error:', error);
+                        resolve(this.generateWithRuleBased(prompt, options));
+                    }
+                });
+            });
+            
+            req.on('error', (error) => {
+                console.error('[Built-In AI] Ollama request error:', error);
+                resolve(this.generateWithRuleBased(prompt, options));
+            });
+            
+            req.on('timeout', () => {
+                console.error('[Built-In AI] Ollama timeout');
+                req.destroy();
+                resolve(this.generateWithRuleBased(prompt, options));
+            });
+            
+            req.write(postData);
+            req.end();
+        });
     }
     
     /**
@@ -378,6 +539,9 @@ What would you like help with?`;
     getModelInfo() {
         return {
             current: this.currentModel,
+            ollamaAvailable: this.ollamaAvailable,
+            ollamaModels: this.ollamaModels,
+            customOllamaModels: this.customOllamaModels,
             installed: this.listInstalledModels(),
             capabilities: [
                 'code-completion',
@@ -387,10 +551,48 @@ What would you like help with?`;
                 'documentation',
                 'general-help'
             ],
+            mode: this.ollamaAvailable ? 
+                (this.currentModel?.type === 'ollama-custom' ? 'Custom Ollama (Offline)' : 'Ollama (Offline)') : 
+                'Rule-Based (Always Available)',
             requiresInternet: false,
-            requiresOllama: false,
-            alwaysAvailable: true
+            requiresOllama: false, // Not required, but used if available!
+            alwaysAvailable: true,
+            offline: true
         };
+    }
+    
+    /**
+     * List all available Ollama models
+     */
+    listOllamaModels() {
+        return {
+            all: this.ollamaModels,
+            custom: this.customOllamaModels,
+            available: this.ollamaAvailable
+        };
+    }
+    
+    /**
+     * Switch to specific Ollama model
+     */
+    async switchModel(modelName) {
+        if (!this.ollamaAvailable) {
+            return { success: false, error: 'Ollama not available' };
+        }
+        
+        const model = this.ollamaModels.find(m => m.name === modelName);
+        if (!model) {
+            return { success: false, error: 'Model not found' };
+        }
+        
+        this.currentModel = {
+            name: model.name,
+            type: this.customOllamaModels.some(m => m.name === modelName) ? 'ollama-custom' : 'ollama',
+            size: model.size
+        };
+        
+        console.log(`[Built-In AI] Switched to ${this.currentModel.type}: ${modelName}`);
+        return { success: true, model: this.currentModel };
     }
     
     /**
@@ -433,10 +635,16 @@ What would you like help with?`;
         return {
             initialized: this.isInitialized,
             currentModel: this.currentModel,
+            ollamaAvailable: this.ollamaAvailable,
+            ollamaModels: this.ollamaModels.length,
+            customOllamaModels: this.customOllamaModels.length,
             installedModels: this.listInstalledModels().length,
             ready: true,
             offline: true,
-            noDependencies: true
+            noDependencies: true,
+            mode: this.ollamaAvailable ? 
+                `Using ${this.currentModel?.type === 'ollama-custom' ? 'Custom' : 'Standard'} Ollama Models` : 
+                'Rule-Based Fallback'
         };
     }
 }
