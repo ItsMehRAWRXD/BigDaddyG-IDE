@@ -929,6 +929,9 @@
         </div>
     </div>
     
+    <!-- RENDERER - Must load BEFORE Monaco to define window.onMonacoLoad -->
+    <script src="renderer.js"></script>
+    
     <!-- Monaco Bootstrap Test -->
     <script src="monaco-bootstrap-test.js"></script>
     
@@ -1108,8 +1111,6 @@
     
     <!-- UI ENHANCER - Professional animations and polish -->
     <script src="ui-enhancer.js"></script>
-    
-    <script src="renderer.js"></script>
     <script src="settings-applier.js"></script>
     <script src="settings-panel.js"></script>
     
