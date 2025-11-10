@@ -1,7 +1,7 @@
 /**
  * BigDaddyG IDE - Professional Terminal Panel (Cursor-style)
  * Full PowerShell access + GitLens + Ports + Debug Console + Output + Problems
- * Toggle with Ctrl+J (like Cursor)
+ * Managed by central PanelManager (Ctrl+J to toggle)
  */
 
 // Browser/Node compatibility
@@ -108,7 +108,7 @@ class TerminalPanel {
             background: rgba(10, 10, 30, 0.98);
             backdrop-filter: blur(20px);
             border-top: 2px solid var(--cyan);
-            z-index: 99998;
+            z-index: ${window.panelManager?.zIndexLevels?.terminal || 10001};
             display: flex;
             flex-direction: column;
             transition: height 0.3s;
@@ -137,7 +137,7 @@ class TerminalPanel {
                         font-size: 18px;
                         cursor: pointer;
                         padding: 5px;
-                    " title="Toggle Panel (Ctrl+J)">⌨️</button>
+                    " title="Toggle Panel - Use Ctrl+J">⌨️</button>
                     
                     <div style="color: var(--cyan); font-weight: bold; font-size: 13px;">
                         Terminal Panel
@@ -1165,12 +1165,9 @@ class TerminalPanel {
     }
     
     setupKeyboardShortcuts() {
-        document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.key === 'j') {
-                e.preventDefault();
-                this.toggle();
-            }
-        });
+        // Keyboard shortcuts are now handled by central PanelManager
+        // to prevent conflicts. Ctrl+J is managed there.
+        console.log('[TerminalPanel] ⌨️ Keyboard shortcuts managed by PanelManager');
     }
 
     focusActiveTerminal() {
@@ -1283,15 +1280,23 @@ if (typeof monaco !== 'undefined') {
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         terminalPanelInstance = new TerminalPanel();
-        window.terminalPanelInstance = terminalPanelInstance; // Expose globally
-        console.log('[TerminalPanel] ✅ Terminal panel initialized');
-        console.log('[TerminalPanel] 💡 Press Ctrl+J to toggle');
+        window.terminalPanelInstance = terminalPanelInstance;
+        // Register with central panel manager
+        if (window.registerPanelInstance) {
+            window.registerPanelInstance('terminal', terminalPanelInstance);
+        }
+        console.log('[TerminalPanel] ✅ Terminal panel initialized and registered');
+        console.log('[TerminalPanel] 💡 Press Ctrl+J to toggle (managed by PanelManager)');
     });
 } else {
     terminalPanelInstance = new TerminalPanel();
-    window.terminalPanelInstance = terminalPanelInstance; // Expose globally
-    console.log('[TerminalPanel] ✅ Terminal panel initialized');
-    console.log('[TerminalPanel] 💡 Press Ctrl+J to toggle');
+    window.terminalPanelInstance = terminalPanelInstance;
+    // Register with central panel manager
+    if (window.registerPanelInstance) {
+        window.registerPanelInstance('terminal', terminalPanelInstance);
+    }
+    console.log('[TerminalPanel] ✅ Terminal panel initialized and registered');
+    console.log('[TerminalPanel] 💡 Press Ctrl+J to toggle (managed by PanelManager)');
 }
 
 // Export

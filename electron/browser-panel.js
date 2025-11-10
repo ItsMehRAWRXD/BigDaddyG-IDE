@@ -59,19 +59,11 @@ class BrowserPanel {
 
         this.syncEmbeddedBrowserState();
         
-        // Register keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.shiftKey && e.key === 'B') {
-                e.preventDefault();
-                this.toggle();
-            }
-            if (e.key === 'Escape' && this.isVisible) {
-                e.preventDefault();
-                this.hide();
-            }
-        });
+        // Keyboard shortcuts are now managed by central PanelManager
+        // Ctrl+Shift+B is handled there
         
         console.log('[BrowserPanel] ✅ Browser panel ready!');
+        console.log('[BrowserPanel] 💡 Press Ctrl+Shift+B to toggle (managed by PanelManager)');
     }
     
     createBrowserPanel() {
@@ -85,7 +77,7 @@ class BrowserPanel {
             right: 0;
             bottom: 0;
             background: #1e1e1e;
-            z-index: 99999;
+            z-index: ${window.panelManager?.zIndexLevels?.browser || 10002};
             display: none;
             flex-direction: column;
         `;
@@ -708,8 +700,13 @@ class BrowserPanel {
 // Initialize browser panel
 window.browserPanel = new BrowserPanel();
 
-console.log('[BrowserPanel] 🌐 Browser panel module loaded');
+// Register with central panel manager
+if (window.registerPanelInstance) {
+    window.registerPanelInstance('browser', window.browserPanel);
+}
+
+console.log('[BrowserPanel] 🌐 Browser panel module loaded and registered');
 console.log('[BrowserPanel] 💡 Usage:');
-console.log('  • Ctrl+Shift+B - Toggle browser');
+console.log('  • Ctrl+Shift+B - Toggle browser (managed by PanelManager)');
 console.log('  • browserPanel.show() - Show browser');
 console.log('  • browserPanel.navigate(url) - Navigate to URL');
