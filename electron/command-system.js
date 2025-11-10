@@ -124,33 +124,44 @@ class CommandSystem {
     }
     
     hookIntoChat() {
-        // Hook into floating chat
-        if (window.floatingChat) {
-            const originalSend = window.floatingChat.send.bind(window.floatingChat);
-            
-            window.floatingChat.send = async function() {
-                const input = document.getElementById('floating-chat-input');
-                const message = input?.value.trim();
+        // Hook into floating chat (with retry for timing)
+        const hookFloatingChat = () => {
+            if (window.floatingChat && window.floatingChat.send) {
+                const originalSend = window.floatingChat.send.bind(window.floatingChat);
                 
-                if (message && message.startsWith('!')) {
-                    // Extract command and args
-                    const parts = message.substring(1).split(' ');
-                    const command = parts[0].toLowerCase();
-                    const args = parts.slice(1).join(' ');
+                window.floatingChat.send = async function() {
+                    const input = document.getElementById('floating-chat-input');
+                    const message = input?.value.trim();
                     
-                    if (window.commandSystem.commands.has(command)) {
-                        input.value = '';
-                        await window.commandSystem.executeCommand(command, args);
-                        return;
+                    if (message && message.startsWith('!')) {
+                        // Extract command and args
+                        const parts = message.substring(1).split(' ');
+                        const command = parts[0].toLowerCase();
+                        const args = parts.slice(1).join(' ');
+                        
+                        if (window.commandSystem && window.commandSystem.commands.has(command)) {
+                            input.value = '';
+                            await window.commandSystem.executeCommand(command, args);
+                            return;
+                        }
                     }
-                }
-                
-                // Call original send
-                return originalSend();
-            };
+                    
+                    // Call original send
+                    return originalSend();
+                };
+                console.log('[CommandSystem] ✅ Hooked into floating chat');
+                return true;
+            }
+            return false;
+        };
+        
+        // Try to hook immediately, retry if not available
+        if (!hookFloatingChat()) {
+            console.log('[CommandSystem] ⏳ Waiting for floating chat...');
+            setTimeout(hookFloatingChat, 500);
         }
         
-        // Also hook into sidebar chat
+        // Hook into sidebar chat
         const originalSendToAI = window.sendToAI;
         
         window.sendToAI = async function() {
@@ -162,7 +173,7 @@ class CommandSystem {
                 const command = parts[0].toLowerCase();
                 const args = parts.slice(1).join(' ');
                 
-                if (window.commandSystem.commands.has(command)) {
+                if (window.commandSystem && window.commandSystem.commands.has(command)) {
                     input.value = '';
                     await window.commandSystem.executeCommand(command, args);
                     return;
@@ -175,7 +186,7 @@ class CommandSystem {
             }
         };
         
-        console.log('[CommandSystem] ✅ Commands hooked into chat');
+        console.log('[CommandSystem] ✅ Commands hooked into sidebar chat');
     }
     
     async executeCommand(command, args) {
@@ -705,15 +716,15 @@ ${context}
     // ========================================================================
     
     showProgress(message) {
-        this.displayMessage('Command', message, '⏳', 'info');
+        this.displayMessage('Command', this.escapeHtml(message), '⏳', 'info');
     }
     
     showSuccess(message) {
-        this.displayMessage('Command', message, '✅', 'success');
+        this.displayMessage('Command', this.escapeHtml(message), '✅', 'success');
     }
     
     showError(message) {
-        this.displayMessage('Error', message, '❌', 'error');
+        this.displayMessage('Error', this.escapeHtml(message), '❌', 'error');
     }
     
     displayMessage(title, content, icon = '💬', type = 'info') {
@@ -748,7 +759,7 @@ ${context}
         msgDiv.innerHTML = `
             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; user-select: none;">
                 <span style="font-size: 16px;">${icon}</span>
-                <span style="font-weight: 600; color: ${borderColors[type]};">${title}</span>
+                <span style="font-weight: 600; color: ${borderColors[type]};">${this.escapeHtml(title)}</span>
                 <span style="font-size: 10px; color: var(--cursor-text-secondary);">${new Date().toLocaleTimeString()}</span>
             </div>
             <div style="color: var(--cursor-text); font-size: 13px; line-height: 1.6; white-space: pre-wrap; user-select: text;">
@@ -853,6 +864,11 @@ ${context}
         this.commands.forEach((info, cmd) => {
             console.log(`  ${info.icon} !${cmd} - ${info.description}`);
         });
+        console.log('\n[CommandSystem] 💡 Usage:');
+        console.log('  - Use SIDEBAR CHAT (right panel) for AI conversations');
+        console.log('  - Use FLOATING CHAT (Ctrl+L) for quick AI queries');
+        console.log('  - Type !command in either chat to use commands');
+        console.log('  - Both chat surfaces route through the same command system\n');
     }
     
     showNotification(message, type = 'info') {
