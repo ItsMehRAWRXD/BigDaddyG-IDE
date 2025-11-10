@@ -119,3 +119,49 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - name: Download Linux artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: BigDaddyG-Linux-${{ github.run_id }}
+          path: linux-dist
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: BigDaddyG-Windows-${{ github.run_id }}
+          path: windows-dist
+      - name: Download macOS artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: BigDaddyG-macOS-${{ github.run_id }}
+          path: macos-dist
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: nightly-${{ github.run_id }}
+          name: Nightly Build ${{ github.run_id }}
+          body: |
+            🌙 Automated nightly build
+
+            **What's New:**
+            - Latest changes from main branch
+            - All three phases integrated:
+              - 🐙 GitHub Integration
+              - 🤖 Background Agents
+              - 👥 Team Collaboration
+
+            **Platform Support:**
+            - Windows: .exe installer & portable
+            - macOS: .dmg installer & .zip
+            - Linux: AppImage, .deb, .rpm
+
+            **Setup Instructions:**
+            See README.md and setup guides in the repository.
+
+            **Note:** This is an automated build. For stable releases, see the [Releases page](https://github.com/ItsMehRAWRXD/BigDaddyG-IDE/releases).
+          files: |
+            linux-dist/*
+            windows-dist/*
+            macos-dist/*
+          draft: false
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
