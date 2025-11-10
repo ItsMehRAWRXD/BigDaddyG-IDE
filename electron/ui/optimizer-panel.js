@@ -8,6 +8,7 @@ class OptimizerPanel {
     this.container = document.getElementById(containerId);
     this.optimizer = null;
     this.isScanning = false;
+    this.scoreUpdateTimer = null;
     
     this.init();
   }
@@ -314,24 +315,67 @@ class OptimizerPanel {
       </div>
     `).join('');
     
-    // Add event listeners for tweaks
+    // Add event listeners for tweaks with improved handling
     tweakableSettings.forEach(setting => {
       const slider = document.getElementById(`tweak-${setting.key}`);
       const number = document.getElementById(`tweak-${setting.key}-value`);
       
       if (slider && number) {
+        // Slider input event (real-time feedback)
         slider.addEventListener('input', (e) => {
-          number.value = e.target.value;
-          this.optimizer.tweakSetting(setting.key, parseInt(e.target.value));
-          this.log(`✏️ ${setting.label} = ${e.target.value}`);
-          this.displayPerformanceScore();
+          const value = parseInt(e.target.value);
+          if (!Number.isFinite(value)) return;
+          
+          number.value = value;
+          this.optimizer.tweakSetting(setting.key, value);
+          this.log(`✏️ ${setting.label} = ${value}`);
+          
+          // Debounce performance score update for better performance
+          clearTimeout(this.scoreUpdateTimer);
+          this.scoreUpdateTimer = setTimeout(() => {
+            this.displayPerformanceScore();
+          }, 300);
         });
         
-        number.addEventListener('input', (e) => {
-          slider.value = e.target.value;
-          this.optimizer.tweakSetting(setting.key, parseInt(e.target.value));
-          this.log(`✏️ ${setting.label} = ${e.target.value}`);
+        // Slider change event (final value)
+        slider.addEventListener('change', (e) => {
+          const value = parseInt(e.target.value);
+          if (!Number.isFinite(value)) return;
+          
           this.displayPerformanceScore();
+          this.displayComparison();
+        });
+        
+        // Number input event
+        number.addEventListener('input', (e) => {
+          const value = parseInt(e.target.value);
+          if (!Number.isFinite(value)) return;
+          
+          // Clamp value to valid range
+          const clampedValue = Math.max(setting.min, Math.min(setting.max, value));
+          if (clampedValue !== value) {
+            e.target.value = clampedValue;
+          }
+          
+          slider.value = clampedValue;
+          this.optimizer.tweakSetting(setting.key, clampedValue);
+          this.log(`✏️ ${setting.label} = ${clampedValue}`);
+          
+          // Debounce performance score update
+          clearTimeout(this.scoreUpdateTimer);
+          this.scoreUpdateTimer = setTimeout(() => {
+            this.displayPerformanceScore();
+            this.displayComparison();
+          }, 300);
+        });
+        
+        // Add visual feedback on focus
+        slider.addEventListener('focus', () => {
+          slider.style.boxShadow = '0 0 0 3px rgba(0, 255, 255, 0.3)';
+        });
+        
+        slider.addEventListener('blur', () => {
+          slider.style.boxShadow = 'none';
         });
       }
     });
@@ -648,6 +692,64 @@ class OptimizerPanel {
       
       .tweak-slider {
         width: 200px;
+        -webkit-appearance: none;
+        appearance: none;
+        height: 6px;
+        border-radius: 3px;
+        background: rgba(0, 255, 255, 0.2);
+        outline: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      
+      .tweak-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--cyan);
+        cursor: pointer;
+        border: 2px solid var(--void);
+        box-shadow: 0 2px 6px rgba(0, 255, 255, 0.4);
+        transition: all 0.2s ease;
+      }
+      
+      .tweak-slider::-webkit-slider-thumb:hover {
+        background: var(--green);
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px rgba(0, 255, 0, 0.6);
+      }
+      
+      .tweak-slider::-moz-range-thumb {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--cyan);
+        cursor: pointer;
+        border: 2px solid var(--void);
+        box-shadow: 0 2px 6px rgba(0, 255, 255, 0.4);
+        transition: all 0.2s ease;
+      }
+      
+      .tweak-slider::-moz-range-thumb:hover {
+        background: var(--green);
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px rgba(0, 255, 0, 0.6);
+      }
+      
+      .tweak-slider:focus {
+        background: rgba(0, 255, 255, 0.3);
+      }
+      
+      .tweak-slider:active::-webkit-slider-thumb {
+        transform: scale(1.2);
+        box-shadow: 0 6px 16px rgba(0, 255, 0, 0.8);
+      }
+      
+      .tweak-slider:active::-moz-range-thumb {
+        transform: scale(1.2);
+        box-shadow: 0 6px 16px rgba(0, 255, 0, 0.8);
       }
       
       .tweak-number {

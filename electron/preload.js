@@ -245,5 +245,31 @@ contextBridge.exposeInMainWorld('electron', {
   }
 });
 
+// ============================================================================
+// EXPOSE PROCESS ENVIRONMENT (FIX: process is not defined)
+// ============================================================================
+const os = require('os');
+const path = require('path');
+
+contextBridge.exposeInMainWorld('env', {
+  platform: os.platform(),
+  arch: os.arch(),
+  cwd: () => process.cwd(),
+  env: {
+    ...process.env,
+    // Sanitize sensitive vars
+    PATH: process.env.PATH,
+    HOME: process.env.HOME || process.env.USERPROFILE,
+    NODE_ENV: process.env.NODE_ENV || 'production'
+  },
+  versions: {
+    node: process.versions.node,
+    chrome: process.versions.chrome,
+    electron: process.versions.electron
+  },
+  sep: path.sep,
+  delimiter: path.delimiter
+});
+
 console.log('[BigDaddyG] ✅ Preload script loaded');
 

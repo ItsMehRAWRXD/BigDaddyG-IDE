@@ -1,0 +1,15 @@
+{
+  "name": "@bigdaddyg/agent",
+  "version": "0.1.0",
+  "description": "BigDaddyG Agentic AI Core",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "sqlite3": "^5.1.6"
+  },
+  "keywords": ["agent", "ai", "automation"],
+  "author": "BigDaddyG",
+  "license": "MIT"
+}

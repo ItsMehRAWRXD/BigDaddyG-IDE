@@ -116,9 +116,15 @@ class FileExplorer {
     }
     
     renderDrives() {
+        // Wait for DOM if not ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.renderDrives());
+            return;
+        }
+        
         const container = document.getElementById('drives-list');
         if (!container) {
-            console.error('[Explorer] ❌ Drives list container not found');
+            // Silently return - element may not exist in all layouts
             return;
         }
         

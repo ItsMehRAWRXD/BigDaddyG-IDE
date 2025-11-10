@@ -71,33 +71,26 @@ class VisualTestRunner {
         // Create visual overlay
         this.createOverlay();
         
-        // Check if Monaco is ready, if not - BOOTSTRAP IT by creating a tab!
-        this.updateProgress(0, '🚀 Starting Monaco Editor', 'Checking if editor needs initialization...');
+        // Check Monaco bootstrap status
+        this.updateProgress(0, '🚀 Checking Monaco Bootstrap', 'Running Monaco diagnostic...');
         
-        if (!window.editor || !window.monaco) {
-            console.log('[VisualTest] 💡 Monaco not ready - creating a tab to bootstrap it!');
-            this.updateProgress(0, '🎬 Bootstrapping Monaco', 'Creating initial tab to trigger Monaco initialization...');
+        // Run diagnostic to check Monaco status
+        if (typeof window.diagnoseMonaco === 'function') {
+            const diagnostic = window.diagnoseMonaco();
+            const allGreen = Object.values(diagnostic).every(Boolean);
             
-            try {
-                if (typeof createNewTab === 'function') {
-                    createNewTab('welcome.js', 'javascript', '// BigDaddyG IDE - Visual Test\nconsole.log("Monaco bootstrapped!");\n');
-                    await this.wait(1000);
-                }
-                
-                let attempts = 0;
-                while (!window.editor || !window.monaco) {
-                    await this.wait(300);
-                    attempts++;
-                    if (attempts > 10) {
-                        throw new Error('Monaco initialization timeout');
-                    }
-                }
-            } catch (error) {
-                console.error('[VisualTest] Monaco bootstrap failed:', error);
-                this.updateProgress(0, '⚠️ Monaco Fallback', 'Using basic text editor mode');
-                this.results.push({ step: 'Monaco Bootstrap', status: 'FALLBACK', icon: '⚠️' });
-                // Continue with limited functionality
+            if (allGreen) {
+                console.log('[VisualTest] ✅ Monaco bootstrap successful!');
+                this.results.push({ step: 'Monaco Bootstrap', status: 'PASS', icon: '✅' });
+            } else {
+                console.log('[VisualTest] ❌ Monaco bootstrap failed:', diagnostic);
+                this.results.push({ step: 'Monaco Bootstrap', status: 'FAIL', icon: '❌' });
+                this.updateProgress(0, '❌ Monaco Bootstrap Failed', 'Check console for details');
+                await this.wait(2000);
             }
+        } else {
+            console.log('[VisualTest] ⚠️ Monaco diagnostic not available');
+            this.results.push({ step: 'Monaco Bootstrap', status: 'UNKNOWN', icon: '⚠️' });
         }
         
         // Make sure Monaco container is visible

@@ -12,10 +12,10 @@
 // ============================================================================
 
 const Platform = {
-    isWindows: process.platform === 'win32',
-    isMac: process.platform === 'darwin',
-    isLinux: process.platform === 'linux',
-    isElectron: typeof process !== 'undefined' && process.versions && process.versions.electron,
+    isWindows: (window.env && window.env.platform === 'win32') || false,
+    isMac: (window.env && window.env.platform === 'darwin') || false,
+    isLinux: (window.env && window.env.platform === 'linux') || false,
+    isElectron: (window.env && window.env.versions && window.env.versions.electron) || false,
     isMobile: /Android|iPhone|iPad|iPod/i.test(navigator.userAgent),
     isAndroid: /Android/i.test(navigator.userAgent),
     isIOS: /iPhone|iPad|iPod/i.test(navigator.userAgent)

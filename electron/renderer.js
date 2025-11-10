@@ -100,52 +100,97 @@ function handleFullscreenChange() {
 
 window.addEventListener('fullscreenchange', handleFullscreenChange);
 
+// Load Monaco CSS first, then initialize
+function loadMonacoCSS() {
+    return new Promise((resolve, reject) => {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = './node_modules/monaco-editor/min/vs/editor/editor.main.css';
+        
+        link.onload = () => {
+            console.log('[BigDaddyG] ✅ Monaco CSS loaded');
+            resolve();
+        };
+        
+        link.onerror = () => {
+            alert('Monaco CSS missing – editor will not work. Check console for details.');
+            console.error('[BigDaddyG] ❌ Monaco CSS 404 – bootstrap aborted');
+            reject(new Error('Monaco CSS failed to load'));
+        };
+        
+        document.head.appendChild(link);
+    });
+}
+
 // Monaco Editor initialization - Called when Monaco loads from index.html
 window.onMonacoLoad = function() {
-    console.log('[BigDaddyG] 🎨 Monaco loaded, initializing editor...');
+    console.log('[BigDaddyG] 🎨 Monaco loaded, loading CSS first...');
     clearTimeout(window.monacoTimeout); // Cancel timeout if Monaco loads
-    initMonacoEditor();
+    
+    loadMonacoCSS().then(() => {
+        console.log('[BigDaddyG] 🎨 CSS loaded, initializing editor...');
+        initMonacoEditor();
+    }).catch(error => {
+        console.error('[BigDaddyG] ❌ Failed to load Monaco CSS:', error);
+        showMonacoError('Monaco CSS failed to load');
+    });
 };
+
+// Show Monaco error with helpful message
+function showMonacoError(message) {
+    const container = document.getElementById('monaco-container');
+    if (container) {
+        container.innerHTML = `
+            <div style="display: flex; align-items: center; justify-content: center; height: 100%; background: #1e1e1e; color: #fff; padding: 40px; text-align: center; flex-direction: column;">
+                <div style="font-size: 48px; margin-bottom: 20px;">⚠️</div>
+                <h2 style="color: #ff6b6b; margin-bottom: 20px;">Monaco Editor Bootstrap Failed</h2>
+                <p style="margin-bottom: 20px; max-width: 600px; line-height: 1.6;">
+                    ${message}
+                </p>
+                <button onclick="location.reload()" style="padding: 12px 30px; background: #00d4ff; color: #000; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold;">
+                    🔄 Retry Loading
+                </button>
+            </div>
+        `;
+    }
+}
 
 // Also try immediate init if Monaco is already loaded
 if (typeof monaco !== 'undefined') {
     console.log('[BigDaddyG] 🎨 Monaco already available, initializing...');
-    initMonacoEditor();
+    window.onMonacoLoad();
 } else {
-    // Set timeout fallback in case Monaco fails to load from CDN
+    // Set timeout fallback in case Monaco fails to load
     console.log('[BigDaddyG] ⏳ Waiting for Monaco to load (15s timeout)...');
     window.monacoTimeout = setTimeout(() => {
         if (typeof monaco === 'undefined') {
-            console.error('[BigDaddyG] ❌ Monaco failed to load from CDN after 15s!');
-            console.error('[BigDaddyG] 💡 Showing fallback error message...');
-            
-            // Show user-friendly error instead of white screen
-            document.getElementById('monaco-container').innerHTML = `
-                <div style="display: flex; align-items: center; justify-content: center; height: 100%; background: #1e1e1e; color: #fff; padding: 40px; text-align: center; flex-direction: column;">
-                    <div style="font-size: 48px; margin-bottom: 20px;">⚠️</div>
-                    <h2 style="color: #ff6b6b; margin-bottom: 20px;">Monaco Editor Failed to Load</h2>
-                    <p style="margin-bottom: 20px; max-width: 600px; line-height: 1.6;">
-                        The code editor couldn't load from the CDN. This might be due to:
-                    </p>
-                    <ul style="text-align: left; margin-bottom: 20px;">
-                        <li>No internet connection</li>
-                        <li>CDN is down or blocked</li>
-                        <li>Firewall/antivirus blocking the CDN</li>
-                    </ul>
-                    <button onclick="location.reload()" style="padding: 12px 30px; background: #00d4ff; color: #000; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold;">
-                        🔄 Retry Loading
-                    </button>
-                    <p style="margin-top: 20px; font-size: 12px; color: #666;">
-                        Or check your internet connection and try again
-                    </p>
-                </div>
-            `;
+            console.error('[BigDaddyG] ❌ Monaco failed to load after 15s!');
+            showMonacoError('Monaco Editor failed to load. Check console for details.');
         }
     }, 15000); // 15 second timeout
 }
 
 function initMonacoEditor() {
     console.log('[BigDaddyG] 🎨 Initializing Monaco Editor...');
+    
+    // ========================================================================
+    // CRITICAL: Wait for Monaco CSS to load first
+    // ========================================================================
+    if (!window.__monacoReady) {
+        console.log('[BigDaddyG] ⏳ Waiting for Monaco CSS to load...');
+        setTimeout(initMonacoEditor, 100);
+        return;
+    }
+    
+    // Ensure editor container exists and is visible
+    const container = document.getElementById('monaco-container');
+    if (!container || !container.offsetParent) {
+        console.warn('[BigDaddyG] ⚠️ monaco-container not in rendered DOM; retry in 100ms');
+        setTimeout(initMonacoEditor, 100);
+        return;
+    }
+    
+    console.log('[BigDaddyG] ✅ CSS loaded, container ready - creating editor instance');
     
     const appearanceSettings = window.__appSettings?.appearance || {};
     const editorFontSize = appearanceSettings.fontSize || 14;
@@ -171,7 +216,7 @@ function initMonacoEditor() {
     });
     
     // Create Monaco Editor instance with performance optimizations
-    editor = monaco.editor.create(document.getElementById('monaco-container'), {
+    editor = monaco.editor.create(container, {
         value: getWelcomeMessage(),
         language: 'markdown',
         theme: 'bigdaddyg-dark', // Use custom theme
@@ -609,6 +654,13 @@ function closeOtherTabs() {
 
 function renderTabs() {
     const tabBar = document.getElementById('tab-bar');
+    
+    // Safety check - if tab-bar doesn't exist, skip rendering
+    if (!tabBar) {
+        console.warn('[BigDaddyG] ⚠️ Tab bar not found - skipping tab render');
+        return;
+    }
+    
     tabBar.innerHTML = '';
     
     // Get sorted tabs (by creation time)

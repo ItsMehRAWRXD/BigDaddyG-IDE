@@ -19,7 +19,7 @@ class EnhancedTerminal {
         this.activeShell = 'powershell'; // powershell, cmd, bash, wsl
         this.history = [];
         this.historyIndex = -1;
-        this.currentDirectory = process.cwd();
+        this.currentDirectory = (window.env && window.env.cwd) ? window.env.cwd() : 'C:\\';
         this.sessionId = `terminal_${Date.now()}`;
         this.outputBuffer = [];
         

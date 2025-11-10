@@ -54,10 +54,10 @@ class ResizablePanes {
         divider.className = 'resize-divider resize-divider-vertical';
         divider.style.cssText = `
             position: fixed;
-            left: 280px;
-            top: 0;
+            left: 250px;
+            top: 65px;
             width: 4px;
-            height: 100vh;
+            height: calc(100vh - 65px);
             background: transparent;
             cursor: ew-resize;
             z-index: 10000;
@@ -98,10 +98,10 @@ class ResizablePanes {
         divider.className = 'resize-divider resize-divider-vertical';
         divider.style.cssText = `
             position: fixed;
-            right: 50%;
-            top: 0;
+            left: 50%;
+            top: 65px;
             width: 4px;
-            height: 100vh;
+            height: calc(100vh - 65px);
             background: transparent;
             cursor: ew-resize;
             z-index: 10000;
@@ -140,7 +140,7 @@ class ResizablePanes {
         divider.className = 'resize-divider resize-divider-horizontal';
         divider.style.cssText = `
             position: fixed;
-            bottom: 300px;
+            top: calc(100vh - 300px);
             left: 0;
             width: 100%;
             height: 4px;
@@ -148,7 +148,7 @@ class ResizablePanes {
             cursor: ns-resize;
             z-index: 10000;
             transition: background 0.2s;
-            display: none; /* Hidden by default, show when terminal is open */
+            display: none;
         `;
         
         divider.addEventListener('mouseenter', () => {
@@ -255,25 +255,21 @@ class ResizablePanes {
     }
     
     resizeLeftPane(x) {
-        // Constrain to min/max
         const minSize = this.minPaneSize;
         const maxSize = window.innerWidth * (this.maxPaneSize / 100);
         const newSize = Math.max(minSize, Math.min(maxSize, x));
         
-        // Update left sidebar width
-        const leftSidebar = document.querySelector('#conversation-history-sidebar, .left-sidebar, #file-explorer');
+        const leftSidebar = document.querySelector('#conversation-history-sidebar, .left-sidebar, #file-explorer, #sidebar');
         if (leftSidebar) {
             leftSidebar.style.width = newSize + 'px';
         }
         
-        // Update divider position
         const divider = this.dividers.get('left');
         if (divider) {
             divider.style.left = newSize + 'px';
         }
         
-        // Update main content margin
-        const mainContent = document.querySelector('.main-container, #orchestra-chat-stage');
+        const mainContent = document.querySelector('.main-container, #orchestra-chat-stage, #main-container');
         if (mainContent) {
             mainContent.style.marginLeft = newSize + 'px';
         }
@@ -282,48 +278,38 @@ class ResizablePanes {
     }
     
     resizeRightPane(x) {
-        // Calculate right pane width from right edge
         const rightWidth = window.innerWidth - x;
-        
-        // Constrain to min/max
         const minSize = this.minPaneSize;
         const maxSize = window.innerWidth * (this.maxPaneSize / 100);
         const newSize = Math.max(minSize, Math.min(maxSize, rightWidth));
         
-        // Update right editor width
         const rightEditor = document.querySelector('#monaco-editor-container, .editor-container, .right-pane');
         if (rightEditor) {
             rightEditor.style.width = newSize + 'px';
         }
         
-        // Update divider position
         const divider = this.dividers.get('right');
         if (divider) {
-            divider.style.right = newSize + 'px';
+            divider.style.left = x + 'px';
         }
         
         this.savedSizes.rightPane = newSize;
     }
     
     resizeHorizontalPane(y) {
-        // Calculate bottom pane height from bottom edge
         const bottomHeight = window.innerHeight - y;
-        
-        // Constrain to min/max
         const minSize = 100;
         const maxSize = window.innerHeight * 0.8;
         const newSize = Math.max(minSize, Math.min(maxSize, bottomHeight));
         
-        // Update terminal/console height
         const bottomPane = document.querySelector('#console-panel, .terminal-panel, .bottom-pane');
         if (bottomPane) {
             bottomPane.style.height = newSize + 'px';
         }
         
-        // Update divider position
         const divider = this.dividers.get('horizontal');
         if (divider) {
-            divider.style.bottom = newSize + 'px';
+            divider.style.top = y + 'px';
         }
         
         this.savedSizes.bottomPane = newSize;

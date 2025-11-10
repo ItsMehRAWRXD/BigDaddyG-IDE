@@ -13,6 +13,7 @@
     "benchmark": "node -e \"require('./benchmark-suite.js'); runBenchmarks();\"",
     "lint": "eslint agentic-auto-fixer.js plugins/first-party-linter.js",
     "build": "electron-builder",
+    "package": "electron-builder",
     "dist": "electron-builder --publish=never",
     "pack": "electron-builder --dir",
     "postinstall": "electron-builder install-app-deps",
@@ -32,18 +33,18 @@
   "author": "BigDaddyG",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^27.0.0",
+    "electron": "^39.1.1",
     "electron-builder": "^24.6.4",
     "electron-window-state": "^5.0.3",
     "eslint": "^8.57.1"
   },
   "dependencies": {
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.5",
+    "helmet": "^7.1.0",
     "monaco-editor": "^0.44.0",
     "node-fetch": "^3.3.2",
-    "ws": "^8.14.2",
-    "helmet": "^7.1.0",
-    "express-rate-limit": "^7.1.5",
-    "express": "^4.18.2"
+    "ws": "^8.14.2"
   },
   "build": {
     "appId": "com.bigdaddyg.ide",
@@ -56,6 +57,10 @@
       "!node_modules/**/*",
       "node_modules/monaco-editor/**/*",
       "node_modules/electron-window-state/**/*"
+    ],
+    "extraResources": [
+      "node_modules/monaco-editor/min/vs/**/*",
+      "!**/*.map"
     ],
     "win": {
       "target": "nsis",
