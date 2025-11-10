@@ -44,40 +44,51 @@ class FlexibleLayoutSystem {
     }
     
     createWorkspace() {
-        // Find or create main workspace
+        // Find or create main workspace wrapper
         let workspace = document.getElementById('flexible-workspace');
         
         if (!workspace) {
-            // Create new workspace
             workspace = document.createElement('div');
             workspace.id = 'flexible-workspace';
             workspace.className = 'flexible-workspace';
             workspace.style.cssText = `
-                position: fixed;
-                top: 40px;
-                left: 0;
-                right: 0;
-                bottom: 0;
                 display: flex;
                 flex-direction: column;
+                flex: 1;
+                min-height: 0;
+                min-width: 0;
                 background: var(--void);
+                position: relative;
                 z-index: 1;
             `;
+        }
+        
+        const mainContainer = document.getElementById('main-container');
+        
+        if (mainContainer) {
+            const parent = mainContainer.parentNode;
             
-            // Replace or insert into body
-            const mainContainer = document.getElementById('main-container') || document.body;
-            if (document.getElementById('main-container')) {
-                mainContainer.parentNode.replaceChild(workspace, mainContainer);
-            } else {
-                document.body.appendChild(workspace);
+            // Ensure workspace is in the DOM right before the main container
+            if (!workspace.parentNode && parent) {
+                parent.insertBefore(workspace, mainContainer);
             }
+            
+            // Preserve the original DOM by nesting it inside the workspace wrapper
+            if (mainContainer.parentNode !== workspace) {
+                workspace.appendChild(mainContainer);
+            }
+            
+            // Make sure the wrapper flexes like the original main container
+            workspace.style.flex = '1';
+        } else if (!workspace.parentNode) {
+            document.body.appendChild(workspace);
         }
         
         this.workspace = workspace;
         
         // Don't create default layout - preserve existing DOM structure
         // Users can manually customize layout with Ctrl+Shift+L
-        console.log('[FlexibleLayout] Workspace assigned, existing structure preserved');
+        console.log('[FlexibleLayout] Workspace wrapper ready, original structure preserved');
         console.log('[FlexibleLayout] Use Ctrl+Shift+L to customize layout');
     }
     
