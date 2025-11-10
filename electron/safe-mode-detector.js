@@ -122,17 +122,17 @@ class SafeModeDetector {
                 enabled: false,
                 failure_threshold: 3,
                 failure_count: 0,
-                last_working_html: 'test-color.html'
+                last_working_html: 'index.html'
             },
             IDE: {
-                html_file: 'test-color.html',
-                monaco_enabled: false,
-                load_all_features: false
+                html_file: 'index.html',
+                monaco_enabled: true,
+                load_all_features: true
             },
             Features: {
                 unlimited_tabs: true,
-                voice_coding: false,
-                autocomplete: false,
+                voice_coding: true,
+                autocomplete: true,
                 ai_chat: true,
                 file_browser: true
             },
