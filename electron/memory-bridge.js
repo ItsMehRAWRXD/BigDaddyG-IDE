@@ -64,6 +64,14 @@ class MemoryBridge {
         }
     }
     
+    setupInMemoryMode() {
+        // Create in-memory fallback storage
+        this.inMemoryStore = new Map();
+        this.inMemoryCounter = 0;
+        
+        console.log('[MemoryBridge] 📦 In-memory storage initialized');
+    }
+    
     // ========================================================================
     // POWERSHELL EXECUTION WRAPPER
     // ========================================================================
@@ -116,41 +124,38 @@ class MemoryBridge {
             await this.initialize();
         }
         
-        try {
-            // Create a temporary PowerShell script to store memory
-            const scriptContent = `
-                Import-Module "${this.openMemoryPath}\\OpenMemory.psd1" -Force
-                
-                $memory = @{
-                    Content = '${content.replace(/'/g, "''").replace(/\n/g, '`n')}'
-                    Timestamp = Get-Date -Format "yyyy-MM-ddTHH:mm:ss"
-                    Type = '${metadata.type || 'conversation'}'
-                    Source = '${metadata.source || 'IDE'}'
-                    Context = '${JSON.stringify(metadata.context || {}).replace(/'/g, "''")}'
+        // Try Electron IPC first
+        if (window.electron && window.electron.memory) {
+            try {
+                const result = await window.electron.memory.store(content, metadata);
+                if (result && result.success) {
+                    await this.updateStats();
+                    console.log('[MemoryBridge] 💾 Memory stored successfully');
+                    return result.memory;
                 }
-                
-                Add-Memory -Memory $memory -StorePath "${this.storePath}"
-                
-                $memory | ConvertTo-Json -Compress
-            `;
-            
-            const tempScript = path.join(this.storePath, `temp_store_${Date.now()}.ps1`);
-            fs.writeFileSync(tempScript, scriptContent, 'utf8');
-            
-            const result = await this.executePowerShell(tempScript);
-            
-            // Clean up temp script
-            fs.unlinkSync(tempScript);
-            
-            await this.updateStats();
-            console.log('[MemoryBridge] 💾 Memory stored successfully');
-            
-            return result;
-            
-        } catch (error) {
-            console.error('[MemoryBridge] ❌ Failed to store memory:', error);
-            return null;
+            } catch (error) {
+                console.warn('[MemoryBridge] ⚠️ IPC store failed, using fallback:', error);
+            }
         }
+        
+        // Fallback to in-memory storage
+        if (this.inMemoryStore) {
+            const memory = {
+                id: ++this.inMemoryCounter,
+                Content: content,
+                Timestamp: new Date().toISOString(),
+                Type: metadata.type || 'conversation',
+                Source: metadata.source || 'IDE',
+                Context: metadata.context || {}
+            };
+            this.inMemoryStore.set(memory.id, memory);
+            await this.updateStats();
+            console.log('[MemoryBridge] 💾 Memory stored in-memory');
+            return memory;
+        }
+        
+        console.error('[MemoryBridge] ❌ No storage backend available');
+        return null;
     }
     
     async queryMemory(query, limit = 10) {
@@ -158,61 +163,61 @@ class MemoryBridge {
             await this.initialize();
         }
         
-        try {
-            const scriptContent = `
-                Import-Module "${this.openMemoryPath}\\OpenMemory.psd1" -Force
-                
-                $results = Search-Memory -Query '${query.replace(/'/g, "''")}' -StorePath "${this.storePath}" -Limit ${limit}
-                
-                $results | ConvertTo-Json -Compress
-            `;
-            
-            const tempScript = path.join(this.storePath, `temp_query_${Date.now()}.ps1`);
-            fs.writeFileSync(tempScript, scriptContent, 'utf8');
-            
-            const result = await this.executePowerShell(tempScript);
-            
-            // Clean up temp script
-            fs.unlinkSync(tempScript);
-            
-            console.log('[MemoryBridge] 🔍 Query completed, found', result.length || 0, 'results');
-            
-            return Array.isArray(result) ? result : [result];
-            
-        } catch (error) {
-            console.error('[MemoryBridge] ❌ Failed to query memory:', error);
-            return [];
+        // Try Electron IPC first
+        if (window.electron && window.electron.memory) {
+            try {
+                const result = await window.electron.memory.query(query, limit);
+                if (result && result.success) {
+                    console.log('[MemoryBridge] 🔍 Query completed, found', result.results.length || 0, 'results');
+                    return result.results;
+                }
+            } catch (error) {
+                console.warn('[MemoryBridge] ⚠️ IPC query failed, using fallback:', error);
+            }
         }
+        
+        // Fallback: Search in-memory store
+        if (this.inMemoryStore) {
+            const results = [];
+            const queryLower = query.toLowerCase();
+            for (const memory of this.inMemoryStore.values()) {
+                if (memory.Content.toLowerCase().includes(queryLower)) {
+                    results.push(memory);
+                    if (results.length >= limit) break;
+                }
+            }
+            console.log('[MemoryBridge] 🔍 In-memory query found', results.length, 'results');
+            return results;
+        }
+        
+        return [];
     }
     
     async getRecentMemories(limit = 20) {
         if (!this.isInitialized) {
-            return [];
+            await this.initialize();
         }
         
-        try {
-            const scriptContent = `
-                Import-Module "${this.openMemoryPath}\\OpenMemory.psd1" -Force
-                
-                $memories = Get-RecentMemories -StorePath "${this.storePath}" -Limit ${limit}
-                
-                $memories | ConvertTo-Json -Compress
-            `;
-            
-            const tempScript = path.join(this.storePath, `temp_recent_${Date.now()}.ps1`);
-            fs.writeFileSync(tempScript, scriptContent, 'utf8');
-            
-            const result = await this.executePowerShell(tempScript);
-            
-            // Clean up temp script
-            fs.unlinkSync(tempScript);
-            
-            return Array.isArray(result) ? result : [result];
-            
-        } catch (error) {
-            console.error('[MemoryBridge] ❌ Failed to get recent memories:', error);
-            return [];
+        // Try Electron IPC first
+        if (window.electron && window.electron.memory) {
+            try {
+                const result = await window.electron.memory.recent(limit);
+                if (result && result.success) {
+                    return result.memories;
+                }
+            } catch (error) {
+                console.warn('[MemoryBridge] ⚠️ IPC recent failed, using fallback:', error);
+            }
         }
+        
+        // Fallback: Get recent from in-memory store
+        if (this.inMemoryStore) {
+            const memories = Array.from(this.inMemoryStore.values());
+            memories.sort((a, b) => new Date(b.Timestamp) - new Date(a.Timestamp));
+            return memories.slice(0, limit);
+        }
+        
+        return [];
     }
     
     // ========================================================================
@@ -437,7 +442,11 @@ window.memory = {
     similar: (embedding, threshold, limit) => window.memoryBridge.similaritySearch(embedding, threshold, limit),
     decay: () => window.memoryBridge.applyDecay(),
     stats: () => window.memoryBridge.getStats(),
-    clear: () => window.memoryBridge.clearAllMemories()
+    clear: () => window.memoryBridge.clearAllMemories(),
+    // Health check methods
+    isAvailable: () => window.memoryBridge.isAvailable(),
+    getStatus: () => window.memoryBridge.getAvailabilityStatus(),
+    initialize: () => window.memoryBridge.initialize()
 };
 
 console.log('[MemoryBridge] 🌐 Global memory API exposed: window.memory');

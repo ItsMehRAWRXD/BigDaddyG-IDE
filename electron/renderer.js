@@ -100,40 +100,15 @@ function handleFullscreenChange() {
 
 window.addEventListener('fullscreenchange', handleFullscreenChange);
 
-// Load Monaco CSS first, then initialize
-function loadMonacoCSS() {
-    return new Promise((resolve, reject) => {
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = './node_modules/monaco-editor/min/vs/editor/editor.main.css';
-        
-        link.onload = () => {
-            console.log('[BigDaddyG] ✅ Monaco CSS loaded');
-            resolve();
-        };
-        
-        link.onerror = () => {
-            alert('Monaco CSS missing – editor will not work. Check console for details.');
-            console.error('[BigDaddyG] ❌ Monaco CSS 404 – bootstrap aborted');
-            reject(new Error('Monaco CSS failed to load'));
-        };
-        
-        document.head.appendChild(link);
-    });
-}
-
 // Monaco Editor initialization - Called when Monaco loads from index.html
 window.onMonacoLoad = function() {
-    console.log('[BigDaddyG] 🎨 Monaco loaded, loading CSS first...');
+    console.log('[BigDaddyG] 🎨 Monaco loaded callback, initializing editor...');
     clearTimeout(window.monacoTimeout); // Cancel timeout if Monaco loads
     
-    loadMonacoCSS().then(() => {
-        console.log('[BigDaddyG] 🎨 CSS loaded, initializing editor...');
+    // Wait a bit for CSS to be fully applied
+    setTimeout(() => {
         initMonacoEditor();
-    }).catch(error => {
-        console.error('[BigDaddyG] ❌ Failed to load Monaco CSS:', error);
-        showMonacoError('Monaco CSS failed to load');
-    });
+    }, 100);
 };
 
 // Show Monaco error with helpful message
@@ -173,11 +148,9 @@ if (typeof monaco !== 'undefined') {
 function initMonacoEditor() {
     console.log('[BigDaddyG] 🎨 Initializing Monaco Editor...');
     
-    // ========================================================================
-    // CRITICAL: Wait for Monaco CSS to load first
-    // ========================================================================
-    if (!window.__monacoReady) {
-        console.log('[BigDaddyG] ⏳ Waiting for Monaco CSS to load...');
+    // Ensure Monaco is loaded
+    if (typeof monaco === 'undefined') {
+        console.warn('[BigDaddyG] ⚠️ Monaco not yet loaded, retrying in 100ms...');
         setTimeout(initMonacoEditor, 100);
         return;
     }
@@ -190,7 +163,7 @@ function initMonacoEditor() {
         return;
     }
     
-    console.log('[BigDaddyG] ✅ CSS loaded, container ready - creating editor instance');
+    console.log('[BigDaddyG] ✅ Monaco ready, container ready - creating editor instance');
     
     const appearanceSettings = window.__appSettings?.appearance || {};
     const editorFontSize = appearanceSettings.fontSize || 14;

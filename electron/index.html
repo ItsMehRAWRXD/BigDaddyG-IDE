@@ -929,16 +929,8 @@
         </div>
     </div>
     
-    <!-- Monaco Bootstrap Test -->
-    <script src="monaco-bootstrap-test.js"></script>
-    
-    <!-- Monaco Editor - Proper AMD Loader Setup -->
+    <!-- Monaco Editor - Simplified AMD Loader Setup -->
     <script>
-        // CRITICAL: Save AMD require before Node.js require overwrites it
-        // (nodeIntegration: true makes Node's require available after scripts load)
-        var amdRequire = null;
-        var amdDefine = null;
-        
         // Set up AMD loader configuration BEFORE loading Monaco
         var require = { 
             paths: { 
@@ -946,111 +938,52 @@
             }
         };
         
-        // Stub out process for Monaco
+        // Stub out process for Monaco (needed for Electron compatibility)
         window.process = window.process || { 
             env: {}, 
             platform: 'browser',
             cwd: () => '/'
         };
         
-        // ========================================================================
-        // CRITICAL FIX: Preload Monaco CSS before AMD loader
-        // ========================================================================
-        (function() {
-            console.log('[Monaco] 🎨 Preloading CSS...');
-            const cssLink = document.createElement('link');
-            cssLink.rel = 'stylesheet';
-            cssLink.href = './node_modules/monaco-editor/min/vs/editor/editor.main.css';
-            
-            cssLink.onload = function() {
-                console.log('[Monaco] ✅ CSS loaded successfully');
-                window.__monacoReady = true;
-                
-                // Now load the AMD loader
-                const loaderScript = document.createElement('script');
-                loaderScript.src = './node_modules/monaco-editor/min/vs/loader.js';
-                loaderScript.onload = function() {
-                    console.log('[Monaco] ✅ AMD loader loaded');
-                    // CRITICAL: Wait for AMD loader to initialize globals (require/define)
-                    setTimeout(initializeMonacoAMD, 100);
-                };
-                loaderScript.onerror = function(error) {
-                    console.error('[Monaco] ❌ Failed to load AMD loader:', error);
-                };
-                document.head.appendChild(loaderScript);
-            };
-            
-            cssLink.onerror = function(error) {
-                console.error('[Monaco] ❌ Failed to load CSS:', error);
-                console.warn('[Monaco] ⚠️ Continuing without CSS (degraded mode)');
-                window.__monacoReady = true;
-                
-                // Still try to load AMD loader
-                const loaderScript = document.createElement('script');
-                loaderScript.src = './node_modules/monaco-editor/min/vs/loader.js';
-                loaderScript.onload = function() {
-                    initializeMonacoAMD();
-                };
-                document.head.appendChild(loaderScript);
-            };
-            
-            document.head.appendChild(cssLink);
-        })();
+        console.log('[Monaco] 🎨 Starting Monaco initialization...');
         
-        // Initialize Monaco AMD after CSS and loader are ready
-        function initializeMonacoAMD() {
-            console.log('[Monaco] 💾 Checking for AMD loader...');
-            if (typeof require === 'function' && typeof require.config === 'function') {
-                amdRequire = require;
-                amdDefine = define;
-                console.log('[Monaco] ✅ AMD loader saved!');
-            } else {
-                console.error('[Monaco] ❌ AMD loader not found!');
-                console.log('[Monaco] require type:', typeof require);
-                console.log('[Monaco] require.config:', typeof (require && require.config));
-            }
+        // Load AMD loader script
+        (function() {
+            const loaderScript = document.createElement('script');
+            loaderScript.src = './node_modules/monaco-editor/min/vs/loader.js';
             
-            // Wait for AMD loader to be ready, then define stubs and load Monaco
-            (function() {
-            // Use saved AMD define/require
-            var myDefine = amdDefine || (typeof define === 'function' && define.amd ? define : null);
-            var myRequire = amdRequire || (typeof require === 'function' && typeof require.config === 'function' ? require : null);
-            
-            if (!myDefine || !myRequire) {
-                console.error('[Monaco] ❌ AMD loader not available after save attempt!');
-                return;
-            }
-            
-            // Define empty modules for Node.js dependencies Monaco might try to load
-            myDefine('fs', [], function() { console.log('[Monaco] Stubbed fs module'); return {}; });
-            myDefine('os', [], function() { console.log('[Monaco] Stubbed os module'); return {}; });
-            myDefine('child_process', [], function() { console.log('[Monaco] Stubbed child_process'); return {}; });
-            myDefine('path', [], function() { 
-                console.log('[Monaco] Stubbed path module'); 
-                return { 
-                    join: function() { return Array.prototype.slice.call(arguments).join('/'); }, 
-                    resolve: function() { return Array.prototype.slice.call(arguments).join('/'); },
-                    dirname: function(p) { return p.split('/').slice(0, -1).join('/'); },
-                    basename: function(p) { return p.split('/').pop(); }
-                }; 
-            });
-            
-            console.log('[Monaco] ✅ Node module stubs registered');
-            
-            // Now load Monaco Editor using saved AMD require
-            console.log('[Monaco] 📦 Attempting to load vs/editor/editor.main...');
-            myRequire(['vs/editor/editor.main'], function() {
-                console.log('[BigDaddyG] ✅ Monaco Editor loaded via AMD');
-                // Monaco is now available globally as 'monaco'
-                if (typeof window.onMonacoLoad === 'function') {
-                    console.log('[BigDaddyG] 🎨 Calling onMonacoLoad()');
-                    window.onMonacoLoad();
+            loaderScript.onload = function() {
+                console.log('[Monaco] ✅ AMD loader loaded');
+                
+                // Configure paths and load Monaco
+                if (typeof require !== 'undefined' && require.config) {
+                    require.config({
+                        paths: { 'vs': './node_modules/monaco-editor/min/vs' }
+                    });
+                    
+                    // Load Monaco Editor
+                    require(['vs/editor/editor.main'], function() {
+                        console.log('[Monaco] ✅ Monaco Editor loaded');
+                        window.__monacoReady = true;
+                        
+                        // Notify renderer.js that Monaco is ready
+                        if (typeof window.onMonacoLoad === 'function') {
+                            console.log('[Monaco] 🎨 Calling onMonacoLoad()');
+                            window.onMonacoLoad();
+                        }
+                    }, function(err) {
+                        console.error('[Monaco] ❌ Failed to load editor.main:', err);
+                    });
                 } else {
-                    console.error('[BigDaddyG] ❌ window.onMonacoLoad not defined!');
+                    console.error('[Monaco] ❌ AMD loader not available');
                 }
-            }, function(err) {
-                console.error('[Monaco] ❌ Failed to load Monaco editor.main:', err);
-            });
+            };
+            
+            loaderScript.onerror = function(error) {
+                console.error('[Monaco] ❌ Failed to load AMD loader script:', error);
+            };
+            
+            document.head.appendChild(loaderScript);
         })();
     </script>
     
