@@ -971,8 +971,8 @@
                 loaderScript.src = '../node_modules/monaco-editor/min/vs/loader.js';
                 loaderScript.onload = function() {
                     console.log('[Monaco] ✅ AMD loader loaded');
-                    // CRITICAL: Wait for AMD loader to initialize globals (require/define)
-                    setTimeout(initializeMonacoAMD, 100);
+                    // CRITICAL: Call immediately, don't wait
+                    initializeMonacoAMD();
                 };
                 loaderScript.onerror = function(error) {
                     console.error('[Monaco] ❌ Failed to load AMD loader:', error);
@@ -1042,12 +1042,22 @@
             myRequire(['vs/editor/editor.main'], function() {
                 console.log('[BigDaddyG] ✅ Monaco Editor loaded via AMD');
                 // Monaco is now available globally as 'monaco'
-                if (typeof window.onMonacoLoad === 'function') {
-                    console.log('[BigDaddyG] 🎨 Calling onMonacoLoad()');
-                    window.onMonacoLoad();
-                } else {
-                    console.error('[BigDaddyG] ❌ window.onMonacoLoad not defined!');
-                }
+                
+                // Wait for window.onMonacoLoad to be defined by renderer.js
+                let retries = 0;
+                const maxRetries = 50; // 5 seconds max wait
+                const waitForOnMonacoLoad = function() {
+                    if (typeof window.onMonacoLoad === 'function') {
+                        console.log('[BigDaddyG] 🎨 Calling onMonacoLoad()');
+                        window.onMonacoLoad();
+                    } else if (retries < maxRetries) {
+                        retries++;
+                        setTimeout(waitForOnMonacoLoad, 100);
+                    } else {
+                        console.error('[BigDaddyG] ❌ window.onMonacoLoad not defined after 5 seconds!');
+                    }
+                };
+                waitForOnMonacoLoad();
             }, function(err) {
                 console.error('[Monaco] ❌ Failed to load Monaco editor.main:', err);
             });
