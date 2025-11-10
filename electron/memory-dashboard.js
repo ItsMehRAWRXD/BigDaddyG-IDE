@@ -220,6 +220,32 @@ class MemoryDashboard {
     
     async refreshStats() {
         try {
+            // Check memory service status first
+            let serviceStatus = { available: false, mode: 'offline', message: 'Memory service offline' };
+            if (window.memory && window.memory.getStatus) {
+                serviceStatus = window.memory.getStatus();
+            }
+            
+            // Update context status with service availability
+            const contextStatusEl = document.getElementById('context-status');
+            if (contextStatusEl) {
+                let statusColor = serviceStatus.available ? 'var(--green)' : 'var(--red)';
+                let statusIcon = serviceStatus.available ? '✅' : '⚠️';
+                
+                if (serviceStatus.mode === 'limited') {
+                    statusColor = 'var(--orange)';
+                    statusIcon = '⚡';
+                }
+                
+                contextStatusEl.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <span style="font-size: 18px;">${statusIcon}</span>
+                        <span style="color: ${statusColor}; font-weight: bold;">${serviceStatus.message}</span>
+                    </div>
+                    <div style="font-size: 11px; opacity: 0.8;">Mode: ${serviceStatus.mode}</div>
+                `;
+            }
+            
             // Update memory stats
             if (window.memoryBridge) {
                 await window.memoryBridge.updateStats();
@@ -233,12 +259,15 @@ class MemoryDashboard {
                 document.getElementById('stat-last-updated').textContent = lastUpdated;
             }
             
-            // Update context status
+            // Update context manager status if available
             if (window.contextManager) {
                 const contextStatus = window.contextManager.getStatus();
-                document.getElementById('context-status').innerHTML = `
-                    <strong>${contextStatus.usage}</strong> of context used<br>
-                    <span style="font-size: 11px; opacity: 0.8;">${contextStatus.current.toLocaleString()} / ${contextStatus.max.toLocaleString()} tokens</span>
+                const existingContent = contextStatusEl.innerHTML;
+                contextStatusEl.innerHTML = existingContent + `
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(0, 212, 255, 0.2);">
+                        <strong>${contextStatus.usage}</strong> of context used<br>
+                        <span style="font-size: 11px; opacity: 0.8;">${contextStatus.current.toLocaleString()} / ${contextStatus.max.toLocaleString()} tokens</span>
+                    </div>
                 `;
             }
             
@@ -335,15 +364,28 @@ class MemoryDashboard {
     // ========================================================================
     
     async applyDecay() {
+        // Check service availability first
+        const status = window.memory && window.memory.getStatus ? window.memory.getStatus() : { available: false };
+        
+        if (!status.available) {
+            alert('⚠️ Memory service is offline. Cannot apply decay.');
+            return;
+        }
+        
         if (!confirm('Apply decay to all memories? This will reduce the strength of old, unused memories.')) {
             return;
         }
         
         try {
             if (window.memory) {
-                await window.memory.decay();
+                const result = await window.memory.decay();
                 await this.refreshStats();
-                alert('✅ Decay applied successfully!');
+                
+                if (result && result.success) {
+                    alert('✅ Decay applied successfully!');
+                } else {
+                    alert('⚠️ Decay operation completed with warnings. Check console for details.');
+                }
             }
         } catch (error) {
             console.error('[MemoryDashboard] ❌ Failed to apply decay:', error);
@@ -352,15 +394,28 @@ class MemoryDashboard {
     }
     
     async clearMemories() {
+        // Check service availability first
+        const status = window.memory && window.memory.getStatus ? window.memory.getStatus() : { available: false };
+        
+        if (!status.available) {
+            alert('⚠️ Memory service is offline. Cannot clear memories.');
+            return;
+        }
+        
         if (!confirm('⚠️ Clear ALL memories? This will archive all existing memories. This action cannot be undone.')) {
             return;
         }
         
         try {
             if (window.memory) {
-                await window.memory.clear();
+                const result = await window.memory.clear();
                 await this.refreshStats();
-                alert('✅ All memories cleared and archived!');
+                
+                if (result && result.success) {
+                    alert('✅ All memories cleared and archived!');
+                } else {
+                    alert('⚠️ Clear operation completed with warnings. Check console for details.');
+                }
             }
         } catch (error) {
             console.error('[MemoryDashboard] ❌ Failed to clear memories:', error);
