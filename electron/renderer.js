@@ -105,7 +105,7 @@ function loadMonacoCSS() {
     return new Promise((resolve, reject) => {
         const link = document.createElement('link');
         link.rel = 'stylesheet';
-        link.href = './node_modules/monaco-editor/min/vs/editor/editor.main.css';
+        link.href = '../node_modules/monaco-editor/min/vs/style.css';
         
         link.onload = () => {
             console.log('[BigDaddyG] ✅ Monaco CSS loaded');
@@ -182,10 +182,11 @@ function initMonacoEditor() {
         return;
     }
     
-    // Ensure editor container exists and is visible
+    // Ensure editor container exists (removed visibility check as container may be in flex layout)
     const container = document.getElementById('monaco-container');
-    if (!container || !container.offsetParent) {
-        console.warn('[BigDaddyG] ⚠️ monaco-container not in rendered DOM; retry in 100ms');
+    console.log('[BigDaddyG] 🔍 Container check:', container ? 'FOUND' : 'NOT FOUND', container);
+    if (!container) {
+        console.warn('[BigDaddyG] ⚠️ monaco-container not in DOM; retry in 100ms');
         setTimeout(initMonacoEditor, 100);
         return;
     }

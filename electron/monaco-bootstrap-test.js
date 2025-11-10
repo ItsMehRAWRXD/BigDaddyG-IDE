@@ -6,7 +6,7 @@ console.log('[Monaco Test] Starting bootstrap verification...');
 
 // Test 1: Check if CSS file exists
 function testCSSFile() {
-    const cssPath = './node_modules/monaco-editor/min/vs/editor/editor.main.css';
+    const cssPath = '../node_modules/monaco-editor/min/vs/style.css';
     
     fetch(cssPath)
         .then(response => {
@@ -29,7 +29,7 @@ function testAMDLoader() {
         // Configure Monaco paths
         require.config({
             paths: {
-                'vs': './node_modules/monaco-editor/min/vs'
+                'vs': '../node_modules/monaco-editor/min/vs'
             }
         });
         
