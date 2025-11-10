@@ -960,7 +960,7 @@
             console.log('[Monaco] 🎨 Preloading CSS...');
             const cssLink = document.createElement('link');
             cssLink.rel = 'stylesheet';
-            cssLink.href = './node_modules/monaco-editor/min/vs/editor/editor.main.css';
+            cssLink.href = './node_modules/monaco-editor/min/vs/style.css';  // Fixed path for Monaco 0.53.0+
             
             cssLink.onload = function() {
                 console.log('[Monaco] ✅ CSS loaded successfully');
