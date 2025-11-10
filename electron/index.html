@@ -1037,6 +1037,13 @@
             
             console.log('[Monaco] ✅ Node module stubs registered');
             
+            // Configure Monaco paths before loading
+            myRequire.config({
+                paths: {
+                    'vs': '../node_modules/monaco-editor/min/vs'
+                }
+            });
+            
             // Now load Monaco Editor using saved AMD require
             console.log('[Monaco] 📦 Attempting to load vs/editor/editor.main...');
             myRequire(['vs/editor/editor.main'], function() {
