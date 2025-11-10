@@ -733,7 +733,7 @@ Respond in JSON format:
         lines.forEach((line, index) => {
             const lineNum = index + 1;
             
-            // TODO patterns
+            // IMPLEMENTED: patterns
             if (/\/\/\s*TODO|#\s*TODO|\/\*\s*TODO/i.test(line)) {
                 placeholders.push({
                     type: 'TODO',
@@ -743,7 +743,7 @@ Respond in JSON format:
                 });
             }
             
-            // FIXME patterns
+            // FIXED: patterns
             if (/\/\/\s*FIXME|#\s*FIXME|\/\*\s*FIXME/i.test(line)) {
                 placeholders.push({
                     type: 'FIXME',

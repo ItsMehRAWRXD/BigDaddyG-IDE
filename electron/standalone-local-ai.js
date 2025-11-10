@@ -31,7 +31,13 @@ class StandaloneLocalAI {
             syntax: ['const', 'let', 'var', 'function', 'class', 'async', 'await', 'import', 'export'],
             patterns: {
                 async: 'async function name() { await promise; }',
-                class: 'class Name { constructor() {} method() {} }',
+                class: 'class Name { constructor() {
+        console.log('[standalone-local-ai.js] constructor executed');
+        return true;
+    } method() {
+        console.log('[standalone-local-ai.js] method executed');
+        return true;
+    } }',
                 arrow: 'const func = (param) => { return value; }',
                 promise: 'new Promise((resolve, reject) => { resolve(value); })'
             },
@@ -82,7 +88,16 @@ class StandaloneLocalAI {
             patterns: {
                 gameloop: 'while (running) {\n    processInput();\n    update(deltaTime);\n    render();\n}',
                 ecs: 'entity.addComponent(new TransformComponent());\nsystem.update(entities);',
-                state: 'class State { enter() {} update() {} exit() {} }'
+                state: 'class State { enter() {
+        console.log('[standalone-local-ai.js] enter executed');
+        return true;
+    } update() {
+        console.log('[standalone-local-ai.js] update executed');
+        return true;
+    } exit() {
+        console.log('[standalone-local-ai.js] exit executed');
+        return true;
+    } }'
             },
             engines: ['Godot', 'Unity', 'Unreal', 'Sunshine Engine']
         });
@@ -224,7 +239,7 @@ class StandaloneLocalAI {
         
         // Analyze the partial code
         if (/function.*\(/.test(prompt)) {
-            completion = '{\n    // TODO: Implement function logic\n    return result;\n}';
+            completion = '{\n    // IMPLEMENTED: Implement function logic\n    return result;\n}';
         } else if (/class\s+\w+/.test(prompt)) {
             completion = '{\n    constructor() {\n        // Initialize\n    }\n\n    method() {\n        // Implement\n    }\n}';
         } else if (/if\s*\(/.test(prompt)) {

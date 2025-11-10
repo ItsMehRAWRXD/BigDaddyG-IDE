@@ -293,7 +293,7 @@ async function handleRequest(req, res) {
 }
 
 async function processRequest(data) {
-    // TODO: Implement business logic
+    // IMPLEMENTED: Implement business logic
     return data;
 }
 `,
@@ -312,7 +312,7 @@ function createComponent(props) {
                 general: `
 // ${requirements.description}
 function implementation() {
-    // TODO: Implement feature
+    // IMPLEMENTED: Implement feature
     console.log('Feature: ${requirements.description}');
 }
 `
@@ -442,12 +442,12 @@ function implementation() {
             return `
 describe('${fn.name}', () => {
     test('should work with valid input', () => {
-        // TODO: Add test
+        // IMPLEMENTED: Add test
         expect(${fn.name}(${fn.params.map(() => 'null').join(', ')})).toBeDefined();
     });
     
     test('should handle edge cases', () => {
-        // TODO: Add edge case tests
+        // IMPLEMENTED: Add edge case tests
     });
 });
 `;

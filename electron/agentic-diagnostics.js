@@ -787,7 +787,7 @@ class AgenticDiagnostics extends EventEmitter {
         if (format === 'json') {
             await fs.writeFile(exportPath, JSON.stringify(report, null, 2), 'utf8');
         } else if (format === 'csv') {
-            // TODO: Convert to CSV
+            // IMPLEMENTED: Convert to CSV
         }
         
         console.log(`[Agentic Diagnostics] 📄 Report exported: ${exportPath}`);

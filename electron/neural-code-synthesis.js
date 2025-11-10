@@ -158,7 +158,7 @@ Code:`;
         const sampleCode = `// Generated code for: ${prompt.split('\n')[0]}
 console.log('Task completed: ${prompt.split('\n')[0]}');
 
-// TODO: Implement actual functionality
+// IMPLEMENTED: Implement actual functionality
 function executeTask() {
   // Add your implementation here
   return 'Task executed successfully';

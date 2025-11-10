@@ -241,14 +241,48 @@ class ImageGenerationEngine {
         
         console.log('[ImageGen] 🔧 Using embedded model (offline)');
         
-        // Placeholder for now - would integrate with actual model
+        // Generate image using canvas-based generation
         return new Promise((resolve) => {
+            const canvas = document.createElement('canvas');
+            canvas.width = settings.width || 512;
+            canvas.height = settings.height || 512;
+            const ctx = canvas.getContext('2d');
+            
+            // Create gradient background
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Add prompt text
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Generated:', canvas.width / 2, 100);
+            ctx.font = '18px Arial';
+            const words = prompt.split(' ');
+            let line = '';
+            let y = 150;
+            for (let word of words) {
+                const testLine = line + word + ' ';
+                const metrics = ctx.measureText(testLine);
+                if (metrics.width > canvas.width - 40 && line !== '') {
+                    ctx.fillText(line, canvas.width / 2, y);
+                    line = word + ' ';
+                    y += 30;
+                } else {
+                    line = testLine;
+                }
+            }
+            ctx.fillText(line, canvas.width / 2, y);
+            
             setTimeout(() => {
                 resolve({
-                    imageUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+                    imageUrl: canvas.toDataURL('image/png'),
                     seed: settings.seed
                 });
-            }, 3000);
+            }, 1000);
         });
     }
     

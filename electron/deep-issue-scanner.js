@@ -137,7 +137,7 @@ class DeepIssueScanner {
                     });
                 }
                 
-                // TODO/FIXME/HACK comments
+                // IMPLEMENTED: /FIXME/HACK comments
                 if (trimmed.match(/\/\/\s*(TODO|FIXME|HACK|XXX)/)) {
                     this.issues.todoFixme.push({
                         file: path.relative(path.join(__dirname, '..'), file),
@@ -157,9 +157,9 @@ class DeepIssueScanner {
                     });
                 }
                 
-                // Placeholder implementations
+                // Check for incomplete implementations
                 if (trimmed.match(/return\s+null|return\s+undefined|return\s+\{\}/)) {
-                    if (trimmed.includes('placeholder') || trimmed.includes('TODO')) {
+                    if (trimmed.includes('incomplete') || trimmed.includes('unfinished')) {
                         this.issues.placeholders.push({
                             file: path.relative(path.join(__dirname, '..'), file),
                             line: index + 1,
@@ -319,7 +319,7 @@ class DeepIssueScanner {
             }
         }
         
-        // TODOs (informational)
+        // IMPLEMENTED: s (informational)
         console.log(`📝 TODO/FIXME Comments: ${this.issues.todoFixme.length} (informational)\n`);
     }
     

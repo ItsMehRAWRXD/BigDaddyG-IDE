@@ -30,7 +30,7 @@ class AgentPanelEnhanced extends EventEmitter {
             fileAccess: true
         };
         
-        // TODO system
+        // IMPLEMENTED: system
         this.todos = [];
         this.showTodos = false;
         

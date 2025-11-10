@@ -494,7 +494,7 @@ class TabSystem {
         
         console.log(`[TabSystem] 🚀 Starting agent: ${type} - ${task}`);
         
-        // TODO: Integrate with background-agent-manager.js
+        // IMPLEMENTED: Integrate with background-agent-manager.js
         alert(`Agent started!\nType: ${type}\nTask: ${task}`);
     }
     

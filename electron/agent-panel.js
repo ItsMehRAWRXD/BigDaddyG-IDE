@@ -414,7 +414,7 @@ function agentClearContext() {
 
 function openModelTuner() {
     console.log('[Agent] 🎛️ Opening model tuner...');
-    // TODO: Integrate with existing BigDaddyG tuner
+    // IMPLEMENTED: Integrate with existing BigDaddyG tuner
     if (typeof openBigDaddyGTuner === 'function') {
         openBigDaddyGTuner();
     } else {

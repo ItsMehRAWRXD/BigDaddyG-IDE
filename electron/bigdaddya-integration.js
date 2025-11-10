@@ -82,6 +82,7 @@ class BigDaddyAIntegration extends EventEmitter {
      * Initialize BigDaddyA Integration
      */
     async initialize() {
+        try {
         console.log('[BigDaddyA] Initializing custom LLM runtime...');
         
         // Scan for available models
@@ -94,7 +95,12 @@ class BigDaddyAIntegration extends EventEmitter {
         if (this.models.size > 0) {
             const firstModel = Array.from(this.models.keys())[0];
             await this.loadModel(firstModel);
+        
+        } catch (error) {
+            console.error('[bigdaddya-integration.js] initialize error:', error);
+            throw error;
         }
+    }
         
         this.isRunning = true;
         
@@ -112,11 +118,17 @@ class BigDaddyAIntegration extends EventEmitter {
      * Scan for available models
      */
     async scanModels() {
+        try {
         console.log('[BigDaddyA] Scanning for models in:', this.modelsDir);
         
         if (!fs.existsSync(this.modelsDir)) {
             return;
+        
+        } catch (error) {
+            console.error('[bigdaddya-integration.js] scanModels error:', error);
+            throw error;
         }
+    }
         
         const files = fs.readdirSync(this.modelsDir);
         
@@ -212,7 +224,13 @@ class BigDaddyAIntegration extends EventEmitter {
             patterns: {
                 asyncFunction: 'async function name() { await promise; }',
                 arrowFunction: 'const func = (param) => result',
-                class: 'class Name { constructor() {} method() {} }',
+                class: 'class Name { constructor() {
+        console.log('[bigdaddya-integration.js] constructor executed');
+        return true;
+    } method() {
+        console.log('[bigdaddya-integration.js] method executed');
+        return true;
+    } }',
                 module: 'export default class Name { }'
             },
             libraries: ['react', 'node', 'express', 'vue', 'angular'],
@@ -277,7 +295,13 @@ class BigDaddyAIntegration extends EventEmitter {
         this.knowledgeBase.gamedev.set('unity', {
             language: 'C#',
             patterns: {
-                monobehaviour: 'public class MyScript : MonoBehaviour {\n    void Start() { }\n    void Update() { }\n}',
+                monobehaviour: 'public class MyScript : MonoBehaviour {\n    void Start() {
+        console.log('[bigdaddya-integration.js] set executed');
+        return true;
+    }\n    void Update() {
+        console.log('[bigdaddya-integration.js] Update executed');
+        return true;
+    }\n}',
                 coroutine: 'IEnumerator MyCoroutine() {\n    yield return null;\n}'
             },
             concepts: ['GameObjects', 'Components', 'Prefabs', 'Coroutines']
@@ -297,8 +321,14 @@ class BigDaddyAIntegration extends EventEmitter {
      * Load a model into memory
      */
     async loadModel(modelName) {
+        try {
         if (!this.models.has(modelName)) {
-            throw new Error(`Model ${modelName} not found`);
+            throw new Error(`Model ${modelName
+        } catch (error) {
+            console.error('[bigdaddya-integration.js] loadModel error:', error);
+            throw error;
+        }
+    } not found`);
         }
         
         const model = this.models.get(modelName);
@@ -342,8 +372,14 @@ class BigDaddyAIntegration extends EventEmitter {
      * Unload a model from memory
      */
     async unloadModel(modelName) {
+        try {
         if (!this.loadedModels.has(modelName)) {
-            return { success: false, error: 'Model not loaded' };
+            return { success: false, error: 'Model not loaded' 
+        } catch (error) {
+            console.error('[bigdaddya-integration.js] unloadModel error:', error);
+            throw error;
+        }
+    };
         }
         
         console.log(`[BigDaddyA] Unloading model: ${modelName}`);
@@ -364,6 +400,7 @@ class BigDaddyAIntegration extends EventEmitter {
      * Generate text (main inference method)
      */
     async generate(prompt, options = {}) {
+        try {
         const {
             model = 'bigdaddya-code',
             temperature = this.config.defaultTemperature,
@@ -371,7 +408,12 @@ class BigDaddyAIntegration extends EventEmitter {
             stream = false,
             context = [],
             system = 'You are BigDaddyA, a helpful AI assistant built into BigDaddyG IDE.'
-        } = options;
+        
+        } catch (error) {
+            console.error('[bigdaddya-integration.js] generate error:', error);
+            throw error;
+        }
+    } = options;
         
         console.log(`[BigDaddyA] Generating with model: ${model}`);
         
@@ -394,6 +436,7 @@ class BigDaddyAIntegration extends EventEmitter {
      * Generate from knowledge base
      */
     async generateFromKnowledge(prompt, modelName, options) {
+        try {
         const startTime = Date.now();
         
         // Analyze the prompt
@@ -402,7 +445,12 @@ class BigDaddyAIntegration extends EventEmitter {
         
         if (modelName === 'bigdaddya-code') {
             response = await this.generateCodeResponse(prompt, analysis);
-        } else if (modelName === 'bigdaddya-gamedev') {
+        
+        } catch (error) {
+            console.error('[bigdaddya-integration.js] generateFromKnowledge error:', error);
+            throw error;
+        }
+    } else if (modelName === 'bigdaddya-gamedev') {
             response = await this.generateGameDevResponse(prompt, analysis);
         } else {
             response = await this.generateGeneralResponse(prompt, analysis);
@@ -425,9 +473,15 @@ class BigDaddyAIntegration extends EventEmitter {
      * Generate from model file
      */
     async generateFromFile(prompt, modelName, options) {
+        try {
         // This would handle actual model inference
         // For now, fallback to knowledge base
         return await this.generateFromKnowledge(prompt, 'bigdaddya-code', options);
+    
+        } catch (error) {
+            console.error('[bigdaddya-integration.js] generateFromFile error:', error);
+            throw error;
+        }
     }
     
     /**
@@ -475,11 +529,17 @@ class BigDaddyAIntegration extends EventEmitter {
      * Generate code-focused response
      */
     async generateCodeResponse(prompt, analysis) {
+        try {
         const lang = this.knowledgeBase.languages.get(analysis.language);
         
         if (!lang) {
             return 'I can help with JavaScript, Python, C++, and more. What would you like to code?';
+        
+        } catch (error) {
+            console.error('[bigdaddya-integration.js] generateCodeResponse error:', error);
+            throw error;
         }
+    }
         
         let response = `# ${analysis.language.toUpperCase()} Code Assistant\n\n`;
         
@@ -513,6 +573,7 @@ class BigDaddyAIntegration extends EventEmitter {
      * Generate game dev response
      */
     async generateGameDevResponse(prompt, analysis) {
+        try {
         let response = `# Game Development Assistant\n\n`;
         
         response += `**Supported Engines:**\n`;
@@ -530,13 +591,24 @@ class BigDaddyAIntegration extends EventEmitter {
         response += `What specific game dev help do you need?`;
         
         return response;
+    
+        } catch (error) {
+            console.error('[bigdaddya-integration.js] generateGameDevResponse error:', error);
+            throw error;
+        }
     }
     
     /**
      * Generate general response
      */
     async generateGeneralResponse(prompt, analysis) {
-        return `I'm BigDaddyA, your custom AI assistant!\n\n**I can help with:**\n- Code completion and generation\n- Bug fixing and debugging\n- Refactoring and optimization\n- Game development\n- Multi-language support\n\n**Current mode:** ${analysis.intent}\n**Detected language:** ${analysis.language}\n\nHow can I assist you?`;
+        try {
+        return `I'm BigDaddyA, your custom AI assistant!\n\n**I can help with:**\n- Code completion and generation\n- Bug fixing and debugging\n- Refactoring and optimization\n- Game development\n- Multi-language support\n\n**Current mode:** ${analysis.intent
+        } catch (error) {
+            console.error('[bigdaddya-integration.js] generateGeneralResponse error:', error);
+            throw error;
+        }
+    }\n**Detected language:** ${analysis.language}\n\nHow can I assist you?`;
     }
     
     /**
@@ -551,6 +623,7 @@ class BigDaddyAIntegration extends EventEmitter {
      * Chat interface
      */
     async chat(messages, options = {}) {
+        try {
         const lastMessage = messages[messages.length - 1];
         const prompt = lastMessage.content;
         
@@ -561,7 +634,12 @@ class BigDaddyAIntegration extends EventEmitter {
             content: response.response,
             model: response.model,
             timestamp: Date.now()
-        };
+        
+        } catch (error) {
+            console.error('[bigdaddya-integration.js] chat error:', error);
+            throw error;
+        }
+    };
     }
     
     /**

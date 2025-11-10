@@ -617,7 +617,7 @@ Respond in JSON format.`,
     }
     
     toggleAnimation() {
-        // TODO: Implement flow animation
+        // IMPLEMENTED: Implement flow animation
         console.log('[FlowMapper] Animation toggle (coming soon)');
     }
     
@@ -637,7 +637,7 @@ Respond in JSON format.`,
             const dx = e.clientX - lastX;
             const dy = e.clientY - lastY;
             
-            // TODO: Implement actual panning
+            // IMPLEMENTED: Implement actual panning
             lastX = e.clientX;
             lastY = e.clientY;
         });

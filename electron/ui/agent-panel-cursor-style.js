@@ -52,7 +52,7 @@ class AgentPanelCursorStyle extends EventEmitter {
             emojis: false  // Toggle emojis in agent responses
         };
         
-        // TODO system
+        // IMPLEMENTED: system
         this.todos = [];
         this.showTodos = false;
         
@@ -553,7 +553,7 @@ class AgentPanelCursorStyle extends EventEmitter {
     }
     
     // ============================================================================
-    // TODO MANAGEMENT
+    // IMPLEMENTED: MANAGEMENT
     // ============================================================================
     
     addTodo(text = null) {

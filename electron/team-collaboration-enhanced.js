@@ -404,6 +404,211 @@ class TeamCollaborationEnhanced {
     /**
      * Disconnect from session
      */
+    
+    
+    /**
+     * Video conferencing
+     */
+    async startVideo() {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            console.error('[TeamCollab Enhanced] Video not supported');
+            return null;
+        }
+        
+        try {
+            console.log('[TeamCollab Enhanced] Starting video...');
+            
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: {
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 },
+                    frameRate: { ideal: 30 }
+                },
+                audio: {
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    autoGainControl: true
+                }
+            });
+            
+            this.videoStream = stream;
+            this.broadcastStream(stream, 'video');
+            
+            console.log('[TeamCollab Enhanced] Video active');
+            this.showNotification('Video started', 'success');
+            
+            return stream;
+            
+        } catch (error) {
+            console.error('[TeamCollab Enhanced] Video failed:', error);
+            this.showNotification('Camera access denied', 'error');
+            return null;
+        }
+    }
+    
+    /**
+     * Stop video
+     */
+    stopVideo() {
+        if (this.videoStream) {
+            this.videoStream.getTracks().forEach(track => track.stop());
+            this.videoStream = null;
+            console.log('[TeamCollab Enhanced] Video stopped');
+        }
+    }
+    
+    /**
+     * File transfer
+     */
+    async sendFile(file) {
+        if (!this.session) return;
+        
+        console.log(`[TeamCollab Enhanced] Sending file: ${file.name}`);
+        
+        // Read file as base64
+        const reader = new FileReader();
+        
+        return new Promise((resolve, reject) => {
+            reader.onload = () => {
+                const data = {
+                    type: 'file',
+                    fileName: file.name,
+                    fileSize: file.size,
+                    fileType: file.type,
+                    fileData: reader.result,
+                    user: this.session.username,
+                    timestamp: Date.now()
+                };
+                
+                this.broadcast(data);
+                this.showNotification(`Sent ${file.name}`, 'success');
+                resolve();
+            };
+            
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+    
+    /**
+     * Whiteboard for design discussions
+     */
+    createWhiteboard() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 1920;
+        canvas.height = 1080;
+        canvas.style.position = 'fixed';
+        canvas.style.top = '0';
+        canvas.style.left = '0';
+        canvas.style.zIndex = '10000';
+        canvas.style.background = 'white';
+        
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+        
+        canvas.addEventListener('mousedown', (e) => {
+            isDrawing = true;
+            lastX = e.offsetX;
+            lastY = e.offsetY;
+        });
+        
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isDrawing) return;
+            
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(e.offsetX, e.offsetY);
+            ctx.stroke();
+            
+            // Broadcast drawing
+            this.broadcast({
+                type: 'whiteboard',
+                action: 'draw',
+                fromX: lastX,
+                fromY: lastY,
+                toX: e.offsetX,
+                toY: e.offsetY
+            });
+            
+            lastX = e.offsetX;
+            lastY = e.offsetY;
+        });
+        
+        canvas.addEventListener('mouseup', () => {
+            isDrawing = false;
+        });
+        
+        document.body.appendChild(canvas);
+        this.whiteboardCanvas = canvas;
+        
+        console.log('[TeamCollab Enhanced] Whiteboard created');
+        return canvas;
+    }
+    
+    /**
+     * Code review workflow
+     */
+    async startCodeReview(fileContent, fileName) {
+        const reviewId = this.generateSessionId();
+        
+        const review = {
+            id: reviewId,
+            fileName,
+            content: fileContent,
+            comments: [],
+            status: 'in_progress',
+            reviewer: this.session.username,
+            timestamp: Date.now()
+        };
+        
+        this.broadcast({
+            type: 'code_review',
+            review
+        });
+        
+        console.log(`[TeamCollab Enhanced] Code review started: ${reviewId}`);
+        return reviewId;
+    }
+    
+    /**
+     * Add review comment
+     */
+    addReviewComment(reviewId, lineNumber, comment) {
+        const data = {
+            type: 'review_comment',
+            reviewId,
+            lineNumber,
+            comment,
+            user: this.session.username,
+            timestamp: Date.now()
+        };
+        
+        this.broadcast(data);
+    }
+    
+    /**
+     * Permissions system
+     */
+    setPermissions(userId, permissions) {
+        if (!this.session || !this.session.isOwner) {
+            console.error('[TeamCollab Enhanced] Only owner can set permissions');
+            return false;
+        }
+        
+        const data = {
+            type: 'permissions',
+            userId,
+            permissions, // { canEdit: true, canShare: false, canInvite: false }
+            timestamp: Date.now()
+        };
+        
+        this.broadcast(data);
+        console.log(`[TeamCollab Enhanced] Permissions updated for ${userId}`);
+        return true;
+    }
+
     disconnect() {
         console.log('[TeamCollab Enhanced] Disconnecting...');
         
