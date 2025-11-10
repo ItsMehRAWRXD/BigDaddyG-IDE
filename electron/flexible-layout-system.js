@@ -48,28 +48,45 @@ class FlexibleLayoutSystem {
         let workspace = document.getElementById('flexible-workspace');
         
         if (!workspace) {
-            // Create new workspace
+            // Create new workspace wrapper that hosts existing main-container
             workspace = document.createElement('div');
             workspace.id = 'flexible-workspace';
             workspace.className = 'flexible-workspace';
             workspace.style.cssText = `
-                position: fixed;
-                top: 40px;
-                left: 0;
-                right: 0;
-                bottom: 0;
                 display: flex;
                 flex-direction: column;
+                flex: 1;
+                min-height: 0;
                 background: var(--void);
-                z-index: 1;
             `;
             
-            // Replace or insert into body
-            const mainContainer = document.getElementById('main-container') || document.body;
-            if (document.getElementById('main-container')) {
-                mainContainer.parentNode.replaceChild(workspace, mainContainer);
+            const mainContainer = document.getElementById('main-container');
+            
+            if (mainContainer) {
+                // Preserve existing DOM by wrapping main-container instead of removing it
+                const parent = mainContainer.parentNode;
+                parent.insertBefore(workspace, mainContainer);
+                workspace.appendChild(mainContainer);
+                console.log('[FlexibleLayout] Wrapped existing #main-container inside flexible workspace');
             } else {
                 document.body.appendChild(workspace);
+                console.warn('[FlexibleLayout] #main-container not found - flexible workspace appended to body');
+            }
+        } else {
+            // Ensure workspace retains non-destructive styling if it already exists
+            workspace.style.display = 'flex';
+            workspace.style.flexDirection = 'column';
+            workspace.style.flex = '1';
+            workspace.style.minHeight = '0';
+            if (!workspace.style.background) {
+                workspace.style.background = 'var(--void)';
+            }
+            
+            // Ensure the main container remains inside the workspace wrapper
+            const mainContainer = document.getElementById('main-container');
+            if (mainContainer && mainContainer.parentElement !== workspace) {
+                workspace.appendChild(mainContainer);
+                console.log('[FlexibleLayout] Reattached #main-container to flexible workspace');
             }
         }
         
