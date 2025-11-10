@@ -5,6 +5,7 @@
 
 const electronModule = require('electron');
 const { app, BrowserWindow, ipcMain, Menu, dialog } = electronModule;
+const IPCServer = require('./ipc-server');
 
 if (!app || typeof app.whenReady !== 'function') {
   console.error('[BigDaddyG] ❌ Electron "app" module unavailable.');
@@ -358,6 +359,9 @@ console.log('[BigDaddyG] 🎯 Target: 240 FPS');
 // APPLICATION LIFECYCLE
 // ============================================================================
 
+// Initialize IPC server for external CLI
+let ipcServer = null;
+
 app.whenReady().then(async () => {
   console.log('[BigDaddyG] 🚀 Starting Electron app...');
 
@@ -367,6 +371,15 @@ app.whenReady().then(async () => {
   bigDaddyGCore = await getBigDaddyGCore();
 
   bigDaddyGCore.attachNativeClient(nativeOllamaClient);
+  
+  // Start IPC server for external CLI communication
+  try {
+    ipcServer = new IPCServer();
+    ipcServer.start();
+    console.log('[BigDaddyG] ✅ IPC server started for external CLI on port 35792');
+  } catch (error) {
+    console.error('[BigDaddyG] ❌ Failed to start IPC server:', error.message);
+  }
   
   // Start Orchestra server
   if (isOrchestraAutoStartEnabled()) {
@@ -402,6 +415,12 @@ app.whenReady().then(async () => {
 });
 
 app.on('window-all-closed', () => {
+  // Stop IPC server
+  if (ipcServer) {
+    ipcServer.stop();
+    console.log('[BigDaddyG] 🛑 IPC server stopped');
+  }
+  
   // Stop Orchestra server
   stopOrchestraServer();
   
