@@ -319,21 +319,21 @@ body {
 }
 
 #right-sidebar.collapsed {
-    width: 0;
-    min-width: 0;
-    border: none;
-    opacity: 0;
-    overflow: hidden;
-    pointer-events: none;
-    transition: all 0.3s ease;
+    width: 0 !important;
+    min-width: 0 !important;
+    border: none !important;
+    opacity: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+    transition: all 0.3s ease !important;
 }
 
 body.ide-fullscreen #right-sidebar {
-    width: 0;
-    min-width: 0;
-    border: none;
-    opacity: 0;
-    pointer-events: none;
+    width: 0 !important;
+    min-width: 0 !important;
+    border: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
 }
 
 body.ide-fullscreen #main-container {

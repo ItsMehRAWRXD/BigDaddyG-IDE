@@ -641,8 +641,8 @@ class ProductionReadinessValidator {
                         return true;
                     }
                 } catch (e) {
-                    // Skip
-                }
+        console.error('[Error]', e);
+    }
             }
             
             // Search in game-editor directory
@@ -658,8 +658,8 @@ class ProductionReadinessValidator {
                             return true;
                         }
                     } catch (e) {
-                        // Skip
-                    }
+        console.error('[Error]', e);
+    }
                 }
             }
         }

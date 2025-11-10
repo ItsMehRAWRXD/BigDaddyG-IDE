@@ -332,8 +332,8 @@ class TeamCollaboration {
             });
             
         } catch (error) {
-            // Cursor updates fail silently (too frequent)
-        }
+        console.error('[Error]', error);
+    }
     }
     
     updateRemoteCursor(userId, cursor) {

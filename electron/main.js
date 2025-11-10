@@ -561,8 +561,8 @@ function startOrchestraServer(options = {}) {
     const resolvedModule = require.resolve(serverPath);
     delete require.cache[resolvedModule];
   } catch (ignore) {
-    // Module not yet cached – nothing to remove.
-  }
+        console.error('[Error]', ignore);
+    }
 
   try {
     const orchestraModule = require(serverPath);
@@ -2010,15 +2010,15 @@ ipcMain.handle('search-files', async (event, query, options = {}) => {
                 }
               }
             } catch (err) {
-              // Skip binary or unreadable files
-            }
+        console.error('[Error]', err);
+    }
           }
         } else if (entry.isDirectory()) {
           await searchDirectory(safePath, depth + 1);
         }
       }
     } catch (error) {
-      // Skip inaccessible directories
+        console.error('[Error]', error);
     }
   }
   
@@ -2068,7 +2068,7 @@ ipcMain.handle('read-dir-recursive', async (event, dirPath, maxDepth = 100) => {
         }
       }
     } catch (error) {
-      // Skip inaccessible directories
+        console.error('[Error]', error);
     }
   }
   
@@ -2166,7 +2166,7 @@ ipcMain.handle('scanWorkspace', async (event, options = {}) => {
         }
       }
     } catch (error) {
-      // Skip inaccessible directories silently
+        console.error('[Error]', error);
     }
   }
   
@@ -2260,7 +2260,7 @@ ipcMain.handle('find-by-pattern', async (event, pattern, startPath) => {
         }
       }
     } catch (error) {
-      // Skip inaccessible directories
+        console.error('[Error]', error);
     }
   }
   

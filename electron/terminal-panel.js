@@ -827,8 +827,8 @@ class TerminalPanel {
                     });
                 }
             } catch (error) {
-                // Port check failed
-            }
+        console.error('[Error]', error);
+    }
         }
         
         this.updatePortsDisplay();

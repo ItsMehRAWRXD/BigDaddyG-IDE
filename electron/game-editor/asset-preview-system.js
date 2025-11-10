@@ -515,8 +515,8 @@ class AssetPreviewSystem {
                 try {
                     formatted = JSON.stringify(JSON.parse(content), null, 2);
                 } catch (e) {
-                    // Keep original if parse fails
-                }
+        console.error('[Error]', e);
+    }
             }
             
             // Get first 30 lines

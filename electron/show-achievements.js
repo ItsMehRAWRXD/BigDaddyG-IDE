@@ -30,7 +30,7 @@ function countFiles(dir) {
             }
         }
     } catch (error) {
-        // Ignore errors
+        console.error('[Error]', error);
     }
 }
 

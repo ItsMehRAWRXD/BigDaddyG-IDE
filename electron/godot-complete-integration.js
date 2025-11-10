@@ -69,8 +69,8 @@ class GodotCompleteIntegration extends EventEmitter {
                     return true;
                 }
             } catch (error) {
-                // Continue to next path
-            }
+        console.error('[Error]', error);
+    }
         }
         
         console.warn('[GodotCompleteIntegration] ⚠️ Godot not found in PATH');
@@ -348,8 +348,8 @@ class GodotCompleteIntegration extends EventEmitter {
                 if (files.length >= 200) break; // Limit
             }
         } catch (error) {
-            // Ignore errors
-        }
+        console.error('[Error]', error);
+    }
         
         return files;
     }

@@ -88,7 +88,7 @@ async function scanDirectory(dirPath) {
             }
         }
     } catch (error) {
-        // Silently skip inaccessible directories
+        console.error('[Error]', error);
     }
     
     return models;

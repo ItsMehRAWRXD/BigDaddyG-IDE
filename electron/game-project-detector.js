@@ -146,8 +146,8 @@ class GameProjectDetector {
                         config = JSON.parse(fs.readFileSync(filePath, 'utf8'));
                     }
                 } catch (e) {
-                    // Ignore parse errors
-                }
+        console.error('[Error]', e);
+    }
                 
                 return {
                     detected: true,
@@ -191,8 +191,8 @@ class GameProjectDetector {
                 if (files.length >= 100) break;
             }
         } catch (error) {
-            // Ignore errors (permission issues, etc.)
-        }
+        console.error('[Error]', error);
+    }
         
         return files;
     }

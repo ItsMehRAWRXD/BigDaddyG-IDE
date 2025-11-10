@@ -47,7 +47,7 @@ class AgenticBrowserDemo {
       }
       this.finishOverlay('✅ Agentic browser demo complete!');
     } catch (error) {
-      logger.error('[BrowserDemo]', ' ❌ Demo failed:', error);
+      console.error('[BrowserDemo] ❌ Demo failed:', error);
       this.finishOverlay('❌ Browser demo failed, check console');
     } finally {
       this.running = false;
@@ -362,7 +362,7 @@ window.agenticBrowserDemo = agenticBrowserDemoInstance;
 
 //     console.log('[BrowserDemo] 🚀 Auto-starting agentic browser demo');
 //     agenticBrowserDemoInstance.start().catch(err => {
-logger.error('[BrowserDemo]', ' Demo crashed:', err);
+//       console.error('[BrowserDemo] Demo crashed:', err);
 //     });
 //   }, delay);
 // };

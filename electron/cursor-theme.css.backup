@@ -532,7 +532,7 @@ body {
 
 body.layout-no-overlap #floating-chat-panel,
 body.layout-no-overlap #terminal-panel {
-    display: none;
+    display: none !important;
 }
 
 body.layout-no-overlap #bottom-panel {

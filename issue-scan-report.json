@@ -1,0 +1,229 @@
+{
+  "cssImportant": [],
+  "commentedErrors": [],
+  "emptyTryCatch": [
+    {
+      "file": "electron/error-handler-fixer.js",
+      "line": 42,
+      "content": "// Pattern 1: catch (err) {}",
+      "severity": "HIGH"
+    },
+    {
+      "file": "electron/error-handler-fixer.js",
+      "line": 48,
+      "content": "// Pattern 2: catch (err) { // comment }",
+      "severity": "HIGH"
+    }
+  ],
+  "mockErrors": [
+    {
+      "file": "electron/enhanced-error-recovery.js",
+      "line": 171,
+      "content": "const attemptKey = `${category}-${error.message}`;",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": "electron/enhanced-error-recovery.js",
+      "line": 175,
+      "content": "console.log(`[EnhancedRecovery] ⚠️ Max recovery attempts reached for this error`);",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": "electron/enhanced-error-recovery.js",
+      "line": 182,
+      "content": "const recovered = await this.attemptRecovery(category, error);",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": "electron/enhanced-error-recovery.js",
+      "line": 215,
+      "content": "async attemptRecovery(category, error) {",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": "electron/enhanced-placeholder-debugger.js",
+      "line": 72,
+      "content": "console.error(`[PlaceholderDebugger] Error scanning ${filePath}:`, error);",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": "electron/enhanced-placeholder-debugger.js",
+      "line": 251,
+      "content": "console.warn('[PlaceholderDebugger] AI analysis unavailable:', error.message);",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": "electron/error-protection.js",
+      "line": 62,
+      "content": "this.attemptRecovery(type, errorMsg);",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": "electron/error-protection.js",
+      "line": 65,
+      "content": "attemptRecovery(type, errorMsg) {",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": "electron/fetch-timeout-wrapper.js",
+      "line": 126,
+      "content": "console.warn(`Fetch attempt ${attempt + 1} failed, retrying in ${delay}ms...`, error.message);",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": "electron/global-functions.js",
+      "line": 364,
+      "content": "console.warn(`[NetworkUtil] Attempt ${i + 1}/${retries} failed:`, error.message);",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": "electron/mcp/tool-registry.js",
+      "line": 241,
+      "content": "console.warn(`[MCP] ⚠️  ${name} failed (attempt ${attempt + 1}): ${error.message}`);",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": "electron/memory-service.js",
+      "line": 86,
+      "content": "console.warn('[MemoryService] ⚠️ Unable to clean temp script:', error.message);",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": "electron/renderer.js",
+      "line": 42,
+      "content": "console.error(`[BigDaddyG] ❌ Function ${method} not available after ${maxAttempts * 500}ms`);",
+      "severity": "MEDIUM"
+    }
+  ],
+  "todoFixme": [
+    {
+      "file": "electron/advanced-code-intelligence.js",
+      "line": 194,
+      "content": "// TODO comments",
+      "severity": "LOW"
+    },
+    {
+      "file": "electron/advanced-debugging-system.js",
+      "line": 736,
+      "content": "// TODO patterns",
+      "severity": "LOW"
+    },
+    {
+      "file": "electron/advanced-debugging-system.js",
+      "line": 746,
+      "content": "// FIXME patterns",
+      "severity": "LOW"
+    },
+    {
+      "file": "electron/agent-panel.js",
+      "line": 417,
+      "content": "// TODO: Integrate with existing BigDaddyG tuner",
+      "severity": "LOW"
+    },
+    {
+      "file": "electron/agentic-diagnostics.js",
+      "line": 790,
+      "content": "// TODO: Convert to CSV",
+      "severity": "LOW"
+    },
+    {
+      "file": "electron/agentic-security-hardening.js",
+      "line": 293,
+      "content": "// TODO: Download package.json and verify SHA-512",
+      "severity": "LOW"
+    },
+    {
+      "file": "electron/background-agent-worker.js",
+      "line": 296,
+      "content": "// TODO: Implement business logic",
+      "severity": "LOW"
+    },
+    {
+      "file": "electron/background-agent-worker.js",
+      "line": 315,
+      "content": "// TODO: Implement feature",
+      "severity": "LOW"
+    },
+    {
+      "file": "electron/background-agent-worker.js",
+      "line": 445,
+      "content": "// TODO: Add test",
+      "severity": "LOW"
+    },
+    {
+      "file": "electron/background-agent-worker.js",
+      "line": 450,
+      "content": "// TODO: Add edge case tests",
+      "severity": "LOW"
+    },
+    {
+      "file": "electron/neural-code-synthesis.js",
+      "line": 161,
+      "content": "// TODO: Implement actual functionality",
+      "severity": "LOW"
+    },
+    {
+      "file": "electron/standalone-local-ai.js",
+      "line": 227,
+      "content": "completion = '{\\n    // TODO: Implement function logic\\n    return result;\\n}';",
+      "severity": "LOW"
+    },
+    {
+      "file": "electron/tab-system.js",
+      "line": 497,
+      "content": "// TODO: Integrate with background-agent-manager.js",
+      "severity": "LOW"
+    },
+    {
+      "file": "electron/ui/agent-panel-cursor-style.js",
+      "line": 55,
+      "content": "// TODO system",
+      "severity": "LOW"
+    },
+    {
+      "file": "electron/ui/agent-panel-cursor-style.js",
+      "line": 556,
+      "content": "// TODO MANAGEMENT",
+      "severity": "LOW"
+    },
+    {
+      "file": "electron/ui/agent-panel-enhanced.js",
+      "line": 33,
+      "content": "// TODO system",
+      "severity": "LOW"
+    },
+    {
+      "file": "electron/visual-code-flow.js",
+      "line": 620,
+      "content": "// TODO: Implement flow animation",
+      "severity": "LOW"
+    },
+    {
+      "file": "electron/visual-code-flow.js",
+      "line": 640,
+      "content": "// TODO: Implement actual panning",
+      "severity": "LOW"
+    },
+    {
+      "file": "electron/window-api-bridge.js",
+      "line": 269,
+      "content": "// TODO SYSTEM MODULE",
+      "severity": "LOW"
+    }
+  ],
+  "suppressedWarnings": [],
+  "placeholders": [
+    {
+      "file": "electron/enhanced-placeholder-debugger.js",
+      "line": 27,
+      "content": "/return null;\\s*\\/\\/\\s*TODO/gi,",
+      "severity": "LOW"
+    },
+    {
+      "file": "electron/enhanced-placeholder-debugger.js",
+      "line": 28,
+      "content": "/return undefined;\\s*\\/\\/\\s*TODO/gi",
+      "severity": "LOW"
+    }
+  ]
+}

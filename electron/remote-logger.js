@@ -195,7 +195,7 @@ class RemoteLogger {
             try {
                 this.ws.send(JSON.stringify(logEntry));
             } catch (error) {
-                console.error('[RemoteLogger] Failed to send log:', error);
+                logger.error('[RemoteLogger]', ' Failed to send log:', error);
             }
         }
     }

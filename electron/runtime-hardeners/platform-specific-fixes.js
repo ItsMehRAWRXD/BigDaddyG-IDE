@@ -334,8 +334,8 @@ class DockerRootlessHardener {
                 console.log(`[Docker] ✅ Found socket: ${socketPath}`);
                 return socketPath;
             } catch (error) {
-                // Socket doesn't exist, try next
-            }
+        console.error('[Error]', error);
+    }
         }
         
         console.warn('[Docker] ⚠️ No Docker socket found - disabling Docker features');
@@ -645,8 +645,8 @@ class EULAEnforcementHardener {
                 }
             }
         } catch (error) {
-            // Fallback
-        }
+        console.error('[Error]', error);
+    }
         
         return 'unknown';
     }
