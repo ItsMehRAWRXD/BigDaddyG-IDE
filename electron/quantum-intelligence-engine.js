@@ -321,8 +321,10 @@ class QuantumIntelligenceEngine {
             // Apply Hadamard gate for superposition
             const hadamard = interpretation.amplitude * Math.sqrt(0.5);
             
-            // Apply phase gate
-            const phase = Math.exp(interpretation.phase * Math.PI * 1i);
+            // Apply phase gate (using Euler's formula: e^(ix) = cos(x) + i*sin(x))
+            const phaseAngle = interpretation.phase * Math.PI;
+            const phaseReal = Math.cos(phaseAngle);
+            const phaseImag = Math.sin(phaseAngle);
             
             // Apply entanglement effects
             const entanglementFactor = this.calculateEntanglementEffect(interpretation.aspect);
