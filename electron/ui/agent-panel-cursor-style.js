@@ -126,7 +126,7 @@ class AgentPanelCursorStyle extends EventEmitter {
     /**
      * Render quality selector
      */
-    renderQuality Selector() {
+    renderQualitySelector() {
         return `
             <div class="quality-selector">
                 <label style="font-size: 11px; font-weight: bold;">Quality:</label>
