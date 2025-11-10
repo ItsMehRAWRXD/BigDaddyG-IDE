@@ -45,6 +45,16 @@ Open: `🎮-QUICK-START-GUIDE-🎮.md`
 5. **🎮-QUICK-START-GUIDE-🎮.md**  
    → Getting started guide for new users
 
+### **🤖 AI Documentation**
+6. **🤖-AI-ARCHITECTURE-COMPLETE-🤖.md**  
+   → Complete AI system architecture (11 AI systems!)
+
+7. **🔥-AI-QUICK-REFERENCE-🔥.md**  
+   → Quick reference for AI features
+
+8. **📚-API-KEY-GUIDE-📚.md**  
+   → How to configure API keys for cloud AI providers
+
 ---
 
 ## 🎯 **Key Achievements**
