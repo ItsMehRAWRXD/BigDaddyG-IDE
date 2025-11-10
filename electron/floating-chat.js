@@ -290,7 +290,10 @@ class FloatingChat {
                 <div style="text-align: center; color: var(--cursor-text-secondary); padding: 40px 20px;">
                     <div style="font-size: 48px; margin-bottom: 16px;">💬</div>
                     <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Start a conversation</div>
-                    <div style="font-size: 13px;">Ask me anything about your code or project!</div>
+                    <div style="font-size: 13px; margin-bottom: 16px;">Ask me anything about your code or project!</div>
+                    <div style="font-size: 11px; background: rgba(119, 221, 190, 0.1); padding: 10px; border-radius: 6px; margin: 0 auto; max-width: 400px; border-left: 3px solid var(--cursor-jade-dark);">
+                        💡 <strong>Tip:</strong> Type <code style="background: rgba(119, 221, 190, 0.2); padding: 2px 6px; border-radius: 3px;">!help</code> to see all available commands
+                    </div>
                 </div>
             </div>
             
@@ -299,7 +302,7 @@ class FloatingChat {
                 <div style="position: relative;">
                     <textarea 
                         id="floating-chat-input" 
-                        placeholder="Ask anything or use ! for commands (!help for list) 💬"
+                        placeholder="Ask anything or type !help for commands 💬"
                         style="
                             width: 100%;
                             min-height: 80px;
