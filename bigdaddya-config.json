@@ -1,0 +1,11 @@
+{
+  "maxModelsLoaded": 2,
+  "defaultTemperature": 0.7,
+  "defaultMaxTokens": 2000,
+  "contextSize": 4096,
+  "batchSize": 512,
+  "threads": 4,
+  "apiPort": 11435,
+  "enableStreaming": true,
+  "enableCache": true
+}
