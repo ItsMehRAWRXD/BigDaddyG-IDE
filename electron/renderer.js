@@ -105,7 +105,7 @@ function loadMonacoCSS() {
     return new Promise((resolve, reject) => {
         const link = document.createElement('link');
         link.rel = 'stylesheet';
-        link.href = './node_modules/monaco-editor/min/vs/style.css';
+        link.href = '../node_modules/monaco-editor/min/vs/style.css';
         
         link.onload = () => {
             console.log('[BigDaddyG] ✅ Monaco CSS loaded');
