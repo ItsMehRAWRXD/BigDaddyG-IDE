@@ -139,7 +139,7 @@ class CommandSystem {
                     const args = parts.slice(1).join(' ');
                     
                     if (window.commandSystem.commands.has(command)) {
-                        input.value = '';
+                        if (input) input.value = '';
                         await window.commandSystem.executeCommand(command, args);
                         return;
                     }
@@ -163,7 +163,7 @@ class CommandSystem {
                 const args = parts.slice(1).join(' ');
                 
                 if (window.commandSystem.commands.has(command)) {
-                    input.value = '';
+                    if (input) input.value = '';
                     await window.commandSystem.executeCommand(command, args);
                     return;
                 }

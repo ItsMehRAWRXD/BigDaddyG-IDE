@@ -73,10 +73,10 @@ class DebuggerIntegration {
   }
 }
 
-const debugger = new DebuggerIntegration();
+const debuggerIntegration = new DebuggerIntegration();
 
 app.whenReady().then(() => {
-  debugger.init();
+  debuggerIntegration.init();
 });
 
 app.on('window-all-closed', () => {
