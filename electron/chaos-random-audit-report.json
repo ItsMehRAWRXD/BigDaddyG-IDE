@@ -1,295 +1,130 @@
 {
-  "timestamp": "2025-11-10T23:23:18.449Z",
+  "timestamp": "2025-11-11T02:50:24.526Z",
   "totalTests": 110,
-  "passed": 110,
-  "failed": 0,
+  "passed": 109,
+  "failed": 1,
   "warnings": 0,
   "executionOrder": [
-    "AI: Cohere provider",
-    "UI: Agents management panel",
-    "Advanced: Voice coding support",
-    "Quality: No empty catch blocks",
-    "UI: Image generation panel",
-    "UI: Team collaboration panel",
-    "Welcome: Tab display logic",
-    "Team: Text chat messaging",
-    "FileSystem: Create file operation",
-    "UI: Chat tab with AI input",
-    "FileSystem: Delete file operation",
-    "Quality: CSS optimization",
-    "Team: File sharing/transfer",
-    "Team: Screen sharing capability",
-    "UI: Performance monitor panel",
-    "Team: Firebase backend integration",
-    "CLI: PowerShell wrapper",
-    "Marketplace: Ratings and reviews",
-    "Agentic: Multi-agent swarm",
-    "AI: Google Gemini provider",
-    "AI: OpenAI chat implementation",
-    "Team: Real-time collaboration",
-    "Performance: Memory tracking",
-    "Marketplace: Auto-update system",
-    "Monaco: Language features configured",
-    "AI: API key management UI",
-    "Advanced: Settings manager",
-    "Marketplace: Extension uninstallation",
-    "Marketplace: Extension discovery",
-    "Team: Voice chat support",
-    "Game: Visual scene editor",
-    "Core: HTML structure integrity",
-    "AI: Max tokens configuration",
-    "Game: Asset preview system",
-    "Welcome: Don't show again checkbox",
-    "UI: Sidebar quick buttons",
-    "CLI: Internal CLI with Ctrl+`",
-    "Agentic: Executor for commands",
-    "UI: Settings configuration panel",
-    "Game: Godot 4.2+ integration",
-    "Game: Unreal Engine 5.3+ support",
-    "AI: Cursor API integration",
-    "Team: Video chat with webcam",
-    "CLI: Help documentation",
-    "Quality: Professional logging",
-    "AI: Ollama local model support",
-    "UI: Marketplace extensions panel",
-    "Advanced: Performance monitoring",
-    "AI: Kimi (Moonshot) integration",
-    "AI: Token counter for costs",
-    "Integration: AI system initialization",
-    "Core: CSS stylesheet loaded",
-    "Marketplace: Analytics tracking",
-    "Game: Sunshine Engine (proprietary)",
     "AI: Temperature control",
-    "AI: Model selection dropdown",
-    "FileSystem: Rename file operation",
-    "Agentic: Goal planner",
+    "Advanced: Performance monitoring",
+    "UI: Sidebar quick buttons",
     "Game: GDScript syntax support",
-    "UI: File explorer tree view",
-    "Team: Collaborative whiteboard",
-    "UI: Game editor visual panel",
-    "Agentic: Safety system",
-    "Team: WebRTC peer connections",
-    "Quality: No console.error suppression",
-    "Advanced: Image generation AI",
+    "Marketplace: Ratings and reviews",
+    "AI: Anthropic Claude integration",
+    "Core: HTML structure integrity",
+    "Game: Shader editor with WebGL2",
+    "Game: Unreal Engine 5.3+ support",
+    "Team: Firebase backend integration",
+    "Quality: Memory management",
+    "Marketplace: Extension installation",
+    "CLI: Windows CMD wrapper",
     "AI: Streaming response handler",
+    "AI: Token counter for costs",
+    "Game: Animation timeline editor",
+    "FileSystem: Rename file operation",
+    "Monaco: Language features configured",
+    "Marketplace: Analytics tracking",
+    "Team: Screen sharing capability",
     "CLI: Command registry (85+ commands)",
+    "UI: Keyboard shortcut system",
+    "Welcome: Markdown to HTML conversion",
+    "AI: Groq fast inference",
+    "AI: Amazon Q support",
+    "FileSystem: Delete file operation",
+    "AI: API key management UI",
+    "Marketplace: Auto-update system",
+    "Monaco: Editor loader present",
+    "Integration: AI system initialization",
+    "CLI: Internal CLI with Ctrl+`",
+    "UI: Agents management panel",
+    "AI: Ollama local model support",
+    "Quality: No console.error suppression",
+    "AI: Cursor API integration",
+    "Game: C# scripting support",
+    "Advanced: Image generation AI",
+    "Welcome: Guide markdown file",
+    "CLI: IPC server on port 35792",
+    "FileSystem: Tree view rendering",
+    "Integration: All tabs loaded in HTML",
+    "Game: Visual scene editor",
+    "UI: Team collaboration panel",
     "AI: Azure OpenAI integration",
     "Core: package.json structure",
-    "Marketplace: UI with tabs",
-    "Marketplace: Extension installation",
-    "AI: Groq fast inference",
-    "Quality: Memory management",
-    "Game: Unity 2022 LTS support",
-    "AI: Rate limiter implementation",
-    "UI: GitHub integration panel",
-    "CLI: IPC server on port 35792",
-    "Core: Renderer process initialization",
-    "Integration: IPC server in main process",
-    "CLI: Windows CMD wrapper",
-    "UI: Keyboard shortcut system",
-    "Performance: FPS monitoring",
-    "AI: GitHub Copilot integration",
-    "Welcome: Markdown to HTML conversion",
-    "AI: Amazon Q support",
-    "Game: C# scripting support",
-    "CLI: Tab autocomplete",
-    "Monaco: Editor loader present",
-    "Team: Cursor position sharing",
-    "FileSystem: Tree view rendering",
-    "UI: Theme manager with dark/light",
-    "AI: BigDaddyA local AI engine",
-    "Advanced: Debugging system",
-    "Advanced: Recent files tracking",
-    "UI: Tab system class implementation",
-    "Game: Animation timeline editor",
-    "Integration: All tabs loaded in HTML",
-    "Game: Shader editor with WebGL2",
-    "Advanced: Command palette (Ctrl+Shift+P)",
-    "Core: Electron main process entry",
-    "Advanced: Context menus",
-    "Welcome: First-launch detection",
-    "AI: Anthropic Claude integration",
-    "CLI: External Node.js CLI",
+    "AI: Google Gemini provider",
+    "UI: File explorer tree view",
+    "Welcome: Don't show again checkbox",
+    "Core: CSS stylesheet loaded",
+    "Advanced: Voice coding support",
+    "Performance: Memory tracking",
+    "Quality: CSS optimization",
     "AI: DeepSeek provider",
+    "CLI: External Node.js CLI",
+    "UI: Performance monitor panel",
+    "AI: Max tokens configuration",
+    "AI: GitHub Copilot integration",
+    "Agentic: Safety system",
+    "Agentic: Executor for commands",
+    "Core: Electron main process entry",
+    "AI: Kimi (Moonshot) integration",
+    "Game: Asset preview system",
+    "Team: File sharing/transfer",
+    "Team: Cursor position sharing",
+    "Team: Real-time collaboration",
+    "Marketplace: Extension discovery",
+    "UI: Chat tab with AI input",
+    "AI: Model selection dropdown",
+    "Advanced: Command palette (Ctrl+Shift+P)",
+    "UI: Image generation panel",
     "CLI: Interactive mode",
-    "FileSystem: File explorer class",
+    "Advanced: Debugging system",
+    "Integration: IPC server in main process",
+    "Team: Voice chat support",
+    "Team: Collaborative whiteboard",
+    "Advanced: Recent files tracking",
+    "CLI: PowerShell wrapper",
+    "Game: Godot 4.2+ integration",
+    "UI: GitHub integration panel",
+    "Marketplace: Extension uninstallation",
+    "CLI: Help documentation",
+    "Advanced: Settings manager",
+    "UI: Settings configuration panel",
+    "Core: Renderer process initialization",
+    "Quality: Professional logging",
+    "Game: Sunshine Engine (proprietary)",
+    "Welcome: First-launch detection",
+    "UI: Marketplace extensions panel",
+    "AI: BigDaddyA local AI engine",
+    "Marketplace: UI with tabs",
     "UI: Debug panel with breakpoints",
-    "Welcome: Guide markdown file"
+    "UI: Theme manager with dark/light",
+    "Team: Text chat messaging",
+    "UI: Game editor visual panel",
+    "UI: Tab system class implementation",
+    "Advanced: Context menus",
+    "Welcome: Tab display logic",
+    "AI: Cohere provider",
+    "Team: Video chat with webcam",
+    "FileSystem: Create file operation",
+    "AI: OpenAI chat implementation",
+    "Team: WebRTC peer connections",
+    "Quality: No empty catch blocks",
+    "FileSystem: File explorer class",
+    "Game: Unity 2022 LTS support",
+    "Agentic: Goal planner",
+    "Performance: FPS monitoring",
+    "CLI: Tab autocomplete",
+    "Agentic: Multi-agent swarm",
+    "AI: Rate limiter implementation"
   ],
   "testResults": [
     {
-      "name": "AI: Cohere provider",
+      "name": "AI: Temperature control",
       "category": "AI",
       "status": "PASS"
     },
     {
-      "name": "UI: Agents management panel",
-      "category": "UI",
-      "status": "PASS"
-    },
-    {
-      "name": "Advanced: Voice coding support",
+      "name": "Advanced: Performance monitoring",
       "category": "Advanced",
-      "status": "PASS"
-    },
-    {
-      "name": "Quality: No empty catch blocks",
-      "category": "Quality",
-      "status": "PASS"
-    },
-    {
-      "name": "UI: Image generation panel",
-      "category": "UI",
-      "status": "PASS"
-    },
-    {
-      "name": "UI: Team collaboration panel",
-      "category": "UI",
-      "status": "PASS"
-    },
-    {
-      "name": "Welcome: Tab display logic",
-      "category": "Welcome",
-      "status": "PASS"
-    },
-    {
-      "name": "Team: Text chat messaging",
-      "category": "Team",
-      "status": "PASS"
-    },
-    {
-      "name": "FileSystem: Create file operation",
-      "category": "FileSystem",
-      "status": "PASS"
-    },
-    {
-      "name": "UI: Chat tab with AI input",
-      "category": "UI",
-      "status": "PASS"
-    },
-    {
-      "name": "FileSystem: Delete file operation",
-      "category": "FileSystem",
-      "status": "PASS"
-    },
-    {
-      "name": "Quality: CSS optimization",
-      "category": "Quality",
-      "status": "PASS"
-    },
-    {
-      "name": "Team: File sharing/transfer",
-      "category": "Team",
-      "status": "PASS"
-    },
-    {
-      "name": "Team: Screen sharing capability",
-      "category": "Team",
-      "status": "PASS"
-    },
-    {
-      "name": "UI: Performance monitor panel",
-      "category": "UI",
-      "status": "PASS"
-    },
-    {
-      "name": "Team: Firebase backend integration",
-      "category": "Team",
-      "status": "PASS"
-    },
-    {
-      "name": "CLI: PowerShell wrapper",
-      "category": "CLI",
-      "status": "PASS"
-    },
-    {
-      "name": "Marketplace: Ratings and reviews",
-      "category": "Marketplace",
-      "status": "PASS"
-    },
-    {
-      "name": "Agentic: Multi-agent swarm",
-      "category": "Agentic",
-      "status": "PASS"
-    },
-    {
-      "name": "AI: Google Gemini provider",
-      "category": "AI",
-      "status": "PASS"
-    },
-    {
-      "name": "AI: OpenAI chat implementation",
-      "category": "AI",
-      "status": "PASS"
-    },
-    {
-      "name": "Team: Real-time collaboration",
-      "category": "Team",
-      "status": "PASS"
-    },
-    {
-      "name": "Performance: Memory tracking",
-      "category": "Performance",
-      "status": "PASS"
-    },
-    {
-      "name": "Marketplace: Auto-update system",
-      "category": "Marketplace",
-      "status": "PASS"
-    },
-    {
-      "name": "Monaco: Language features configured",
-      "category": "Monaco",
-      "status": "PASS"
-    },
-    {
-      "name": "AI: API key management UI",
-      "category": "AI",
-      "status": "PASS"
-    },
-    {
-      "name": "Advanced: Settings manager",
-      "category": "Advanced",
-      "status": "PASS"
-    },
-    {
-      "name": "Marketplace: Extension uninstallation",
-      "category": "Marketplace",
-      "status": "PASS"
-    },
-    {
-      "name": "Marketplace: Extension discovery",
-      "category": "Marketplace",
-      "status": "PASS"
-    },
-    {
-      "name": "Team: Voice chat support",
-      "category": "Team",
-      "status": "PASS"
-    },
-    {
-      "name": "Game: Visual scene editor",
-      "category": "GameDev",
-      "status": "PASS"
-    },
-    {
-      "name": "Core: HTML structure integrity",
-      "category": "Foundation",
-      "status": "PASS"
-    },
-    {
-      "name": "AI: Max tokens configuration",
-      "category": "AI",
-      "status": "PASS"
-    },
-    {
-      "name": "Game: Asset preview system",
-      "category": "GameDev",
-      "status": "PASS"
-    },
-    {
-      "name": "Welcome: Don't show again checkbox",
-      "category": "Welcome",
       "status": "PASS"
     },
     {
@@ -298,22 +133,27 @@
       "status": "PASS"
     },
     {
-      "name": "CLI: Internal CLI with Ctrl+`",
-      "category": "CLI",
+      "name": "Game: GDScript syntax support",
+      "category": "GameDev",
       "status": "PASS"
     },
     {
-      "name": "Agentic: Executor for commands",
-      "category": "Agentic",
+      "name": "Marketplace: Ratings and reviews",
+      "category": "Marketplace",
       "status": "PASS"
     },
     {
-      "name": "UI: Settings configuration panel",
-      "category": "UI",
+      "name": "AI: Anthropic Claude integration",
+      "category": "AI",
       "status": "PASS"
     },
     {
-      "name": "Game: Godot 4.2+ integration",
+      "name": "Core: HTML structure integrity",
+      "category": "Foundation",
+      "status": "PASS"
+    },
+    {
+      "name": "Game: Shader editor with WebGL2",
       "category": "GameDev",
       "status": "PASS"
     },
@@ -323,42 +163,27 @@
       "status": "PASS"
     },
     {
-      "name": "AI: Cursor API integration",
-      "category": "AI",
-      "status": "PASS"
-    },
-    {
-      "name": "Team: Video chat with webcam",
+      "name": "Team: Firebase backend integration",
       "category": "Team",
       "status": "PASS"
     },
     {
-      "name": "CLI: Help documentation",
-      "category": "CLI",
-      "status": "PASS"
-    },
-    {
-      "name": "Quality: Professional logging",
+      "name": "Quality: Memory management",
       "category": "Quality",
       "status": "PASS"
     },
     {
-      "name": "AI: Ollama local model support",
-      "category": "AI",
+      "name": "Marketplace: Extension installation",
+      "category": "Marketplace",
       "status": "PASS"
     },
     {
-      "name": "UI: Marketplace extensions panel",
-      "category": "UI",
+      "name": "CLI: Windows CMD wrapper",
+      "category": "CLI",
       "status": "PASS"
     },
     {
-      "name": "Advanced: Performance monitoring",
-      "category": "Advanced",
-      "status": "PASS"
-    },
-    {
-      "name": "AI: Kimi (Moonshot) integration",
+      "name": "AI: Streaming response handler",
       "category": "AI",
       "status": "PASS"
     },
@@ -368,33 +193,8 @@
       "status": "PASS"
     },
     {
-      "name": "Integration: AI system initialization",
-      "category": "Integration",
-      "status": "PASS"
-    },
-    {
-      "name": "Core: CSS stylesheet loaded",
-      "category": "Foundation",
-      "status": "PASS"
-    },
-    {
-      "name": "Marketplace: Analytics tracking",
-      "category": "Marketplace",
-      "status": "PASS"
-    },
-    {
-      "name": "Game: Sunshine Engine (proprietary)",
+      "name": "Game: Animation timeline editor",
       "category": "GameDev",
-      "status": "PASS"
-    },
-    {
-      "name": "AI: Temperature control",
-      "category": "AI",
-      "status": "PASS"
-    },
-    {
-      "name": "AI: Model selection dropdown",
-      "category": "AI",
       "status": "PASS"
     },
     {
@@ -403,38 +203,83 @@
       "status": "PASS"
     },
     {
-      "name": "Agentic: Goal planner",
-      "category": "Agentic",
+      "name": "Monaco: Language features configured",
+      "category": "Monaco",
+      "status": "FAIL"
+    },
+    {
+      "name": "Marketplace: Analytics tracking",
+      "category": "Marketplace",
       "status": "PASS"
     },
     {
-      "name": "Game: GDScript syntax support",
-      "category": "GameDev",
-      "status": "PASS"
-    },
-    {
-      "name": "UI: File explorer tree view",
-      "category": "UI",
-      "status": "PASS"
-    },
-    {
-      "name": "Team: Collaborative whiteboard",
+      "name": "Team: Screen sharing capability",
       "category": "Team",
       "status": "PASS"
     },
     {
-      "name": "UI: Game editor visual panel",
+      "name": "CLI: Command registry (85+ commands)",
+      "category": "CLI",
+      "status": "PASS"
+    },
+    {
+      "name": "UI: Keyboard shortcut system",
       "category": "UI",
       "status": "PASS"
     },
     {
-      "name": "Agentic: Safety system",
-      "category": "Agentic",
+      "name": "Welcome: Markdown to HTML conversion",
+      "category": "Welcome",
       "status": "PASS"
     },
     {
-      "name": "Team: WebRTC peer connections",
-      "category": "Team",
+      "name": "AI: Groq fast inference",
+      "category": "AI",
+      "status": "PASS"
+    },
+    {
+      "name": "AI: Amazon Q support",
+      "category": "AI",
+      "status": "PASS"
+    },
+    {
+      "name": "FileSystem: Delete file operation",
+      "category": "FileSystem",
+      "status": "PASS"
+    },
+    {
+      "name": "AI: API key management UI",
+      "category": "AI",
+      "status": "PASS"
+    },
+    {
+      "name": "Marketplace: Auto-update system",
+      "category": "Marketplace",
+      "status": "PASS"
+    },
+    {
+      "name": "Monaco: Editor loader present",
+      "category": "Monaco",
+      "status": "PASS"
+    },
+    {
+      "name": "Integration: AI system initialization",
+      "category": "Integration",
+      "status": "PASS"
+    },
+    {
+      "name": "CLI: Internal CLI with Ctrl+`",
+      "category": "CLI",
+      "status": "PASS"
+    },
+    {
+      "name": "UI: Agents management panel",
+      "category": "UI",
+      "status": "PASS"
+    },
+    {
+      "name": "AI: Ollama local model support",
+      "category": "AI",
       "status": "PASS"
     },
     {
@@ -443,18 +288,48 @@
       "status": "PASS"
     },
     {
+      "name": "AI: Cursor API integration",
+      "category": "AI",
+      "status": "PASS"
+    },
+    {
+      "name": "Game: C# scripting support",
+      "category": "GameDev",
+      "status": "PASS"
+    },
+    {
       "name": "Advanced: Image generation AI",
       "category": "Advanced",
       "status": "PASS"
     },
     {
-      "name": "AI: Streaming response handler",
-      "category": "AI",
+      "name": "Welcome: Guide markdown file",
+      "category": "Welcome",
       "status": "PASS"
     },
     {
-      "name": "CLI: Command registry (85+ commands)",
+      "name": "CLI: IPC server on port 35792",
       "category": "CLI",
+      "status": "PASS"
+    },
+    {
+      "name": "FileSystem: Tree view rendering",
+      "category": "FileSystem",
+      "status": "PASS"
+    },
+    {
+      "name": "Integration: All tabs loaded in HTML",
+      "category": "Integration",
+      "status": "PASS"
+    },
+    {
+      "name": "Game: Visual scene editor",
+      "category": "GameDev",
+      "status": "PASS"
+    },
+    {
+      "name": "UI: Team collaboration panel",
+      "category": "UI",
       "status": "PASS"
     },
     {
@@ -468,172 +343,42 @@
       "status": "PASS"
     },
     {
-      "name": "Marketplace: UI with tabs",
-      "category": "Marketplace",
-      "status": "PASS"
-    },
-    {
-      "name": "Marketplace: Extension installation",
-      "category": "Marketplace",
-      "status": "PASS"
-    },
-    {
-      "name": "AI: Groq fast inference",
+      "name": "AI: Google Gemini provider",
       "category": "AI",
       "status": "PASS"
     },
     {
-      "name": "Quality: Memory management",
-      "category": "Quality",
-      "status": "PASS"
-    },
-    {
-      "name": "Game: Unity 2022 LTS support",
-      "category": "GameDev",
-      "status": "PASS"
-    },
-    {
-      "name": "AI: Rate limiter implementation",
-      "category": "AI",
-      "status": "PASS"
-    },
-    {
-      "name": "UI: GitHub integration panel",
+      "name": "UI: File explorer tree view",
       "category": "UI",
       "status": "PASS"
     },
     {
-      "name": "CLI: IPC server on port 35792",
-      "category": "CLI",
+      "name": "Welcome: Don't show again checkbox",
+      "category": "Welcome",
       "status": "PASS"
     },
     {
-      "name": "Core: Renderer process initialization",
+      "name": "Core: CSS stylesheet loaded",
       "category": "Foundation",
       "status": "PASS"
     },
     {
-      "name": "Integration: IPC server in main process",
-      "category": "Integration",
+      "name": "Advanced: Voice coding support",
+      "category": "Advanced",
       "status": "PASS"
     },
     {
-      "name": "CLI: Windows CMD wrapper",
-      "category": "CLI",
-      "status": "PASS"
-    },
-    {
-      "name": "UI: Keyboard shortcut system",
-      "category": "UI",
-      "status": "PASS"
-    },
-    {
-      "name": "Performance: FPS monitoring",
+      "name": "Performance: Memory tracking",
       "category": "Performance",
       "status": "PASS"
     },
     {
-      "name": "AI: GitHub Copilot integration",
-      "category": "AI",
+      "name": "Quality: CSS optimization",
+      "category": "Quality",
       "status": "PASS"
     },
     {
-      "name": "Welcome: Markdown to HTML conversion",
-      "category": "Welcome",
-      "status": "PASS"
-    },
-    {
-      "name": "AI: Amazon Q support",
-      "category": "AI",
-      "status": "PASS"
-    },
-    {
-      "name": "Game: C# scripting support",
-      "category": "GameDev",
-      "status": "PASS"
-    },
-    {
-      "name": "CLI: Tab autocomplete",
-      "category": "CLI",
-      "status": "PASS"
-    },
-    {
-      "name": "Monaco: Editor loader present",
-      "category": "Monaco",
-      "status": "PASS"
-    },
-    {
-      "name": "Team: Cursor position sharing",
-      "category": "Team",
-      "status": "PASS"
-    },
-    {
-      "name": "FileSystem: Tree view rendering",
-      "category": "FileSystem",
-      "status": "PASS"
-    },
-    {
-      "name": "UI: Theme manager with dark/light",
-      "category": "UI",
-      "status": "PASS"
-    },
-    {
-      "name": "AI: BigDaddyA local AI engine",
-      "category": "AI",
-      "status": "PASS"
-    },
-    {
-      "name": "Advanced: Debugging system",
-      "category": "Advanced",
-      "status": "PASS"
-    },
-    {
-      "name": "Advanced: Recent files tracking",
-      "category": "Advanced",
-      "status": "PASS"
-    },
-    {
-      "name": "UI: Tab system class implementation",
-      "category": "UI",
-      "status": "PASS"
-    },
-    {
-      "name": "Game: Animation timeline editor",
-      "category": "GameDev",
-      "status": "PASS"
-    },
-    {
-      "name": "Integration: All tabs loaded in HTML",
-      "category": "Integration",
-      "status": "PASS"
-    },
-    {
-      "name": "Game: Shader editor with WebGL2",
-      "category": "GameDev",
-      "status": "PASS"
-    },
-    {
-      "name": "Advanced: Command palette (Ctrl+Shift+P)",
-      "category": "Advanced",
-      "status": "PASS"
-    },
-    {
-      "name": "Core: Electron main process entry",
-      "category": "Foundation",
-      "status": "PASS"
-    },
-    {
-      "name": "Advanced: Context menus",
-      "category": "Advanced",
-      "status": "PASS"
-    },
-    {
-      "name": "Welcome: First-launch detection",
-      "category": "Welcome",
-      "status": "PASS"
-    },
-    {
-      "name": "AI: Anthropic Claude integration",
+      "name": "AI: DeepSeek provider",
       "category": "AI",
       "status": "PASS"
     },
@@ -643,8 +388,83 @@
       "status": "PASS"
     },
     {
-      "name": "AI: DeepSeek provider",
+      "name": "UI: Performance monitor panel",
+      "category": "UI",
+      "status": "PASS"
+    },
+    {
+      "name": "AI: Max tokens configuration",
       "category": "AI",
+      "status": "PASS"
+    },
+    {
+      "name": "AI: GitHub Copilot integration",
+      "category": "AI",
+      "status": "PASS"
+    },
+    {
+      "name": "Agentic: Safety system",
+      "category": "Agentic",
+      "status": "PASS"
+    },
+    {
+      "name": "Agentic: Executor for commands",
+      "category": "Agentic",
+      "status": "PASS"
+    },
+    {
+      "name": "Core: Electron main process entry",
+      "category": "Foundation",
+      "status": "PASS"
+    },
+    {
+      "name": "AI: Kimi (Moonshot) integration",
+      "category": "AI",
+      "status": "PASS"
+    },
+    {
+      "name": "Game: Asset preview system",
+      "category": "GameDev",
+      "status": "PASS"
+    },
+    {
+      "name": "Team: File sharing/transfer",
+      "category": "Team",
+      "status": "PASS"
+    },
+    {
+      "name": "Team: Cursor position sharing",
+      "category": "Team",
+      "status": "PASS"
+    },
+    {
+      "name": "Team: Real-time collaboration",
+      "category": "Team",
+      "status": "PASS"
+    },
+    {
+      "name": "Marketplace: Extension discovery",
+      "category": "Marketplace",
+      "status": "PASS"
+    },
+    {
+      "name": "UI: Chat tab with AI input",
+      "category": "UI",
+      "status": "PASS"
+    },
+    {
+      "name": "AI: Model selection dropdown",
+      "category": "AI",
+      "status": "PASS"
+    },
+    {
+      "name": "Advanced: Command palette (Ctrl+Shift+P)",
+      "category": "Advanced",
+      "status": "PASS"
+    },
+    {
+      "name": "UI: Image generation panel",
+      "category": "UI",
       "status": "PASS"
     },
     {
@@ -653,8 +473,98 @@
       "status": "PASS"
     },
     {
-      "name": "FileSystem: File explorer class",
-      "category": "FileSystem",
+      "name": "Advanced: Debugging system",
+      "category": "Advanced",
+      "status": "PASS"
+    },
+    {
+      "name": "Integration: IPC server in main process",
+      "category": "Integration",
+      "status": "PASS"
+    },
+    {
+      "name": "Team: Voice chat support",
+      "category": "Team",
+      "status": "PASS"
+    },
+    {
+      "name": "Team: Collaborative whiteboard",
+      "category": "Team",
+      "status": "PASS"
+    },
+    {
+      "name": "Advanced: Recent files tracking",
+      "category": "Advanced",
+      "status": "PASS"
+    },
+    {
+      "name": "CLI: PowerShell wrapper",
+      "category": "CLI",
+      "status": "PASS"
+    },
+    {
+      "name": "Game: Godot 4.2+ integration",
+      "category": "GameDev",
+      "status": "PASS"
+    },
+    {
+      "name": "UI: GitHub integration panel",
+      "category": "UI",
+      "status": "PASS"
+    },
+    {
+      "name": "Marketplace: Extension uninstallation",
+      "category": "Marketplace",
+      "status": "PASS"
+    },
+    {
+      "name": "CLI: Help documentation",
+      "category": "CLI",
+      "status": "PASS"
+    },
+    {
+      "name": "Advanced: Settings manager",
+      "category": "Advanced",
+      "status": "PASS"
+    },
+    {
+      "name": "UI: Settings configuration panel",
+      "category": "UI",
+      "status": "PASS"
+    },
+    {
+      "name": "Core: Renderer process initialization",
+      "category": "Foundation",
+      "status": "PASS"
+    },
+    {
+      "name": "Quality: Professional logging",
+      "category": "Quality",
+      "status": "PASS"
+    },
+    {
+      "name": "Game: Sunshine Engine (proprietary)",
+      "category": "GameDev",
+      "status": "PASS"
+    },
+    {
+      "name": "Welcome: First-launch detection",
+      "category": "Welcome",
+      "status": "PASS"
+    },
+    {
+      "name": "UI: Marketplace extensions panel",
+      "category": "UI",
+      "status": "PASS"
+    },
+    {
+      "name": "AI: BigDaddyA local AI engine",
+      "category": "AI",
+      "status": "PASS"
+    },
+    {
+      "name": "Marketplace: UI with tabs",
+      "category": "Marketplace",
       "status": "PASS"
     },
     {
@@ -663,8 +573,98 @@
       "status": "PASS"
     },
     {
-      "name": "Welcome: Guide markdown file",
+      "name": "UI: Theme manager with dark/light",
+      "category": "UI",
+      "status": "PASS"
+    },
+    {
+      "name": "Team: Text chat messaging",
+      "category": "Team",
+      "status": "PASS"
+    },
+    {
+      "name": "UI: Game editor visual panel",
+      "category": "UI",
+      "status": "PASS"
+    },
+    {
+      "name": "UI: Tab system class implementation",
+      "category": "UI",
+      "status": "PASS"
+    },
+    {
+      "name": "Advanced: Context menus",
+      "category": "Advanced",
+      "status": "PASS"
+    },
+    {
+      "name": "Welcome: Tab display logic",
       "category": "Welcome",
+      "status": "PASS"
+    },
+    {
+      "name": "AI: Cohere provider",
+      "category": "AI",
+      "status": "PASS"
+    },
+    {
+      "name": "Team: Video chat with webcam",
+      "category": "Team",
+      "status": "PASS"
+    },
+    {
+      "name": "FileSystem: Create file operation",
+      "category": "FileSystem",
+      "status": "PASS"
+    },
+    {
+      "name": "AI: OpenAI chat implementation",
+      "category": "AI",
+      "status": "PASS"
+    },
+    {
+      "name": "Team: WebRTC peer connections",
+      "category": "Team",
+      "status": "PASS"
+    },
+    {
+      "name": "Quality: No empty catch blocks",
+      "category": "Quality",
+      "status": "PASS"
+    },
+    {
+      "name": "FileSystem: File explorer class",
+      "category": "FileSystem",
+      "status": "PASS"
+    },
+    {
+      "name": "Game: Unity 2022 LTS support",
+      "category": "GameDev",
+      "status": "PASS"
+    },
+    {
+      "name": "Agentic: Goal planner",
+      "category": "Agentic",
+      "status": "PASS"
+    },
+    {
+      "name": "Performance: FPS monitoring",
+      "category": "Performance",
+      "status": "PASS"
+    },
+    {
+      "name": "CLI: Tab autocomplete",
+      "category": "CLI",
+      "status": "PASS"
+    },
+    {
+      "name": "Agentic: Multi-agent swarm",
+      "category": "Agentic",
+      "status": "PASS"
+    },
+    {
+      "name": "AI: Rate limiter implementation",
+      "category": "AI",
       "status": "PASS"
     }
   ]
