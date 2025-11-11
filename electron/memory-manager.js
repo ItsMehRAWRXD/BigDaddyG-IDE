@@ -294,9 +294,11 @@ class MemoryManager {
 // Create singleton
 const memoryManager = new MemoryManager();
 
-// Export
-module.exports = memoryManager;
-module.exports.MemoryManager = MemoryManager;
+// Export (browser-safe)
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = memoryManager;
+    module.exports.MemoryManager = MemoryManager;
+}
 
 // Make available globally
 if (typeof global !== 'undefined') {

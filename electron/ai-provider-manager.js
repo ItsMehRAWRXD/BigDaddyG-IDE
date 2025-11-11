@@ -299,12 +299,12 @@ class AIProviderManager {
       type: 'extension',
       endpoint: null,
       auth: () => this.getExtensionAuth('amazonq')
-    
-        } catch (error) {
-            console.error('[ai-provider-manager.js] registerProviders error:', error);
-            throw error;
-        }
     });
+    
+    } catch (error) {
+        console.error('[ai-provider-manager.js] registerProviders error:', error);
+        throw error;
+    }
 
     // GitHub Copilot
     this.providers.set('copilot', {

@@ -95,11 +95,10 @@ class BigDaddyAIntegration extends EventEmitter {
         if (this.models.size > 0) {
             const firstModel = Array.from(this.models.keys())[0];
             await this.loadModel(firstModel);
-        
-        } catch (error) {
-            console.error('[bigdaddya-integration.js] initialize error:', error);
-            throw error;
         }
+    } catch (error) {
+        console.error('[bigdaddya-integration.js] initialize error:', error);
+        throw error;
     }
         
         this.isRunning = true;

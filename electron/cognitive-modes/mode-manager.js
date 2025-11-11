@@ -11,9 +11,14 @@
  * @author BigDaddyG IDE Team + AI Family
  */
 
-const EventEmitter = require('events');
-const fs = require('fs');
-const path = require('path');
+// Browser-safe requires
+const EventEmitter = (typeof require !== 'undefined' && typeof process !== 'undefined' && process.versions?.node) ? require('events') : class EventEmitter {
+    constructor() { this.events = {}; }
+    on(event, listener) { (this.events[event] = this.events[event] || []).push(listener); }
+    emit(event, ...args) { (this.events[event] || []).forEach(listener => listener(...args)); }
+};
+const fs = (typeof require !== 'undefined' && typeof process !== 'undefined' && process.versions?.node) ? require('fs') : null;
+const path = (typeof require !== 'undefined' && typeof process !== 'undefined' && process.versions?.node) ? require('path') : null;
 
 class CognitiveModeManager extends EventEmitter {
     constructor() {

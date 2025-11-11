@@ -3,8 +3,9 @@
  * Manages IDE themes and appearance
  */
 
-const fs = require('fs');
-const path = require('path');
+// Browser-safe requires
+const fs = (typeof require !== 'undefined' && typeof process !== 'undefined' && process.versions?.electron) ? require('fs') : null;
+const path = (typeof require !== 'undefined' && typeof process !== 'undefined' && process.versions?.electron) ? require('path') : null;
 
 class ThemeManager {
     constructor() {

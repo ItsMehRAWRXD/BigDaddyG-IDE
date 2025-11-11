@@ -236,12 +236,12 @@ class PluginMarketplace {
         if (this.backendAvailable && window.electron?.marketplace?.onEvent) {
             this.unsubscribeMarketplaceEvents = window.electron.marketplace.onEvent((event) => {
                 this.handleMarketplaceEvent(event);
-            
-        } catch (error) {
-            console.error('[plugin-marketplace.js] init error:', error);
-            throw error;
+            });
         }
-    });
+    } catch (error) {
+        console.error('[plugin-marketplace.js] init error:', error);
+        throw error;
+    }
         }
         
         // Load available plugins

@@ -100,10 +100,7 @@ if (!AgenticSecurityHardening) {
                 throw new Error('Invalid command');
             }
 
-            if(/[;&|`$() {
-        console.log('[agentic-executor.js] if executed');
-        return true;
-    }\[\]<>]/.test(command)) {
+            if(/[;&|`$()\[\]<>]/.test(command)) {
                 throw new Error('Command contains dangerous characters');
             }
 

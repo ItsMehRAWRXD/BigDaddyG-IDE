@@ -692,15 +692,7 @@ visualTestDemo();`;
 window.visualTest = new VisualTestRunner();
 
 console.log('[VisualTest] 💡 Usage: visualTest.start()');
-console.log('[VisualTest] ⏸️ AUTO-START DISABLED - Run manually with visualTest.start()');
-
-// AUTO-START DISABLED - Users can run visualTest.start() manually if needed
-// setTimeout(() => {
-//     console.log('[VisualTest] 🎬 Starting visual test NOW!');
-//     window.visualTest.start().catch(err => {
-//         console.error('[VisualTest] ❌ Test failed:', err);
-//     });
-// }, 8000); // Wait 8 seconds, we'll bootstrap Monaco if needed
+console.log('[VisualTest] ⏸️ AUTO-START DISABLED - Run manually if needed');
 
 })();
 

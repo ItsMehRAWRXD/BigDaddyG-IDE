@@ -3,8 +3,9 @@
  * Handles preview and editing of all game asset types
  */
 
-const fs = require('fs');
-const path = require('path');
+// Browser-safe requires
+const fs = (typeof require !== 'undefined' && typeof process !== 'undefined' && process.versions?.electron) ? require('fs') : null;
+const path = (typeof require !== 'undefined' && typeof process !== 'undefined' && process.versions?.electron) ? require('path') : null;
 
 class AssetPreviewSystem {
     constructor() {
