@@ -45,27 +45,116 @@ class CompleteMarketplaceUI {
      */
     render() {
         this.container.innerHTML = `
-            <div class="marketplace-container">
+            <div class="marketplace-container" style="
+                width: 100%;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                background: #1e1e1e;
+                color: #cccccc;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                overflow: hidden;
+            ">
                 <!-- Header -->
-                <div class="marketplace-header">
-                    <h2>🛍️ Extension Marketplace</h2>
-                    <div class="marketplace-search">
-                        <input type="text" id="marketplace-search" placeholder="Search extensions..." />
-                        <button id="marketplace-search-btn">🔍</button>
+                <div class="marketplace-header" style="
+                    padding: 20px;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+                    flex-shrink: 0;
+                ">
+                    <h2 style="margin: 0 0 15px 0; font-size: 28px; font-weight: 600;">🛍️ Extension Marketplace</h2>
+                    <div class="marketplace-search" style="display: flex; gap: 10px;">
+                        <input type="text" id="marketplace-search" placeholder="Search extensions..." style="
+                            flex: 1;
+                            padding: 10px 15px;
+                            border: none;
+                            border-radius: 8px;
+                            font-size: 14px;
+                            background: rgba(255,255,255,0.2);
+                            color: white;
+                        " />
+                        <button id="marketplace-search-btn" style="
+                            padding: 10px 20px;
+                            border: none;
+                            border-radius: 8px;
+                            background: rgba(255,255,255,0.3);
+                            color: white;
+                            cursor: pointer;
+                            font-size: 16px;
+                        ">🔍</button>
                     </div>
                 </div>
                 
                 <!-- Navigation -->
-                <div class="marketplace-nav">
-                    <button class="nav-btn active" data-view="discover">Discover</button>
-                    <button class="nav-btn" data-view="installed">Installed</button>
-                    <button class="nav-btn" data-view="updates">Updates</button>
-                    <button class="nav-btn" data-view="settings">Settings</button>
+                <div class="marketplace-nav" style="
+                    display: flex;
+                    gap: 10px;
+                    padding: 15px 20px;
+                    background: #252525;
+                    border-bottom: 1px solid #3a3a3a;
+                    flex-shrink: 0;
+                ">
+                    <button class="nav-btn active" data-view="discover" style="
+                        padding: 8px 16px;
+                        border: none;
+                        border-radius: 6px;
+                        background: #667eea;
+                        color: white;
+                        cursor: pointer;
+                        font-size: 14px;
+                        transition: all 0.3s;
+                    ">Discover</button>
+                    <button class="nav-btn" data-view="installed" style="
+                        padding: 8px 16px;
+                        border: none;
+                        border-radius: 6px;
+                        background: #3a3a3a;
+                        color: #cccccc;
+                        cursor: pointer;
+                        font-size: 14px;
+                        transition: all 0.3s;
+                    ">Installed</button>
+                    <button class="nav-btn" data-view="updates" style="
+                        padding: 8px 16px;
+                        border: none;
+                        border-radius: 6px;
+                        background: #3a3a3a;
+                        color: #cccccc;
+                        cursor: pointer;
+                        font-size: 14px;
+                        transition: all 0.3s;
+                    ">Updates</button>
+                    <button class="nav-btn" data-view="settings" style="
+                        padding: 8px 16px;
+                        border: none;
+                        border-radius: 6px;
+                        background: #3a3a3a;
+                        color: #cccccc;
+                        cursor: pointer;
+                        font-size: 14px;
+                        transition: all 0.3s;
+                    ">Settings</button>
                 </div>
                 
                 <!-- Filters -->
-                <div class="marketplace-filters">
-                    <select id="category-filter">
+                <div class="marketplace-filters" style="
+                    display: flex;
+                    gap: 15px;
+                    padding: 15px 20px;
+                    background: #2a2a2a;
+                    border-bottom: 1px solid #3a3a3a;
+                    align-items: center;
+                    flex-shrink: 0;
+                ">
+                    <select id="category-filter" style="
+                        padding: 8px 12px;
+                        border: 1px solid #4a4a4a;
+                        border-radius: 6px;
+                        background: #3a3a3a;
+                        color: #cccccc;
+                        cursor: pointer;
+                    ">
                         <option value="all">All Categories</option>
                         <option value="languages">Languages</option>
                         <option value="themes">Themes</option>
@@ -75,29 +164,98 @@ class CompleteMarketplaceUI {
                         <option value="gamedev">Game Dev</option>
                     </select>
                     
-                    <select id="rating-filter">
+                    <select id="rating-filter" style="
+                        padding: 8px 12px;
+                        border: 1px solid #4a4a4a;
+                        border-radius: 6px;
+                        background: #3a3a3a;
+                        color: #cccccc;
+                        cursor: pointer;
+                    ">
                         <option value="0">Any Rating</option>
                         <option value="3">3+ Stars</option>
                         <option value="4">4+ Stars</option>
                         <option value="5">5 Stars</option>
                     </select>
                     
-                    <label>
-                        <input type="checkbox" id="installed-filter" />
+                    <label style="display: flex; align-items: center; gap: 8px; color: #cccccc; cursor: pointer;">
+                        <input type="checkbox" id="installed-filter" style="cursor: pointer;" />
                         Show Installed Only
                     </label>
+                    
+                    <div style="flex: 1;"></div>
+                    
+                    <button id="refresh-marketplace" style="
+                        padding: 8px 16px;
+                        border: none;
+                        border-radius: 6px;
+                        background: #4a4a4a;
+                        color: white;
+                        cursor: pointer;
+                        font-size: 14px;
+                    ">🔄 Refresh</button>
                 </div>
                 
                 <!-- Content Area -->
-                <div class="marketplace-content" id="marketplace-content">
+                <div class="marketplace-content" id="marketplace-content" style="
+                    flex: 1;
+                    overflow-y: auto;
+                    padding: 20px;
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                    gap: 20px;
+                    align-content: start;
+                ">
                     <!-- Dynamic content goes here -->
                 </div>
                 
                 <!-- Install Progress -->
-                <div class="marketplace-progress" id="marketplace-progress" style="display: none;">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progress-fill"></div>
+                <div class="marketplace-progress" id="marketplace-progress" style="
+                    display: none;
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    width: 400px;
+                    padding: 20px;
+                    background: #2a2a2a;
+                    border: 1px solid #4a4a4a;
+                    border-radius: 10px;
+                    box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+                    z-index: 10000;
+                ">
+                    <h3 style="margin: 0 0 15px 0; color: #cccccc;">📦 Installing Extension</h3>
+                    <div class="progress-info" id="progress-info" style="margin-bottom: 10px; color: #999; font-size: 13px;"></div>
+                    <div class="progress-bar" style="
+                        width: 100%;
+                        height: 30px;
+                        background: #1e1e1e;
+                        border-radius: 15px;
+                        overflow: hidden;
+                        position: relative;
+                    ">
+                        <div class="progress-fill" id="progress-fill" style="
+                            width: 0%;
+                            height: 100%;
+                            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+                            transition: width 0.3s;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: white;
+                            font-weight: 600;
+                            font-size: 12px;
+                        "></div>
                     </div>
+                    <button id="cancel-install" style="
+                        margin-top: 15px;
+                        padding: 8px 16px;
+                        border: none;
+                        border-radius: 6px;
+                        background: #d32f2f;
+                        color: white;
+                        cursor: pointer;
+                        width: 100%;
+                    ">Cancel</button>
                     <div class="progress-text" id="progress-text">Installing...</div>
                 </div>
             </div>
