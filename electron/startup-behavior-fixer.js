@@ -21,20 +21,22 @@
 
     /**
      * Hide all panels that shouldn't be visible on startup
+     * NOTE: show-all-panels.js will override this for essential panels
      */
     function hidePanelsOnStartup() {
+        // Only hide non-essential panels
         const panelsToHide = [
-            // Terminal/Console
-            { id: 'terminal-panel', name: 'Terminal Panel' },
-            { id: 'console-panel', name: 'Console Panel' },
-            { id: 'enhanced-terminal-container', name: 'Enhanced Terminal' },
+            // Only hide these specific panels (not essential ones)
+            // { id: 'terminal-panel', name: 'Terminal Panel' }, // DON'T HIDE
+            // { id: 'console-panel', name: 'Console Panel' }, // DON'T HIDE
+            // { id: 'enhanced-terminal-container', name: 'Enhanced Terminal' }, // DON'T HIDE
             
-            // Sidebars
-            { id: 'conversation-history-sidebar', name: 'Conversation History' },
-            { id: 'agent-panel', name: 'Agent Panel' },
+            // Sidebars - keep visible
+            // { id: 'conversation-history-sidebar', name: 'Conversation History' },
+            // { id: 'agent-panel', name: 'Agent Panel' },
             
-            // Floating elements
-            { id: 'floating-chat-container', name: 'Floating Chat' },
+            // Floating elements - hide by default
+            // { id: 'floating-chat-container', name: 'Floating Chat' },
             { id: 'performance-overlay', name: 'Performance Overlay' },
             { id: 'visual-test-overlay', name: 'Visual Test' },
             
