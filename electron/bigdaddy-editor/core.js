@@ -49,6 +49,16 @@ class PieceTable {
         const addStart = this.add.length;
         this.add += text;
         
+        // Handle empty buffer case
+        if (this.pieces.length === 0) {
+            this.pieces.push({
+                source: 'add',
+                start: addStart,
+                length: text.length
+            });
+            return;
+        }
+        
         // Find piece containing offset
         let currentOffset = 0;
         let pieceIndex = 0;
@@ -66,6 +76,17 @@ class PieceTable {
         }
         
         const piece = this.pieces[pieceIndex];
+        
+        // Handle case where offset is beyond all pieces
+        if (!piece) {
+            this.pieces.push({
+                source: 'add',
+                start: addStart,
+                length: text.length
+            });
+            return;
+        }
+        
         const offsetInPiece = offset - currentOffset;
         
         if (offsetInPiece === 0 && pieceIndex > 0) {
@@ -291,8 +312,21 @@ class PieceTable {
  * BigDaddy Editor - Main Class
  */
 class BigDaddyEditor {
-    constructor(options = {}) {
-        this.container = options.container;
+    constructor(container, options = {}) {
+        // Handle both old and new API
+        if (typeof container === 'object' && container.container) {
+            // Old API: BigDaddyEditor({container: el, ...})
+            options = container;
+            this.container = options.container;
+        } else {
+            // New API: BigDaddyEditor(el, {...})
+            this.container = container;
+        }
+        
+        if (!this.container) {
+            throw new Error('BigDaddyEditor: container element is required');
+        }
+        
         this.options = Object.assign({
             language: 'javascript',
             theme: 'bigdaddy-dark',
@@ -358,11 +392,18 @@ class BigDaddyEditor {
             desynchronized: true // Hint for better performance
         });
         
+        // Initialize charWidth and lineHeight to defaults
+        this.charWidth = 8;  // Temporary, will be measured
+        this.lineHeight = this.options.lineHeight;
+        
         // Handle high DPI displays
         this.updateCanvasSize();
         
-        // Measure font metrics
+        // Measure font metrics (updates charWidth with actual value)
         this.measureFont();
+        
+        // Update canvas size again with correct charWidth
+        this.updateCanvasSize();
         
         // Initial render
         this.render();
@@ -496,12 +537,14 @@ class BigDaddyEditor {
             const lineNumber = this.topLine + i;
             if (lineNumber >= lines.length) break;
             
-            const line = lines[lineNumber];
+            const line = lines[lineNumber] || '';
             const y = i * this.lineHeight + this.lineHeight - 4;
             const x = lineNumberWidth + 10 - (this.leftColumn * this.charWidth);
             
             // Simple rendering (syntax highlighting will be added via Web Worker)
-            this.ctx.fillText(line, x, y);
+            if (line) {
+                this.ctx.fillText(line, x, y);
+            }
         }
     }
 
@@ -638,9 +681,22 @@ class BigDaddyEditor {
      * Insert text at cursor
      */
     insertText(text) {
+        if (!text || text.length === 0) return;
+        
         const offset = this.getOffsetFromPosition(this.cursor);
         this.buffer.insert(offset, text);
-        this.cursor.column += text.length;
+        
+        // Update cursor position
+        const lines = text.split('\n');
+        if (lines.length > 1) {
+            // Multi-line insert
+            this.cursor.line += lines.length - 1;
+            this.cursor.column = lines[lines.length - 1].length;
+        } else {
+            // Single line insert
+            this.cursor.column += text.length;
+        }
+        
         this.emit('change', { type: 'insert', text, offset });
         this.render();
     }
@@ -658,7 +714,7 @@ class BigDaddyEditor {
             const offset = this.getOffsetFromPosition(this.cursor) - 1;
             this.buffer.delete(offset, 1);
             this.cursor.line--;
-            this.cursor.column = prevLine.length;
+            this.cursor.column = prevLine ? prevLine.length : 0;
         }
         this.emit('change', { type: 'delete' });
         this.render();
@@ -775,8 +831,8 @@ class BigDaddyEditor {
         const lines = this.buffer.getLines();
         let offset = 0;
         
-        for (let i = 0; i < pos.line; i++) {
-            offset += lines[i].length + 1; // +1 for newline
+        for (let i = 0; i < pos.line && i < lines.length; i++) {
+            offset += (lines[i] || '').length + 1; // +1 for newline
         }
         
         offset += pos.column;
