@@ -1,0 +1,6599 @@
+{
+  "files": [
+    {
+      "path": ".eslintrc.cjs",
+      "fullPath": "/workspace/electron/.eslintrc.cjs",
+      "ext": ".cjs",
+      "size": 503,
+      "type": "Other"
+    },
+    {
+      "path": ".tmp-window-check.js",
+      "fullPath": "/workspace/electron/.tmp-window-check.js",
+      "ext": ".js",
+      "size": 1456,
+      "type": "JavaScript"
+    },
+    {
+      "path": "AGENTIC-AI-SETUP.md",
+      "fullPath": "/workspace/electron/AGENTIC-AI-SETUP.md",
+      "ext": ".md",
+      "size": 4575,
+      "type": "Markdown"
+    },
+    {
+      "path": "AGENTIC_BUILD_PLAN.md",
+      "fullPath": "/workspace/electron/AGENTIC_BUILD_PLAN.md",
+      "ext": ".md",
+      "size": 11243,
+      "type": "Markdown"
+    },
+    {
+      "path": "AUDIT-FIXES-COMPLETE.md",
+      "fullPath": "/workspace/electron/AUDIT-FIXES-COMPLETE.md",
+      "ext": ".md",
+      "size": 12978,
+      "type": "Markdown"
+    },
+    {
+      "path": "AUDIT-FIXES-COMPLETED.md",
+      "fullPath": "/workspace/electron/AUDIT-FIXES-COMPLETED.md",
+      "ext": ".md",
+      "size": 6210,
+      "type": "Markdown"
+    },
+    {
+      "path": "AUDIT-FIXES-TODO.md",
+      "fullPath": "/workspace/electron/AUDIT-FIXES-TODO.md",
+      "ext": ".md",
+      "size": 6508,
+      "type": "Markdown"
+    },
+    {
+      "path": "AUDIT-ISSUES.md",
+      "fullPath": "/workspace/electron/AUDIT-ISSUES.md",
+      "ext": ".md",
+      "size": 13734,
+      "type": "Markdown"
+    },
+    {
+      "path": "AUDIT-REPORT.md",
+      "fullPath": "/workspace/electron/AUDIT-REPORT.md",
+      "ext": ".md",
+      "size": 6018,
+      "type": "Markdown"
+    },
+    {
+      "path": "COMPLETE-INTEGRATION-REPORT.md",
+      "fullPath": "/workspace/electron/COMPLETE-INTEGRATION-REPORT.md",
+      "ext": ".md",
+      "size": 14839,
+      "type": "Markdown"
+    },
+    {
+      "path": "CRITICAL-ISSUES-FOUND.md",
+      "fullPath": "/workspace/electron/CRITICAL-ISSUES-FOUND.md",
+      "ext": ".md",
+      "size": 5292,
+      "type": "Markdown"
+    },
+    {
+      "path": "FINAL-FIX-SUMMARY.md",
+      "fullPath": "/workspace/electron/FINAL-FIX-SUMMARY.md",
+      "ext": ".md",
+      "size": 5280,
+      "type": "Markdown"
+    },
+    {
+      "path": "FIXES-APPLIED-FINAL.md",
+      "fullPath": "/workspace/electron/FIXES-APPLIED-FINAL.md",
+      "ext": ".md",
+      "size": 6735,
+      "type": "Markdown"
+    },
+    {
+      "path": "FIXES-APPLIED.md",
+      "fullPath": "/workspace/electron/FIXES-APPLIED.md",
+      "ext": ".md",
+      "size": 3474,
+      "type": "Markdown"
+    },
+    {
+      "path": "FIXES-CRITICAL.md",
+      "fullPath": "/workspace/electron/FIXES-CRITICAL.md",
+      "ext": ".md",
+      "size": 1876,
+      "type": "Markdown"
+    },
+    {
+      "path": "FLEXIBLE-LAYOUT-GUIDE.md",
+      "fullPath": "/workspace/electron/FLEXIBLE-LAYOUT-GUIDE.md",
+      "ext": ".md",
+      "size": 8545,
+      "type": "Markdown"
+    },
+    {
+      "path": "FULL-AGENTIC-AUDIT.md",
+      "fullPath": "/workspace/electron/FULL-AGENTIC-AUDIT.md",
+      "ext": ".md",
+      "size": 30021,
+      "type": "Markdown"
+    },
+    {
+      "path": "MONACO-CONTAINER-FIX.md",
+      "fullPath": "/workspace/electron/MONACO-CONTAINER-FIX.md",
+      "ext": ".md",
+      "size": 3919,
+      "type": "Markdown"
+    },
+    {
+      "path": "NAMING-WIRING-FIXES.md",
+      "fullPath": "/workspace/electron/NAMING-WIRING-FIXES.md",
+      "ext": ".md",
+      "size": 9158,
+      "type": "Markdown"
+    },
+    {
+      "path": "PHASE-1-IMPLEMENTATION.md",
+      "fullPath": "/workspace/electron/PHASE-1-IMPLEMENTATION.md",
+      "ext": ".md",
+      "size": 8315,
+      "type": "Markdown"
+    },
+    {
+      "path": "PROCESS-ERRORS-FIXED.md",
+      "fullPath": "/workspace/electron/PROCESS-ERRORS-FIXED.md",
+      "ext": ".md",
+      "size": 6135,
+      "type": "Markdown"
+    },
+    {
+      "path": "QUICK-START-GUIDE.md",
+      "fullPath": "/workspace/electron/QUICK-START-GUIDE.md",
+      "ext": ".md",
+      "size": 8468,
+      "type": "Markdown"
+    },
+    {
+      "path": "README.md",
+      "fullPath": "/workspace/electron/README.md",
+      "ext": ".md",
+      "size": 9601,
+      "type": "Markdown"
+    },
+    {
+      "path": "SECURITY_FIXES_APPLIED.md",
+      "fullPath": "/workspace/electron/SECURITY_FIXES_APPLIED.md",
+      "ext": ".md",
+      "size": 8380,
+      "type": "Markdown"
+    },
+    {
+      "path": "SLIDER-FIXES-SUMMARY.md",
+      "fullPath": "/workspace/electron/SLIDER-FIXES-SUMMARY.md",
+      "ext": ".md",
+      "size": 7882,
+      "type": "Markdown"
+    },
+    {
+      "path": "SYSTEM-CHECK-GUIDE.md",
+      "fullPath": "/workspace/electron/SYSTEM-CHECK-GUIDE.md",
+      "ext": ".md",
+      "size": 10027,
+      "type": "Markdown"
+    },
+    {
+      "path": "Untitled-1.js",
+      "fullPath": "/workspace/electron/Untitled-1.js",
+      "ext": ".js",
+      "size": 26504,
+      "type": "JavaScript"
+    },
+    {
+      "path": "__tests__/security/path-utils.test.js",
+      "fullPath": "/workspace/electron/__tests__/security/path-utils.test.js",
+      "ext": ".js",
+      "size": 3022,
+      "type": "JavaScript"
+    },
+    {
+      "path": "__tests__/settings-service.test.js",
+      "fullPath": "/workspace/electron/__tests__/settings-service.test.js",
+      "ext": ".js",
+      "size": 3151,
+      "type": "JavaScript"
+    },
+    {
+      "path": "adaptive-behavior-engine.js",
+      "fullPath": "/workspace/electron/adaptive-behavior-engine.js",
+      "ext": ".js",
+      "size": 4496,
+      "type": "JavaScript"
+    },
+    {
+      "path": "admin-command-runner.js",
+      "fullPath": "/workspace/electron/admin-command-runner.js",
+      "ext": ".js",
+      "size": 16786,
+      "type": "JavaScript"
+    },
+    {
+      "path": "advanced-code-intelligence.js",
+      "fullPath": "/workspace/electron/advanced-code-intelligence.js",
+      "ext": ".js",
+      "size": 28487,
+      "type": "JavaScript"
+    },
+    {
+      "path": "advanced-debugging-system.js",
+      "fullPath": "/workspace/electron/advanced-debugging-system.js",
+      "ext": ".js",
+      "size": 36225,
+      "type": "JavaScript"
+    },
+    {
+      "path": "agent-panel.js",
+      "fullPath": "/workspace/electron/agent-panel.js",
+      "ext": ".js",
+      "size": 30169,
+      "type": "JavaScript"
+    },
+    {
+      "path": "agentic-ai-bridge.js",
+      "fullPath": "/workspace/electron/agentic-ai-bridge.js",
+      "ext": ".js",
+      "size": 2799,
+      "type": "JavaScript"
+    },
+    {
+      "path": "agentic-auto-fixer.js",
+      "fullPath": "/workspace/electron/agentic-auto-fixer.js",
+      "ext": ".js",
+      "size": 14672,
+      "type": "JavaScript"
+    },
+    {
+      "path": "agentic-browser-demo.js",
+      "fullPath": "/workspace/electron/agentic-browser-demo.js",
+      "ext": ".js",
+      "size": 12771,
+      "type": "JavaScript"
+    },
+    {
+      "path": "agentic-browser-demo.js.backup",
+      "fullPath": "/workspace/electron/agentic-browser-demo.js.backup",
+      "ext": ".backup",
+      "size": 12774,
+      "type": "Other"
+    },
+    {
+      "path": "agentic-coder.js",
+      "fullPath": "/workspace/electron/agentic-coder.js",
+      "ext": ".js",
+      "size": 10999,
+      "type": "JavaScript"
+    },
+    {
+      "path": "agentic-diagnostics.js",
+      "fullPath": "/workspace/electron/agentic-diagnostics.js",
+      "ext": ".js",
+      "size": 34512,
+      "type": "JavaScript"
+    },
+    {
+      "path": "agentic-executor.js",
+      "fullPath": "/workspace/electron/agentic-executor.js",
+      "ext": ".js",
+      "size": 31855,
+      "type": "JavaScript"
+    },
+    {
+      "path": "agentic-file-browser.js",
+      "fullPath": "/workspace/electron/agentic-file-browser.js",
+      "ext": ".js",
+      "size": 25126,
+      "type": "JavaScript"
+    },
+    {
+      "path": "agentic-global-api.js",
+      "fullPath": "/workspace/electron/agentic-global-api.js",
+      "ext": ".js",
+      "size": 33665,
+      "type": "JavaScript"
+    },
+    {
+      "path": "agentic-goal-planner.js",
+      "fullPath": "/workspace/electron/agentic-goal-planner.js",
+      "ext": ".js",
+      "size": 6244,
+      "type": "JavaScript"
+    },
+    {
+      "path": "agentic-safety.js",
+      "fullPath": "/workspace/electron/agentic-safety.js",
+      "ext": ".js",
+      "size": 32352,
+      "type": "JavaScript"
+    },
+    {
+      "path": "agentic-security-hardening.js",
+      "fullPath": "/workspace/electron/agentic-security-hardening.js",
+      "ext": ".js",
+      "size": 25303,
+      "type": "JavaScript"
+    },
+    {
+      "path": "agentic-test-runner.js",
+      "fullPath": "/workspace/electron/agentic-test-runner.js",
+      "ext": ".js",
+      "size": 28249,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ai-code-response-system.js",
+      "fullPath": "/workspace/electron/ai-code-response-system.js",
+      "ext": ".js",
+      "size": 19399,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ai-code-review-security.js",
+      "fullPath": "/workspace/electron/ai-code-review-security.js",
+      "ext": ".js",
+      "size": 24875,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ai-code-to-tabs.js",
+      "fullPath": "/workspace/electron/ai-code-to-tabs.js",
+      "ext": ".js",
+      "size": 12053,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ai-live-preview.js",
+      "fullPath": "/workspace/electron/ai-live-preview.js",
+      "ext": ".js",
+      "size": 26068,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ai-provider-manager.js",
+      "fullPath": "/workspace/electron/ai-provider-manager.js",
+      "ext": ".js",
+      "size": 34418,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ai-response-handler.js",
+      "fullPath": "/workspace/electron/ai-response-handler.js",
+      "ext": ".js",
+      "size": 27120,
+      "type": "JavaScript"
+    },
+    {
+      "path": "audit-fixes-verifier.js",
+      "fullPath": "/workspace/electron/audit-fixes-verifier.js",
+      "ext": ".js",
+      "size": 14552,
+      "type": "JavaScript"
+    },
+    {
+      "path": "auto-documenter.js",
+      "fullPath": "/workspace/electron/auto-documenter.js",
+      "ext": ".js",
+      "size": 7091,
+      "type": "JavaScript"
+    },
+    {
+      "path": "auto-fixer.js",
+      "fullPath": "/workspace/electron/auto-fixer.js",
+      "ext": ".js",
+      "size": 4897,
+      "type": "JavaScript"
+    },
+    {
+      "path": "auto-formatter.js",
+      "fullPath": "/workspace/electron/auto-formatter.js",
+      "ext": ".js",
+      "size": 7393,
+      "type": "JavaScript"
+    },
+    {
+      "path": "autocomplete-engine.js",
+      "fullPath": "/workspace/electron/autocomplete-engine.js",
+      "ext": ".js",
+      "size": 25874,
+      "type": "JavaScript"
+    },
+    {
+      "path": "automated-browser-test.js",
+      "fullPath": "/workspace/electron/automated-browser-test.js",
+      "ext": ".js",
+      "size": 12151,
+      "type": "JavaScript"
+    },
+    {
+      "path": "automated-ide-tester.js",
+      "fullPath": "/workspace/electron/automated-ide-tester.js",
+      "ext": ".js",
+      "size": 42433,
+      "type": "JavaScript"
+    },
+    {
+      "path": "automated-integration-test.js",
+      "fullPath": "/workspace/electron/automated-integration-test.js",
+      "ext": ".js",
+      "size": 18404,
+      "type": "JavaScript"
+    },
+    {
+      "path": "background-agent-manager.js",
+      "fullPath": "/workspace/electron/background-agent-manager.js",
+      "ext": ".js",
+      "size": 28606,
+      "type": "JavaScript"
+    },
+    {
+      "path": "background-agent-worker.js",
+      "fullPath": "/workspace/electron/background-agent-worker.js",
+      "ext": ".js",
+      "size": 20953,
+      "type": "JavaScript"
+    },
+    {
+      "path": "background-agent.css",
+      "fullPath": "/workspace/electron/background-agent.css",
+      "ext": ".css",
+      "size": 7314,
+      "type": "CSS"
+    },
+    {
+      "path": "backwards-complete-audit-report.json",
+      "fullPath": "/workspace/electron/backwards-complete-audit-report.json",
+      "ext": ".json",
+      "size": 10565,
+      "type": "JSON"
+    },
+    {
+      "path": "backwards-complete-audit.js",
+      "fullPath": "/workspace/electron/backwards-complete-audit.js",
+      "ext": ".js",
+      "size": 35414,
+      "type": "JavaScript"
+    },
+    {
+      "path": "backwards-integration-test.js",
+      "fullPath": "/workspace/electron/backwards-integration-test.js",
+      "ext": ".js",
+      "size": 24879,
+      "type": "JavaScript"
+    },
+    {
+      "path": "benchmark-suite.js",
+      "fullPath": "/workspace/electron/benchmark-suite.js",
+      "ext": ".js",
+      "size": 6975,
+      "type": "JavaScript"
+    },
+    {
+      "path": "bigdaddy-editor/ai-autocomplete.js",
+      "fullPath": "/workspace/electron/bigdaddy-editor/ai-autocomplete.js",
+      "ext": ".js",
+      "size": 7196,
+      "type": "JavaScript"
+    },
+    {
+      "path": "bigdaddy-editor/complete-demo.html",
+      "fullPath": "/workspace/electron/bigdaddy-editor/complete-demo.html",
+      "ext": ".html",
+      "size": 20725,
+      "type": "HTML"
+    },
+    {
+      "path": "bigdaddy-editor/core-enhanced.js",
+      "fullPath": "/workspace/electron/bigdaddy-editor/core-enhanced.js",
+      "ext": ".js",
+      "size": 20724,
+      "type": "JavaScript"
+    },
+    {
+      "path": "bigdaddy-editor/core.js",
+      "fullPath": "/workspace/electron/bigdaddy-editor/core.js",
+      "ext": ".js",
+      "size": 27126,
+      "type": "JavaScript"
+    },
+    {
+      "path": "bigdaddy-editor/demo.html",
+      "fullPath": "/workspace/electron/bigdaddy-editor/demo.html",
+      "ext": ".html",
+      "size": 13037,
+      "type": "HTML"
+    },
+    {
+      "path": "bigdaddy-editor/minimap.js",
+      "fullPath": "/workspace/electron/bigdaddy-editor/minimap.js",
+      "ext": ".js",
+      "size": 6090,
+      "type": "JavaScript"
+    },
+    {
+      "path": "bigdaddy-editor/real-stress-test.html",
+      "fullPath": "/workspace/electron/bigdaddy-editor/real-stress-test.html",
+      "ext": ".html",
+      "size": 23674,
+      "type": "HTML"
+    },
+    {
+      "path": "bigdaddy-editor/search.js",
+      "fullPath": "/workspace/electron/bigdaddy-editor/search.js",
+      "ext": ".js",
+      "size": 7522,
+      "type": "JavaScript"
+    },
+    {
+      "path": "bigdaddy-editor/shader-preview.js",
+      "fullPath": "/workspace/electron/bigdaddy-editor/shader-preview.js",
+      "ext": ".js",
+      "size": 7021,
+      "type": "JavaScript"
+    },
+    {
+      "path": "bigdaddy-editor/tokenizer.js",
+      "fullPath": "/workspace/electron/bigdaddy-editor/tokenizer.js",
+      "ext": ".js",
+      "size": 8223,
+      "type": "JavaScript"
+    },
+    {
+      "path": "bigdaddya-integration.js",
+      "fullPath": "/workspace/electron/bigdaddya-integration.js",
+      "ext": ".js",
+      "size": 25498,
+      "type": "JavaScript"
+    },
+    {
+      "path": "bigdaddyg-agentic-core.js",
+      "fullPath": "/workspace/electron/bigdaddyg-agentic-core.js",
+      "ext": ".js",
+      "size": 29939,
+      "type": "JavaScript"
+    },
+    {
+      "path": "bigdaddyg-styles.css",
+      "fullPath": "/workspace/electron/bigdaddyg-styles.css",
+      "ext": ".css",
+      "size": 6959,
+      "type": "CSS"
+    },
+    {
+      "path": "bigdaddyg.ini",
+      "fullPath": "/workspace/electron/bigdaddyg.ini",
+      "ext": ".ini",
+      "size": 666,
+      "type": "Other"
+    },
+    {
+      "path": "bigdaddyg.ini.example",
+      "fullPath": "/workspace/electron/bigdaddyg.ini.example",
+      "ext": ".example",
+      "size": 481,
+      "type": "Other"
+    },
+    {
+      "path": "browser-integration.js",
+      "fullPath": "/workspace/electron/browser-integration.js",
+      "ext": ".js",
+      "size": 8015,
+      "type": "JavaScript"
+    },
+    {
+      "path": "browser-panel.js",
+      "fullPath": "/workspace/electron/browser-panel.js",
+      "ext": ".js",
+      "size": 22806,
+      "type": "JavaScript"
+    },
+    {
+      "path": "browser-stress-runner.js",
+      "fullPath": "/workspace/electron/browser-stress-runner.js",
+      "ext": ".js",
+      "size": 15438,
+      "type": "JavaScript"
+    },
+    {
+      "path": "browser-view.js",
+      "fullPath": "/workspace/electron/browser-view.js",
+      "ext": ".js",
+      "size": 26031,
+      "type": "JavaScript"
+    },
+    {
+      "path": "built-in-local-ai.js",
+      "fullPath": "/workspace/electron/built-in-local-ai.js",
+      "ext": ".js",
+      "size": 21098,
+      "type": "JavaScript"
+    },
+    {
+      "path": "chameleon-theme.js",
+      "fullPath": "/workspace/electron/chameleon-theme.js",
+      "ext": ".js",
+      "size": 24416,
+      "type": "JavaScript"
+    },
+    {
+      "path": "chaos-random-audit-report.json",
+      "fullPath": "/workspace/electron/chaos-random-audit-report.json",
+      "ext": ".json",
+      "size": 16397,
+      "type": "JSON"
+    },
+    {
+      "path": "chaos-random-audit.js",
+      "fullPath": "/workspace/electron/chaos-random-audit.js",
+      "ext": ".js",
+      "size": 50420,
+      "type": "JavaScript"
+    },
+    {
+      "path": "chat-history.js",
+      "fullPath": "/workspace/electron/chat-history.js",
+      "ext": ".js",
+      "size": 21268,
+      "type": "JavaScript"
+    },
+    {
+      "path": "cinematic-visualization.js",
+      "fullPath": "/workspace/electron/cinematic-visualization.js",
+      "ext": ".js",
+      "size": 18964,
+      "type": "JavaScript"
+    },
+    {
+      "path": "cognitive-modes/ai-integration.js",
+      "fullPath": "/workspace/electron/cognitive-modes/ai-integration.js",
+      "ext": ".js",
+      "size": 10090,
+      "type": "JavaScript"
+    },
+    {
+      "path": "cognitive-modes/cli.js",
+      "fullPath": "/workspace/electron/cognitive-modes/cli.js",
+      "ext": ".js",
+      "size": 13999,
+      "type": "JavaScript"
+    },
+    {
+      "path": "cognitive-modes/cognitive-modes.bat",
+      "fullPath": "/workspace/electron/cognitive-modes/cognitive-modes.bat",
+      "ext": ".bat",
+      "size": 580,
+      "type": "Batch"
+    },
+    {
+      "path": "cognitive-modes/cognitive-modes.ps1",
+      "fullPath": "/workspace/electron/cognitive-modes/cognitive-modes.ps1",
+      "ext": ".ps1",
+      "size": 2746,
+      "type": "PowerShell"
+    },
+    {
+      "path": "cognitive-modes/demo.html",
+      "fullPath": "/workspace/electron/cognitive-modes/demo.html",
+      "ext": ".html",
+      "size": 13292,
+      "type": "HTML"
+    },
+    {
+      "path": "cognitive-modes/ide-integration.js",
+      "fullPath": "/workspace/electron/cognitive-modes/ide-integration.js",
+      "ext": ".js",
+      "size": 13354,
+      "type": "JavaScript"
+    },
+    {
+      "path": "cognitive-modes/mode-manager.js",
+      "fullPath": "/workspace/electron/cognitive-modes/mode-manager.js",
+      "ext": ".js",
+      "size": 14415,
+      "type": "JavaScript"
+    },
+    {
+      "path": "cognitive-modes/mode-ui.js",
+      "fullPath": "/workspace/electron/cognitive-modes/mode-ui.js",
+      "ext": ".js",
+      "size": 18118,
+      "type": "JavaScript"
+    },
+    {
+      "path": "cognitive-modes-config.json",
+      "fullPath": "/workspace/electron/cognitive-modes-config.json",
+      "ext": ".json",
+      "size": 384,
+      "type": "JSON"
+    },
+    {
+      "path": "collapsible-agent-sidebar.css",
+      "fullPath": "/workspace/electron/collapsible-agent-sidebar.css",
+      "ext": ".css",
+      "size": 6292,
+      "type": "CSS"
+    },
+    {
+      "path": "collapsible-agent-sidebar.css.backup",
+      "fullPath": "/workspace/electron/collapsible-agent-sidebar.css.backup",
+      "ext": ".backup",
+      "size": 6347,
+      "type": "Other"
+    },
+    {
+      "path": "collapsible-agent-sidebar.js",
+      "fullPath": "/workspace/electron/collapsible-agent-sidebar.js",
+      "ext": ".js",
+      "size": 2021,
+      "type": "JavaScript"
+    },
+    {
+      "path": "command-generator.js",
+      "fullPath": "/workspace/electron/command-generator.js",
+      "ext": ".js",
+      "size": 23252,
+      "type": "JavaScript"
+    },
+    {
+      "path": "command-palette.js",
+      "fullPath": "/workspace/electron/command-palette.js",
+      "ext": ".js",
+      "size": 21752,
+      "type": "JavaScript"
+    },
+    {
+      "path": "command-system.js",
+      "fullPath": "/workspace/electron/command-system.js",
+      "ext": ".js",
+      "size": 35909,
+      "type": "JavaScript"
+    },
+    {
+      "path": "complete-debugger-integration.js",
+      "fullPath": "/workspace/electron/complete-debugger-integration.js",
+      "ext": ".js",
+      "size": 2118,
+      "type": "JavaScript"
+    },
+    {
+      "path": "complete-integration-fixer.js",
+      "fullPath": "/workspace/electron/complete-integration-fixer.js",
+      "ext": ".js",
+      "size": 11715,
+      "type": "JavaScript"
+    },
+    {
+      "path": "comprehensive-agentic-test.js",
+      "fullPath": "/workspace/electron/comprehensive-agentic-test.js",
+      "ext": ".js",
+      "size": 19406,
+      "type": "JavaScript"
+    },
+    {
+      "path": "comprehensive-cli-tester.js",
+      "fullPath": "/workspace/electron/comprehensive-cli-tester.js",
+      "ext": ".js",
+      "size": 39049,
+      "type": "JavaScript"
+    },
+    {
+      "path": "comprehensive-cli.js",
+      "fullPath": "/workspace/electron/comprehensive-cli.js",
+      "ext": ".js",
+      "size": 25936,
+      "type": "JavaScript"
+    },
+    {
+      "path": "comprehensive-enhancement-audit.js",
+      "fullPath": "/workspace/electron/comprehensive-enhancement-audit.js",
+      "ext": ".js",
+      "size": 18243,
+      "type": "JavaScript"
+    },
+    {
+      "path": "comprehensive-health-checker.js",
+      "fullPath": "/workspace/electron/comprehensive-health-checker.js",
+      "ext": ".js",
+      "size": 17498,
+      "type": "JavaScript"
+    },
+    {
+      "path": "comprehensive-ide-audit.js",
+      "fullPath": "/workspace/electron/comprehensive-ide-audit.js",
+      "ext": ".js",
+      "size": 14689,
+      "type": "JavaScript"
+    },
+    {
+      "path": "comprehensive-validation.js",
+      "fullPath": "/workspace/electron/comprehensive-validation.js",
+      "ext": ".js",
+      "size": 10451,
+      "type": "JavaScript"
+    },
+    {
+      "path": "connection-fixer.js",
+      "fullPath": "/workspace/electron/connection-fixer.js",
+      "ext": ".js",
+      "size": 13331,
+      "type": "JavaScript"
+    },
+    {
+      "path": "console-panel.js",
+      "fullPath": "/workspace/electron/console-panel.js",
+      "ext": ".js",
+      "size": 20572,
+      "type": "JavaScript"
+    },
+    {
+      "path": "container-runtime.js",
+      "fullPath": "/workspace/electron/container-runtime.js",
+      "ext": ".js",
+      "size": 15180,
+      "type": "JavaScript"
+    },
+    {
+      "path": "context-menu-executor.js",
+      "fullPath": "/workspace/electron/context-menu-executor.js",
+      "ext": ".js",
+      "size": 14748,
+      "type": "JavaScript"
+    },
+    {
+      "path": "context-menu-manager.js",
+      "fullPath": "/workspace/electron/context-menu-manager.js",
+      "ext": ".js",
+      "size": 4214,
+      "type": "JavaScript"
+    },
+    {
+      "path": "context-summarizer.js",
+      "fullPath": "/workspace/electron/context-summarizer.js",
+      "ext": ".js",
+      "size": 7630,
+      "type": "JavaScript"
+    },
+    {
+      "path": "create-audit-package.ps1",
+      "fullPath": "/workspace/electron/create-audit-package.ps1",
+      "ext": ".ps1",
+      "size": 2139,
+      "type": "PowerShell"
+    },
+    {
+      "path": "css-optimizer.js",
+      "fullPath": "/workspace/electron/css-optimizer.js",
+      "ext": ".js",
+      "size": 7614,
+      "type": "JavaScript"
+    },
+    {
+      "path": "cursor-theme.css",
+      "fullPath": "/workspace/electron/cursor-theme.css",
+      "ext": ".css",
+      "size": 12988,
+      "type": "CSS"
+    },
+    {
+      "path": "cursor-theme.css.backup",
+      "fullPath": "/workspace/electron/cursor-theme.css.backup",
+      "ext": ".backup",
+      "size": 12999,
+      "type": "Other"
+    },
+    {
+      "path": "dashboard-view.js",
+      "fullPath": "/workspace/electron/dashboard-view.js",
+      "ext": ".js",
+      "size": 27576,
+      "type": "JavaScript"
+    },
+    {
+      "path": "debug-browser-test.js",
+      "fullPath": "/workspace/electron/debug-browser-test.js",
+      "ext": ".js",
+      "size": 4123,
+      "type": "JavaScript"
+    },
+    {
+      "path": "debug-mode.js",
+      "fullPath": "/workspace/electron/debug-mode.js",
+      "ext": ".js",
+      "size": 8095,
+      "type": "JavaScript"
+    },
+    {
+      "path": "deep-issue-scanner.js",
+      "fullPath": "/workspace/electron/deep-issue-scanner.js",
+      "ext": ".js",
+      "size": 13503,
+      "type": "JavaScript"
+    },
+    {
+      "path": "deep-research-engine.js",
+      "fullPath": "/workspace/electron/deep-research-engine.js",
+      "ext": ".js",
+      "size": 6891,
+      "type": "JavaScript"
+    },
+    {
+      "path": "demo-launcher.js",
+      "fullPath": "/workspace/electron/demo-launcher.js",
+      "ext": ".js",
+      "size": 26996,
+      "type": "JavaScript"
+    },
+    {
+      "path": "diagnose-monaco.js",
+      "fullPath": "/workspace/electron/diagnose-monaco.js",
+      "ext": ".js",
+      "size": 2845,
+      "type": "JavaScript"
+    },
+    {
+      "path": "eliminate-all-placeholders.js",
+      "fullPath": "/workspace/electron/eliminate-all-placeholders.js",
+      "ext": ".js",
+      "size": 32329,
+      "type": "JavaScript"
+    },
+    {
+      "path": "enhanced-agentic-executor.js",
+      "fullPath": "/workspace/electron/enhanced-agentic-executor.js",
+      "ext": ".js",
+      "size": 7497,
+      "type": "JavaScript"
+    },
+    {
+      "path": "enhanced-agentic-ui.js",
+      "fullPath": "/workspace/electron/enhanced-agentic-ui.js",
+      "ext": ".js",
+      "size": 27973,
+      "type": "JavaScript"
+    },
+    {
+      "path": "enhanced-error-handler.js",
+      "fullPath": "/workspace/electron/enhanced-error-handler.js",
+      "ext": ".js",
+      "size": 6295,
+      "type": "JavaScript"
+    },
+    {
+      "path": "enhanced-error-recovery.js",
+      "fullPath": "/workspace/electron/enhanced-error-recovery.js",
+      "ext": ".js",
+      "size": 11842,
+      "type": "JavaScript"
+    },
+    {
+      "path": "enhanced-file-explorer.js",
+      "fullPath": "/workspace/electron/enhanced-file-explorer.js",
+      "ext": ".js",
+      "size": 39900,
+      "type": "JavaScript"
+    },
+    {
+      "path": "enhanced-placeholder-debugger.js",
+      "fullPath": "/workspace/electron/enhanced-placeholder-debugger.js",
+      "ext": ".js",
+      "size": 25395,
+      "type": "JavaScript"
+    },
+    {
+      "path": "enhanced-terminal.js",
+      "fullPath": "/workspace/electron/enhanced-terminal.js",
+      "ext": ".js",
+      "size": 24759,
+      "type": "JavaScript"
+    },
+    {
+      "path": "enhanced-user-message-system.js",
+      "fullPath": "/workspace/electron/enhanced-user-message-system.js",
+      "ext": ".js",
+      "size": 36973,
+      "type": "JavaScript"
+    },
+    {
+      "path": "enhancement-audit-report.json",
+      "fullPath": "/workspace/electron/enhancement-audit-report.json",
+      "ext": ".json",
+      "size": 19854,
+      "type": "JSON"
+    },
+    {
+      "path": "error-cleanup.js",
+      "fullPath": "/workspace/electron/error-cleanup.js",
+      "ext": ".js",
+      "size": 10400,
+      "type": "JavaScript"
+    },
+    {
+      "path": "error-handler-fixer.js",
+      "fullPath": "/workspace/electron/error-handler-fixer.js",
+      "ext": ".js",
+      "size": 3163,
+      "type": "JavaScript"
+    },
+    {
+      "path": "error-log-writer.js",
+      "fullPath": "/workspace/electron/error-log-writer.js",
+      "ext": ".js",
+      "size": 8392,
+      "type": "JavaScript"
+    },
+    {
+      "path": "error-protection.js",
+      "fullPath": "/workspace/electron/error-protection.js",
+      "ext": ".js",
+      "size": 6394,
+      "type": "JavaScript"
+    },
+    {
+      "path": "error-tracker.js",
+      "fullPath": "/workspace/electron/error-tracker.js",
+      "ext": ".js",
+      "size": 19132,
+      "type": "JavaScript"
+    },
+    {
+      "path": "event-listener-manager.js",
+      "fullPath": "/workspace/electron/event-listener-manager.js",
+      "ext": ".js",
+      "size": 10610,
+      "type": "JavaScript"
+    },
+    {
+      "path": "explorer-integration.js",
+      "fullPath": "/workspace/electron/explorer-integration.js",
+      "ext": ".js",
+      "size": 6621,
+      "type": "JavaScript"
+    },
+    {
+      "path": "extension-host/complete-extension-host.js",
+      "fullPath": "/workspace/electron/extension-host/complete-extension-host.js",
+      "ext": ".js",
+      "size": 19490,
+      "type": "JavaScript"
+    },
+    {
+      "path": "extension-host/extension-bridge.js",
+      "fullPath": "/workspace/electron/extension-host/extension-bridge.js",
+      "ext": ".js",
+      "size": 1395,
+      "type": "JavaScript"
+    },
+    {
+      "path": "extension-host/extension-host.js",
+      "fullPath": "/workspace/electron/extension-host/extension-host.js",
+      "ext": ".js",
+      "size": 590,
+      "type": "JavaScript"
+    },
+    {
+      "path": "extension-manager.js",
+      "fullPath": "/workspace/electron/extension-manager.js",
+      "ext": ".js",
+      "size": 1322,
+      "type": "JavaScript"
+    },
+    {
+      "path": "extensions/asm-ide/extension.ts",
+      "fullPath": "/workspace/electron/extensions/asm-ide/extension.ts",
+      "ext": ".ts",
+      "size": 55221,
+      "type": "Other"
+    },
+    {
+      "path": "extensions/asm-ide/package.json",
+      "fullPath": "/workspace/electron/extensions/asm-ide/package.json",
+      "ext": ".json",
+      "size": 4378,
+      "type": "JSON"
+    },
+    {
+      "path": "extensions/asm-ide/syntaxes/asm.tmLanguage.json",
+      "fullPath": "/workspace/electron/extensions/asm-ide/syntaxes/asm.tmLanguage.json",
+      "ext": ".json",
+      "size": 1025,
+      "type": "JSON"
+    },
+    {
+      "path": "fetch-timeout-wrapper.js",
+      "fullPath": "/workspace/electron/fetch-timeout-wrapper.js",
+      "ext": ".js",
+      "size": 8386,
+      "type": "JavaScript"
+    },
+    {
+      "path": "file-browser-enhanced.js",
+      "fullPath": "/workspace/electron/file-browser-enhanced.js",
+      "ext": ".js",
+      "size": 22321,
+      "type": "JavaScript"
+    },
+    {
+      "path": "file-explorer.js",
+      "fullPath": "/workspace/electron/file-explorer.js",
+      "ext": ".js",
+      "size": 24781,
+      "type": "JavaScript"
+    },
+    {
+      "path": "file-tree.js",
+      "fullPath": "/workspace/electron/file-tree.js",
+      "ext": ".js",
+      "size": 20294,
+      "type": "JavaScript"
+    },
+    {
+      "path": "final-issues-fixer.js",
+      "fullPath": "/workspace/electron/final-issues-fixer.js",
+      "ext": ".js",
+      "size": 15809,
+      "type": "JavaScript"
+    },
+    {
+      "path": "final-production-verification.js",
+      "fullPath": "/workspace/electron/final-production-verification.js",
+      "ext": ".js",
+      "size": 16939,
+      "type": "JavaScript"
+    },
+    {
+      "path": "final-production-verification.json",
+      "fullPath": "/workspace/electron/final-production-verification.json",
+      "ext": ".json",
+      "size": 1615,
+      "type": "JSON"
+    },
+    {
+      "path": "flexible-layout-system.js",
+      "fullPath": "/workspace/electron/flexible-layout-system.js",
+      "ext": ".js",
+      "size": 35952,
+      "type": "JavaScript"
+    },
+    {
+      "path": "floating-chat.js",
+      "fullPath": "/workspace/electron/floating-chat.js",
+      "ext": ".js",
+      "size": 79003,
+      "type": "JavaScript"
+    },
+    {
+      "path": "forward-complete-audit-report.json",
+      "fullPath": "/workspace/electron/forward-complete-audit-report.json",
+      "ext": ".json",
+      "size": 10985,
+      "type": "JSON"
+    },
+    {
+      "path": "forward-complete-audit.js",
+      "fullPath": "/workspace/electron/forward-complete-audit.js",
+      "ext": ".js",
+      "size": 34687,
+      "type": "JavaScript"
+    },
+    {
+      "path": "frontend-ux-tester.js",
+      "fullPath": "/workspace/electron/frontend-ux-tester.js",
+      "ext": ".js",
+      "size": 33983,
+      "type": "JavaScript"
+    },
+    {
+      "path": "full-agentic-demo.js",
+      "fullPath": "/workspace/electron/full-agentic-demo.js",
+      "ext": ".js",
+      "size": 13197,
+      "type": "JavaScript"
+    },
+    {
+      "path": "full-agentic-demo.js.backup",
+      "fullPath": "/workspace/electron/full-agentic-demo.js.backup",
+      "ext": ".backup",
+      "size": 13199,
+      "type": "Other"
+    },
+    {
+      "path": "game-dev-integration-tester.js",
+      "fullPath": "/workspace/electron/game-dev-integration-tester.js",
+      "ext": ".js",
+      "size": 28773,
+      "type": "JavaScript"
+    },
+    {
+      "path": "game-editor/animation-timeline-editor.js",
+      "fullPath": "/workspace/electron/game-editor/animation-timeline-editor.js",
+      "ext": ".js",
+      "size": 25185,
+      "type": "JavaScript"
+    },
+    {
+      "path": "game-editor/asset-preview-system.js",
+      "fullPath": "/workspace/electron/game-editor/asset-preview-system.js",
+      "ext": ".js",
+      "size": 23455,
+      "type": "JavaScript"
+    },
+    {
+      "path": "game-editor/shader-editor.js",
+      "fullPath": "/workspace/electron/game-editor/shader-editor.js",
+      "ext": ".js",
+      "size": 22473,
+      "type": "JavaScript"
+    },
+    {
+      "path": "game-editor/visual-game-editor.js",
+      "fullPath": "/workspace/electron/game-editor/visual-game-editor.js",
+      "ext": ".js",
+      "size": 37512,
+      "type": "JavaScript"
+    },
+    {
+      "path": "game-loop-manager.js",
+      "fullPath": "/workspace/electron/game-loop-manager.js",
+      "ext": ".js",
+      "size": 3956,
+      "type": "JavaScript"
+    },
+    {
+      "path": "game-project-detector.js",
+      "fullPath": "/workspace/electron/game-project-detector.js",
+      "ext": ".js",
+      "size": 7289,
+      "type": "JavaScript"
+    },
+    {
+      "path": "github-auth.js",
+      "fullPath": "/workspace/electron/github-auth.js",
+      "ext": ".js",
+      "size": 20565,
+      "type": "JavaScript"
+    },
+    {
+      "path": "github-integration.css",
+      "fullPath": "/workspace/electron/github-integration.css",
+      "ext": ".css",
+      "size": 7283,
+      "type": "CSS"
+    },
+    {
+      "path": "github-integration.js",
+      "fullPath": "/workspace/electron/github-integration.js",
+      "ext": ".js",
+      "size": 35141,
+      "type": "JavaScript"
+    },
+    {
+      "path": "global-functions.js",
+      "fullPath": "/workspace/electron/global-functions.js",
+      "ext": ".js",
+      "size": 13015,
+      "type": "JavaScript"
+    },
+    {
+      "path": "godot-complete-integration.js",
+      "fullPath": "/workspace/electron/godot-complete-integration.js",
+      "ext": ".js",
+      "size": 15232,
+      "type": "JavaScript"
+    },
+    {
+      "path": "godot-integration.js",
+      "fullPath": "/workspace/electron/godot-integration.js",
+      "ext": ".js",
+      "size": 7403,
+      "type": "JavaScript"
+    },
+    {
+      "path": "hardening/rck-bootstrap.js",
+      "fullPath": "/workspace/electron/hardening/rck-bootstrap.js",
+      "ext": ".js",
+      "size": 22079,
+      "type": "JavaScript"
+    },
+    {
+      "path": "hardening/rck-enhanced.js",
+      "fullPath": "/workspace/electron/hardening/rck-enhanced.js",
+      "ext": ".js",
+      "size": 15651,
+      "type": "JavaScript"
+    },
+    {
+      "path": "hot-reload-manager.js",
+      "fullPath": "/workspace/electron/hot-reload-manager.js",
+      "ext": ".js",
+      "size": 7004,
+      "type": "JavaScript"
+    },
+    {
+      "path": "hotkey-manager.js",
+      "fullPath": "/workspace/electron/hotkey-manager.js",
+      "ext": ".js",
+      "size": 48134,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ide-comparison-tester.js",
+      "fullPath": "/workspace/electron/ide-comparison-tester.js",
+      "ext": ".js",
+      "size": 27649,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ide-extensions/jetbrains/build.gradle.kts",
+      "fullPath": "/workspace/electron/ide-extensions/jetbrains/build.gradle.kts",
+      "ext": ".kts",
+      "size": 6575,
+      "type": "Other"
+    },
+    {
+      "path": "ide-extensions/jetbrains/dependency-check-suppressions.xml",
+      "fullPath": "/workspace/electron/ide-extensions/jetbrains/dependency-check-suppressions.xml",
+      "ext": ".xml",
+      "size": 805,
+      "type": "Other"
+    },
+    {
+      "path": "ide-extensions/jetbrains/gradle.properties",
+      "fullPath": "/workspace/electron/ide-extensions/jetbrains/gradle.properties",
+      "ext": ".properties",
+      "size": 471,
+      "type": "Other"
+    },
+    {
+      "path": "ide-extensions/jetbrains/src/main/resources/security.conf",
+      "fullPath": "/workspace/electron/ide-extensions/jetbrains/src/main/resources/security.conf",
+      "ext": ".conf",
+      "size": 1556,
+      "type": "Other"
+    },
+    {
+      "path": "ide-extensions/vscode/package.json",
+      "fullPath": "/workspace/electron/ide-extensions/vscode/package.json",
+      "ext": ".json",
+      "size": 10094,
+      "type": "JSON"
+    },
+    {
+      "path": "ide-extensions/vscode/src/agentTreeProvider.ts",
+      "fullPath": "/workspace/electron/ide-extensions/vscode/src/agentTreeProvider.ts",
+      "ext": ".ts",
+      "size": 1327,
+      "type": "Other"
+    },
+    {
+      "path": "ide-extensions/vscode/src/authenticationService.ts",
+      "fullPath": "/workspace/electron/ide-extensions/vscode/src/authenticationService.ts",
+      "ext": ".ts",
+      "size": 12771,
+      "type": "Other"
+    },
+    {
+      "path": "ide-extensions/vscode/src/chatViewProvider.ts",
+      "fullPath": "/workspace/electron/ide-extensions/vscode/src/chatViewProvider.ts",
+      "ext": ".ts",
+      "size": 8088,
+      "type": "Other"
+    },
+    {
+      "path": "ide-extensions/vscode/src/client.ts",
+      "fullPath": "/workspace/electron/ide-extensions/vscode/src/client.ts",
+      "ext": ".ts",
+      "size": 3120,
+      "type": "Other"
+    },
+    {
+      "path": "ide-extensions/vscode/src/extension.ts",
+      "fullPath": "/workspace/electron/ide-extensions/vscode/src/extension.ts",
+      "ext": ".ts",
+      "size": 15286,
+      "type": "Other"
+    },
+    {
+      "path": "ide-extensions/vscode/src/inlineCompletionProvider.ts",
+      "fullPath": "/workspace/electron/ide-extensions/vscode/src/inlineCompletionProvider.ts",
+      "ext": ".ts",
+      "size": 1711,
+      "type": "Other"
+    },
+    {
+      "path": "ide-extensions/vscode/src/providers/agents-view-provider.ts",
+      "fullPath": "/workspace/electron/ide-extensions/vscode/src/providers/agents-view-provider.ts",
+      "ext": ".ts",
+      "size": 5530,
+      "type": "Other"
+    },
+    {
+      "path": "ide-extensions/vscode/src/providers/chat-view-provider.ts",
+      "fullPath": "/workspace/electron/ide-extensions/vscode/src/providers/chat-view-provider.ts",
+      "ext": ".ts",
+      "size": 4409,
+      "type": "Other"
+    },
+    {
+      "path": "ide-extensions/vscode/src/securityService.ts",
+      "fullPath": "/workspace/electron/ide-extensions/vscode/src/securityService.ts",
+      "ext": ".ts",
+      "size": 12732,
+      "type": "Other"
+    },
+    {
+      "path": "ide-extensions/vscode/src/services/authentication-service.ts",
+      "fullPath": "/workspace/electron/ide-extensions/vscode/src/services/authentication-service.ts",
+      "ext": ".ts",
+      "size": 3154,
+      "type": "Other"
+    },
+    {
+      "path": "ide-extensions/vscode/src/services/bigdaddyg-client.ts",
+      "fullPath": "/workspace/electron/ide-extensions/vscode/src/services/bigdaddyg-client.ts",
+      "ext": ".ts",
+      "size": 6548,
+      "type": "Other"
+    },
+    {
+      "path": "ide-extensions/vscode/src/services/security-manager.ts",
+      "fullPath": "/workspace/electron/ide-extensions/vscode/src/services/security-manager.ts",
+      "ext": ".ts",
+      "size": 1297,
+      "type": "Other"
+    },
+    {
+      "path": "ide-extensions/vscode/src/services/telemetry-service.ts",
+      "fullPath": "/workspace/electron/ide-extensions/vscode/src/services/telemetry-service.ts",
+      "ext": ".ts",
+      "size": 791,
+      "type": "Other"
+    },
+    {
+      "path": "ide-extensions/vscode/tsconfig.json",
+      "fullPath": "/workspace/electron/ide-extensions/vscode/tsconfig.json",
+      "ext": ".json",
+      "size": 368,
+      "type": "JSON"
+    },
+    {
+      "path": "ide-initializer.js",
+      "fullPath": "/workspace/electron/ide-initializer.js",
+      "ext": ".js",
+      "size": 15506,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ide-validation-report.json",
+      "fullPath": "/workspace/electron/ide-validation-report.json",
+      "ext": ".json",
+      "size": 155443,
+      "type": "JSON"
+    },
+    {
+      "path": "image-generation.js",
+      "fullPath": "/workspace/electron/image-generation.js",
+      "ext": ".js",
+      "size": 18102,
+      "type": "JavaScript"
+    },
+    {
+      "path": "image-generator.js",
+      "fullPath": "/workspace/electron/image-generator.js",
+      "ext": ".js",
+      "size": 26000,
+      "type": "JavaScript"
+    },
+    {
+      "path": "immediate-diagnostics.js",
+      "fullPath": "/workspace/electron/immediate-diagnostics.js",
+      "ext": ".js",
+      "size": 4359,
+      "type": "JavaScript"
+    },
+    {
+      "path": "index-minimal.html",
+      "fullPath": "/workspace/electron/index-minimal.html",
+      "ext": ".html",
+      "size": 5816,
+      "type": "HTML"
+    },
+    {
+      "path": "index-ultra-simple.html",
+      "fullPath": "/workspace/electron/index-ultra-simple.html",
+      "ext": ".html",
+      "size": 4288,
+      "type": "HTML"
+    },
+    {
+      "path": "index-working.html",
+      "fullPath": "/workspace/electron/index-working.html",
+      "ext": ".html",
+      "size": 16887,
+      "type": "HTML"
+    },
+    {
+      "path": "index.html",
+      "fullPath": "/workspace/electron/index.html",
+      "ext": ".html",
+      "size": 71282,
+      "type": "HTML"
+    },
+    {
+      "path": "index.html.backup",
+      "fullPath": "/workspace/electron/index.html.backup",
+      "ext": ".backup",
+      "size": 66491,
+      "type": "Other"
+    },
+    {
+      "path": "indexeddb-storage.js",
+      "fullPath": "/workspace/electron/indexeddb-storage.js",
+      "ext": ".js",
+      "size": 14555,
+      "type": "JavaScript"
+    },
+    {
+      "path": "inline-styles.css",
+      "fullPath": "/workspace/electron/inline-styles.css",
+      "ext": ".css",
+      "size": 6072,
+      "type": "CSS"
+    },
+    {
+      "path": "integration-updates.js",
+      "fullPath": "/workspace/electron/integration-updates.js",
+      "ext": ".js",
+      "size": 9765,
+      "type": "JavaScript"
+    },
+    {
+      "path": "integration-wiring-tester.js",
+      "fullPath": "/workspace/electron/integration-wiring-tester.js",
+      "ext": ".js",
+      "size": 27572,
+      "type": "JavaScript"
+    },
+    {
+      "path": "intellij-system/code-analysis-engine.js",
+      "fullPath": "/workspace/electron/intellij-system/code-analysis-engine.js",
+      "ext": ".js",
+      "size": 20196,
+      "type": "JavaScript"
+    },
+    {
+      "path": "intellij-system/code-inspections.js",
+      "fullPath": "/workspace/electron/intellij-system/code-inspections.js",
+      "ext": ".js",
+      "size": 9982,
+      "type": "JavaScript"
+    },
+    {
+      "path": "intellij-system/intellij-system.js",
+      "fullPath": "/workspace/electron/intellij-system/intellij-system.js",
+      "ext": ".js",
+      "size": 12058,
+      "type": "JavaScript"
+    },
+    {
+      "path": "intellij-system/refactoring-engine.js",
+      "fullPath": "/workspace/electron/intellij-system/refactoring-engine.js",
+      "ext": ".js",
+      "size": 19004,
+      "type": "JavaScript"
+    },
+    {
+      "path": "intellij-system/smart-navigation.js",
+      "fullPath": "/workspace/electron/intellij-system/smart-navigation.js",
+      "ext": ".js",
+      "size": 16155,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ipc-server.js",
+      "fullPath": "/workspace/electron/ipc-server.js",
+      "ext": ".js",
+      "size": 13044,
+      "type": "JavaScript"
+    },
+    {
+      "path": "launch-ide.bat",
+      "fullPath": "/workspace/electron/launch-ide.bat",
+      "ext": ".bat",
+      "size": 973,
+      "type": "Batch"
+    },
+    {
+      "path": "launch-ide.sh",
+      "fullPath": "/workspace/electron/launch-ide.sh",
+      "ext": ".sh",
+      "size": 1017,
+      "type": "Shell"
+    },
+    {
+      "path": "lazy-loader.js",
+      "fullPath": "/workspace/electron/lazy-loader.js",
+      "ext": ".js",
+      "size": 5427,
+      "type": "JavaScript"
+    },
+    {
+      "path": "logger.js",
+      "fullPath": "/workspace/electron/logger.js",
+      "ext": ".js",
+      "size": 7096,
+      "type": "JavaScript"
+    },
+    {
+      "path": "lsp-client.js",
+      "fullPath": "/workspace/electron/lsp-client.js",
+      "ext": ".js",
+      "size": 9693,
+      "type": "JavaScript"
+    },
+    {
+      "path": "main-simple.js",
+      "fullPath": "/workspace/electron/main-simple.js",
+      "ext": ".js",
+      "size": 5408,
+      "type": "JavaScript"
+    },
+    {
+      "path": "main-test.js",
+      "fullPath": "/workspace/electron/main-test.js",
+      "ext": ".js",
+      "size": 764,
+      "type": "JavaScript"
+    },
+    {
+      "path": "main-working.js",
+      "fullPath": "/workspace/electron/main-working.js",
+      "ext": ".js",
+      "size": 754,
+      "type": "JavaScript"
+    },
+    {
+      "path": "main.js",
+      "fullPath": "/workspace/electron/main.js",
+      "ext": ".js",
+      "size": 109374,
+      "type": "JavaScript"
+    },
+    {
+      "path": "marketplace/complete-extension-manager.js",
+      "fullPath": "/workspace/electron/marketplace/complete-extension-manager.js",
+      "ext": ".js",
+      "size": 25411,
+      "type": "JavaScript"
+    },
+    {
+      "path": "marketplace/complete-marketplace-tester.js",
+      "fullPath": "/workspace/electron/marketplace/complete-marketplace-tester.js",
+      "ext": ".js",
+      "size": 27579,
+      "type": "JavaScript"
+    },
+    {
+      "path": "marketplace/extension-manager.js",
+      "fullPath": "/workspace/electron/marketplace/extension-manager.js",
+      "ext": ".js",
+      "size": 1322,
+      "type": "JavaScript"
+    },
+    {
+      "path": "marketplace/featured.json",
+      "fullPath": "/workspace/electron/marketplace/featured.json",
+      "ext": ".json",
+      "size": 309,
+      "type": "JSON"
+    },
+    {
+      "path": "marketplace/marketplace-client.js",
+      "fullPath": "/workspace/electron/marketplace/marketplace-client.js",
+      "ext": ".js",
+      "size": 495,
+      "type": "JavaScript"
+    },
+    {
+      "path": "marketplace-complete-tester.js",
+      "fullPath": "/workspace/electron/marketplace-complete-tester.js",
+      "ext": ".js",
+      "size": 27459,
+      "type": "JavaScript"
+    },
+    {
+      "path": "marketplace-system.js",
+      "fullPath": "/workspace/electron/marketplace-system.js",
+      "ext": ".js",
+      "size": 82415,
+      "type": "JavaScript"
+    },
+    {
+      "path": "massive-audit.js",
+      "fullPath": "/workspace/electron/massive-audit.js",
+      "ext": ".js",
+      "size": 24260,
+      "type": "JavaScript"
+    },
+    {
+      "path": "master-initializer.js",
+      "fullPath": "/workspace/electron/master-initializer.js",
+      "ext": ".js",
+      "size": 11736,
+      "type": "JavaScript"
+    },
+    {
+      "path": "mcp/tool-registry.js",
+      "fullPath": "/workspace/electron/mcp/tool-registry.js",
+      "ext": ".js",
+      "size": 17284,
+      "type": "JavaScript"
+    },
+    {
+      "path": "memory-bridge.js",
+      "fullPath": "/workspace/electron/memory-bridge.js",
+      "ext": ".js",
+      "size": 16380,
+      "type": "JavaScript"
+    },
+    {
+      "path": "memory-dashboard.js",
+      "fullPath": "/workspace/electron/memory-dashboard.js",
+      "ext": ".js",
+      "size": 19265,
+      "type": "JavaScript"
+    },
+    {
+      "path": "memory-manager.js",
+      "fullPath": "/workspace/electron/memory-manager.js",
+      "ext": ".js",
+      "size": 7999,
+      "type": "JavaScript"
+    },
+    {
+      "path": "memory-service.js",
+      "fullPath": "/workspace/electron/memory-service.js",
+      "ext": ".js",
+      "size": 11060,
+      "type": "JavaScript"
+    },
+    {
+      "path": "menu-bar.js",
+      "fullPath": "/workspace/electron/menu-bar.js",
+      "ext": ".js",
+      "size": 21378,
+      "type": "JavaScript"
+    },
+    {
+      "path": "model-hotswap.js",
+      "fullPath": "/workspace/electron/model-hotswap.js",
+      "ext": ".js",
+      "size": 23489,
+      "type": "JavaScript"
+    },
+    {
+      "path": "model-loader.js",
+      "fullPath": "/workspace/electron/model-loader.js",
+      "ext": ".js",
+      "size": 8864,
+      "type": "JavaScript"
+    },
+    {
+      "path": "model-state-manager.js",
+      "fullPath": "/workspace/electron/model-state-manager.js",
+      "ext": ".js",
+      "size": 5713,
+      "type": "JavaScript"
+    },
+    {
+      "path": "monaco-bootstrap-test.js",
+      "fullPath": "/workspace/electron/monaco-bootstrap-test.js",
+      "ext": ".js",
+      "size": 2718,
+      "type": "JavaScript"
+    },
+    {
+      "path": "monaco-config.js",
+      "fullPath": "/workspace/electron/monaco-config.js",
+      "ext": ".js",
+      "size": 2863,
+      "type": "JavaScript"
+    },
+    {
+      "path": "monaco-diagnostic.js",
+      "fullPath": "/workspace/electron/monaco-diagnostic.js",
+      "ext": ".js",
+      "size": 6946,
+      "type": "JavaScript"
+    },
+    {
+      "path": "monaco-language-features.js",
+      "fullPath": "/workspace/electron/monaco-language-features.js",
+      "ext": ".js",
+      "size": 11155,
+      "type": "JavaScript"
+    },
+    {
+      "path": "mouse-ripple.js",
+      "fullPath": "/workspace/electron/mouse-ripple.js",
+      "ext": ".js",
+      "size": 18943,
+      "type": "JavaScript"
+    },
+    {
+      "path": "multi-agent/swarm-security-hardening.js",
+      "fullPath": "/workspace/electron/multi-agent/swarm-security-hardening.js",
+      "ext": ".js",
+      "size": 25434,
+      "type": "JavaScript"
+    },
+    {
+      "path": "multi-agent-swarm.js",
+      "fullPath": "/workspace/electron/multi-agent-swarm.js",
+      "ext": ".js",
+      "size": 26877,
+      "type": "JavaScript"
+    },
+    {
+      "path": "native-ollama-bridge.js",
+      "fullPath": "/workspace/electron/native-ollama-bridge.js",
+      "ext": ".js",
+      "size": 8864,
+      "type": "JavaScript"
+    },
+    {
+      "path": "native-ollama-cli.js",
+      "fullPath": "/workspace/electron/native-ollama-cli.js",
+      "ext": ".js",
+      "size": 3090,
+      "type": "JavaScript"
+    },
+    {
+      "path": "native-ollama-node.js",
+      "fullPath": "/workspace/electron/native-ollama-node.js",
+      "ext": ".js",
+      "size": 12497,
+      "type": "JavaScript"
+    },
+    {
+      "path": "neural-code-synthesis.js",
+      "fullPath": "/workspace/electron/neural-code-synthesis.js",
+      "ext": ".js",
+      "size": 8329,
+      "type": "JavaScript"
+    },
+    {
+      "path": "offline-speech-engine.js",
+      "fullPath": "/workspace/electron/offline-speech-engine.js",
+      "ext": ".js",
+      "size": 25456,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ollama-integration.js",
+      "fullPath": "/workspace/electron/ollama-integration.js",
+      "ext": ".js",
+      "size": 2664,
+      "type": "JavaScript"
+    },
+    {
+      "path": "orchestra-layout.js",
+      "fullPath": "/workspace/electron/orchestra-layout.js",
+      "ext": ".js",
+      "size": 71483,
+      "type": "JavaScript"
+    },
+    {
+      "path": "package-lock.json",
+      "fullPath": "/workspace/electron/package-lock.json",
+      "ext": ".json",
+      "size": 206077,
+      "type": "JSON"
+    },
+    {
+      "path": "package.json",
+      "fullPath": "/workspace/electron/package.json",
+      "ext": ".json",
+      "size": 2201,
+      "type": "JSON"
+    },
+    {
+      "path": "panel-manager.js",
+      "fullPath": "/workspace/electron/panel-manager.js",
+      "ext": ".js",
+      "size": 9069,
+      "type": "JavaScript"
+    },
+    {
+      "path": "parallel-execution-viz.js",
+      "fullPath": "/workspace/electron/parallel-execution-viz.js",
+      "ext": ".js",
+      "size": 10573,
+      "type": "JavaScript"
+    },
+    {
+      "path": "performance-dashboard.js",
+      "fullPath": "/workspace/electron/performance-dashboard.js",
+      "ext": ".js",
+      "size": 11184,
+      "type": "JavaScript"
+    },
+    {
+      "path": "performance-modes.js",
+      "fullPath": "/workspace/electron/performance-modes.js",
+      "ext": ".js",
+      "size": 28093,
+      "type": "JavaScript"
+    },
+    {
+      "path": "performance-optimizations.js",
+      "fullPath": "/workspace/electron/performance-optimizations.js",
+      "ext": ".js",
+      "size": 3358,
+      "type": "JavaScript"
+    },
+    {
+      "path": "performance-optimizer.js",
+      "fullPath": "/workspace/electron/performance-optimizer.js",
+      "ext": ".js",
+      "size": 11671,
+      "type": "JavaScript"
+    },
+    {
+      "path": "plugin-marketplace.js",
+      "fullPath": "/workspace/electron/plugin-marketplace.js",
+      "ext": ".js",
+      "size": 82415,
+      "type": "JavaScript"
+    },
+    {
+      "path": "plugin-system.js",
+      "fullPath": "/workspace/electron/plugin-system.js",
+      "ext": ".js",
+      "size": 27541,
+      "type": "JavaScript"
+    },
+    {
+      "path": "plugins/code-stats.js",
+      "fullPath": "/workspace/electron/plugins/code-stats.js",
+      "ext": ".js",
+      "size": 2388,
+      "type": "JavaScript"
+    },
+    {
+      "path": "plugins/first-party-linter.js",
+      "fullPath": "/workspace/electron/plugins/first-party-linter.js",
+      "ext": ".js",
+      "size": 20014,
+      "type": "JavaScript"
+    },
+    {
+      "path": "predictive-debugger.js",
+      "fullPath": "/workspace/electron/predictive-debugger.js",
+      "ext": ".js",
+      "size": 18426,
+      "type": "JavaScript"
+    },
+    {
+      "path": "preload.js",
+      "fullPath": "/workspace/electron/preload.js",
+      "ext": ".js",
+      "size": 13875,
+      "type": "JavaScript"
+    },
+    {
+      "path": "production-readiness-validator.js",
+      "fullPath": "/workspace/electron/production-readiness-validator.js",
+      "ext": ".js",
+      "size": 35207,
+      "type": "JavaScript"
+    },
+    {
+      "path": "project-importer.js",
+      "fullPath": "/workspace/electron/project-importer.js",
+      "ext": ".js",
+      "size": 13145,
+      "type": "JavaScript"
+    },
+    {
+      "path": "prompt-processing/prompt-processor.js",
+      "fullPath": "/workspace/electron/prompt-processing/prompt-processor.js",
+      "ext": ".js",
+      "size": 26955,
+      "type": "JavaScript"
+    },
+    {
+      "path": "quantum-intelligence-engine.js",
+      "fullPath": "/workspace/electron/quantum-intelligence-engine.js",
+      "ext": ".js",
+      "size": 28099,
+      "type": "JavaScript"
+    },
+    {
+      "path": "quick-actions-executor.js",
+      "fullPath": "/workspace/electron/quick-actions-executor.js",
+      "ext": ".js",
+      "size": 13338,
+      "type": "JavaScript"
+    },
+    {
+      "path": "quick-fixes.js",
+      "fullPath": "/workspace/electron/quick-fixes.js",
+      "ext": ".js",
+      "size": 2733,
+      "type": "JavaScript"
+    },
+    {
+      "path": "quick-health-check.js",
+      "fullPath": "/workspace/electron/quick-health-check.js",
+      "ext": ".js",
+      "size": 3015,
+      "type": "JavaScript"
+    },
+    {
+      "path": "recent-files-manager.js",
+      "fullPath": "/workspace/electron/recent-files-manager.js",
+      "ext": ".js",
+      "size": 5392,
+      "type": "JavaScript"
+    },
+    {
+      "path": "remote-logger.js",
+      "fullPath": "/workspace/electron/remote-logger.js",
+      "ext": ".js",
+      "size": 7663,
+      "type": "JavaScript"
+    },
+    {
+      "path": "renderer.js",
+      "fullPath": "/workspace/electron/renderer.js",
+      "ext": ".js",
+      "size": 75135,
+      "type": "JavaScript"
+    },
+    {
+      "path": "request-pool.js",
+      "fullPath": "/workspace/electron/request-pool.js",
+      "ext": ".js",
+      "size": 6901,
+      "type": "JavaScript"
+    },
+    {
+      "path": "resizable-panes.js",
+      "fullPath": "/workspace/electron/resizable-panes.js",
+      "ext": ".js",
+      "size": 15762,
+      "type": "JavaScript"
+    },
+    {
+      "path": "run-real-stress-test.js",
+      "fullPath": "/workspace/electron/run-real-stress-test.js",
+      "ext": ".js",
+      "size": 18975,
+      "type": "JavaScript"
+    },
+    {
+      "path": "runtime-feature-validator.js",
+      "fullPath": "/workspace/electron/runtime-feature-validator.js",
+      "ext": ".js",
+      "size": 12634,
+      "type": "JavaScript"
+    },
+    {
+      "path": "runtime-hardeners/platform-specific-fixes.js",
+      "fullPath": "/workspace/electron/runtime-hardeners/platform-specific-fixes.js",
+      "ext": ".js",
+      "size": 27613,
+      "type": "JavaScript"
+    },
+    {
+      "path": "safe-mode-detector.js",
+      "fullPath": "/workspace/electron/safe-mode-detector.js",
+      "ext": ".js",
+      "size": 6432,
+      "type": "JavaScript"
+    },
+    {
+      "path": "scan-and-fix.js",
+      "fullPath": "/workspace/electron/scan-and-fix.js",
+      "ext": ".js",
+      "size": 3272,
+      "type": "JavaScript"
+    },
+    {
+      "path": "security/path-utils.js",
+      "fullPath": "/workspace/electron/security/path-utils.js",
+      "ext": ".js",
+      "size": 2531,
+      "type": "JavaScript"
+    },
+    {
+      "path": "security-config.js",
+      "fullPath": "/workspace/electron/security-config.js",
+      "ext": ".js",
+      "size": 3283,
+      "type": "JavaScript"
+    },
+    {
+      "path": "security-enhancements.js",
+      "fullPath": "/workspace/electron/security-enhancements.js",
+      "ext": ".js",
+      "size": 1892,
+      "type": "JavaScript"
+    },
+    {
+      "path": "security-manager.js",
+      "fullPath": "/workspace/electron/security-manager.js",
+      "ext": ".js",
+      "size": 9375,
+      "type": "JavaScript"
+    },
+    {
+      "path": "security-performance-enhancements.js",
+      "fullPath": "/workspace/electron/security-performance-enhancements.js",
+      "ext": ".js",
+      "size": 24370,
+      "type": "JavaScript"
+    },
+    {
+      "path": "security-performance-scanner.js",
+      "fullPath": "/workspace/electron/security-performance-scanner.js",
+      "ext": ".js",
+      "size": 7969,
+      "type": "JavaScript"
+    },
+    {
+      "path": "settings/api-key-store.js",
+      "fullPath": "/workspace/electron/settings/api-key-store.js",
+      "ext": ".js",
+      "size": 7921,
+      "type": "JavaScript"
+    },
+    {
+      "path": "settings/layout-manager.js",
+      "fullPath": "/workspace/electron/settings/layout-manager.js",
+      "ext": ".js",
+      "size": 10467,
+      "type": "JavaScript"
+    },
+    {
+      "path": "settings/settings-importer.js",
+      "fullPath": "/workspace/electron/settings/settings-importer.js",
+      "ext": ".js",
+      "size": 249,
+      "type": "JavaScript"
+    },
+    {
+      "path": "settings/settings-service.js",
+      "fullPath": "/workspace/electron/settings/settings-service.js",
+      "ext": ".js",
+      "size": 10793,
+      "type": "JavaScript"
+    },
+    {
+      "path": "settings-applier.js",
+      "fullPath": "/workspace/electron/settings-applier.js",
+      "ext": ".js",
+      "size": 8621,
+      "type": "JavaScript"
+    },
+    {
+      "path": "settings-manager.js",
+      "fullPath": "/workspace/electron/settings-manager.js",
+      "ext": ".js",
+      "size": 3679,
+      "type": "JavaScript"
+    },
+    {
+      "path": "settings-panel.js",
+      "fullPath": "/workspace/electron/settings-panel.js",
+      "ext": ".js",
+      "size": 35013,
+      "type": "JavaScript"
+    },
+    {
+      "path": "show-achievements.js",
+      "fullPath": "/workspace/electron/show-achievements.js",
+      "ext": ".js",
+      "size": 8210,
+      "type": "JavaScript"
+    },
+    {
+      "path": "simple-main.js",
+      "fullPath": "/workspace/electron/simple-main.js",
+      "ext": ".js",
+      "size": 645,
+      "type": "JavaScript"
+    },
+    {
+      "path": "standalone-local-ai.js",
+      "fullPath": "/workspace/electron/standalone-local-ai.js",
+      "ext": ".js",
+      "size": 25815,
+      "type": "JavaScript"
+    },
+    {
+      "path": "state-machine.js",
+      "fullPath": "/workspace/electron/state-machine.js",
+      "ext": ".js",
+      "size": 4606,
+      "type": "JavaScript"
+    },
+    {
+      "path": "status-manager.js",
+      "fullPath": "/workspace/electron/status-manager.js",
+      "ext": ".js",
+      "size": 5365,
+      "type": "JavaScript"
+    },
+    {
+      "path": "stress-test-bigdaddy.js",
+      "fullPath": "/workspace/electron/stress-test-bigdaddy.js",
+      "ext": ".js",
+      "size": 15396,
+      "type": "JavaScript"
+    },
+    {
+      "path": "styles.css",
+      "fullPath": "/workspace/electron/styles.css",
+      "ext": ".css",
+      "size": 15505,
+      "type": "CSS"
+    },
+    {
+      "path": "styles.css.backup",
+      "fullPath": "/workspace/electron/styles.css.backup",
+      "ext": ".backup",
+      "size": 15637,
+      "type": "Other"
+    },
+    {
+      "path": "sunshine-engine.js",
+      "fullPath": "/workspace/electron/sunshine-engine.js",
+      "ext": ".js",
+      "size": 9880,
+      "type": "JavaScript"
+    },
+    {
+      "path": "swarm-engine.js",
+      "fullPath": "/workspace/electron/swarm-engine.js",
+      "ext": ".js",
+      "size": 16343,
+      "type": "JavaScript"
+    },
+    {
+      "path": "system-diagnostic.js",
+      "fullPath": "/workspace/electron/system-diagnostic.js",
+      "ext": ".js",
+      "size": 19779,
+      "type": "JavaScript"
+    },
+    {
+      "path": "system-optimizer.js",
+      "fullPath": "/workspace/electron/system-optimizer.js",
+      "ext": ".js",
+      "size": 17276,
+      "type": "JavaScript"
+    },
+    {
+      "path": "system-verification.js",
+      "fullPath": "/workspace/electron/system-verification.js",
+      "ext": ".js",
+      "size": 11826,
+      "type": "JavaScript"
+    },
+    {
+      "path": "tab-debug.js",
+      "fullPath": "/workspace/electron/tab-debug.js",
+      "ext": ".js",
+      "size": 2225,
+      "type": "JavaScript"
+    },
+    {
+      "path": "tab-system.js",
+      "fullPath": "/workspace/electron/tab-system.js",
+      "ext": ".js",
+      "size": 29792,
+      "type": "JavaScript"
+    },
+    {
+      "path": "team-collaboration-enhanced.js",
+      "fullPath": "/workspace/electron/team-collaboration-enhanced.js",
+      "ext": ".js",
+      "size": 19982,
+      "type": "JavaScript"
+    },
+    {
+      "path": "team-collaboration-test-report.json",
+      "fullPath": "/workspace/electron/team-collaboration-test-report.json",
+      "ext": ".json",
+      "size": 6137,
+      "type": "JSON"
+    },
+    {
+      "path": "team-collaboration.css",
+      "fullPath": "/workspace/electron/team-collaboration.css",
+      "ext": ".css",
+      "size": 5836,
+      "type": "CSS"
+    },
+    {
+      "path": "team-collaboration.js",
+      "fullPath": "/workspace/electron/team-collaboration.js",
+      "ext": ".js",
+      "size": 31427,
+      "type": "JavaScript"
+    },
+    {
+      "path": "terminal-panel.js",
+      "fullPath": "/workspace/electron/terminal-panel.js",
+      "ext": ".js",
+      "size": 50539,
+      "type": "JavaScript"
+    },
+    {
+      "path": "test-all-fixes.js",
+      "fullPath": "/workspace/electron/test-all-fixes.js",
+      "ext": ".js",
+      "size": 12145,
+      "type": "JavaScript"
+    },
+    {
+      "path": "test-bigdaddy-editor.js",
+      "fullPath": "/workspace/electron/test-bigdaddy-editor.js",
+      "ext": ".js",
+      "size": 29402,
+      "type": "JavaScript"
+    },
+    {
+      "path": "test-color.html",
+      "fullPath": "/workspace/electron/test-color.html",
+      "ext": ".html",
+      "size": 746,
+      "type": "HTML"
+    },
+    {
+      "path": "test-color.html.backup",
+      "fullPath": "/workspace/electron/test-color.html.backup",
+      "ext": ".backup",
+      "size": 757,
+      "type": "Other"
+    },
+    {
+      "path": "test-cursor-integration.js",
+      "fullPath": "/workspace/electron/test-cursor-integration.js",
+      "ext": ".js",
+      "size": 4345,
+      "type": "JavaScript"
+    },
+    {
+      "path": "test-electron.js",
+      "fullPath": "/workspace/electron/test-electron.js",
+      "ext": ".js",
+      "size": 723,
+      "type": "JavaScript"
+    },
+    {
+      "path": "test-integration.js",
+      "fullPath": "/workspace/electron/test-integration.js",
+      "ext": ".js",
+      "size": 9766,
+      "type": "JavaScript"
+    },
+    {
+      "path": "test-monaco-fix.html",
+      "fullPath": "/workspace/electron/test-monaco-fix.html",
+      "ext": ".html",
+      "size": 4052,
+      "type": "HTML"
+    },
+    {
+      "path": "test-runner.js",
+      "fullPath": "/workspace/electron/test-runner.js",
+      "ext": ".js",
+      "size": 3787,
+      "type": "JavaScript"
+    },
+    {
+      "path": "test-simple.html",
+      "fullPath": "/workspace/electron/test-simple.html",
+      "ext": ".html",
+      "size": 591,
+      "type": "HTML"
+    },
+    {
+      "path": "test-sliders.html",
+      "fullPath": "/workspace/electron/test-sliders.html",
+      "ext": ".html",
+      "size": 12472,
+      "type": "HTML"
+    },
+    {
+      "path": "test-team-collaboration.js",
+      "fullPath": "/workspace/electron/test-team-collaboration.js",
+      "ext": ".js",
+      "size": 15589,
+      "type": "JavaScript"
+    },
+    {
+      "path": "test-visual-game-editors.js",
+      "fullPath": "/workspace/electron/test-visual-game-editors.js",
+      "ext": ".js",
+      "size": 25014,
+      "type": "JavaScript"
+    },
+    {
+      "path": "test.html",
+      "fullPath": "/workspace/electron/test.html",
+      "ext": ".html",
+      "size": 482,
+      "type": "HTML"
+    },
+    {
+      "path": "theme-manager.js",
+      "fullPath": "/workspace/electron/theme-manager.js",
+      "ext": ".js",
+      "size": 5009,
+      "type": "JavaScript"
+    },
+    {
+      "path": "throttle-manager.js",
+      "fullPath": "/workspace/electron/throttle-manager.js",
+      "ext": ".js",
+      "size": 5697,
+      "type": "JavaScript"
+    },
+    {
+      "path": "timer-manager.js",
+      "fullPath": "/workspace/electron/timer-manager.js",
+      "ext": ".js",
+      "size": 10186,
+      "type": "JavaScript"
+    },
+    {
+      "path": "toggle-fps-display.js",
+      "fullPath": "/workspace/electron/toggle-fps-display.js",
+      "ext": ".js",
+      "size": 2138,
+      "type": "JavaScript"
+    },
+    {
+      "path": "tool-calling-system.js",
+      "fullPath": "/workspace/electron/tool-calling-system.js",
+      "ext": ".js",
+      "size": 12907,
+      "type": "JavaScript"
+    },
+    {
+      "path": "transparency-manager.js",
+      "fullPath": "/workspace/electron/transparency-manager.js",
+      "ext": ".js",
+      "size": 9056,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ui/agent-panel-cursor-style.js",
+      "fullPath": "/workspace/electron/ui/agent-panel-cursor-style.js",
+      "ext": ".js",
+      "size": 28191,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ui/agent-panel-enhanced.js",
+      "fullPath": "/workspace/electron/ui/agent-panel-enhanced.js",
+      "ext": ".js",
+      "size": 25374,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ui/api-key-manager-ui.js",
+      "fullPath": "/workspace/electron/ui/api-key-manager-ui.js",
+      "ext": ".js",
+      "size": 20153,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ui/chat-customizer.js",
+      "fullPath": "/workspace/electron/ui/chat-customizer.js",
+      "ext": ".js",
+      "size": 26002,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ui/code-completion.js",
+      "fullPath": "/workspace/electron/ui/code-completion.js",
+      "ext": ".js",
+      "size": 2602,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ui/complete-marketplace-ui.js",
+      "fullPath": "/workspace/electron/ui/complete-marketplace-ui.js",
+      "ext": ".js",
+      "size": 21899,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ui/enhanced-ui-framework.js",
+      "fullPath": "/workspace/electron/ui/enhanced-ui-framework.js",
+      "ext": ".js",
+      "size": 24326,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ui/extensions-panel.js",
+      "fullPath": "/workspace/electron/ui/extensions-panel.js",
+      "ext": ".js",
+      "size": 15363,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ui/file-explorer.js",
+      "fullPath": "/workspace/electron/ui/file-explorer.js",
+      "ext": ".js",
+      "size": 6349,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ui/ide-main.css",
+      "fullPath": "/workspace/electron/ui/ide-main.css",
+      "ext": ".css",
+      "size": 1939,
+      "type": "CSS"
+    },
+    {
+      "path": "ui/ide-main.js",
+      "fullPath": "/workspace/electron/ui/ide-main.js",
+      "ext": ".js",
+      "size": 13416,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ui/layout-manager.js",
+      "fullPath": "/workspace/electron/ui/layout-manager.js",
+      "ext": ".js",
+      "size": 6339,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ui/live-coding-panel.js",
+      "fullPath": "/workspace/electron/ui/live-coding-panel.js",
+      "ext": ".js",
+      "size": 20297,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ui/model-selector.js",
+      "fullPath": "/workspace/electron/ui/model-selector.js",
+      "ext": ".js",
+      "size": 1544,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ui/multi-agent-workspace.js",
+      "fullPath": "/workspace/electron/ui/multi-agent-workspace.js",
+      "ext": ".js",
+      "size": 30838,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ui/optimizer-panel.js",
+      "fullPath": "/workspace/electron/ui/optimizer-panel.js",
+      "ext": ".js",
+      "size": 25046,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ui/swarm-visualizer.js",
+      "fullPath": "/workspace/electron/ui/swarm-visualizer.js",
+      "ext": ".js",
+      "size": 13765,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ui/syntax-highlighter.js",
+      "fullPath": "/workspace/electron/ui/syntax-highlighter.js",
+      "ext": ".js",
+      "size": 4456,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ui/todo-panel.js",
+      "fullPath": "/workspace/electron/ui/todo-panel.js",
+      "ext": ".js",
+      "size": 25991,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ui/ui-integration.js",
+      "fullPath": "/workspace/electron/ui/ui-integration.js",
+      "ext": ".js",
+      "size": 1773,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ui-accessibility-audit.js",
+      "fullPath": "/workspace/electron/ui-accessibility-audit.js",
+      "ext": ".js",
+      "size": 51956,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ui-accessibility-report.json",
+      "fullPath": "/workspace/electron/ui-accessibility-report.json",
+      "ext": ".json",
+      "size": 33092,
+      "type": "JSON"
+    },
+    {
+      "path": "ui-components.js",
+      "fullPath": "/workspace/electron/ui-components.js",
+      "ext": ".js",
+      "size": 11803,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ui-enhancer.js",
+      "fullPath": "/workspace/electron/ui-enhancer.js",
+      "ext": ".js",
+      "size": 20683,
+      "type": "JavaScript"
+    },
+    {
+      "path": "ultra-extreme-stress-test.js",
+      "fullPath": "/workspace/electron/ultra-extreme-stress-test.js",
+      "ext": ".js",
+      "size": 19850,
+      "type": "JavaScript"
+    },
+    {
+      "path": "unified-chat-handler.js",
+      "fullPath": "/workspace/electron/unified-chat-handler.js",
+      "ext": ".js",
+      "size": 8602,
+      "type": "JavaScript"
+    },
+    {
+      "path": "unified-extension-system.js",
+      "fullPath": "/workspace/electron/unified-extension-system.js",
+      "ext": ".js",
+      "size": 26434,
+      "type": "JavaScript"
+    },
+    {
+      "path": "unity-integration.js",
+      "fullPath": "/workspace/electron/unity-integration.js",
+      "ext": ".js",
+      "size": 7283,
+      "type": "JavaScript"
+    },
+    {
+      "path": "universal-chat-handler.js",
+      "fullPath": "/workspace/electron/universal-chat-handler.js",
+      "ext": ".js",
+      "size": 8688,
+      "type": "JavaScript"
+    },
+    {
+      "path": "universal-drag-system.js",
+      "fullPath": "/workspace/electron/universal-drag-system.js",
+      "ext": ".js",
+      "size": 8766,
+      "type": "JavaScript"
+    },
+    {
+      "path": "unreal-integration.js",
+      "fullPath": "/workspace/electron/unreal-integration.js",
+      "ext": ".js",
+      "size": 8095,
+      "type": "JavaScript"
+    },
+    {
+      "path": "validators/ide-validator.js",
+      "fullPath": "/workspace/electron/validators/ide-validator.js",
+      "ext": ".js",
+      "size": 25426,
+      "type": "JavaScript"
+    },
+    {
+      "path": "virtual-scroller.js",
+      "fullPath": "/workspace/electron/virtual-scroller.js",
+      "ext": ".js",
+      "size": 5525,
+      "type": "JavaScript"
+    },
+    {
+      "path": "visual-benchmark.js",
+      "fullPath": "/workspace/electron/visual-benchmark.js",
+      "ext": ".js",
+      "size": 28166,
+      "type": "JavaScript"
+    },
+    {
+      "path": "visual-code-flow.js",
+      "fullPath": "/workspace/electron/visual-code-flow.js",
+      "ext": ".js",
+      "size": 25758,
+      "type": "JavaScript"
+    },
+    {
+      "path": "visual-test-runner.js",
+      "fullPath": "/workspace/electron/visual-test-runner.js",
+      "ext": ".js",
+      "size": 28909,
+      "type": "JavaScript"
+    },
+    {
+      "path": "voice-coding-enhanced.js",
+      "fullPath": "/workspace/electron/voice-coding-enhanced.js",
+      "ext": ".js",
+      "size": 19967,
+      "type": "JavaScript"
+    },
+    {
+      "path": "voice-coding.js",
+      "fullPath": "/workspace/electron/voice-coding.js",
+      "ext": ".js",
+      "size": 23857,
+      "type": "JavaScript"
+    },
+    {
+      "path": "vscode-api/Position.js",
+      "fullPath": "/workspace/electron/vscode-api/Position.js",
+      "ext": ".js",
+      "size": 3074,
+      "type": "JavaScript"
+    },
+    {
+      "path": "vscode-api/Range.js",
+      "fullPath": "/workspace/electron/vscode-api/Range.js",
+      "ext": ".js",
+      "size": 3008,
+      "type": "JavaScript"
+    },
+    {
+      "path": "vscode-api/Selection.js",
+      "fullPath": "/workspace/electron/vscode-api/Selection.js",
+      "ext": ".js",
+      "size": 1556,
+      "type": "JavaScript"
+    },
+    {
+      "path": "vscode-api/TextDocument.js",
+      "fullPath": "/workspace/electron/vscode-api/TextDocument.js",
+      "ext": ".js",
+      "size": 457,
+      "type": "JavaScript"
+    },
+    {
+      "path": "vscode-api/Uri.js",
+      "fullPath": "/workspace/electron/vscode-api/Uri.js",
+      "ext": ".js",
+      "size": 3128,
+      "type": "JavaScript"
+    },
+    {
+      "path": "vscode-api/commands.js",
+      "fullPath": "/workspace/electron/vscode-api/commands.js",
+      "ext": ".js",
+      "size": 7021,
+      "type": "JavaScript"
+    },
+    {
+      "path": "vscode-api/debug.js",
+      "fullPath": "/workspace/electron/vscode-api/debug.js",
+      "ext": ".js",
+      "size": 6579,
+      "type": "JavaScript"
+    },
+    {
+      "path": "vscode-api/env.js",
+      "fullPath": "/workspace/electron/vscode-api/env.js",
+      "ext": ".js",
+      "size": 2969,
+      "type": "JavaScript"
+    },
+    {
+      "path": "vscode-api/extensions.js",
+      "fullPath": "/workspace/electron/vscode-api/extensions.js",
+      "ext": ".js",
+      "size": 4548,
+      "type": "JavaScript"
+    },
+    {
+      "path": "vscode-api/languages.js",
+      "fullPath": "/workspace/electron/vscode-api/languages.js",
+      "ext": ".js",
+      "size": 10915,
+      "type": "JavaScript"
+    },
+    {
+      "path": "vscode-api/vscode-api.js",
+      "fullPath": "/workspace/electron/vscode-api/vscode-api.js",
+      "ext": ".js",
+      "size": 7508,
+      "type": "JavaScript"
+    },
+    {
+      "path": "vscode-api/window.js",
+      "fullPath": "/workspace/electron/vscode-api/window.js",
+      "ext": ".js",
+      "size": 11302,
+      "type": "JavaScript"
+    },
+    {
+      "path": "vscode-api/workspace.js",
+      "fullPath": "/workspace/electron/vscode-api/workspace.js",
+      "ext": ".js",
+      "size": 15525,
+      "type": "JavaScript"
+    },
+    {
+      "path": "web-browser.js",
+      "fullPath": "/workspace/electron/web-browser.js",
+      "ext": ".js",
+      "size": 10965,
+      "type": "JavaScript"
+    },
+    {
+      "path": "welcome-tab.js",
+      "fullPath": "/workspace/electron/welcome-tab.js",
+      "ext": ".js",
+      "size": 9262,
+      "type": "JavaScript"
+    },
+    {
+      "path": "welcome.md",
+      "fullPath": "/workspace/electron/welcome.md",
+      "ext": ".md",
+      "size": 8254,
+      "type": "Markdown"
+    },
+    {
+      "path": "window-api-bridge.js",
+      "fullPath": "/workspace/electron/window-api-bridge.js",
+      "ext": ".js",
+      "size": 18211,
+      "type": "JavaScript"
+    },
+    {
+      "path": "working-ide.js",
+      "fullPath": "/workspace/electron/working-ide.js",
+      "ext": ".js",
+      "size": 9899,
+      "type": "JavaScript"
+    }
+  ],
+  "scripts": [
+    ".tmp-window-check.js",
+    "Untitled-1.js",
+    "__tests__/security/path-utils.test.js",
+    "__tests__/settings-service.test.js",
+    "adaptive-behavior-engine.js",
+    "admin-command-runner.js",
+    "advanced-code-intelligence.js",
+    "advanced-debugging-system.js",
+    "agent-panel.js",
+    "agentic-ai-bridge.js",
+    "agentic-auto-fixer.js",
+    "agentic-browser-demo.js",
+    "agentic-coder.js",
+    "agentic-diagnostics.js",
+    "agentic-executor.js",
+    "agentic-file-browser.js",
+    "agentic-global-api.js",
+    "agentic-goal-planner.js",
+    "agentic-safety.js",
+    "agentic-security-hardening.js",
+    "agentic-test-runner.js",
+    "ai-code-response-system.js",
+    "ai-code-review-security.js",
+    "ai-code-to-tabs.js",
+    "ai-live-preview.js",
+    "ai-provider-manager.js",
+    "ai-response-handler.js",
+    "audit-fixes-verifier.js",
+    "auto-documenter.js",
+    "auto-fixer.js",
+    "auto-formatter.js",
+    "autocomplete-engine.js",
+    "automated-browser-test.js",
+    "automated-ide-tester.js",
+    "automated-integration-test.js",
+    "background-agent-manager.js",
+    "background-agent-worker.js",
+    "backwards-complete-audit.js",
+    "backwards-integration-test.js",
+    "benchmark-suite.js",
+    "bigdaddy-editor/ai-autocomplete.js",
+    "bigdaddy-editor/core-enhanced.js",
+    "bigdaddy-editor/core.js",
+    "bigdaddy-editor/minimap.js",
+    "bigdaddy-editor/search.js",
+    "bigdaddy-editor/shader-preview.js",
+    "bigdaddy-editor/tokenizer.js",
+    "bigdaddya-integration.js",
+    "bigdaddyg-agentic-core.js",
+    "browser-integration.js",
+    "browser-panel.js",
+    "browser-stress-runner.js",
+    "browser-view.js",
+    "built-in-local-ai.js",
+    "chameleon-theme.js",
+    "chaos-random-audit.js",
+    "chat-history.js",
+    "cinematic-visualization.js",
+    "cognitive-modes/ai-integration.js",
+    "cognitive-modes/cli.js",
+    "cognitive-modes/ide-integration.js",
+    "cognitive-modes/mode-manager.js",
+    "cognitive-modes/mode-ui.js",
+    "collapsible-agent-sidebar.js",
+    "command-generator.js",
+    "command-palette.js",
+    "command-system.js",
+    "complete-debugger-integration.js",
+    "complete-integration-fixer.js",
+    "comprehensive-agentic-test.js",
+    "comprehensive-cli-tester.js",
+    "comprehensive-cli.js",
+    "comprehensive-enhancement-audit.js",
+    "comprehensive-health-checker.js",
+    "comprehensive-ide-audit.js",
+    "comprehensive-validation.js",
+    "connection-fixer.js",
+    "console-panel.js",
+    "container-runtime.js",
+    "context-menu-executor.js",
+    "context-menu-manager.js",
+    "context-summarizer.js",
+    "css-optimizer.js",
+    "dashboard-view.js",
+    "debug-browser-test.js",
+    "debug-mode.js",
+    "deep-issue-scanner.js",
+    "deep-research-engine.js",
+    "demo-launcher.js",
+    "diagnose-monaco.js",
+    "eliminate-all-placeholders.js",
+    "enhanced-agentic-executor.js",
+    "enhanced-agentic-ui.js",
+    "enhanced-error-handler.js",
+    "enhanced-error-recovery.js",
+    "enhanced-file-explorer.js",
+    "enhanced-placeholder-debugger.js",
+    "enhanced-terminal.js",
+    "enhanced-user-message-system.js",
+    "error-cleanup.js",
+    "error-handler-fixer.js",
+    "error-log-writer.js",
+    "error-protection.js",
+    "error-tracker.js",
+    "event-listener-manager.js",
+    "explorer-integration.js",
+    "extension-host/complete-extension-host.js",
+    "extension-host/extension-bridge.js",
+    "extension-host/extension-host.js",
+    "extension-manager.js",
+    "fetch-timeout-wrapper.js",
+    "file-browser-enhanced.js",
+    "file-explorer.js",
+    "file-tree.js",
+    "final-issues-fixer.js",
+    "final-production-verification.js",
+    "flexible-layout-system.js",
+    "floating-chat.js",
+    "forward-complete-audit.js",
+    "frontend-ux-tester.js",
+    "full-agentic-demo.js",
+    "game-dev-integration-tester.js",
+    "game-editor/animation-timeline-editor.js",
+    "game-editor/asset-preview-system.js",
+    "game-editor/shader-editor.js",
+    "game-editor/visual-game-editor.js",
+    "game-loop-manager.js",
+    "game-project-detector.js",
+    "github-auth.js",
+    "github-integration.js",
+    "global-functions.js",
+    "godot-complete-integration.js",
+    "godot-integration.js",
+    "hardening/rck-bootstrap.js",
+    "hardening/rck-enhanced.js",
+    "hot-reload-manager.js",
+    "hotkey-manager.js",
+    "ide-comparison-tester.js",
+    "ide-initializer.js",
+    "image-generation.js",
+    "image-generator.js",
+    "immediate-diagnostics.js",
+    "indexeddb-storage.js",
+    "integration-updates.js",
+    "integration-wiring-tester.js",
+    "intellij-system/code-analysis-engine.js",
+    "intellij-system/code-inspections.js",
+    "intellij-system/intellij-system.js",
+    "intellij-system/refactoring-engine.js",
+    "intellij-system/smart-navigation.js",
+    "ipc-server.js",
+    "lazy-loader.js",
+    "logger.js",
+    "lsp-client.js",
+    "main-simple.js",
+    "main-test.js",
+    "main-working.js",
+    "main.js",
+    "marketplace/complete-extension-manager.js",
+    "marketplace/complete-marketplace-tester.js",
+    "marketplace/extension-manager.js",
+    "marketplace/marketplace-client.js",
+    "marketplace-complete-tester.js",
+    "marketplace-system.js",
+    "massive-audit.js",
+    "master-initializer.js",
+    "mcp/tool-registry.js",
+    "memory-bridge.js",
+    "memory-dashboard.js",
+    "memory-manager.js",
+    "memory-service.js",
+    "menu-bar.js",
+    "model-hotswap.js",
+    "model-loader.js",
+    "model-state-manager.js",
+    "monaco-bootstrap-test.js",
+    "monaco-config.js",
+    "monaco-diagnostic.js",
+    "monaco-language-features.js",
+    "mouse-ripple.js",
+    "multi-agent/swarm-security-hardening.js",
+    "multi-agent-swarm.js",
+    "native-ollama-bridge.js",
+    "native-ollama-cli.js",
+    "native-ollama-node.js",
+    "neural-code-synthesis.js",
+    "offline-speech-engine.js",
+    "ollama-integration.js",
+    "orchestra-layout.js",
+    "panel-manager.js",
+    "parallel-execution-viz.js",
+    "performance-dashboard.js",
+    "performance-modes.js",
+    "performance-optimizations.js",
+    "performance-optimizer.js",
+    "plugin-marketplace.js",
+    "plugin-system.js",
+    "plugins/code-stats.js",
+    "plugins/first-party-linter.js",
+    "predictive-debugger.js",
+    "preload.js",
+    "production-readiness-validator.js",
+    "project-importer.js",
+    "prompt-processing/prompt-processor.js",
+    "quantum-intelligence-engine.js",
+    "quick-actions-executor.js",
+    "quick-fixes.js",
+    "quick-health-check.js",
+    "recent-files-manager.js",
+    "remote-logger.js",
+    "renderer.js",
+    "request-pool.js",
+    "resizable-panes.js",
+    "run-real-stress-test.js",
+    "runtime-feature-validator.js",
+    "runtime-hardeners/platform-specific-fixes.js",
+    "safe-mode-detector.js",
+    "scan-and-fix.js",
+    "security/path-utils.js",
+    "security-config.js",
+    "security-enhancements.js",
+    "security-manager.js",
+    "security-performance-enhancements.js",
+    "security-performance-scanner.js",
+    "settings/api-key-store.js",
+    "settings/layout-manager.js",
+    "settings/settings-importer.js",
+    "settings/settings-service.js",
+    "settings-applier.js",
+    "settings-manager.js",
+    "settings-panel.js",
+    "show-achievements.js",
+    "simple-main.js",
+    "standalone-local-ai.js",
+    "state-machine.js",
+    "status-manager.js",
+    "stress-test-bigdaddy.js",
+    "sunshine-engine.js",
+    "swarm-engine.js",
+    "system-diagnostic.js",
+    "system-optimizer.js",
+    "system-verification.js",
+    "tab-debug.js",
+    "tab-system.js",
+    "team-collaboration-enhanced.js",
+    "team-collaboration.js",
+    "terminal-panel.js",
+    "test-all-fixes.js",
+    "test-bigdaddy-editor.js",
+    "test-cursor-integration.js",
+    "test-electron.js",
+    "test-integration.js",
+    "test-runner.js",
+    "test-team-collaboration.js",
+    "test-visual-game-editors.js",
+    "theme-manager.js",
+    "throttle-manager.js",
+    "timer-manager.js",
+    "toggle-fps-display.js",
+    "tool-calling-system.js",
+    "transparency-manager.js",
+    "ui/agent-panel-cursor-style.js",
+    "ui/agent-panel-enhanced.js",
+    "ui/api-key-manager-ui.js",
+    "ui/chat-customizer.js",
+    "ui/code-completion.js",
+    "ui/complete-marketplace-ui.js",
+    "ui/enhanced-ui-framework.js",
+    "ui/extensions-panel.js",
+    "ui/file-explorer.js",
+    "ui/ide-main.js",
+    "ui/layout-manager.js",
+    "ui/live-coding-panel.js",
+    "ui/model-selector.js",
+    "ui/multi-agent-workspace.js",
+    "ui/optimizer-panel.js",
+    "ui/swarm-visualizer.js",
+    "ui/syntax-highlighter.js",
+    "ui/todo-panel.js",
+    "ui/ui-integration.js",
+    "ui-accessibility-audit.js",
+    "ui-components.js",
+    "ui-enhancer.js",
+    "ultra-extreme-stress-test.js",
+    "unified-chat-handler.js",
+    "unified-extension-system.js",
+    "unity-integration.js",
+    "universal-chat-handler.js",
+    "universal-drag-system.js",
+    "unreal-integration.js",
+    "validators/ide-validator.js",
+    "virtual-scroller.js",
+    "visual-benchmark.js",
+    "visual-code-flow.js",
+    "visual-test-runner.js",
+    "voice-coding-enhanced.js",
+    "voice-coding.js",
+    "vscode-api/Position.js",
+    "vscode-api/Range.js",
+    "vscode-api/Selection.js",
+    "vscode-api/TextDocument.js",
+    "vscode-api/Uri.js",
+    "vscode-api/commands.js",
+    "vscode-api/debug.js",
+    "vscode-api/env.js",
+    "vscode-api/extensions.js",
+    "vscode-api/languages.js",
+    "vscode-api/vscode-api.js",
+    "vscode-api/window.js",
+    "vscode-api/workspace.js",
+    "web-browser.js",
+    "welcome-tab.js",
+    "window-api-bridge.js",
+    "working-ide.js"
+  ],
+  "styles": [
+    "background-agent.css",
+    "bigdaddyg-styles.css",
+    "collapsible-agent-sidebar.css",
+    "cursor-theme.css",
+    "github-integration.css",
+    "inline-styles.css",
+    "styles.css",
+    "team-collaboration.css",
+    "ui/ide-main.css"
+  ],
+  "modules": [],
+  "dependencies": [
+    {
+      "type": "script",
+      "path": "settings-manager.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "theme-manager.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "monaco-config.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "cognitive-modes/mode-manager.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "cognitive-modes/mode-ui.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "cognitive-modes/ai-integration.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "cognitive-modes/ide-integration.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "github-integration.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "background-agent-manager.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "team-collaboration.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "toggle-fps-display.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "monaco-bootstrap-test.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "window-api-bridge.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "timer-manager.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "event-listener-manager.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "debug-mode.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "request-pool.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "fetch-timeout-wrapper.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "indexeddb-storage.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "lazy-loader.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "virtual-scroller.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "performance-dashboard.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "debug-mode.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "event-listener-manager.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "error-cleanup.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "native-ollama-bridge.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "global-functions.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "memory-bridge.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "memory-dashboard.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "ui-enhancer.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "renderer.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "settings-applier.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "settings-panel.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "agentic-global-api.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "ai-code-to-tabs.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "universal-drag-system.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "error-protection.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "enhanced-error-recovery.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "performance-optimizer.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "comprehensive-health-checker.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "comprehensive-ide-audit.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "performance-modes.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "visual-benchmark.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "model-hotswap.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "mouse-ripple.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "chameleon-theme.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "console-panel.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "terminal-panel.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "agentic-coder.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "agentic-safety.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "command-generator.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "agent-panel.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "autocomplete-engine.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "agentic-executor.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "offline-speech-engine.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "status-manager.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "model-state-manager.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "flexible-layout-system.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "hotkey-manager.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "command-palette.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "file-explorer.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "enhanced-file-explorer.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "explorer-integration.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "chat-history.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "ai-response-handler.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "floating-chat.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "unified-chat-handler.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "context-menu-executor.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "quick-actions-executor.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "audit-fixes-verifier.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "system-diagnostic.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "connection-fixer.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "quick-health-check.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "monaco-diagnostic.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "diagnose-monaco.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "orchestra-layout.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "enhanced-agentic-ui.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "parallel-execution-viz.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "tab-system.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "universal-chat-handler.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "agentic-auto-fixer.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "ai-provider-manager.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "ui/api-key-manager-ui.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "memory-manager.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "bigdaddya-integration.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "agentic-ai-bridge.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "agentic-coder.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "error-tracker.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "voice-coding.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "plugin-system.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "plugin-marketplace.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "plugins/code-stats.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "plugins/first-party-linter.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "unified-extension-system.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "agentic-file-browser.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "command-system.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "image-generator.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "cinematic-visualization.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "remote-logger.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "ai-live-preview.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "visual-code-flow.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "predictive-debugger.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "multi-agent-swarm.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "ai-code-review-security.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "context-summarizer.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "deep-research-engine.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "project-importer.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "enhanced-agentic-executor.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "ui/live-coding-panel.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "ui/todo-panel.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "neural-code-synthesis.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "ui/chat-customizer.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "agentic-test-runner.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "swarm-engine.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "system-optimizer.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "ui/swarm-visualizer.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "ui/optimizer-panel.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "collapsible-agent-sidebar.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "resizable-panes.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "transparency-manager.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "enhanced-terminal.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "github-auth.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "ai-code-response-system.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "enhanced-user-message-system.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "error-log-writer.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "web-browser.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "browser-panel.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "panel-manager.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "menu-bar.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "visual-test-runner.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "full-agentic-demo.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "agentic-browser-demo.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "tab-debug.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "immediate-diagnostics.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "ide-initializer.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "integration-updates.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "demo-launcher.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "master-initializer.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "settings-panel.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "ui/complete-marketplace-ui.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "game-editor/visual-game-editor.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "game-editor/asset-preview-system.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "game-editor/shader-editor.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "game-editor/animation-timeline-editor.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "image-generation.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "command-palette.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "advanced-debugging-system.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "performance-optimizations.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "welcome-tab.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "comprehensive-cli.js",
+      "from": "index.html"
+    },
+    {
+      "type": "script",
+      "path": "test-integration.js",
+      "from": "index.html"
+    },
+    {
+      "type": "css",
+      "path": "cursor-theme.css",
+      "from": "index.html"
+    },
+    {
+      "type": "css",
+      "path": "collapsible-agent-sidebar.css",
+      "from": "index.html"
+    },
+    {
+      "type": "css",
+      "path": "inline-styles.css",
+      "from": "index.html"
+    },
+    {
+      "type": "css",
+      "path": "github-integration.css",
+      "from": "index.html"
+    },
+    {
+      "type": "css",
+      "path": "background-agent.css",
+      "from": "index.html"
+    },
+    {
+      "type": "css",
+      "path": "team-collaboration.css",
+      "from": "index.html"
+    }
+  ],
+  "connections": [
+    {
+      "from": ".tmp-window-check.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": ".tmp-window-check.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "__tests__/security/path-utils.test.js",
+      "to": "assert",
+      "type": "require"
+    },
+    {
+      "from": "__tests__/security/path-utils.test.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "__tests__/security/path-utils.test.js",
+      "to": "os",
+      "type": "require"
+    },
+    {
+      "from": "__tests__/security/path-utils.test.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "__tests__/security/path-utils.test.js",
+      "to": "node:test",
+      "type": "require"
+    },
+    {
+      "from": "__tests__/security/path-utils.test.js",
+      "to": "../../security/path-utils",
+      "type": "require"
+    },
+    {
+      "from": "__tests__/settings-service.test.js",
+      "to": "node:test",
+      "type": "require"
+    },
+    {
+      "from": "__tests__/settings-service.test.js",
+      "to": "node:assert/strict",
+      "type": "require"
+    },
+    {
+      "from": "__tests__/settings-service.test.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "__tests__/settings-service.test.js",
+      "to": "os",
+      "type": "require"
+    },
+    {
+      "from": "__tests__/settings-service.test.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "__tests__/settings-service.test.js",
+      "to": "../settings/settings-service",
+      "type": "require"
+    },
+    {
+      "from": "advanced-code-intelligence.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "advanced-debugging-system.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "agent-panel.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "agent-panel.js",
+      "to": "window.monaco",
+      "type": "global"
+    },
+    {
+      "from": "agentic-auto-fixer.js",
+      "to": "window.tabSystem",
+      "type": "global"
+    },
+    {
+      "from": "agentic-coder.js",
+      "to": "window.tabSystem",
+      "type": "global"
+    },
+    {
+      "from": "agentic-diagnostics.js",
+      "to": "events",
+      "type": "require"
+    },
+    {
+      "from": "agentic-diagnostics.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "agentic-diagnostics.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "agentic-executor.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "agentic-executor.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "agentic-executor.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "agentic-executor.js",
+      "to": "./agentic-security-hardening",
+      "type": "require"
+    },
+    {
+      "from": "agentic-file-browser.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "agentic-global-api.js",
+      "to": "express",
+      "type": "require"
+    },
+    {
+      "from": "agentic-global-api.js",
+      "to": "cors",
+      "type": "require"
+    },
+    {
+      "from": "agentic-global-api.js",
+      "to": "dotenv",
+      "type": "require"
+    },
+    {
+      "from": "agentic-global-api.js",
+      "to": "react",
+      "type": "import"
+    },
+    {
+      "from": "agentic-global-api.js",
+      "to": "react",
+      "type": "import"
+    },
+    {
+      "from": "agentic-global-api.js",
+      "to": "react-dom/client",
+      "type": "import"
+    },
+    {
+      "from": "agentic-global-api.js",
+      "to": "./App",
+      "type": "import"
+    },
+    {
+      "from": "agentic-global-api.js",
+      "to": "window.tabSystem",
+      "type": "global"
+    },
+    {
+      "from": "agentic-global-api.js",
+      "to": "window.monaco",
+      "type": "global"
+    },
+    {
+      "from": "agentic-security-hardening.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "agentic-security-hardening.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "agentic-security-hardening.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "agentic-security-hardening.js",
+      "to": "crypto",
+      "type": "require"
+    },
+    {
+      "from": "agentic-security-hardening.js",
+      "to": "./runtime-hardeners/platform-specific-fixes",
+      "type": "require"
+    },
+    {
+      "from": "agentic-test-runner.js",
+      "to": "./enhanced-agentic-executor",
+      "type": "require"
+    },
+    {
+      "from": "ai-code-response-system.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "ai-code-review-security.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "ai-live-preview.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "ai-response-handler.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "auto-fixer.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "auto-fixer.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "automated-browser-test.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "automated-browser-test.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "automated-browser-test.js",
+      "to": "http",
+      "type": "require"
+    },
+    {
+      "from": "automated-browser-test.js",
+      "to": "puppeteer",
+      "type": "require"
+    },
+    {
+      "from": "automated-ide-tester.js",
+      "to": "window.tabSystem",
+      "type": "global"
+    },
+    {
+      "from": "automated-integration-test.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "automated-integration-test.js",
+      "to": "window.monaco",
+      "type": "global"
+    },
+    {
+      "from": "background-agent-manager.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "backwards-complete-audit.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "backwards-complete-audit.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "backwards-complete-audit.js",
+      "to": "net",
+      "type": "require"
+    },
+    {
+      "from": "backwards-integration-test.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "backwards-integration-test.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "backwards-integration-test.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "benchmark-suite.js",
+      "to": "window.tabSystem",
+      "type": "global"
+    },
+    {
+      "from": "bigdaddya-integration.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "bigdaddya-integration.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "bigdaddya-integration.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "bigdaddya-integration.js",
+      "to": "http",
+      "type": "require"
+    },
+    {
+      "from": "bigdaddya-integration.js",
+      "to": "events",
+      "type": "require"
+    },
+    {
+      "from": "bigdaddyg-agentic-core.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "bigdaddyg-agentic-core.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "bigdaddyg-agentic-core.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "bigdaddyg-agentic-core.js",
+      "to": "events",
+      "type": "require"
+    },
+    {
+      "from": "browser-integration.js",
+      "to": "electron",
+      "type": "require"
+    },
+    {
+      "from": "browser-integration.js",
+      "to": "electron",
+      "type": "require"
+    },
+    {
+      "from": "browser-integration.js",
+      "to": "electron",
+      "type": "require"
+    },
+    {
+      "from": "browser-integration.js",
+      "to": "electron",
+      "type": "require"
+    },
+    {
+      "from": "browser-integration.js",
+      "to": "electron",
+      "type": "require"
+    },
+    {
+      "from": "browser-integration.js",
+      "to": "electron",
+      "type": "require"
+    },
+    {
+      "from": "browser-integration.js",
+      "to": "electron",
+      "type": "require"
+    },
+    {
+      "from": "browser-integration.js",
+      "to": "electron",
+      "type": "require"
+    },
+    {
+      "from": "browser-stress-runner.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "browser-stress-runner.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "browser-stress-runner.js",
+      "to": "http",
+      "type": "require"
+    },
+    {
+      "from": "browser-stress-runner.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "browser-stress-runner.js",
+      "to": "puppeteer",
+      "type": "require"
+    },
+    {
+      "from": "browser-view.js",
+      "to": "electron",
+      "type": "require"
+    },
+    {
+      "from": "browser-view.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "browser-view.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "browser-view.js",
+      "to": "electron",
+      "type": "require"
+    },
+    {
+      "from": "browser-view.js",
+      "to": "os",
+      "type": "require"
+    },
+    {
+      "from": "built-in-local-ai.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "built-in-local-ai.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "built-in-local-ai.js",
+      "to": "https",
+      "type": "require"
+    },
+    {
+      "from": "built-in-local-ai.js",
+      "to": "http",
+      "type": "require"
+    },
+    {
+      "from": "chameleon-theme.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "chaos-random-audit.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "chaos-random-audit.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "cognitive-modes/cli.js",
+      "to": "./mode-manager.js",
+      "type": "require"
+    },
+    {
+      "from": "cognitive-modes/cli.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "cognitive-modes/cli.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "cognitive-modes/cli.js",
+      "to": "readline",
+      "type": "require"
+    },
+    {
+      "from": "cognitive-modes/ide-integration.js",
+      "to": "window.tabSystem",
+      "type": "global"
+    },
+    {
+      "from": "cognitive-modes/ide-integration.js",
+      "to": "window.aiSystem",
+      "type": "global"
+    },
+    {
+      "from": "cognitive-modes/ide-integration.js",
+      "to": "window.cognitiveModeManager",
+      "type": "global"
+    },
+    {
+      "from": "cognitive-modes/mode-manager.js",
+      "to": "events",
+      "type": "require"
+    },
+    {
+      "from": "cognitive-modes/mode-manager.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "cognitive-modes/mode-manager.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "command-system.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "complete-debugger-integration.js",
+      "to": "electron",
+      "type": "require"
+    },
+    {
+      "from": "complete-debugger-integration.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "complete-integration-fixer.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "complete-integration-fixer.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "comprehensive-agentic-test.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "comprehensive-agentic-test.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "comprehensive-cli-tester.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "comprehensive-cli-tester.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "comprehensive-cli-tester.js",
+      "to": "../package.json",
+      "type": "require"
+    },
+    {
+      "from": "comprehensive-cli.js",
+      "to": "window.tabSystem",
+      "type": "global"
+    },
+    {
+      "from": "comprehensive-enhancement-audit.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "comprehensive-enhancement-audit.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "comprehensive-health-checker.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "comprehensive-validation.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "comprehensive-validation.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "connection-fixer.js",
+      "to": "window.tabSystem",
+      "type": "global"
+    },
+    {
+      "from": "connection-fixer.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "container-runtime.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "container-runtime.js",
+      "to": "util",
+      "type": "require"
+    },
+    {
+      "from": "container-runtime.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "container-runtime.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "container-runtime.js",
+      "to": "crypto",
+      "type": "require"
+    },
+    {
+      "from": "context-menu-executor.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "context-menu-manager.js",
+      "to": "electron",
+      "type": "require"
+    },
+    {
+      "from": "css-optimizer.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "css-optimizer.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "dashboard-view.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "dashboard-view.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "debug-browser-test.js",
+      "to": "puppeteer",
+      "type": "require"
+    },
+    {
+      "from": "debug-browser-test.js",
+      "to": "http",
+      "type": "require"
+    },
+    {
+      "from": "debug-browser-test.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "debug-browser-test.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "deep-issue-scanner.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "deep-issue-scanner.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "demo-launcher.js",
+      "to": "window.tabSystem",
+      "type": "global"
+    },
+    {
+      "from": "diagnose-monaco.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "eliminate-all-placeholders.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "eliminate-all-placeholders.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "enhanced-agentic-ui.js",
+      "to": "window.monaco",
+      "type": "global"
+    },
+    {
+      "from": "enhanced-placeholder-debugger.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "enhanced-terminal.js",
+      "to": "electron",
+      "type": "require"
+    },
+    {
+      "from": "error-handler-fixer.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "error-handler-fixer.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "explorer-integration.js",
+      "to": "window.tabSystem",
+      "type": "global"
+    },
+    {
+      "from": "explorer-integration.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "explorer-integration.js",
+      "to": "window.monaco",
+      "type": "global"
+    },
+    {
+      "from": "extension-host/complete-extension-host.js",
+      "to": "events",
+      "type": "require"
+    },
+    {
+      "from": "extension-host/complete-extension-host.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "extension-host/complete-extension-host.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "extension-manager.js",
+      "to": "events",
+      "type": "require"
+    },
+    {
+      "from": "file-explorer.js",
+      "to": "window.tabSystem",
+      "type": "global"
+    },
+    {
+      "from": "file-tree.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "file-tree.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "file-tree.js",
+      "to": "os",
+      "type": "require"
+    },
+    {
+      "from": "file-tree.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "file-tree.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "file-tree.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "file-tree.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "final-issues-fixer.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "final-issues-fixer.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "final-production-verification.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "final-production-verification.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "forward-complete-audit.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "forward-complete-audit.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "forward-complete-audit.js",
+      "to": "net",
+      "type": "require"
+    },
+    {
+      "from": "frontend-ux-tester.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "frontend-ux-tester.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "full-agentic-demo.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "game-dev-integration-tester.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "game-dev-integration-tester.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "game-dev-integration-tester.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "game-editor/asset-preview-system.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "game-editor/asset-preview-system.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "game-project-detector.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "game-project-detector.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "github-integration.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "godot-complete-integration.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "godot-complete-integration.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "godot-complete-integration.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "godot-complete-integration.js",
+      "to": "events",
+      "type": "require"
+    },
+    {
+      "from": "godot-integration.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "godot-integration.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "godot-integration.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "hardening/rck-bootstrap.js",
+      "to": "crypto",
+      "type": "require"
+    },
+    {
+      "from": "hardening/rck-bootstrap.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "hardening/rck-bootstrap.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "hardening/rck-bootstrap.js",
+      "to": "os",
+      "type": "require"
+    },
+    {
+      "from": "hardening/rck-enhanced.js",
+      "to": "crypto",
+      "type": "require"
+    },
+    {
+      "from": "hardening/rck-enhanced.js",
+      "to": "events",
+      "type": "require"
+    },
+    {
+      "from": "hardening/rck-enhanced.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "hardening/rck-enhanced.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "hot-reload-manager.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "hot-reload-manager.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "hot-reload-manager.js",
+      "to": "chokidar",
+      "type": "require"
+    },
+    {
+      "from": "hotkey-manager.js",
+      "to": "window.tabSystem",
+      "type": "global"
+    },
+    {
+      "from": "hotkey-manager.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "ide-comparison-tester.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "ide-comparison-tester.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "image-generation.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "immediate-diagnostics.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "immediate-diagnostics.js",
+      "to": "window.monaco",
+      "type": "global"
+    },
+    {
+      "from": "integration-wiring-tester.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "integration-wiring-tester.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "intellij-system/intellij-system.js",
+      "to": "./code-analysis-engine.js",
+      "type": "require"
+    },
+    {
+      "from": "intellij-system/intellij-system.js",
+      "to": "./refactoring-engine.js",
+      "type": "require"
+    },
+    {
+      "from": "intellij-system/intellij-system.js",
+      "to": "./smart-navigation.js",
+      "type": "require"
+    },
+    {
+      "from": "intellij-system/intellij-system.js",
+      "to": "./code-inspections.js",
+      "type": "require"
+    },
+    {
+      "from": "ipc-server.js",
+      "to": "net",
+      "type": "require"
+    },
+    {
+      "from": "ipc-server.js",
+      "to": "window.tabSystem",
+      "type": "global"
+    },
+    {
+      "from": "logger.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "logger.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "logger.js",
+      "to": "electron",
+      "type": "require"
+    },
+    {
+      "from": "lsp-client.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "lsp-client.js",
+      "to": "events",
+      "type": "require"
+    },
+    {
+      "from": "main-simple.js",
+      "to": "electron",
+      "type": "require"
+    },
+    {
+      "from": "main-simple.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "main-simple.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "main-test.js",
+      "to": "electron",
+      "type": "require"
+    },
+    {
+      "from": "main-working.js",
+      "to": "electron",
+      "type": "require"
+    },
+    {
+      "from": "main-working.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "electron",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "./ipc-server",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "http",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "./security/path-utils",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "electron-window-state",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "./browser-view",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "./safe-mode-detector",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "./memory-service",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "./native-ollama-node",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "./bigdaddyg-agentic-core",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "./extension-host/extension-host",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "./marketplace/marketplace-client",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "./marketplace/extension-manager",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "./settings/settings-importer",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "./settings/api-key-store",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "./settings/settings-service",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "../packages/agent",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "os",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "electron",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "electron",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "electron",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "os",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "electron",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "electron",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "electron",
+      "type": "require"
+    },
+    {
+      "from": "main.js",
+      "to": "os",
+      "type": "require"
+    },
+    {
+      "from": "marketplace/complete-extension-manager.js",
+      "to": "events",
+      "type": "require"
+    },
+    {
+      "from": "marketplace/complete-extension-manager.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "marketplace/complete-extension-manager.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "marketplace/complete-extension-manager.js",
+      "to": "https",
+      "type": "require"
+    },
+    {
+      "from": "marketplace/complete-extension-manager.js",
+      "to": "http",
+      "type": "require"
+    },
+    {
+      "from": "marketplace/complete-extension-manager.js",
+      "to": "crypto",
+      "type": "require"
+    },
+    {
+      "from": "marketplace/complete-extension-manager.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "marketplace/complete-marketplace-tester.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "marketplace/complete-marketplace-tester.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "marketplace/extension-manager.js",
+      "to": "events",
+      "type": "require"
+    },
+    {
+      "from": "marketplace-complete-tester.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "marketplace-complete-tester.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "massive-audit.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "massive-audit.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "massive-audit.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "master-initializer.js",
+      "to": "window.tabSystem",
+      "type": "global"
+    },
+    {
+      "from": "master-initializer.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "master-initializer.js",
+      "to": "window.monaco",
+      "type": "global"
+    },
+    {
+      "from": "mcp/tool-registry.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "mcp/tool-registry.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "mcp/tool-registry.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "mcp/tool-registry.js",
+      "to": "../container-runtime",
+      "type": "require"
+    },
+    {
+      "from": "mcp/tool-registry.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "mcp/tool-registry.js",
+      "to": "util",
+      "type": "require"
+    },
+    {
+      "from": "mcp/tool-registry.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "mcp/tool-registry.js",
+      "to": "util",
+      "type": "require"
+    },
+    {
+      "from": "memory-service.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "memory-service.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "memory-service.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "menu-bar.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "model-loader.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "model-loader.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "monaco-bootstrap-test.js",
+      "to": "window.monaco",
+      "type": "global"
+    },
+    {
+      "from": "monaco-diagnostic.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "monaco-diagnostic.js",
+      "to": "window.monaco",
+      "type": "global"
+    },
+    {
+      "from": "multi-agent/swarm-security-hardening.js",
+      "to": "crypto",
+      "type": "require"
+    },
+    {
+      "from": "multi-agent/swarm-security-hardening.js",
+      "to": "os",
+      "type": "require"
+    },
+    {
+      "from": "multi-agent/swarm-security-hardening.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "multi-agent/swarm-security-hardening.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "multi-agent-swarm.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "native-ollama-cli.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "native-ollama-cli.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "native-ollama-cli.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "native-ollama-node.js",
+      "to": "events",
+      "type": "require"
+    },
+    {
+      "from": "native-ollama-node.js",
+      "to": "./bigdaddyg-agentic-core",
+      "type": "require"
+    },
+    {
+      "from": "native-ollama-node.js",
+      "to": "electron",
+      "type": "require"
+    },
+    {
+      "from": "native-ollama-node.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "native-ollama-node.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "native-ollama-node.js",
+      "to": "crypto",
+      "type": "require"
+    },
+    {
+      "from": "neural-code-synthesis.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "neural-code-synthesis.js",
+      "to": "window.monaco",
+      "type": "global"
+    },
+    {
+      "from": "performance-modes.js",
+      "to": "electron",
+      "type": "require"
+    },
+    {
+      "from": "performance-optimizer.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "plugin-system.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "plugins/first-party-linter.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "predictive-debugger.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "preload.js",
+      "to": "electron",
+      "type": "require"
+    },
+    {
+      "from": "preload.js",
+      "to": "os",
+      "type": "require"
+    },
+    {
+      "from": "preload.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "production-readiness-validator.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "production-readiness-validator.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "production-readiness-validator.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "project-importer.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "project-importer.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "prompt-processing/prompt-processor.js",
+      "to": "events",
+      "type": "require"
+    },
+    {
+      "from": "prompt-processing/prompt-processor.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "prompt-processing/prompt-processor.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "prompt-processing/prompt-processor.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "quantum-intelligence-engine.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "quick-actions-executor.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "quick-fixes.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "quick-fixes.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "quick-health-check.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "quick-health-check.js",
+      "to": "window.monaco",
+      "type": "global"
+    },
+    {
+      "from": "recent-files-manager.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "recent-files-manager.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "recent-files-manager.js",
+      "to": "electron",
+      "type": "require"
+    },
+    {
+      "from": "renderer.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "renderer.js",
+      "to": "window.monaco",
+      "type": "global"
+    },
+    {
+      "from": "run-real-stress-test.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "run-real-stress-test.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "runtime-feature-validator.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "runtime-feature-validator.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "runtime-feature-validator.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "runtime-hardeners/platform-specific-fixes.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "runtime-hardeners/platform-specific-fixes.js",
+      "to": "util",
+      "type": "require"
+    },
+    {
+      "from": "runtime-hardeners/platform-specific-fixes.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "runtime-hardeners/platform-specific-fixes.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "runtime-hardeners/platform-specific-fixes.js",
+      "to": "os",
+      "type": "require"
+    },
+    {
+      "from": "runtime-hardeners/platform-specific-fixes.js",
+      "to": "electron",
+      "type": "require"
+    },
+    {
+      "from": "runtime-hardeners/platform-specific-fixes.js",
+      "to": "os",
+      "type": "require"
+    },
+    {
+      "from": "runtime-hardeners/platform-specific-fixes.js",
+      "to": "crypto",
+      "type": "require"
+    },
+    {
+      "from": "safe-mode-detector.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "safe-mode-detector.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "scan-and-fix.js",
+      "to": "./security-performance-scanner",
+      "type": "require"
+    },
+    {
+      "from": "scan-and-fix.js",
+      "to": "./quick-fixes",
+      "type": "require"
+    },
+    {
+      "from": "scan-and-fix.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "security/path-utils.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "security/path-utils.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "security-enhancements.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "security-manager.js",
+      "to": "crypto",
+      "type": "require"
+    },
+    {
+      "from": "security-manager.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "security-performance-enhancements.js",
+      "to": "crypto",
+      "type": "require"
+    },
+    {
+      "from": "security-performance-enhancements.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "security-performance-enhancements.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "security-performance-enhancements.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "security-performance-enhancements.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "security-performance-scanner.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "security-performance-scanner.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "settings/api-key-store.js",
+      "to": "crypto",
+      "type": "require"
+    },
+    {
+      "from": "settings/api-key-store.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "settings/api-key-store.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "settings/api-key-store.js",
+      "to": "os",
+      "type": "require"
+    },
+    {
+      "from": "settings/layout-manager.js",
+      "to": "events",
+      "type": "require"
+    },
+    {
+      "from": "settings/layout-manager.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "settings/layout-manager.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "settings/settings-service.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "settings/settings-service.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "settings/settings-service.js",
+      "to": "events",
+      "type": "require"
+    },
+    {
+      "from": "settings-applier.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "settings-manager.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "settings-manager.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "settings-manager.js",
+      "to": "electron",
+      "type": "require"
+    },
+    {
+      "from": "show-achievements.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "show-achievements.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "simple-main.js",
+      "to": "electron",
+      "type": "require"
+    },
+    {
+      "from": "simple-main.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "standalone-local-ai.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "standalone-local-ai.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "stress-test-bigdaddy.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "stress-test-bigdaddy.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "sunshine-engine.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "sunshine-engine.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "system-diagnostic.js",
+      "to": "window.tabSystem",
+      "type": "global"
+    },
+    {
+      "from": "system-diagnostic.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "system-diagnostic.js",
+      "to": "window.monaco",
+      "type": "global"
+    },
+    {
+      "from": "system-optimizer.js",
+      "to": "os",
+      "type": "require"
+    },
+    {
+      "from": "system-optimizer.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "system-optimizer.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "system-optimizer.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "system-optimizer.js",
+      "to": "electron",
+      "type": "require"
+    },
+    {
+      "from": "system-verification.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "system-verification.js",
+      "to": "window.monaco",
+      "type": "global"
+    },
+    {
+      "from": "tab-debug.js",
+      "to": "window.tabSystem",
+      "type": "global"
+    },
+    {
+      "from": "tab-system.js",
+      "to": "window.tabSystem",
+      "type": "global"
+    },
+    {
+      "from": "team-collaboration.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "terminal-panel.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "terminal-panel.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "terminal-panel.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "terminal-panel.js",
+      "to": "os",
+      "type": "require"
+    },
+    {
+      "from": "terminal-panel.js",
+      "to": "net",
+      "type": "require"
+    },
+    {
+      "from": "terminal-panel.js",
+      "to": "net",
+      "type": "require"
+    },
+    {
+      "from": "terminal-panel.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "terminal-panel.js",
+      "to": "window.monaco",
+      "type": "global"
+    },
+    {
+      "from": "test-all-fixes.js",
+      "to": "window.tabSystem",
+      "type": "global"
+    },
+    {
+      "from": "test-bigdaddy-editor.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "test-bigdaddy-editor.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "test-cursor-integration.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "test-cursor-integration.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "test-electron.js",
+      "to": "electron",
+      "type": "require"
+    },
+    {
+      "from": "test-runner.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "test-runner.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "test-runner.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "test-runner.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "test-team-collaboration.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "test-team-collaboration.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "test-visual-game-editors.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "test-visual-game-editors.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "theme-manager.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "theme-manager.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "ui/agent-panel-cursor-style.js",
+      "to": "events",
+      "type": "require"
+    },
+    {
+      "from": "ui/agent-panel-enhanced.js",
+      "to": "events",
+      "type": "require"
+    },
+    {
+      "from": "ui/extensions-panel.js",
+      "to": "events",
+      "type": "require"
+    },
+    {
+      "from": "ui/multi-agent-workspace.js",
+      "to": "express",
+      "type": "require"
+    },
+    {
+      "from": "ui/optimizer-panel.js",
+      "to": "../system-optimizer",
+      "type": "require"
+    },
+    {
+      "from": "ui-accessibility-audit.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "ui-accessibility-audit.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "ultra-extreme-stress-test.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "ultra-extreme-stress-test.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "ultra-extreme-stress-test.js",
+      "to": "perf_hooks",
+      "type": "require"
+    },
+    {
+      "from": "unity-integration.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "unity-integration.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "unity-integration.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "unreal-integration.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "unreal-integration.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "unreal-integration.js",
+      "to": "child_process",
+      "type": "require"
+    },
+    {
+      "from": "validators/ide-validator.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "validators/ide-validator.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "validators/ide-validator.js",
+      "to": "window.tabSystem",
+      "type": "global"
+    },
+    {
+      "from": "validators/ide-validator.js",
+      "to": "window.aiSystem",
+      "type": "global"
+    },
+    {
+      "from": "validators/ide-validator.js",
+      "to": "window.cognitiveModeManager",
+      "type": "global"
+    },
+    {
+      "from": "validators/ide-validator.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "validators/ide-validator.js",
+      "to": "window.monaco",
+      "type": "global"
+    },
+    {
+      "from": "visual-code-flow.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "visual-test-runner.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "visual-test-runner.js",
+      "to": "window.monaco",
+      "type": "global"
+    },
+    {
+      "from": "voice-coding-enhanced.js",
+      "to": "events",
+      "type": "require"
+    },
+    {
+      "from": "vscode-api/Range.js",
+      "to": "./Position",
+      "type": "require"
+    },
+    {
+      "from": "vscode-api/Selection.js",
+      "to": "./Range",
+      "type": "require"
+    },
+    {
+      "from": "vscode-api/Selection.js",
+      "to": "./Position",
+      "type": "require"
+    },
+    {
+      "from": "vscode-api/Uri.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "vscode-api/commands.js",
+      "to": "events",
+      "type": "require"
+    },
+    {
+      "from": "vscode-api/debug.js",
+      "to": "events",
+      "type": "require"
+    },
+    {
+      "from": "vscode-api/env.js",
+      "to": "os",
+      "type": "require"
+    },
+    {
+      "from": "vscode-api/env.js",
+      "to": "uuid",
+      "type": "require"
+    },
+    {
+      "from": "vscode-api/env.js",
+      "to": "crypto",
+      "type": "require"
+    },
+    {
+      "from": "vscode-api/extensions.js",
+      "to": "events",
+      "type": "require"
+    },
+    {
+      "from": "vscode-api/languages.js",
+      "to": "events",
+      "type": "require"
+    },
+    {
+      "from": "vscode-api/vscode-api.js",
+      "to": "events",
+      "type": "require"
+    },
+    {
+      "from": "vscode-api/vscode-api.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "vscode-api/vscode-api.js",
+      "to": "./commands",
+      "type": "require"
+    },
+    {
+      "from": "vscode-api/vscode-api.js",
+      "to": "./languages",
+      "type": "require"
+    },
+    {
+      "from": "vscode-api/vscode-api.js",
+      "to": "./window",
+      "type": "require"
+    },
+    {
+      "from": "vscode-api/vscode-api.js",
+      "to": "./workspace",
+      "type": "require"
+    },
+    {
+      "from": "vscode-api/vscode-api.js",
+      "to": "./debug",
+      "type": "require"
+    },
+    {
+      "from": "vscode-api/vscode-api.js",
+      "to": "./extensions",
+      "type": "require"
+    },
+    {
+      "from": "vscode-api/vscode-api.js",
+      "to": "./env",
+      "type": "require"
+    },
+    {
+      "from": "vscode-api/vscode-api.js",
+      "to": "./Uri",
+      "type": "require"
+    },
+    {
+      "from": "vscode-api/vscode-api.js",
+      "to": "./Range",
+      "type": "require"
+    },
+    {
+      "from": "vscode-api/vscode-api.js",
+      "to": "./Position",
+      "type": "require"
+    },
+    {
+      "from": "vscode-api/vscode-api.js",
+      "to": "./Selection",
+      "type": "require"
+    },
+    {
+      "from": "vscode-api/vscode-api.js",
+      "to": "./TextDocument",
+      "type": "require"
+    },
+    {
+      "from": "vscode-api/vscode-api.js",
+      "to": "vscode",
+      "type": "require"
+    },
+    {
+      "from": "vscode-api/window.js",
+      "to": "events",
+      "type": "require"
+    },
+    {
+      "from": "vscode-api/workspace.js",
+      "to": "events",
+      "type": "require"
+    },
+    {
+      "from": "vscode-api/workspace.js",
+      "to": "fs",
+      "type": "require"
+    },
+    {
+      "from": "vscode-api/workspace.js",
+      "to": "path",
+      "type": "require"
+    },
+    {
+      "from": "welcome-tab.js",
+      "to": "window.tabSystem",
+      "type": "global"
+    },
+    {
+      "from": "window-api-bridge.js",
+      "to": "window.editor",
+      "type": "global"
+    },
+    {
+      "from": "window-api-bridge.js",
+      "to": "window.monaco",
+      "type": "global"
+    }
+  ],
+  "issues": [
+    {
+      "severity": "HIGH",
+      "file": "index.html",
+      "issue": "Script not found: https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"
+    },
+    {
+      "severity": "HIGH",
+      "file": "index.html",
+      "issue": "Script not found: https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"
+    }
+  ],
+  "warnings": [
+    {
+      "file": "settings-manager.js",
+      "warning": "Global variable window.settingsManager may not be properly wired"
+    },
+    {
+      "file": "theme-manager.js",
+      "warning": "Global variable window.themeManager may not be properly wired"
+    },
+    {
+      "file": "cognitive-modes/mode-ui.js",
+      "warning": "Global variable window.cognitiveModeUI may not be properly wired"
+    }
+  ],
+  "manifest": {
+    "metadata": {
+      "generated": "2025-11-11T01:28:22.426Z",
+      "ide": "BigDaddyG IDE",
+      "version": "1.0.0"
+    },
+    "structure": {
+      "totalFiles": 410,
+      "javascript": 314,
+      "css": 9,
+      "dependencies": 159,
+      "connections": 505
+    },
+    "health": {
+      "critical": 0,
+      "high": 2,
+      "medium": 0,
+      "warnings": 3
+    },
+    "files": {
+      "byType": {
+        "Other": 28,
+        "JavaScript": 314,
+        "Markdown": 25,
+        "CSS": 9,
+        "JSON": 16,
+        "HTML": 13,
+        "Batch": 2,
+        "PowerShell": 2,
+        "Shell": 1
+      },
+      "bySize": {
+        "total": 6590062,
+        "average": 16073
+      }
+    },
+    "features": {
+      "cognitiveModes": true,
+      "intellijSystem": true,
+      "bigdaddyEditor": true,
+      "settingsPanel": true,
+      "themeManager": true
+    }
+  },
+  "stats": {},
+  "score": 77,
+  "timestamp": "2025-11-11T01:28:22.427Z"
+}
