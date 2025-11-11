@@ -671,4 +671,12 @@ class AssetPreviewSystem {
     }
 }
 
-module.exports = AssetPreviewSystem;
+// Browser-safe export
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = AssetPreviewSystem;
+}
+
+// Make available globally
+if (typeof window !== 'undefined') {
+    window.AssetPreviewSystem = AssetPreviewSystem;
+}

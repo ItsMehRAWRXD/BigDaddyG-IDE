@@ -120,9 +120,9 @@ class BigDaddyAIntegration extends EventEmitter {
         try {
         console.log('[BigDaddyA] Scanning for models in:', this.modelsDir);
         
-        if (!fs.existsSync(this.modelsDir)) {
-            return;
-        
+            if (!fs.existsSync(this.modelsDir)) {
+                return;
+            }
         } catch (error) {
             console.error('[bigdaddya-integration.js] scanModels error:', error);
             throw error;

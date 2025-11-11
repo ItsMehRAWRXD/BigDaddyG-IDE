@@ -3,10 +3,17 @@
  * Manages IDE settings and preferences
  */
 
-// Browser-safe requires
-const fs = (typeof require !== 'undefined' && typeof process !== 'undefined' && process.versions?.electron) ? require('fs') : null;
-const path = (typeof require !== 'undefined' && typeof process !== 'undefined' && process.versions?.electron) ? require('path') : null;
-const app = (typeof require !== 'undefined' && typeof process !== 'undefined' && process.versions?.electron) ? require('electron').app : null;
+// Browser-safe requires (use window scope to avoid redeclaration)
+if (typeof window !== 'undefined') {
+    if (!window._fsModule && typeof require !== 'undefined' && typeof process !== 'undefined' && process.versions?.electron) {
+        window._fsModule = require('fs');
+        window._pathModule = require('path');
+        window._appModule = require('electron').app;
+    }
+}
+const fs = (typeof window !== 'undefined' && window._fsModule) ? window._fsModule : null;
+const path = (typeof window !== 'undefined' && window._pathModule) ? window._pathModule : null;
+const app = (typeof window !== 'undefined' && window._appModule) ? window._appModule : null;
 
 class SettingsManager {
     constructor() {

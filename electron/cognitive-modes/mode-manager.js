@@ -11,14 +11,14 @@
  * @author BigDaddyG IDE Team + AI Family
  */
 
-// Browser-safe requires
+// Browser-safe requires (use window scope to avoid redeclaration)
 const EventEmitter = (typeof require !== 'undefined' && typeof process !== 'undefined' && process.versions?.node) ? require('events') : class EventEmitter {
     constructor() { this.events = {}; }
     on(event, listener) { (this.events[event] = this.events[event] || []).push(listener); }
     emit(event, ...args) { (this.events[event] || []).forEach(listener => listener(...args)); }
 };
-const fs = (typeof require !== 'undefined' && typeof process !== 'undefined' && process.versions?.node) ? require('fs') : null;
-const path = (typeof require !== 'undefined' && typeof process !== 'undefined' && process.versions?.node) ? require('path') : null;
+const fs = (typeof window !== 'undefined' && window._fsModule) ? window._fsModule : null;
+const path = (typeof window !== 'undefined' && window._pathModule) ? window._pathModule : null;
 
 class CognitiveModeManager extends EventEmitter {
     constructor() {

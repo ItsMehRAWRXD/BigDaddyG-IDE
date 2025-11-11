@@ -506,9 +506,9 @@ class AIProviderManager {
 
   async refreshModelCatalog() {
         try {
-    if (!window.electron?.models?.discover) {
-      return;
-    
+            if (!window.electron?.models?.discover) {
+                return;
+            }
         } catch (error) {
             console.error('[ai-provider-manager.js] refreshModelCatalog error:', error);
             throw error;

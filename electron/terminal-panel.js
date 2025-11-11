@@ -815,9 +815,16 @@ class TerminalPanel {
         
         this.ports = [];
         
+        // Browser-safe net module
+        const net = (typeof require !== 'undefined' && typeof process !== 'undefined' && process.versions?.electron) ? require('net') : null;
+        
+        if (!net) {
+            console.log('[TerminalPanel] Net module not available in browser mode');
+            return;
+        }
+        
         for (const port of commonPorts) {
             try {
-                const net = require('net');
                 const isOpen = await this.checkPort(port);
                 if (isOpen) {
                     this.ports.push({
