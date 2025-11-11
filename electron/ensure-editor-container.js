@@ -110,11 +110,8 @@
             }
         }
 
-        // Create a basic fallback editor if nothing else works
-        if (!window.editor && !window.monaco) {
-            console.log('[EditorContainer] ⚠️ No editor available, creating fallback...');
-            createFallbackEditor(monacoContainer);
-        }
+        // Don't create fallback here - bypass-monaco.js will handle it
+        console.log('[EditorContainer] ℹ️ Waiting for bypass-monaco.js to create editor...');
 
         console.log('[EditorContainer] ✅ Editor containers ready');
     }
