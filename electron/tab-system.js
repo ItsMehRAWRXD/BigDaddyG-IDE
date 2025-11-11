@@ -90,9 +90,13 @@ class TabSystem {
     }
     
     addContentPanel(tabId, content, type) {
-        const container = document.getElementById('editor-container');
+        // Try multiple container IDs
+        let container = document.getElementById('editor-container') || 
+                       document.getElementById('center-explorer-container') ||
+                       document.getElementById('main-container');
+        
         if (!container) {
-            console.error('[TabSystem] ❌ Editor container not found!');
+            console.error('[TabSystem] ❌ No suitable container found!');
             return;
         }
         
