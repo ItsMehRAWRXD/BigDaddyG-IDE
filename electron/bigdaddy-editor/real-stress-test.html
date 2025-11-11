@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔥 BigDaddy Editor - REAL Stress Test 🔥</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Consolas', 'Monaco', monospace;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .header {
+            background: #2d2d30;
+            padding: 15px 20px;
+            border-bottom: 2px solid #ff0000;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            color: #ff0000;
+            text-shadow: 0 0 10px #ff0000;
+        }
+
+        .controls {
+            background: #252526;
+            padding: 15px 20px;
+            border-bottom: 1px solid #3e3e42;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .btn {
+            background: #c42b1c;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background: #e81123;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+        }
+
+        .btn-stop {
+            background: #107c10;
+        }
+
+        .btn-stop:hover {
+            background: #10893e;
+        }
+
+        .stats {
+            background: #1e1e1e;
+            padding: 15px 20px;
+            border-bottom: 1px solid #3e3e42;
+            font-size: 12px;
+        }
+
+        .stat-row {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 5px;
+        }
+
+        .stat {
+            display: flex;
+            gap: 10px;
+        }
+
+        .stat-label {
+            color: #858585;
+        }
+
+        .stat-value {
+            color: #4ec9b0;
+            font-weight: 600;
+        }
+
+        .stat-value.critical {
+            color: #ff0000;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+
+        .test-area {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2px;
+            background: #1e1e1e;
+            overflow: auto;
+        }
+
+        .editor-instance {
+            background: #1e1e1e;
+            border: 1px solid #3e3e42;
+            position: relative;
+            min-height: 200px;
+        }
+
+        .instance-label {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 10px;
+            z-index: 1000;
+        }
+
+        .log {
+            background: #1e1e1e;
+            padding: 10px 20px;
+            max-height: 150px;
+            overflow-y: auto;
+            border-top: 2px solid #3e3e42;
+            font-size: 11px;
+        }
+
+        .log-entry {
+            padding: 2px 0;
+            font-family: 'Consolas', monospace;
+        }
+
+        .log-entry.error {
+            color: #ff0000;
+        }
+
+        .log-entry.warning {
+            color: #ffaa00;
+        }
+
+        .log-entry.success {
+            color: #4ec9b0;
+        }
+
+        .crash-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 0, 0, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            flex-direction: column;
+        }
+
+        .crash-overlay.show {
+            display: flex;
+        }
+
+        .crash-message {
+            color: white;
+            font-size: 48px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px #ffffff;
+        }
+
+        .crash-details {
+            color: white;
+            font-size: 16px;
+            text-align: center;
+            max-width: 600px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔥 BigDaddy Editor - REAL Stress Test 🔥</h1>
+            <p style="font-size: 12px; color: #858585; margin-top: 5px;">
+                Push it until it BREAKS! Find the REAL limits!
+            </p>
+        </div>
+
+        <div class="controls">
+            <button class="btn" onclick="test1Instance()">Test 1 Instance</button>
+            <button class="btn" onclick="test10Instances()">Test 10 Instances</button>
+            <button class="btn" onclick="test50Instances()">Test 50 Instances</button>
+            <button class="btn" onclick="test100Instances()">Test 100 Instances</button>
+            <button class="btn" onclick="testMassiveFile()">Load 100k Lines</button>
+            <button class="btn" onclick="testInfiniteLoop()">Infinite Insert Loop</button>
+            <button class="btn" onclick="testMemoryBomb()">Memory Bomb</button>
+            <button class="btn" onclick="testRapidOps()">10k Ops/Second</button>
+            <button class="btn btn-stop" onclick="stopTest()">🛑 STOP</button>
+            <button class="btn btn-stop" onclick="clearAll()">Clear All</button>
+        </div>
+
+        <div class="stats">
+            <div class="stat-row">
+                <div class="stat">
+                    <span class="stat-label">Instances:</span>
+                    <span class="stat-value" id="instances">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Memory:</span>
+                    <span class="stat-value" id="memory">0 MB</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">FPS:</span>
+                    <span class="stat-value" id="fps">60</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Operations:</span>
+                    <span class="stat-value" id="ops">0</span>
+                </div>
+            </div>
+            <div class="stat-row">
+                <div class="stat">
+                    <span class="stat-label">Total Lines:</span>
+                    <span class="stat-value" id="lines">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Characters:</span>
+                    <span class="stat-value" id="chars">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Status:</span>
+                    <span class="stat-value" id="status">Ready</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-area" id="test-area"></div>
+
+        <div class="log" id="log"></div>
+    </div>
+
+    <div class="crash-overlay" id="crash-overlay">
+        <div class="crash-message">💥 CRASH DETECTED 💥</div>
+        <div class="crash-details" id="crash-details"></div>
+    </div>
+
+    <!-- Load all editor modules -->
+    <script src="core.js"></script>
+    <script src="tokenizer.js"></script>
+    <script src="ai-autocomplete.js"></script>
+    <script src="shader-preview.js"></script>
+    <script src="minimap.js"></script>
+    <script src="search.js"></script>
+    <script src="core-enhanced.js"></script>
+
+    <script>
+        let editors = [];
+        let testRunning = false;
+        let operationCount = 0;
+        let startTime = Date.now();
+        let lastFPS = 60;
+        let fpsFrames = [];
+
+        // Error handling
+        window.addEventListener('error', (e) => {
+            logError(`CRASH: ${e.message} at ${e.filename}:${e.lineno}`);
+            showCrash(`${e.message}\n\nFile: ${e.filename}\nLine: ${e.lineno}\nColumn: ${e.colno}`);
+        });
+
+        window.addEventListener('unhandledrejection', (e) => {
+            logError(`UNHANDLED REJECTION: ${e.reason}`);
+            showCrash(`Promise rejection: ${e.reason}`);
+        });
+
+        // FPS monitoring
+        function measureFPS() {
+            const now = performance.now();
+            fpsFrames.push(now);
+            
+            // Keep only last second of frames
+            while (fpsFrames.length > 0 && fpsFrames[0] < now - 1000) {
+                fpsFrames.shift();
+            }
+            
+            lastFPS = fpsFrames.length;
+            document.getElementById('fps').textContent = lastFPS;
+            
+            if (lastFPS < 30) {
+                document.getElementById('fps').classList.add('critical');
+            } else {
+                document.getElementById('fps').classList.remove('critical');
+            }
+            
+            requestAnimationFrame(measureFPS);
+        }
+        measureFPS();
+
+        // Memory monitoring
+        setInterval(() => {
+            if (performance.memory) {
+                const mb = (performance.memory.usedJSHeapSize / 1024 / 1024).toFixed(1);
+                document.getElementById('memory').textContent = mb + ' MB';
+                
+                if (performance.memory.usedJSHeapSize > performance.memory.jsHeapSizeLimit * 0.9) {
+                    document.getElementById('memory').classList.add('critical');
+                    logWarning('Memory usage critical!');
+                }
+            }
+        }, 100);
+
+        // Stats update
+        function updateStats() {
+            document.getElementById('instances').textContent = editors.length;
+            
+            let totalLines = 0;
+            let totalChars = 0;
+            
+            editors.forEach(editor => {
+                try {
+                    const content = editor.getValue();
+                    totalChars += content.length;
+                    totalLines += content.split('\n').length;
+                } catch (e) {
+                    logError(`Error getting editor value: ${e.message}`);
+                }
+            });
+            
+            document.getElementById('lines').textContent = totalLines.toLocaleString();
+            document.getElementById('chars').textContent = totalChars.toLocaleString();
+            document.getElementById('ops').textContent = operationCount.toLocaleString();
+        }
+
+        // Logging
+        function log(message, type = 'info') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            document.getElementById('log').appendChild(entry);
+            document.getElementById('log').scrollTop = document.getElementById('log').scrollHeight;
+            console.log(message);
+        }
+
+        function logSuccess(msg) { log(msg, 'success'); }
+        function logWarning(msg) { log(msg, 'warning'); }
+        function logError(msg) { log(msg, 'error'); }
+
+        function showCrash(details) {
+            document.getElementById('crash-details').textContent = details;
+            document.getElementById('crash-overlay').classList.add('show');
+            document.getElementById('status').textContent = 'CRASHED';
+            document.getElementById('status').classList.add('critical');
+            testRunning = false;
+        }
+
+        // Create editor instance
+        function createEditor(index) {
+            try {
+                const container = document.createElement('div');
+                container.className = 'editor-instance';
+                container.innerHTML = `<div class="instance-label">Instance #${index}</div>`;
+                document.getElementById('test-area').appendChild(container);
+
+                const editor = new BigDaddyEditorEnhanced({
+                    container: container,
+                    value: `// Editor instance #${index}\n`,
+                    language: 'javascript',
+                    fontSize: 12,
+                    lineHeight: 18
+                });
+
+                editors.push(editor);
+                operationCount++;
+                updateStats();
+                
+                logSuccess(`Created editor #${index}`);
+                return editor;
+            } catch (e) {
+                logError(`Failed to create editor #${index}: ${e.message}`);
+                throw e;
+            }
+        }
+
+        // TEST 1: Single instance
+        async function test1Instance() {
+            if (testRunning) return;
+            testRunning = true;
+            document.getElementById('status').textContent = 'Testing 1 instance...';
+            
+            try {
+                clearAll();
+                createEditor(1);
+                logSuccess('Test 1: Single instance - PASSED');
+                document.getElementById('status').textContent = 'Test 1 passed';
+            } catch (e) {
+                logError(`Test 1 FAILED: ${e.message}`);
+                showCrash(e.stack);
+            }
+            
+            testRunning = false;
+        }
+
+        // TEST 2: 10 instances
+        async function test10Instances() {
+            if (testRunning) return;
+            testRunning = true;
+            document.getElementById('status').textContent = 'Creating 10 instances...';
+            
+            try {
+                clearAll();
+                for (let i = 1; i <= 10; i++) {
+                    createEditor(i);
+                    await new Promise(resolve => setTimeout(resolve, 50));
+                }
+                logSuccess('Test 2: 10 instances - PASSED');
+                document.getElementById('status').textContent = 'Test 2 passed';
+            } catch (e) {
+                logError(`Test 2 FAILED: ${e.message}`);
+                showCrash(e.stack);
+            }
+            
+            testRunning = false;
+        }
+
+        // TEST 3: 50 instances
+        async function test50Instances() {
+            if (testRunning) return;
+            testRunning = true;
+            document.getElementById('status').textContent = 'Creating 50 instances...';
+            
+            try {
+                clearAll();
+                for (let i = 1; i <= 50; i++) {
+                    createEditor(i);
+                    if (i % 10 === 0) {
+                        logSuccess(`Created ${i}/50 instances...`);
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                    }
+                }
+                logSuccess('Test 3: 50 instances - PASSED');
+                document.getElementById('status').textContent = 'Test 3 passed';
+            } catch (e) {
+                logError(`Test 3 FAILED at ${editors.length} instances: ${e.message}`);
+                showCrash(e.stack);
+            }
+            
+            testRunning = false;
+        }
+
+        // TEST 4: 100 instances
+        async function test100Instances() {
+            if (testRunning) return;
+            testRunning = true;
+            document.getElementById('status').textContent = 'Creating 100 instances...';
+            
+            try {
+                clearAll();
+                for (let i = 1; i <= 100; i++) {
+                    createEditor(i);
+                    if (i % 10 === 0) {
+                        logSuccess(`Created ${i}/100 instances...`);
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                    }
+                }
+                logSuccess('Test 4: 100 instances - PASSED');
+                document.getElementById('status').textContent = 'Test 4 passed - AMAZING!';
+            } catch (e) {
+                logError(`Test 4 FAILED at ${editors.length} instances: ${e.message}`);
+                showCrash(e.stack);
+            }
+            
+            testRunning = false;
+        }
+
+        // TEST 5: Massive file
+        async function testMassiveFile() {
+            if (testRunning) return;
+            testRunning = true;
+            document.getElementById('status').textContent = 'Loading 100k lines...';
+            
+            try {
+                clearAll();
+                const editor = createEditor(1);
+                
+                logSuccess('Generating 100,000 lines...');
+                let code = '// 100,000 line stress test\n\n';
+                for (let i = 0; i < 100000; i++) {
+                    code += `function test${i}() { return ${i}; }\n`;
+                    
+                    if (i % 10000 === 0 && i > 0) {
+                        logSuccess(`Generated ${i}/100,000 lines...`);
+                    }
+                }
+                
+                logSuccess('Setting value...');
+                const start = performance.now();
+                editor.setValue(code);
+                const time = performance.now() - start;
+                
+                logSuccess(`Test 5: 100k lines loaded in ${time.toFixed(2)}ms - PASSED`);
+                document.getElementById('status').textContent = `Test 5 passed (${time.toFixed(2)}ms)`;
+            } catch (e) {
+                logError(`Test 5 FAILED: ${e.message}`);
+                showCrash(e.stack);
+            }
+            
+            testRunning = false;
+            updateStats();
+        }
+
+        // TEST 6: Infinite insert loop
+        async function testInfiniteLoop() {
+            if (testRunning) return;
+            testRunning = true;
+            document.getElementById('status').textContent = 'Infinite insert loop...';
+            
+            try {
+                clearAll();
+                const editor = createEditor(1);
+                
+                logWarning('Starting infinite insert loop - press STOP to end!');
+                
+                let count = 0;
+                while (testRunning) {
+                    editor.insertText('a');
+                    count++;
+                    operationCount++;
+                    
+                    if (count % 1000 === 0) {
+                        logSuccess(`Inserted ${count} characters...`);
+                        updateStats();
+                        await new Promise(resolve => setTimeout(resolve, 0));
+                    }
+                }
+                
+                logSuccess(`Test 6: ${count} inserts completed`);
+            } catch (e) {
+                logError(`Test 6 FAILED after ${operationCount} ops: ${e.message}`);
+                showCrash(e.stack);
+            }
+            
+            testRunning = false;
+        }
+
+        // TEST 7: Memory bomb
+        async function testMemoryBomb() {
+            if (testRunning) return;
+            testRunning = true;
+            document.getElementById('status').textContent = 'Memory bomb...';
+            
+            try {
+                clearAll();
+                logWarning('Creating massive strings until crash...');
+                
+                const editor = createEditor(1);
+                let size = 1000;
+                
+                while (testRunning) {
+                    const text = 'x'.repeat(size);
+                    editor.insertText(text);
+                    operationCount++;
+                    
+                    logSuccess(`Added ${size} chars (total: ${editor.getValue().length})`);
+                    updateStats();
+                    
+                    size *= 2; // Double each time
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+            } catch (e) {
+                logError(`Test 7 CRASHED: ${e.message}`);
+                showCrash(e.stack);
+            }
+            
+            testRunning = false;
+        }
+
+        // TEST 8: Rapid operations
+        async function testRapidOps() {
+            if (testRunning) return;
+            testRunning = true;
+            document.getElementById('status').textContent = '10k ops/second...';
+            
+            try {
+                clearAll();
+                const editor = createEditor(1);
+                
+                logWarning('Starting rapid operations test...');
+                
+                const operations = ['insert', 'delete', 'undo', 'redo'];
+                let count = 0;
+                const startTime = performance.now();
+                
+                while (testRunning && count < 100000) {
+                    const op = operations[Math.floor(Math.random() * operations.length)];
+                    
+                    try {
+                        switch (op) {
+                            case 'insert':
+                                editor.insertText('x');
+                                break;
+                            case 'delete':
+                                if (editor.getValue().length > 0) {
+                                    editor.handleBackspace();
+                                }
+                                break;
+                            case 'undo':
+                                editor.undo();
+                                break;
+                            case 'redo':
+                                editor.redo();
+                                break;
+                        }
+                        count++;
+                        operationCount++;
+                    } catch (e) {
+                        logError(`Operation ${op} failed: ${e.message}`);
+                    }
+                    
+                    if (count % 10000 === 0) {
+                        const elapsed = (performance.now() - startTime) / 1000;
+                        const opsPerSec = Math.floor(count / elapsed);
+                        logSuccess(`${count} ops (${opsPerSec} ops/sec)`);
+                        updateStats();
+                        await new Promise(resolve => setTimeout(resolve, 0));
+                    }
+                }
+                
+                const totalTime = (performance.now() - startTime) / 1000;
+                const opsPerSec = Math.floor(count / totalTime);
+                logSuccess(`Test 8: ${count} operations at ${opsPerSec} ops/sec - PASSED`);
+                document.getElementById('status').textContent = `Test 8 passed (${opsPerSec} ops/sec)`;
+            } catch (e) {
+                logError(`Test 8 FAILED: ${e.message}`);
+                showCrash(e.stack);
+            }
+            
+            testRunning = false;
+        }
+
+        // Stop test
+        function stopTest() {
+            testRunning = false;
+            logWarning('Test stopped by user');
+            document.getElementById('status').textContent = 'Stopped';
+        }
+
+        // Clear all
+        function clearAll() {
+            editors.forEach(editor => {
+                try {
+                    editor.destroy();
+                } catch (e) {
+                    logError(`Error destroying editor: ${e.message}`);
+                }
+            });
+            editors = [];
+            document.getElementById('test-area').innerHTML = '';
+            document.getElementById('crash-overlay').classList.remove('show');
+            operationCount = 0;
+            updateStats();
+            logSuccess('Cleared all editors');
+        }
+
+        // Initial log
+        log('🔥 REAL STRESS TEST READY - Let\'s find the breaking point!', 'success');
+        log('⚠️  WARNING: These tests will push the editor to its limits!', 'warning');
+    </script>
+</body>
+</html>
