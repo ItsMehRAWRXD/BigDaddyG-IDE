@@ -145,13 +145,16 @@ class SafeModeDetector {
     }
     
     getHTMLFile() {
-        // Check if safe mode is enabled
-        if (this.config.SafeMode.enabled === 'true' || this.config.SafeMode.enabled === true) {
-            console.log('[SafeMode] 🛡️ SAFE MODE ENABLED - Using fallback HTML');
-            return this.config.SafeMode.last_working_html;
-        }
+        // FORCE INDEX.HTML - SAFE MODE DISABLED
+        console.log('[SafeMode] 🚀 FORCING INDEX.HTML - Safe mode bypassed');
+        return 'index.html';
         
-        return this.config.IDE.html_file;
+        // Original code disabled:
+        // if (this.config.SafeMode.enabled === 'true' || this.config.SafeMode.enabled === true) {
+        //     console.log('[SafeMode] 🛡️ SAFE MODE ENABLED - Using fallback HTML');
+        //     return this.config.SafeMode.last_working_html;
+        // }
+        // return this.config.IDE.html_file;
     }
     
     reportSuccess(htmlFile) {
@@ -166,25 +169,23 @@ class SafeModeDetector {
     }
     
     reportFailure(htmlFile) {
-        console.log(`[SafeMode] ❌ Failure detected: ${htmlFile}`);
+        console.log(`[SafeMode] ⚠️ Failure detected but IGNORING (safe mode disabled): ${htmlFile}`);
         
-        // Increment failure count
-        let count = parseInt(this.config.SafeMode.failure_count) || 0;
-        count++;
-        this.config.SafeMode.failure_count = count;
+        // SAFE MODE DISABLED - Don't increment failure count or enable safe mode
+        // Just log and ignore
         
-        const threshold = parseInt(this.config.SafeMode.failure_threshold) || 3;
-        
-        console.log(`[SafeMode] Failure count: ${count}/${threshold}`);
-        
-        // Enable safe mode if threshold reached
-        if (count >= threshold) {
-            console.log('[SafeMode] 🛡️ THRESHOLD REACHED - Enabling Safe Mode');
-            this.config.SafeMode.enabled = true;
-            this.config.IDE.html_file = this.config.SafeMode.last_working_html;
-        }
-        
-        this.saveConfig();
+        // Original code disabled:
+        // let count = parseInt(this.config.SafeMode.failure_count) || 0;
+        // count++;
+        // this.config.SafeMode.failure_count = count;
+        // const threshold = parseInt(this.config.SafeMode.failure_threshold) || 3;
+        // console.log(`[SafeMode] Failure count: ${count}/${threshold}`);
+        // if (count >= threshold) {
+        //     console.log('[SafeMode] 🛡️ THRESHOLD REACHED - Enabling Safe Mode');
+        //     this.config.SafeMode.enabled = true;
+        //     this.config.IDE.html_file = this.config.SafeMode.last_working_html;
+        // }
+        // this.saveConfig();
     }
     
     enableSafeMode() {
