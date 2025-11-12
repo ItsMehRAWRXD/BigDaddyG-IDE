@@ -253,6 +253,36 @@
         }, 3000);
     </script>
     
+    <!-- WINDOW CONTROLS -->
+    <script>
+        // Window control functions
+        function minimizeWindow() {
+            if (window.electron && window.electron.ipcRenderer) {
+                window.electron.ipcRenderer.send('window-minimize');
+            } else {
+                console.log('[Window] Minimize window');
+            }
+        }
+        
+        function maximizeWindow() {
+            if (window.electron && window.electron.ipcRenderer) {
+                window.electron.ipcRenderer.send('window-maximize');
+            } else {
+                console.log('[Window] Maximize window');
+            }
+        }
+        
+        function closeWindow() {
+            if (window.electron && window.electron.ipcRenderer) {
+                window.electron.ipcRenderer.send('window-close');
+            } else {
+                console.log('[Window] Close window');
+            }
+        }
+        
+        console.log('[Window] ✅ Window controls loaded');
+    </script>
+    
     <!-- MENU BAR FUNCTIONALITY -->
     <script src="menu-system.js" defer></script>
     
