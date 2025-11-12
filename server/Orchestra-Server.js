@@ -1622,6 +1622,107 @@ Return relevant memory IDs, comma-separated (max 5).`;
 });
 
 // ============================================================================
+// MISSING ENDPOINTS - AGENTIC CODE GENERATION & IMAGE GENERATION
+// ============================================================================
+
+// Agentic Code Generation - Generate code from natural language task
+app.post('/api/agentic-code', async (req, res) => {
+  const { task, language = 'javascript', context = '' } = req.body;
+  
+  if (!task) {
+    return res.status(400).json({ error: 'Task required' });
+  }
+  
+  try {
+    console.log(`[Orchestra] 🤖 Agentic code generation: "${task}"`);
+    
+    const prompt = `You are an expert code generator. Generate production-ready code for this task:
+
+TASK: ${task}
+
+${language ? `LANGUAGE: ${language}` : ''}
+${context ? `CONTEXT: ${context}` : ''}
+
+Requirements:
+1. Generate COMPLETE, working code
+2. Include proper error handling
+3. Add helpful comments
+4. Follow best practices for ${language}
+5. Make it production-ready
+
+Respond with ONLY the code, no explanations.`;
+
+    const response = await processBigDaddyGRequest('bigdaddyg:coder', prompt, false);
+    const code = extractContentFromResponse(response);
+    
+    // Extract code from markdown code blocks if present
+    let cleanCode = code;
+    const codeBlockMatch = code.match(/```[\w]*\n([\s\S]*?)\n```/);
+    if (codeBlockMatch) {
+      cleanCode = codeBlockMatch[1];
+    }
+    
+    res.json({
+      task,
+      code: cleanCode,
+      language,
+      model: 'bigdaddyg:coder',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('[Orchestra] /api/agentic-code error:', error);
+    res.status(500).json({ 
+      error: error.message || 'Code generation failed',
+      code: `// Error generating code: ${error.message}\n// Task: ${task}`
+    });
+  }
+});
+
+// Image Generation - Generate images from text descriptions
+app.post('/api/generate-image', async (req, res) => {
+  const { prompt, style = 'realistic', size = '512x512' } = req.body;
+  
+  if (!prompt) {
+    return res.status(400).json({ error: 'Prompt required' });
+  }
+  
+  try {
+    console.log(`[Orchestra] 🎨 Image generation: "${prompt}"`);
+    
+    // For now, use AI to describe what the image would look like
+    // In production, this would call Stable Diffusion or DALL-E
+    const descriptionPrompt = `Describe in detail what an AI-generated image would look like for this prompt:
+"${prompt}"
+
+Style: ${style}
+Size: ${size}
+
+Provide a vivid, detailed description as if you're viewing the actual generated image.`;
+
+    const response = await processBigDaddyGRequest('bigdaddyg:latest', descriptionPrompt, false);
+    const description = extractContentFromResponse(response);
+    
+    // Return placeholder data structure
+    // TODO: Integrate with Stable Diffusion API or similar
+    res.json({
+      prompt,
+      style,
+      size,
+      description,
+      status: 'generated',
+      image_url: null, // Would contain actual image URL in production
+      note: 'Image generation requires Stable Diffusion/DALL-E integration. Currently returning AI description.',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('[Orchestra] /api/generate-image error:', error);
+    res.status(500).json({ 
+      error: error.message || 'Image generation failed'
+    });
+  }
+});
+
+// ============================================================================
 // START SERVER
 // ============================================================================
 
