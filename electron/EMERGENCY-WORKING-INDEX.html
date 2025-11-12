@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BigDaddyG IDE - EMERGENCY WORKING VERSION</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0a0a1e;
+            color: #fff;
+            overflow: hidden;
+        }
+        
+        #app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100vw;
+            background: #0a0a1e;
+        }
+        
+        #title-bar {
+            height: 35px;
+            background: #05050f;
+            border-bottom: 2px solid #00d4ff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 15px;
+        }
+        
+        .title {
+            font-size: 14px;
+            color: #00d4ff;
+            font-weight: bold;
+        }
+        
+        #menu-bar {
+            height: 30px;
+            background: #05050f;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.3);
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            gap: 15px;
+            font-size: 13px;
+        }
+        
+        .menu-item {
+            padding: 5px 12px;
+            cursor: pointer;
+            color: #ccc;
+            transition: all 0.2s;
+        }
+        
+        .menu-item:hover {
+            background: rgba(0, 212, 255, 0.2);
+            border-radius: 4px;
+        }
+        
+        #main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: #0a0a1e !important;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* FORCE VISIBILITY */
+        #master-tab-bar {
+            background: #1a1a2e !important;
+            min-height: 45px !important;
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        #master-tab-content {
+            background: #0a0a1e !important;
+            flex: 1 !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            overflow: auto !important;
+        }
+        
+        .unified-tab-content {
+            background: #0a0a1e !important;
+            color: #fff !important;
+            display: none;
+        }
+        
+        .unified-tab-content[style*="display: block"] {
+            display: block !important;
+            visibility: visible !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Title Bar -->
+        <div id="title-bar">
+            <div class="title">🌌 BigDaddyG IDE - EMERGENCY WORKING VERSION</div>
+        </div>
+        
+        <!-- Menu Bar -->
+        <div id="menu-bar">
+            <div class="menu-item">File</div>
+            <div class="menu-item">Edit</div>
+            <div class="menu-item">View</div>
+            <div class="menu-item" onclick="alert('Press Ctrl+T to create tabs!\n\nAvailable:\n- Code Editor\n- AI Chat\n- Settings\n- Marketplace\n- And more!')">Help</div>
+        </div>
+        
+        <!-- Main Container -->
+        <div id="main-container" style="flex: 1; display: flex; flex-direction: column; background: #0a0a1e;">
+            <!-- Tab system will populate this -->
+            <div style="padding: 50px; text-align: center; color: #888; display: none;" id="loading-indicator">
+                <h2 style="color: #00d4ff; font-size: 32px; margin-bottom: 20px;">Loading Tab System...</h2>
+                <p>If this message persists, check console (F12)</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Load ONLY tab system -->
+    <script src="complete-tab-system.js"></script>
+    
+    <!-- Debug script -->
+    <script>
+        console.log('🎯 EMERGENCY VERSION LOADING...');
+        console.log('App container:', document.getElementById('app'));
+        console.log('Main container:', document.getElementById('main-container'));
+        
+        // Show loading indicator initially
+        setTimeout(() => {
+            const loader = document.getElementById('loading-indicator');
+            if (loader) loader.style.display = 'block';
+        }, 100);
+        
+        // Hide loading indicator when tab system ready
+        window.addEventListener('tab-system-ready', () => {
+            console.log('✅ Tab system ready event received');
+            const loader = document.getElementById('loading-indicator');
+            if (loader) loader.style.display = 'none';
+        });
+        
+        // After 3 seconds, check what happened
+        setTimeout(() => {
+            console.log('=== 3 SECOND CHECK ===');
+            console.log('Tab system loaded:', !!window.completeTabSystem);
+            console.log('Tabs created:', window.completeTabSystem?.tabs.size);
+            console.log('Tab bar exists:', !!document.getElementById('master-tab-bar'));
+            console.log('Tab content exists:', !!document.getElementById('master-tab-content'));
+            
+            const mainContainer = document.getElementById('main-container');
+            if (mainContainer) {
+                console.log('Main container background:', window.getComputedStyle(mainContainer).background);
+                console.log('Main container display:', window.getComputedStyle(mainContainer).display);
+                console.log('Main container height:', window.getComputedStyle(mainContainer).height);
+                console.log('Main container children:', mainContainer.children.length);
+            }
+            
+            // If tab system didn't load, show error
+            if (!window.completeTabSystem) {
+                document.getElementById('main-container').innerHTML = `
+                    <div style="padding: 50px; text-align: center;">
+                        <h1 style="color: #ff4757; font-size: 48px; margin-bottom: 20px;">❌ Tab System Failed</h1>
+                        <p style="color: #888; font-size: 18px; margin-bottom: 30px;">Check console (F12) for errors</p>
+                        <button onclick="location.reload()" style="
+                            padding: 15px 30px;
+                            background: #00d4ff;
+                            color: #000;
+                            border: none;
+                            border-radius: 8px;
+                            font-size: 16px;
+                            font-weight: bold;
+                            cursor: pointer;
+                        ">Reload IDE</button>
+                    </div>
+                `;
+            } else {
+                console.log('✅ Tab system loaded successfully!');
+            }
+        }, 3000);
+    </script>
+</body>
+</html>
