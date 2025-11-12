@@ -8,7 +8,7 @@
     <!-- Dependencies -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Use a stable version of Monaco -->
-    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.48.0/min/vs/loader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.48.0/min/vs/loader.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.1/marked.min.js"></script>
     
     <script>
@@ -461,18 +461,46 @@
     // --- Editor Initialization ---
 
     function initMonacoEditor() {
-        setStatus('Loading editor...', 'warn');
-        
+        setStatus('Loading Monaco Editor...', 'thinking');
+
+        if (editor && typeof editor.dispose === 'function') {
+            try {
+                editor.dispose();
+            } catch (disposeError) {
+                console.warn('Monaco dispose error:', disposeError);
+            }
+            editor = null;
+        }
+
         require.config({
             paths: {
                 vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.48.0/min/vs'
-            }
+            },
+            waitSeconds: 30
         });
-        
-        require(['vs/editor/editor.main'], () => {
-            const initialCode = localStorage.getItem('wb-code') || `// Welcome to the Agentic Developer Workbench!
+
+        require.onError = (err) => {
+            console.error('Monaco Loader Error:', err);
+            setStatus(`Failed to load editor: ${err?.message || 'Network error'}`, 'error');
+            renderChat(`
+**❌ Editor Failed to Load**
+
+**Cause**: Could not load Monaco Editor from CDN.
+
+**Solutions**:
+1. **Check your internet connection**
+2. **Try refreshing the page** (Ctrl+R)
+3. **If behind a firewall**, download Monaco locally
+
+**Technical Details**: ${err?.message || 'Unknown network error'}
+`, 'error');
+        };
+
+        let loadAttempts = 0;
+        const maxAttempts = 3;
+
+        const initialCodeTemplate = `// Welcome to the Agentic Developer Workbench!
 // Use the chat on the right to interact with the multi-agent system.
-// Agents will analyze this code and provide a complete implementation.
 
 function calculate(a, b) {
     // Current function is empty.
@@ -484,32 +512,74 @@ function calculate(a, b) {
 }
 `;
 
-            editor = monaco.editor.create(el('#editor'), {
-                value: initialCode,
-                language: 'javascript',
-                theme: 'vs-dark',
-                automaticLayout: true,
-                fontSize: 14,
-                fontFamily: 'Fira Code, ui-monospace, SFMono-Regular, Menlo, Monaco, monospace',
-                fontLigatures: true,
-                minimap: { enabled: true },
-                scrollBeyondLastLine: false,
+        function useFallbackEditor() {
+            const editorDiv = el('#editor');
+            editorDiv.innerHTML = `
+                <textarea id="fallback-editor" 
+                    style="width:100%; height:100%; background:#0f172a; color:#e2e8f0; border:none; padding:1rem; font-family:monospace; font-size:14px;"
+                    placeholder="Monaco Editor failed to load. Fallback editor active."
+                >${localStorage.getItem('wb-code') || initialCodeTemplate}</textarea>
+            `;
+            
+            const fallback = el('#fallback-editor');
+            fallback.addEventListener('input', () => {
+                localStorage.setItem('wb-code', fallback.value);
             });
+            
+            editor = null;
+            renderChat('⚠️ **Using Fallback Editor** - Monaco failed to load. Basic functionality only.', 'warn');
+        }
 
-            editor.onDidChangeCursorPosition(e => {
-                const pos = e.position;
-                el('#cursor-pos').textContent = `Ln ${pos.lineNumber}, Col ${pos.column}`;
+        function loadMonaco() {
+            loadAttempts++;
+
+            require(['vs/editor/editor.main'], () => {
+                const initialCode = localStorage.getItem('wb-code') || initialCodeTemplate;
+
+                editor = monaco.editor.create(el('#editor'), {
+                    value: initialCode,
+                    language: 'javascript',
+                    theme: 'vs-dark',
+                    automaticLayout: true,
+                    fontSize: 14,
+                    fontFamily: 'Fira Code, ui-monospace, SFMono-Regular, Menlo, Monaco, monospace',
+                    fontLigatures: true,
+                    minimap: { enabled: true },
+                    scrollBeyondLastLine: false,
+                    wordWrap: 'on',
+                    wrappingIndent: 'indent'
+                });
+
+                editor.onDidChangeCursorPosition(e => {
+                    const pos = e.position;
+                    el('#cursor-pos').textContent = `Ln ${pos.lineNumber}, Col ${pos.column}`;
+                });
+
+                editor.onDidChangeModelContent(() => {
+                    clearTimeout(updateTimer);
+                    updateTimer = setTimeout(() => {
+                        try {
+                            localStorage.setItem('wb-code', editor.getValue());
+                        } catch (storageError) {
+                            console.warn('Failed to persist editor content:', storageError);
+                        }
+                    }, 500);
+                });
+
+                setStatus('Editor ready', 'ok');
+            }, (err) => {
+                console.error(`Monaco load attempt ${loadAttempts} failed:`, err);
+                if (loadAttempts < maxAttempts) {
+                    setStatus(`Retrying editor load... (${loadAttempts}/${maxAttempts})`, 'warn');
+                    setTimeout(loadMonaco, 1000);
+                } else {
+                    setStatus('Editor load failed. Using fallback.', 'error');
+                    useFallbackEditor();
+                }
             });
+        }
 
-            editor.onDidChangeModelContent(() => {
-                clearTimeout(updateTimer);
-                updateTimer = setTimeout(() => {
-                    localStorage.setItem('wb-code', editor.getValue());
-                }, 500);
-            });
-
-            setStatus('Editor ready', 'ok');
-        });
+        loadMonaco();
     }
 
     // --- Main Application Entry Point ---
