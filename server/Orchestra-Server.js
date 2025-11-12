@@ -476,13 +476,13 @@ async function processBigDaddyGChat(model, messages = [], stream) {
   };
 }
 
-// REAL Ollama response with smart model fallback
+// REAL Ollama response - uses SELECTED model or smart fallback
 async function generateBigDaddyGResponse(prompt = '', modelInfo, modelKey) {
   const fallbackInfo = BIGDADDYG_MODELS[DEFAULT_MODEL];
   const info = modelInfo || fallbackInfo || { name: modelKey || DEFAULT_MODEL, type: 'general' };
   const sanitizedPrompt = typeof prompt === 'string' ? prompt : '';
 
-  // Map BigDaddyG model names to real Ollama models
+  // ONLY map BigDaddyG aliases - use real model names as-is
   const modelMapping = {
     'bigdaddyg:latest': 'llama3',
     'bigdaddyg:coder': 'codellama',
@@ -491,11 +491,11 @@ async function generateBigDaddyGResponse(prompt = '', modelInfo, modelKey) {
     'bigdaddyg:asm': 'codellama'
   };
 
-  // Get real Ollama model name
+  // If it's a BigDaddyG alias, map it. Otherwise use as-is (respects user selection!)
   let ollamaModel = modelMapping[modelKey] || modelKey || 'llama3';
   
-  // List of fallback models to try in order
-  const fallbackModels = ['llama3', 'llama2', 'codellama', 'mistral', 'phi', 'gemma'];
+  // List of fallback models to try ONLY if selected model fails
+  const fallbackModels = ['llama3', 'llama2', 'codellama', 'mistral', 'phi3', 'gemma'];
 
   try {
     console.log(`[Orchestra] 🤖 Calling Ollama with model: ${ollamaModel} (mapped from ${modelKey})`);
