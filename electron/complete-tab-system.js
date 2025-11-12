@@ -1285,10 +1285,17 @@ hello();"></textarea>
         const status = document.getElementById(`${agenticId}-status`);
         const outputDiv = document.getElementById(`${agenticId}-output`);
         const logDiv = document.getElementById(`${agenticId}-log`);
+        const modelSelect = document.getElementById(`${agenticId}-model`);
         
         if (!textarea || !button || !status) {
             console.error('[TabSystem] Agentic Coding elements not found');
             return;
+        }
+        
+        // Load models into selector
+        if (modelSelect) {
+            this.loadModelsIntoSelector(modelSelect, null);
+            console.log('[TabSystem] ✅ Loading models for Agentic Coding tab');
         }
         
         const log = (message, color = '#00d4ff') => {
