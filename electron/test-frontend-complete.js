@@ -754,7 +754,7 @@ class FrontEndTestSuite {
     }
 }
 
-// Make globally available for manual testing
+// Make globally available for manual testing ONLY
 window.runFrontEndTests = async () => {
     console.log('🧪 [FrontEndTest] Starting tests...');
     const tester = new FrontEndTestSuite();
@@ -762,7 +762,7 @@ window.runFrontEndTests = async () => {
     return window.testResults;
 };
 
-// Add button handler
+// Add button handler (NO auto-run)
 window.addEventListener('load', () => {
     setTimeout(() => {
         const btn = document.getElementById('run-tests-btn');
@@ -783,13 +783,14 @@ window.addEventListener('load', () => {
                     btn.style.background = '#00d4ff';
                 }, 3000);
             });
-            console.log('🧪 [FrontEndTest] Test button ready - Click "🧪 Run Tests" in menu bar');
         }
     }, 1000);
 });
 
-console.log('🧪 [FrontEndTest] Test suite loaded');
-console.log('🧪 [FrontEndTest] Click "🧪 Run Tests" button in menu bar OR');
-console.log('🧪 [FrontEndTest] Run in console: window.runFrontEndTests()');
+// Silent load - no console spam
+if (window.location.search.includes('debug')) {
+    console.log('🧪 [FrontEndTest] Test suite loaded (manual only)');
+    console.log('🧪 [FrontEndTest] Run via: window.runFrontEndTests() or click button');
+}
 
 })();
