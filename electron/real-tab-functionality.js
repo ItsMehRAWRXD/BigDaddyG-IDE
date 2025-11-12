@@ -19,6 +19,13 @@ class RealTabFunctionality {
      * Initialize REAL functionality for all tabs
      */
     initialize() {
+        // Wait for tab system to be ready
+        if (!window.completeTabSystem) {
+            console.log('[RealFunctionality] ⏳ Waiting for tab system...');
+            setTimeout(() => this.initialize(), 100);
+            return;
+        }
+        
         // Monitor tab activations
         const originalActivateTab = window.completeTabSystem.activateTab.bind(window.completeTabSystem);
         
