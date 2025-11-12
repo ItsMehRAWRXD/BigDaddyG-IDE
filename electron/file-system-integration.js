@@ -470,15 +470,24 @@ class FileSystemIntegration {
      */
     renderFileTreeInTab(files, containerId) {
         const container = document.getElementById(containerId);
-        if (!container) return;
+        if (!container) {
+            console.error('[FileSystem] ❌ Container not found:', containerId);
+            return;
+        }
+        
+        console.log('[FileSystem] 📋 Rendering', files.length, 'files in tab');
         
         container.innerHTML = files.map(file => {
             const icon = file.type === 'directory' ? '📁' : this.getFileIcon(file.name);
             const isDir = file.type === 'directory';
+            const escapedPath = file.path.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
             
             return `
                 <div 
                     class="file-tree-item"
+                    data-path="${escapedPath}"
+                    data-type="${file.type}"
+                    data-name="${file.name}"
                     style="
                         padding: 10px 12px;
                         cursor: pointer;
@@ -491,29 +500,44 @@ class FileSystemIntegration {
                         margin: 2px 0;
                         transition: all 0.2s;
                     "
-                    onclick="window.fileSystem.handleFileClick('${file.path.replace(/\\/g, '\\\\')}', '${file.type}')"
-                    onmouseover="this.style.background='rgba(0,212,255,0.1)'"
-                    onmouseout="this.style.background='transparent'"
+                    onclick="window.fileSystem.handleFileClick('${escapedPath}', '${file.type}')"
+                    onmouseover="this.style.background='rgba(0,212,255,0.1)'; this.style.borderLeft='3px solid #00d4ff'"
+                    onmouseout="this.style.background='transparent'; this.style.borderLeft='3px solid transparent'"
                 >
                     <span style="font-size: 18px;">${icon}</span>
-                    <span style="flex: 1;">${file.name}</span>
-                    ${isDir ? '<span style="color: #888; font-size: 10px;">›</span>' : ''}
+                    <span style="flex: 1; user-select: none;">${file.name}</span>
+                    ${isDir ? '<span style="color: #888; font-size: 10px;">›</span>' : '<span style="color: #00d4ff; font-size: 10px;">📄</span>'}
                 </div>
             `;
         }).join('');
+        
+        console.log('[FileSystem] ✅ File tree rendered in tab');
     }
     
     /**
      * Handle file click from explorer
      */
     async handleFileClick(filePath, type) {
-        console.log('[FileSystem] File clicked:', filePath, type);
+        console.log('[FileSystem] 📂 File clicked:', filePath, 'Type:', type);
+        
+        if (!type || type === 'undefined') {
+            console.warn('[FileSystem] ⚠️ Type is undefined, trying to detect...');
+            // Try to detect if it's a file or directory
+            if (filePath && !filePath.match(/\.\w+$/)) {
+                type = 'directory';
+            } else {
+                type = 'file';
+            }
+            console.log('[FileSystem] 🔍 Detected type:', type);
+        }
         
         if (type === 'file') {
+            console.log('[FileSystem] 📄 Loading file in new tab:', filePath);
             await this.loadFile(filePath);
         } else if (type === 'directory') {
-            console.log('[FileSystem] TODO: Expand directory');
-            // TODO: Load subdirectory
+            console.log('[FileSystem] 📁 Directory clicked, expanding:', filePath);
+            // Load subdirectory
+            await this.loadProject(filePath);
         }
     }
     
