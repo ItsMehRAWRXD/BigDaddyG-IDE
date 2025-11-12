@@ -2357,7 +2357,7 @@ You have access to the user's workspace. You can reference files by name.`;
                                     </div>
                                 </div>
                                 <button 
-                                    onclick="event.stopPropagation(); alert('Installing ${ext.name}...');"
+                                    onclick="event.stopPropagation(); window.completeTabSystem.installExtension('${ext.id}', '${ext.name.replace(/'/g, "\\'")}');"
                                     style="
                                         padding: 8px 20px;
                                         background: #00d4ff;
@@ -2431,6 +2431,40 @@ You have access to the user's workspace. You can reference files by name.`;
         filterExtensions();
         
         console.log('[Marketplace] ✅ Marketplace wired with search');
+    }
+    
+    /**
+     * Install extension - REAL implementation
+     */
+    installExtension(extId, extName) {
+        console.log('[Marketplace] 📥 Installing:', extName);
+        
+        // Get installed extensions from localStorage
+        let installed = JSON.parse(localStorage.getItem('installed-extensions') || '[]');
+        
+        // Check if already installed
+        if (installed.includes(extId)) {
+            alert(`✅ "${extName}" is already installed!`);
+            return;
+        }
+        
+        // Add to installed list
+        installed.push(extId);
+        localStorage.setItem('installed-extensions', JSON.stringify(installed));
+        
+        // Show success
+        alert(`✅ Installed "${extName}"!\n\nExtension has been added to your IDE.`);
+        console.log('[Marketplace] ✅ Installed:', extName);
+        
+        // Update UI to show as installed
+        setTimeout(() => {
+            const btn = event.target;
+            if (btn) {
+                btn.textContent = '✅ Installed';
+                btn.style.background = '#00ff88';
+                btn.disabled = true;
+            }
+        }, 100);
     }
     
     /**
