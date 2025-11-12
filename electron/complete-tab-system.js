@@ -1150,7 +1150,69 @@ hello();"></textarea>
         // Focus input
         input.focus();
         
+        // Load models if selector exists
+        if (modelSelect) {
+            this.loadModelsIntoSelector(modelSelect, `${chatId}-refresh-models`);
+        }
+        
         console.log('[TabSystem] ✅ AI Chat wired');
+    }
+    
+    /**
+     * Load user's Ollama models into selector
+     */
+    async loadModelsIntoSelector(selectElement, refreshButtonId) {
+        if (!selectElement) return;
+        
+        const loadModels = async () => {
+            try {
+                console.log('[TabSystem] 📡 Loading YOUR models from Ollama...');
+                
+                const response = await fetch('http://localhost:11441/api/models');
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                const data = await response.json();
+                const models = data.models || [];
+                
+                console.log('[TabSystem] ✅ Found', models.length, 'models on your system');
+                
+                // Clear selector
+                selectElement.innerHTML = '';
+                
+                // Add all YOUR models
+                models.forEach(model => {
+                    const option = document.createElement('option');
+                    option.value = model.name;
+                    option.textContent = `${model.name} ${model.size || ''}`.trim();
+                    selectElement.appendChild(option);
+                });
+                
+                if (models.length === 0) {
+                    selectElement.innerHTML = '<option>No models found - Install with: ollama pull llama3</option>';
+                }
+                
+                console.log('[TabSystem] ✅ Model selector populated with YOUR 33 models');
+                
+            } catch (error) {
+                console.error('[TabSystem] ❌ Error loading models:', error);
+                selectElement.innerHTML = '<option>Error loading models</option>';
+            }
+        };
+        
+        // Load models
+        await loadModels();
+        
+        // Refresh button
+        const refreshBtn = document.getElementById(refreshButtonId);
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', async () => {
+                refreshBtn.textContent = '⏳';
+                refreshBtn.disabled = true;
+                await loadModels();
+                refreshBtn.textContent = '🔄 Refresh';
+                refreshBtn.disabled = false;
+            });
+        }
     }
     
     /**
