@@ -111,7 +111,7 @@ class FileSystemIntegration {
             console.log('[FileSystem] 📂 Opening file dialog...');
             
             if (!window.electron || !window.electron.openFileDialog) {
-                alert('File system access requires Electron');
+                window.notify?.error('File system not available') || console.error('File system not available');
                 return;
             }
             
@@ -128,7 +128,7 @@ class FileSystemIntegration {
             
         } catch (error) {
             console.error('[FileSystem] Error opening file:', error);
-            alert('Error opening file: ' + error.message);
+            window.notify?.error('Error opening file: ' + error.message);
         }
     }
     
@@ -201,7 +201,7 @@ class FileSystemIntegration {
             
         } catch (error) {
             console.error('[FileSystem] Error loading file:', error);
-            alert('Error loading file: ' + error.message);
+            window.notify?.error('Error loading file: ' + error.message);
         }
     }
     
@@ -248,7 +248,7 @@ class FileSystemIntegration {
             
         } catch (error) {
             console.error('[FileSystem] Error saving file:', error);
-            alert('Error saving file: ' + error.message);
+            window.notify?.error('Error saving file: ' + error.message);
         }
     }
     
@@ -297,7 +297,7 @@ class FileSystemIntegration {
             
         } catch (error) {
             console.error('[FileSystem] Error in save as:', error);
-            alert('Error saving file: ' + error.message);
+            window.notify?.error('Error saving file: ' + error.message);
         }
     }
     
@@ -323,7 +323,7 @@ class FileSystemIntegration {
             console.log('[FileSystem] 📁 Opening folder dialog...');
             
             if (!window.electron || !window.electron.openFolderDialog) {
-                alert('File system access requires Electron');
+                window.notify?.error('File system not available') || console.error('File system not available');
                 return;
             }
             
@@ -609,7 +609,7 @@ class FileSystemIntegration {
         
         if (protectedFolders.some(pf => fileName.toLowerCase().includes(pf.toLowerCase()))) {
             console.warn('[FileSystem] ⚠️ Skipping protected folder:', fileName);
-            alert(`⚠️ Protected System Folder\n\n"${fileName}" is a Windows system folder.\n\nAccess is restricted for security.`);
+            window.notify?.warning(`Protected System Folder\n\n"${fileName}" is a Windows system folder.\n\nAccess is restricted for security.`);
             return;
         }
         
@@ -642,7 +642,7 @@ class FileSystemIntegration {
                 await this.loadFile(filePath);
             } catch (error) {
                 console.error('[FileSystem] Error opening file:', error);
-                alert(`⚠️ Cannot Open File\n\n${error.message}`);
+                window.notify?.error(`Cannot Open File\n\n${error.message}`);
             }
         } else if (type === 'directory') {
             console.log('[FileSystem] 📁 Expanding directory...');

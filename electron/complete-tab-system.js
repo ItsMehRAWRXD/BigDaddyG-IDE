@@ -2444,7 +2444,7 @@ You have access to the user's workspace. You can reference files by name.`;
         
         // Check if already installed
         if (installed.includes(extId)) {
-            alert(`✅ "${extName}" is already installed!`);
+            window.notify?.success(`${extName}" is already installed!`);
             return;
         }
         
@@ -2453,7 +2453,7 @@ You have access to the user's workspace. You can reference files by name.`;
         localStorage.setItem('installed-extensions', JSON.stringify(installed));
         
         // Show success
-        alert(`✅ Installed "${extName}"!\n\nExtension has been added to your IDE.`);
+        window.notify?.success(`Installed "${extName}"!\n\nExtension has been added to your IDE.`);
         console.log('[Marketplace] ✅ Installed:', extName);
         
         // Update UI to show as installed
