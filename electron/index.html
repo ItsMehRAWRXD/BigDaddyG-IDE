@@ -5,6 +5,109 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BigDaddyG IDE</title>
     
+    <!-- CRASH PROTECTION: Catch all errors before they crash the window -->
+    <script>
+        window.startupErrors = [];
+        window.onerror = function(msg, url, line, col, error) {
+            const errorInfo = {
+                message: msg,
+                file: url,
+                line: line,
+                column: col,
+                stack: error?.stack,
+                time: new Date().toISOString()
+            };
+            window.startupErrors.push(errorInfo);
+            console.error('🚨 STARTUP ERROR:', errorInfo);
+            
+            // Show error in window instead of crashing
+            if (window.startupErrors.length === 1) {
+                setTimeout(() => {
+                    if (window.startupErrors.length > 0) {
+                        showStartupErrors();
+                    }
+                }, 3000);
+            }
+            return true; // Prevent default error handling
+        };
+        
+        window.addEventListener('unhandledrejection', e => {
+            const errorInfo = {
+                message: 'Unhandled Promise Rejection',
+                reason: e.reason?.toString() || 'Unknown',
+                stack: e.reason?.stack,
+                time: new Date().toISOString()
+            };
+            window.startupErrors.push(errorInfo);
+            console.error('🚨 UNHANDLED REJECTION:', errorInfo);
+            e.preventDefault();
+        });
+        
+        function showStartupErrors() {
+            const errorDiv = document.createElement('div');
+            errorDiv.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: #0a0a1e;
+                color: #fff;
+                padding: 40px;
+                overflow: auto;
+                z-index: 999999999;
+                font-family: monospace;
+            `;
+            
+            errorDiv.innerHTML = `
+                <h1 style="color: #ff4757; font-size: 32px; margin-bottom: 20px;">
+                    🚨 IDE Startup Errors Detected
+                </h1>
+                <p style="color: #888; margin-bottom: 30px;">
+                    The IDE caught ${window.startupErrors.length} error(s) during startup.
+                    The window stayed open so you can see what went wrong.
+                </p>
+                <div style="background: rgba(255, 71, 87, 0.1); border: 2px solid #ff4757; border-radius: 10px; padding: 20px; margin-bottom: 20px;">
+                    ${window.startupErrors.map((err, i) => `
+                        <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,71,87,0.3);">
+                            <div style="color: #ff4757; font-weight: bold; margin-bottom: 10px;">
+                                Error ${i + 1}: ${err.message}
+                            </div>
+                            ${err.file ? `<div style="color: #888; font-size: 12px;">File: ${err.file}:${err.line}:${err.column}</div>` : ''}
+                            ${err.reason ? `<div style="color: #888; font-size: 12px;">Reason: ${err.reason}</div>` : ''}
+                            ${err.stack ? `<pre style="color: #ffa502; font-size: 11px; overflow: auto; margin-top: 10px;">${err.stack}</pre>` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+                <button onclick="location.reload()" style="
+                    padding: 15px 30px;
+                    background: #00d4ff;
+                    color: #000;
+                    border: none;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    font-weight: bold;
+                    cursor: pointer;
+                ">Reload IDE</button>
+                <button onclick="this.parentElement.style.display='none'" style="
+                    padding: 15px 30px;
+                    background: transparent;
+                    color: #00d4ff;
+                    border: 2px solid #00d4ff;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    margin-left: 10px;
+                ">Continue Anyway</button>
+            `;
+            
+            document.body.appendChild(errorDiv);
+        }
+        
+        console.log('[BigDaddyG] 🛡️ Crash protection active');
+    </script>
+    
     <style>
         /* FORCE VISIBLE BACKGROUNDS - NO BLACK SCREEN */
         * { margin: 0; padding: 0; box-sizing: border-box; }
