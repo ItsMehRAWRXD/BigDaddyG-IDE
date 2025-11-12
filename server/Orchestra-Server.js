@@ -476,17 +476,29 @@ async function processBigDaddyGChat(model, messages = [], stream) {
   };
 }
 
-// REAL BigDaddyG response using Ollama API
+// REAL Ollama response with smart model fallback
 async function generateBigDaddyGResponse(prompt = '', modelInfo, modelKey) {
   const fallbackInfo = BIGDADDYG_MODELS[DEFAULT_MODEL];
   const info = modelInfo || fallbackInfo || { name: modelKey || DEFAULT_MODEL, type: 'general' };
   const sanitizedPrompt = typeof prompt === 'string' ? prompt : '';
 
+  // Map BigDaddyG model names to real Ollama models
+  const modelMapping = {
+    'bigdaddyg:latest': 'llama3',
+    'bigdaddyg:coder': 'codellama',
+    'bigdaddyg:python': 'codellama',
+    'bigdaddyg:javascript': 'codellama',
+    'bigdaddyg:asm': 'codellama'
+  };
+
+  // Get real Ollama model name
+  let ollamaModel = modelMapping[modelKey] || modelKey || 'llama3';
+  
+  // List of fallback models to try in order
+  const fallbackModels = ['llama3', 'llama2', 'codellama', 'mistral', 'phi', 'gemma'];
+
   try {
-    // Use Ollama to generate REAL response
-    const ollamaModel = modelKey || DEFAULT_MODEL;
-    
-    console.log(`[Orchestra] 🤖 Calling Ollama with model: ${ollamaModel}`);
+    console.log(`[Orchestra] 🤖 Calling Ollama with model: ${ollamaModel} (mapped from ${modelKey})`);
     
     const response = await fetch('http://localhost:11434/api/generate', {
       method: 'POST',
@@ -506,30 +518,44 @@ async function generateBigDaddyGResponse(prompt = '', modelInfo, modelKey) {
     return data.response || 'No response from model';
     
   } catch (error) {
-    console.error('[Orchestra] ❌ Real model call failed:', error.message);
+    console.error('[Orchestra] ❌ Model call failed for', ollamaModel, ':', error.message);
     
-    // Fallback: Try to use any available Ollama model
-    try {
-      const fallbackResponse = await fetch('http://localhost:11434/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'llama2', // Most common fallback
-          prompt: sanitizedPrompt,
-          stream: false
-        })
-      });
+    // Try fallback models one by one
+    for (const fallbackModel of fallbackModels) {
+      if (fallbackModel === ollamaModel) continue; // Skip already tried
       
-      if (fallbackResponse.ok) {
-        const fallbackData = await fallbackResponse.json();
-        return fallbackData.response || 'Fallback response generated';
+      try {
+        console.log(`[Orchestra] 🔄 Trying fallback model: ${fallbackModel}`);
+        
+        const fallbackResponse = await fetch('http://localhost:11434/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: fallbackModel,
+            prompt: sanitizedPrompt,
+            stream: false
+          })
+        });
+        
+        if (fallbackResponse.ok) {
+          const fallbackData = await fallbackResponse.json();
+          console.log(`[Orchestra] ✅ Fallback successful with ${fallbackModel}`);
+          return fallbackData.response || 'Response generated with fallback model';
+        }
+      } catch (fallbackError) {
+        // Continue to next fallback
+        continue;
       }
-    } catch (fallbackError) {
-      console.error('[Orchestra] ❌ Fallback also failed:', fallbackError.message);
     }
     
-    // Last resort: Return error message instead of fake data
-    return `[ERROR] Could not generate real response. Please ensure Ollama is running with model: ${modelKey}. Error: ${error.message}`;
+    // All models failed
+    console.error('[Orchestra] ❌ All models failed');
+    return `[ERROR] No Ollama models available. Please install models using:
+ollama pull llama3
+ollama pull codellama
+ollama pull mistral
+
+Then restart the IDE.`;
   }
 }
 
