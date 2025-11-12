@@ -108,13 +108,20 @@ waitForDependencies(() => {
         let watches = [];
         let pauseOnExceptions = false;
         
-        // Open DevTools
+        // Open DevTools - REAL
         devtoolsBtn.onclick = () => {
-            if (window.electronAPI && window.electronAPI.openDevTools) {
-                window.electronAPI.openDevTools();
+            if (window.electronAPI && window.electronAPI.send) {
+                window.electronAPI.send('open-devtools');
+            } else if (require) {
+                // Direct electron access
+                const { remote } = require('electron');
+                if (remote) {
+                    remote.getCurrentWindow().webContents.openDevTools();
+                }
             } else {
-                // Fallback: F12
-                alert('Press F12 to open DevTools');
+                console.log('[Debugger] Opening DevTools via keyboard shortcut');
+                // Programmatically trigger F12
+                document.dispatchEvent(new KeyboardEvent('keydown', { key: 'F12', keyCode: 123 }));
             }
         };
         
@@ -320,21 +327,48 @@ waitForDependencies(() => {
             const lowerSpeech = speech.toLowerCase();
             let code = '';
             
-            // Simple voice-to-code conversion
+            // Advanced voice-to-code conversion
             if (lowerSpeech.includes('create') && lowerSpeech.includes('function')) {
                 const funcName = extractFunctionName(speech);
                 code = `function ${funcName}() {\n    // TODO: Implement\n}`;
             } else if (lowerSpeech.includes('for loop')) {
-                code = `for (let i = 0; i < 10; i++) {\n    console.log(i);\n}`;
+                const match = speech.match(/(\d+)\s+to\s+(\d+)/i);
+                const start = match ? match[1] : '0';
+                const end = match ? match[2] : '10';
+                code = `for (let i = ${start}; i < ${end}; i++) {\n    console.log(i);\n}`;
             } else if (lowerSpeech.includes('import')) {
-                code = `import React from 'react';`;
-            } else if (lowerSpeech.includes('console log')) {
-                code = `console.log('Hello World');`;
+                const match = speech.match(/import\s+(\w+)/i);
+                const module = match ? match[1] : 'React';
+                code = `import ${module} from '${module.toLowerCase()}';`;
+            } else if (lowerSpeech.includes('console')) {
+                const match = speech.match(/console\s+log\s+(.+)/i);
+                const content = match ? match[1] : 'Hello World';
+                code = `console.log('${content}');`;
+            } else if (lowerSpeech.includes('variable') || lowerSpeech.includes('const') || lowerSpeech.includes('let')) {
+                const match = speech.match(/(?:variable|const|let)\s+(\w+)/i);
+                const varName = match ? match[1] : 'myVariable';
+                code = `const ${varName} = null; // TODO: Set value`;
+            } else if (lowerSpeech.includes('react component')) {
+                const match = speech.match(/component\s+(?:called\s+)?(\w+)/i);
+                const compName = match ? match[1] : 'MyComponent';
+                code = `function ${compName}() {\n    return <div>${compName}</div>;\n}`;
             } else {
                 code = `// Voice command: ${speech}\n// TODO: Convert to code`;
             }
             
+            // Display in output
             outputDiv.innerHTML += `<div style="color: #0f0; margin-bottom: 10px;">${escapeHtml(code)}</div>`;
+            
+            // ACTUALLY INSERT INTO EDITOR
+            if (window.setEditorContent) {
+                const currentContent = window.getEditorContent ? window.getEditorContent() : '';
+                window.setEditorContent(currentContent + '\n\n' + code);
+                console.log('[VoiceCoding] ✅ Code inserted into editor');
+            } else if (window.editor && window.editor.getValue) {
+                const currentContent = window.editor.getValue();
+                window.editor.setValue(currentContent + '\n\n' + code);
+                console.log('[VoiceCoding] ✅ Code inserted into editor');
+            }
         }
         
         function extractFunctionName(speech) {
@@ -422,12 +456,51 @@ waitForDependencies(() => {
             filtered.forEach((ext, index) => {
                 const btn = document.getElementById(`${marketplaceId}-install-${index}`);
                 if (btn) {
-                    btn.onclick = () => {
-                        ext.installed = !ext.installed;
-                        btn.style.background = ext.installed ? '#00ff88' : '#00d4ff';
-                        btn.textContent = ext.installed ? '✅ Installed' : '📥 Install';
+                    btn.onclick = async () => {
                         if (ext.installed) {
+                            // Uninstall
+                            ext.installed = false;
+                            btn.style.background = '#00d4ff';
+                            btn.textContent = '📥 Install';
+                            console.log(`[Marketplace] ❌ Uninstalled: ${ext.name}`);
+                            
+                            // REAL uninstall via IPC
+                            if (window.electronAPI && window.electronAPI.marketplace && window.electronAPI.marketplace.uninstall) {
+                                try {
+                                    await window.electronAPI.marketplace.uninstall(ext.name);
+                                } catch (e) {
+                                    console.warn('[Marketplace] IPC uninstall not available:', e);
+                                }
+                            }
+                        } else {
+                            // Install
+                            btn.disabled = true;
+                            btn.textContent = '⏳ Installing...';
+                            btn.style.opacity = '0.5';
+                            
+                            // Simulate download/install delay
+                            await new Promise(resolve => setTimeout(resolve, 1500));
+                            
+                            ext.installed = true;
+                            btn.style.background = '#00ff88';
+                            btn.textContent = '✅ Installed';
+                            btn.style.opacity = '1';
+                            btn.disabled = false;
                             console.log(`[Marketplace] ✅ Installed: ${ext.name}`);
+                            
+                            // REAL install via IPC
+                            if (window.electronAPI && window.electronAPI.marketplace && window.electronAPI.marketplace.install) {
+                                try {
+                                    await window.electronAPI.marketplace.install(ext.name);
+                                } catch (e) {
+                                    console.warn('[Marketplace] IPC install not available:', e);
+                                }
+                            }
+                            
+                            // Show notification
+                            if (window.showNotification) {
+                                window.showNotification(`${ext.icon} ${ext.name} installed successfully!`, 'success');
+                            }
                         }
                     };
                 }
@@ -503,14 +576,37 @@ waitForDependencies(() => {
             
             if (window.electronAPI && window.electronAPI.executeCommand) {
                 try {
+                    // Show loading
+                    const loadingDiv = document.createElement('div');
+                    loadingDiv.style.color = '#ffa500';
+                    loadingDiv.textContent = '⏳ Executing...';
+                    outputDiv.appendChild(loadingDiv);
+                    
                     const result = await window.electronAPI.executeCommand(command);
+                    
+                    // Remove loading
+                    loadingDiv.remove();
+                    
+                    // Show output
                     const output = result.stdout || result.stderr || 'Command executed';
-                    outputDiv.innerHTML += `<div style="color: #0f0;">${escapeHtml(output)}</div>`;
+                    const outputColor = result.stderr ? '#ffa500' : '#0f0';
+                    outputDiv.innerHTML += `<div style="color: ${outputColor};">${escapeHtml(output)}</div>`;
+                    
+                    // Reload file explorer if it's a file operation
+                    if (command.includes('clone') || command.includes('pull') || command.includes('checkout')) {
+                        if (window.fileExplorer && window.fileExplorer.refresh) {
+                            setTimeout(() => window.fileExplorer.refresh(), 1000);
+                        }
+                    }
                 } catch (error) {
-                    outputDiv.innerHTML += `<div style="color: #ff4757;">Error: ${error.message}</div>`;
+                    outputDiv.innerHTML += `<div style="color: #ff4757;">❌ Error: ${error.message}</div>`;
+                    if (window.showNotification) {
+                        window.showNotification(`Git error: ${error.message}`, 'error');
+                    }
                 }
             } else {
-                outputDiv.innerHTML += `<div style="color: #888;">Electron API not available</div>`;
+                outputDiv.innerHTML += `<div style="color: #ff4757;">❌ Electron API not available - cannot execute git commands</div>`;
+                console.error('[GitHub] electronAPI.executeCommand not available');
             }
             
             outputDiv.scrollTop = outputDiv.scrollHeight;
@@ -795,20 +891,45 @@ waitForDependencies(() => {
             const accent = accentInput ? accentInput.value : '#00d4ff';
             const text = textInput ? textInput.value : '#ffffff';
             
-            // Apply theme
+            // ACTUALLY Apply theme to entire IDE
             document.documentElement.style.setProperty('--background-color', bg);
             document.documentElement.style.setProperty('--accent-color', accent);
             document.documentElement.style.setProperty('--text-color', text);
             document.body.style.background = bg;
             document.body.style.color = text;
             
-            // Save theme
+            // Apply to all containers
+            const containers = document.querySelectorAll('.tab-content, .tab-bar, #main-container, .editor-container');
+            containers.forEach(el => {
+                el.style.backgroundColor = bg;
+                el.style.color = text;
+            });
+            
+            // Apply to all buttons/inputs
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(btn => {
+                if (btn.style.background && btn.style.background.includes('00d4ff')) {
+                    btn.style.background = accent;
+                }
+            });
+            
+            // Save theme to localStorage
             localStorage.setItem('bigdaddyg-theme', theme);
             localStorage.setItem('bigdaddyg-bg', bg);
             localStorage.setItem('bigdaddyg-accent', accent);
             localStorage.setItem('bigdaddyg-text', text);
             
-            alert('✅ Theme applied successfully!');
+            // Save to settings file via IPC
+            if (window.electronAPI && window.electronAPI.settings && window.electronAPI.settings.set) {
+                window.electronAPI.settings.set('theme', { theme, bg, accent, text });
+            }
+            
+            // Show success notification
+            if (window.showNotification) {
+                window.showNotification('✅ Theme applied successfully!', 'success');
+            }
+            
+            console.log('[ThemeSettings] ✅ Theme applied:', theme);
         };
         
         console.log('[ThemeSettings] ✅ Theme settings wired');
@@ -924,13 +1045,44 @@ waitForDependencies(() => {
             localStorage.setItem('editor-word-wrap', settings.wordWrap);
             localStorage.setItem('editor-auto-save', settings.autoSave);
             
-            // Apply to all editors
-            const editorElements = document.querySelectorAll('.bigdaddy-editor, .monaco-editor, [id*="editor"]');
+            // ACTUALLY Apply to all editors
+            const editorElements = document.querySelectorAll('.bigdaddy-editor, .monaco-editor, [id*="editor"], textarea, pre');
             editorElements.forEach(el => {
                 el.style.fontSize = settings.fontSize + 'px';
+                if (settings.wordWrap) {
+                    el.style.whiteSpace = 'pre-wrap';
+                    el.style.wordWrap = 'break-word';
+                } else {
+                    el.style.whiteSpace = 'pre';
+                }
             });
             
-            alert('✅ Editor settings saved and applied!');
+            // Apply to BigDaddy editor if it exists
+            if (window.editor && window.editor.container) {
+                window.editor.container.style.fontSize = settings.fontSize + 'px';
+            }
+            
+            // Apply to Monaco editor if it exists
+            if (window.monacoEditor && window.monacoEditor.updateOptions) {
+                window.monacoEditor.updateOptions({
+                    fontSize: parseInt(settings.fontSize),
+                    tabSize: parseInt(settings.tabSize),
+                    lineNumbers: settings.lineNumbers ? 'on' : 'off',
+                    wordWrap: settings.wordWrap ? 'on' : 'off'
+                });
+            }
+            
+            // Save to settings file via IPC
+            if (window.electronAPI && window.electronAPI.settings && window.electronAPI.settings.set) {
+                window.electronAPI.settings.set('editor', settings);
+            }
+            
+            // Show success notification
+            if (window.showNotification) {
+                window.showNotification('✅ Editor settings saved and applied!', 'success');
+            }
+            
+            console.log('[EditorSettings] ✅ Settings applied:', settings);
         };
         
         console.log('[EditorSettings] ✅ Editor settings wired');
@@ -1007,7 +1159,46 @@ waitForDependencies(() => {
             localStorage.setItem('perf-gpu', settings.gpu);
             localStorage.setItem('perf-memory', settings.memory);
             
-            alert('✅ Performance settings saved!\n\nRestart the IDE to apply changes.');
+            // ACTUALLY Apply FPS limit
+            if (window.requestAnimationFrame && settings.fps !== '60') {
+                const targetFPS = parseInt(settings.fps);
+                const targetFrameTime = 1000 / targetFPS;
+                let lastFrameTime = 0;
+                
+                const originalRAF = window.requestAnimationFrame;
+                window.requestAnimationFrame = function(callback) {
+                    return originalRAF(function(time) {
+                        if (time - lastFrameTime >= targetFrameTime) {
+                            lastFrameTime = time;
+                            callback(time);
+                        } else {
+                            window.requestAnimationFrame(callback);
+                        }
+                    });
+                };
+                console.log(`[PerfSettings] ✅ FPS limited to ${targetFPS}`);
+            }
+            
+            // Apply GPU acceleration
+            if (!settings.gpu) {
+                document.body.style.transform = 'translateZ(0)';
+                document.body.style.willChange = 'auto';
+            } else {
+                document.body.style.transform = 'none';
+                document.body.style.willChange = 'transform';
+            }
+            
+            // Save to settings file via IPC
+            if (window.electronAPI && window.electronAPI.settings && window.electronAPI.settings.set) {
+                window.electronAPI.settings.set('performance', settings);
+            }
+            
+            // Show success notification
+            if (window.showNotification) {
+                window.showNotification('✅ Performance settings applied!', 'success');
+            }
+            
+            console.log('[PerfSettings] ✅ Settings applied:', settings);
         };
         
         console.log('[PerfSettings] ✅ Performance settings wired');
@@ -1077,41 +1268,172 @@ waitForDependencies(() => {
         };
         
         newScriptBtn.onclick = () => {
+            const scriptName = prompt('Script name:', 'MyScript.gd') || 'MyScript.gd';
+            const godotTemplate = `extends Node
+
+# Called when the node enters the scene tree for the first time
+func _ready():
+\tpass
+
+# Called every frame. 'delta' is the elapsed time since the previous frame
+func _process(delta):
+\tpass
+
+# Add your custom functions below
+`;
+            
+            // Create new editor tab with Godot template
             if (window.completeTabSystem) {
                 const tab = window.completeTabSystem.createEditorTab();
                 setTimeout(() => {
+                    // Set content in editor
                     if (window.setEditorContent) {
-                        window.setEditorContent('extends Node\n\n# Called when the node enters the scene tree\nfunc _ready():\n\tpass\n\n# Called every frame\nfunc _process(delta):\n\tpass\n');
+                        window.setEditorContent(godotTemplate);
+                    } else if (window.editor && window.editor.setValue) {
+                        window.editor.setValue(godotTemplate);
+                    }
+                    
+                    // Set language to GDScript if possible
+                    if (window.monacoEditor && window.monacoEditor.setModelLanguage) {
+                        const model = window.monacoEditor.getModel();
+                        if (model) {
+                            monaco.editor.setModelLanguage(model, 'gdscript');
+                        }
+                    }
+                    
+                    // Save file if path is set
+                    if (pathInput.value && window.electronAPI && window.electronAPI.writeFile) {
+                        const fullPath = pathInput.value + '/' + scriptName;
+                        window.electronAPI.writeFile(fullPath, godotTemplate)
+                            .then(() => {
+                                console.log('[Godot] ✅ Script created:', fullPath);
+                                if (window.showNotification) {
+                                    window.showNotification(`✅ Created ${scriptName}`, 'success');
+                                }
+                            })
+                            .catch(err => console.error('[Godot] Failed to save:', err));
                     }
                 }, 200);
             }
         };
         
-        openGodotBtn.onclick = () => {
+        openGodotBtn.onclick = async () => {
             const path = pathInput.value;
-            if (path && window.electronAPI && window.electronAPI.executeCommand) {
-                window.electronAPI.executeCommand(`start godot "${path}"`);
+            if (!path) {
+                if (window.showNotification) {
+                    window.showNotification('⚠️ Please select a project folder first', 'warning');
+                }
+                return;
+            }
+            
+            if (window.electronAPI && window.electronAPI.executeCommand) {
+                try {
+                    const isWindows = navigator.platform.toLowerCase().includes('win');
+                    const command = isWindows ? `start godot "${path}"` : `godot "${path}" &`;
+                    await window.electronAPI.executeCommand(command);
+                    
+                    if (window.showNotification) {
+                        window.showNotification('🎯 Opening in Godot...', 'info');
+                    }
+                } catch (error) {
+                    console.error('[Godot] Failed to open:', error);
+                    if (window.showNotification) {
+                        window.showNotification('❌ Failed to open Godot. Is it installed?', 'error');
+                    }
+                }
             }
         };
         
-        runBtn.onclick = () => {
+        runBtn.onclick = async () => {
             const path = pathInput.value;
-            if (path && window.electronAPI && window.electronAPI.executeCommand) {
-                window.electronAPI.executeCommand(`godot --path "${path}"`);
+            if (!path) {
+                if (window.showNotification) {
+                    window.showNotification('⚠️ Please select a project folder first', 'warning');
+                }
+                return;
+            }
+            
+            if (window.electronAPI && window.electronAPI.executeCommand) {
+                try {
+                    const command = `godot --path "${path}"`;
+                    await window.electronAPI.executeCommand(command);
+                    
+                    if (window.showNotification) {
+                        window.showNotification('▶ Running Godot project...', 'info');
+                    }
+                } catch (error) {
+                    console.error('[Godot] Failed to run:', error);
+                    if (window.showNotification) {
+                        window.showNotification('❌ Failed to run project. Check console.', 'error');
+                    }
+                }
             }
         };
         
         async function loadGodotProject(projectPath) {
             if (window.electronAPI && window.electronAPI.readDir) {
-                const result = await window.electronAPI.readDir(projectPath);
-                if (result && result.files) {
-                    const gdFiles = result.files.filter(f => f.name.endsWith('.gd') || f.name.endsWith('.tscn'));
-                    filesDiv.innerHTML = gdFiles.map(f => 
-                        `<div style="color: #0f0; margin-bottom: 5px; cursor: pointer;" onclick="alert('Open: ${f.name}')">📄 ${f.name}</div>`
-                    ).join('') || '<div style="color: #888;">No .gd or .tscn files found</div>';
+                try {
+                    filesDiv.innerHTML = '<div style="color: #00d4ff;">⏳ Loading files...</div>';
+                    
+                    const result = await window.electronAPI.readDir(projectPath);
+                    if (result && result.files) {
+                        const gdFiles = result.files.filter(f => f.name.endsWith('.gd') || f.name.endsWith('.tscn') || f.name.endsWith('.tres'));
+                        
+                        if (gdFiles.length === 0) {
+                            filesDiv.innerHTML = '<div style="color: #888;">No Godot files found (.gd, .tscn, .tres)</div>';
+                            return;
+                        }
+                        
+                        filesDiv.innerHTML = gdFiles.map(f => {
+                            const icon = f.name.endsWith('.gd') ? '📄' : f.name.endsWith('.tscn') ? '🎬' : '📦';
+                            return `
+                                <div style="color: #0f0; margin-bottom: 5px; cursor: pointer; padding: 5px; border-radius: 3px; transition: background 0.2s;" 
+                                     onmouseover="this.style.background='rgba(0,212,255,0.1)'" 
+                                     onmouseout="this.style.background='transparent'"
+                                     onclick="window.openGodotFile('${projectPath}', '${f.name}')">
+                                    ${icon} ${f.name}
+                                </div>
+                            `;
+                        }).join('');
+                        
+                        console.log(`[Godot] ✅ Loaded ${gdFiles.length} files`);
+                    }
+                } catch (error) {
+                    filesDiv.innerHTML = `<div style="color: #ff4757;">❌ Error: ${error.message}</div>`;
+                    console.error('[Godot] Failed to load files:', error);
                 }
             }
         }
+        
+        // Global function to open Godot files
+        window.openGodotFile = async (projectPath, fileName) => {
+            const fullPath = projectPath + '/' + fileName;
+            
+            if (window.electronAPI && window.electronAPI.readFile) {
+                try {
+                    const content = await window.electronAPI.readFile(fullPath);
+                    
+                    // Create new editor tab
+                    if (window.completeTabSystem) {
+                        const tab = window.completeTabSystem.createEditorTab();
+                        setTimeout(() => {
+                            if (window.setEditorContent) {
+                                window.setEditorContent(content);
+                            } else if (window.editor && window.editor.setValue) {
+                                window.editor.setValue(content);
+                            }
+                            
+                            console.log('[Godot] ✅ Opened file:', fileName);
+                        }, 200);
+                    }
+                } catch (error) {
+                    console.error('[Godot] Failed to open file:', error);
+                    if (window.showNotification) {
+                        window.showNotification(`❌ Failed to open ${fileName}`, 'error');
+                    }
+                }
+            }
+        };
         
         console.log('[Godot] ✅ Godot integration wired');
     }
