@@ -105,14 +105,12 @@ class AutoUpdater {
             return { hasUpdate: false };
         }
         
-        // Skip auto-update for development/feature branches
-        if (this.branch !== 'main' && !this.branch.startsWith('release/')) {
-            console.log(`[AutoUpdater] ⚠️ Development branch detected: ${this.branch}`);
-            console.log('[AutoUpdater] ⏭️ Skipping auto-update (dev branch)');
-            return { hasUpdate: false, devBranch: true };
-        }
-        
         console.log('[AutoUpdater] 🔍 Checking for updates on branch: ' + this.branch);
+        
+        // Warn if on development branch but still check for updates
+        if (this.branch !== 'main' && !this.branch.startsWith('release/')) {
+            console.log(`[AutoUpdater] ℹ️ Note: Tracking development branch: ${this.branch}`);
+        }
         
         try {
             const latestCommit = await this.fetchLatestCommit();
