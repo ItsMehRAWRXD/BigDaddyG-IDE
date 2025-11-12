@@ -8,20 +8,50 @@ if (typeof window !== 'undefined' && !window.developerMode) {
     window.developerMode = {
         enabled: false,
         settings: {},
+        enable: function() {},
+        disable: function() {},
+        toggleSetting: function() {},
         getStats: () => ({ enabled: false, settings: {}, tabs: 0, files: 0, memory: null })
     };
 }
 
 class DeveloperMode {
     constructor() {
-        this.enabled = this.loadSetting('enabled', false);
-        this.settings = this.loadAllSettings();
-        
-        console.log('[DevMode] 🛠️ Developer Mode Manager initialized');
-        
-        if (this.enabled) {
-            console.log('[DevMode] ⚠️ Developer Mode is ENABLED');
-            this.applyDeveloperSettings();
+        try {
+            this.enabled = this.loadSetting('enabled', false);
+            this.settings = this.loadAllSettings();
+            
+            console.log('[DevMode] 🛠️ Developer Mode Manager initialized');
+            
+            if (this.enabled) {
+                console.log('[DevMode] ⚠️ Developer Mode is ENABLED');
+                // Don't apply settings in constructor - too early
+                setTimeout(() => {
+                    try {
+                        this.applyDeveloperSettings();
+                    } catch (err) {
+                        console.error('[DevMode] Failed to apply settings:', err);
+                    }
+                }, 1000);
+            }
+        } catch (err) {
+            console.error('[DevMode] ❌ Constructor failed:', err);
+            // Set safe defaults
+            this.enabled = false;
+            this.settings = {
+                enabled: false,
+                unverifiedExtensions: false,
+                experimentalFeatures: false,
+                advancedDebugging: false,
+                verboseLogging: false,
+                memoryProfiling: false,
+                showHiddenFeatures: false,
+                betaAPIs: false,
+                disableSafetyChecks: false,
+                allowDangerousOperations: false,
+                maxMemoryMB: 2048,
+                autoSaveInterval: 30000
+            };
         }
     }
     
@@ -30,9 +60,13 @@ class DeveloperMode {
      */
     loadSetting(key, defaultValue) {
         try {
+            if (typeof localStorage === 'undefined') {
+                return defaultValue;
+            }
             const stored = localStorage.getItem(`bigdaddyg-dev-${key}`);
             return stored !== null ? JSON.parse(stored) : defaultValue;
-        } catch {
+        } catch (err) {
+            console.warn('[DevMode] Failed to load setting:', key, err);
             return defaultValue;
         }
     }
@@ -42,6 +76,10 @@ class DeveloperMode {
      */
     saveSetting(key, value) {
         try {
+            if (typeof localStorage === 'undefined') {
+                console.warn('[DevMode] localStorage not available');
+                return;
+            }
             localStorage.setItem(`bigdaddyg-dev-${key}`, JSON.stringify(value));
             console.log(`[DevMode] 💾 Saved ${key}:`, value);
         } catch (err) {
