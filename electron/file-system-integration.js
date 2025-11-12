@@ -66,13 +66,13 @@ class FileSystemIntegration {
         try {
             console.log('[FileSystem] 📂 Opening file dialog...');
             
-            if (!window.electron || !window.electron.ipcRenderer) {
+            if (!window.electron || !window.electron.openFileDialog) {
                 alert('File system access requires Electron');
                 return;
             }
             
-            // Send IPC to main process to show open dialog
-            const result = await window.electron.ipcRenderer.invoke('open-file-dialog');
+            // Use the exposed wrapper function
+            const result = await window.electron.openFileDialog();
             
             if (result.canceled || !result.filePaths || result.filePaths.length === 0) {
                 console.log('[FileSystem] User canceled file dialog');
@@ -95,7 +95,7 @@ class FileSystemIntegration {
         try {
             console.log('[FileSystem] 📄 Loading file:', filePath);
             
-            const result = await window.electron.ipcRenderer.invoke('read-file', filePath);
+            const result = await window.electron.readFile(filePath);
             
             if (!result.success) {
                 throw new Error(result.error);
@@ -209,7 +209,7 @@ class FileSystemIntegration {
             const defaultName = textarea.dataset.fileName || 'untitled.txt';
             
             // Show save dialog
-            const result = await window.electron.ipcRenderer.invoke('save-file-dialog', defaultName);
+            const result = await window.electron.saveFileDialog({ defaultPath: defaultName });
             
             if (result.canceled || !result.filePath) {
                 console.log('[FileSystem] User canceled save dialog');
@@ -242,7 +242,7 @@ class FileSystemIntegration {
      * Save file to disk
      */
     async saveFile(filePath, content) {
-        const result = await window.electron.ipcRenderer.invoke('write-file', filePath, content);
+        const result = await window.electron.writeFile(filePath, content);
         
         if (!result.success) {
             throw new Error(result.error);
@@ -259,7 +259,12 @@ class FileSystemIntegration {
         try {
             console.log('[FileSystem] 📁 Opening folder dialog...');
             
-            const result = await window.electron.ipcRenderer.invoke('open-folder-dialog');
+            if (!window.electron || !window.electron.openFolderDialog) {
+                alert('File system access requires Electron');
+                return;
+            }
+            
+            const result = await window.electron.openFolderDialog();
             
             if (result.canceled || !result.filePaths || result.filePaths.length === 0) {
                 console.log('[FileSystem] User canceled folder dialog');
@@ -305,7 +310,7 @@ class FileSystemIntegration {
         try {
             console.log('[FileSystem] 📂 Loading project:', folderPath);
             
-            const result = await window.electron.ipcRenderer.invoke('read-directory', folderPath);
+            const result = await window.electron.readDir(folderPath);
             
             if (!result.success) {
                 throw new Error(result.error);
