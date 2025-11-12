@@ -1167,11 +1167,40 @@ function createMainWindow() {
     console.log(`[Renderer ${levels[level]}] ${message} (${sourceId}:${line})`);
   });
   
+  // Catch all renderer errors
+  mainWindow.webContents.on('render-process-gone', (event, details) => {
+    console.error('[BigDaddyG] ❌ Renderer process gone!', details);
+  });
+  
+  mainWindow.webContents.on('did-finish-load', () => {
+    console.log('[BigDaddyG] ✅ Page finished loading');
+  });
+  
+  mainWindow.webContents.on('dom-ready', () => {
+    console.log('[BigDaddyG] ✅ DOM ready');
+  });
+  
+  // Prevent premature closing
+  mainWindow.on('close', (event) => {
+    console.log('[BigDaddyG] 🚪 Window close requested');
+    // Allow closing if user requested it
+  });
+  
   mainWindow.on('closed', () => {
+    console.log('[BigDaddyG] 🚪 Window closed');
     mainWindow = null;
     if (embeddedBrowser) {
       embeddedBrowser.destroy();
     }
+  });
+  
+  // Add unresponsive handler
+  mainWindow.on('unresponsive', () => {
+    console.error('[BigDaddyG] ⚠️ Window became unresponsive!');
+  });
+  
+  mainWindow.on('responsive', () => {
+    console.log('[BigDaddyG] ✅ Window became responsive again');
   });
   
   // Initialize embedded browser
