@@ -682,18 +682,172 @@ hello();"></textarea>
                     height: 100%;
                     display: flex;
                     flex-direction: column;
-                    background: #000;
-                "></div>
+                    background: #0c0c0c;
+                    padding: 15px;
+                    font-family: 'Consolas', 'Courier New', monospace;
+                    overflow-y: auto;
+                ">
+                    <div style="margin-bottom: 15px;">
+                        <h3 style="color: #00d4ff; margin: 0 0 10px 0;">💻 Terminal</h3>
+                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                            <input 
+                                id="${terminalId}-input" 
+                                type="text" 
+                                placeholder="Enter command (e.g., ls, dir, echo hello)..." 
+                                style="
+                                    flex: 1;
+                                    padding: 10px;
+                                    background: #1e1e1e;
+                                    border: 1px solid #00d4ff;
+                                    border-radius: 4px;
+                                    color: #fff;
+                                    font-family: 'Consolas', monospace;
+                                    font-size: 14px;
+                                "
+                            />
+                            <button 
+                                id="${terminalId}-run" 
+                                style="
+                                    padding: 10px 20px;
+                                    background: #00d4ff;
+                                    color: #000;
+                                    border: none;
+                                    border-radius: 4px;
+                                    font-weight: bold;
+                                    cursor: pointer;
+                                    font-size: 14px;
+                                "
+                            >Run</button>
+                            <button 
+                                id="${terminalId}-clear" 
+                                style="
+                                    padding: 10px 20px;
+                                    background: rgba(255, 71, 87, 0.2);
+                                    border: 1px solid #ff4757;
+                                    color: #ff4757;
+                                    border-radius: 4px;
+                                    font-weight: bold;
+                                    cursor: pointer;
+                                    font-size: 14px;
+                                "
+                            >Clear</button>
+                        </div>
+                    </div>
+                    <div 
+                        id="${terminalId}-output" 
+                        style="
+                            flex: 1;
+                            background: #000;
+                            border: 1px solid #00d4ff;
+                            border-radius: 4px;
+                            padding: 15px;
+                            color: #0f0;
+                            font-family: 'Consolas', monospace;
+                            font-size: 13px;
+                            line-height: 1.4;
+                            overflow-y: auto;
+                            white-space: pre-wrap;
+                            word-wrap: break-word;
+                        "
+                    ><span style="color: #00d4ff;">BigDaddyG Terminal v1.0</span>
+<span style="color: #888;">Type a command and press Enter or click Run</span>
+<span style="color: #888;">Examples: echo hello, node --version, npm --version</span>
+
+<span style="color: #0f0;">$</span> <span style="color: #fff;">Ready</span>
+</div>
+                </div>
             `,
             onActivate: () => {
                 setTimeout(() => {
-                    if (window.InteractiveTerminal) {
-                        const terminal = new window.InteractiveTerminal(terminalId);
-                        terminal.initialize();
-                    }
+                    this.wireTerminal(terminalId);
                 }, 100);
             }
         });
+    }
+    
+    /**
+     * Wire up terminal functionality
+     */
+    wireTerminal(terminalId) {
+        const input = document.getElementById(`${terminalId}-input`);
+        const runBtn = document.getElementById(`${terminalId}-run`);
+        const clearBtn = document.getElementById(`${terminalId}-clear`);
+        const output = document.getElementById(`${terminalId}-output`);
+        
+        if (!input || !runBtn || !output) {
+            console.error('[TabSystem] Terminal elements not found');
+            return;
+        }
+        
+        const executeCommand = async () => {
+            const command = input.value.trim();
+            if (!command) return;
+            
+            // Add command to output
+            output.innerHTML += `\n\n<span style="color: #0f0;">$</span> <span style="color: #fff;">${this.escapeHtml(command)}</span>\n`;
+            
+            // Clear input
+            input.value = '';
+            
+            // Show loading
+            output.innerHTML += `<span style="color: #888;">Executing...</span>\n`;
+            output.scrollTop = output.scrollHeight;
+            
+            try {
+                // Execute command via IPC
+                if (window.electron && window.electron.ipcRenderer) {
+                    const result = await window.electron.ipcRenderer.invoke('execute-terminal-command', command);
+                    
+                    if (result.success) {
+                        // Remove loading message
+                        output.innerHTML = output.innerHTML.replace(/<span style="color: #888;">Executing...<\/span>\n$/, '');
+                        
+                        // Show output
+                        if (result.output) {
+                            output.innerHTML += `<span style="color: #0f0;">${this.escapeHtml(result.output)}</span>`;
+                        }
+                        if (result.error) {
+                            output.innerHTML += `<span style="color: #ff4757;">${this.escapeHtml(result.error)}</span>`;
+                        }
+                    } else {
+                        output.innerHTML = output.innerHTML.replace(/<span style="color: #888;">Executing...<\/span>\n$/, '');
+                        output.innerHTML += `<span style="color: #ff4757;">Error: ${this.escapeHtml(result.error || 'Command failed')}</span>`;
+                    }
+                } else {
+                    // Fallback: Show message about IPC not available
+                    output.innerHTML = output.innerHTML.replace(/<span style="color: #888;">Executing...<\/span>\n$/, '');
+                    output.innerHTML += `<span style="color: #ff4757;">Terminal requires Electron IPC. Make sure you're running in Electron.</span>`;
+                }
+            } catch (error) {
+                output.innerHTML = output.innerHTML.replace(/<span style="color: #888;">Executing...<\/span>\n$/, '');
+                output.innerHTML += `<span style="color: #ff4757;">Error: ${this.escapeHtml(error.message)}</span>`;
+            }
+            
+            output.scrollTop = output.scrollHeight;
+        };
+        
+        // Enter key to execute
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                executeCommand();
+            }
+        });
+        
+        // Run button
+        runBtn.addEventListener('click', executeCommand);
+        
+        // Clear button
+        clearBtn.addEventListener('click', () => {
+            output.innerHTML = `<span style="color: #00d4ff;">BigDaddyG Terminal v1.0</span>
+<span style="color: #888;">Terminal cleared</span>
+
+<span style="color: #0f0;">$</span> <span style="color: #fff;">Ready</span>`;
+        });
+        
+        // Focus input
+        input.focus();
+        
+        console.log('[TabSystem] ✅ Terminal wired');
     }
     
     createDebuggerTab() {
