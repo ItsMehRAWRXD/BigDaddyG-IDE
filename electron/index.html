@@ -176,6 +176,17 @@
                 font-weight: bold;
                 font-size: 12px;
             " title="Run Front-End Tests (F12 to see results)">🧪 Run Tests</button>
+            <button id="test-inputs-btn" style="
+                background: #ffa502;
+                color: #000;
+                border: none;
+                padding: 5px 15px;
+                margin: 0 5px;
+                border-radius: 4px;
+                cursor: pointer;
+                font-weight: bold;
+                font-size: 12px;
+            " title="Test All Input Boxes">🔍 Test Inputs</button>
         </div>
         
         <!-- Menu Dropdowns (hidden by default) -->
@@ -199,12 +210,14 @@
     
     <!-- 4. Components -->
     <script src="file-explorer-component.js" defer></script>
+    <script src="interactive-terminal.js" defer></script>
     
     <!-- 5. REAL Tab Functionality Layer (NO MOCKS - ALL REAL BACKENDS) -->
     <script src="real-tab-functionality.js" defer></script>
     
-    <!-- 6. Comprehensive Feature Test Suite -->
+    <!-- 6. Testing Systems -->
     <script src="comprehensive-feature-test.js" defer></script>
+    <script src="input-validation-test.js" defer></script>
     
     <!-- REMOVE PAINT TEST -->
     <script>

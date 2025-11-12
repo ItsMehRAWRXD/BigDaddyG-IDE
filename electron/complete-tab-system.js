@@ -672,16 +672,27 @@ hello();"></textarea>
     }
     
     createTerminalTab() {
+        const terminalId = `terminal-${Date.now()}`;
         return this.createTab({
             title: 'Terminal',
             icon: '💻',
             content: `
-                <div style="width: 100%; height: 100%; background: #000; font-family: 'Courier New', monospace; padding: 15px; color: #0f0; overflow-y: auto;">
-                    <p>BigDaddyG IDE Terminal v1.0</p>
-                    <p>Type 'help' for available commands</p>
-                    <p style="margin-top: 15px;">$ <span id="terminal-cursor" style="background: #0f0; padding: 2px 5px;">_</span></p>
-                </div>
-            `
+                <div id="${terminalId}" style="
+                    width: 100%;
+                    height: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    background: #000;
+                "></div>
+            `,
+            onActivate: () => {
+                setTimeout(() => {
+                    if (window.InteractiveTerminal) {
+                        const terminal = new window.InteractiveTerminal(terminalId);
+                        terminal.initialize();
+                    }
+                }, 100);
+            }
         });
     }
     
