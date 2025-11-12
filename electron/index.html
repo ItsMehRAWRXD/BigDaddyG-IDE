@@ -261,32 +261,51 @@
     
     <!-- WINDOW CONTROLS -->
     <script>
-        // Window control functions
+        // Window control functions - Use preload exposed functions
         function minimizeWindow() {
-            if (window.electron && window.electron.ipcRenderer) {
-                window.electron.ipcRenderer.send('window-minimize');
+            console.log('[Window] 🔽 Minimize clicked');
+            if (window.electron && window.electron.minimizeWindow) {
+                window.electron.minimizeWindow();
+                console.log('[Window] ✅ Minimized');
             } else {
-                console.log('[Window] Minimize window');
+                console.error('[Window] ❌ electron.minimizeWindow not available');
+                alert('Window controls require Electron');
             }
         }
         
         function maximizeWindow() {
-            if (window.electron && window.electron.ipcRenderer) {
-                window.electron.ipcRenderer.send('window-maximize');
+            console.log('[Window] 🔲 Maximize clicked');
+            if (window.electron && window.electron.maximizeWindow) {
+                window.electron.maximizeWindow();
+                console.log('[Window] ✅ Maximized');
             } else {
-                console.log('[Window] Maximize window');
+                console.error('[Window] ❌ electron.maximizeWindow not available');
+                alert('Window controls require Electron');
             }
         }
         
         function closeWindow() {
-            if (window.electron && window.electron.ipcRenderer) {
-                window.electron.ipcRenderer.send('window-close');
+            console.log('[Window] ❌ Close clicked');
+            if (window.electron && window.electron.closeWindow) {
+                window.electron.closeWindow();
+                console.log('[Window] ✅ Closing');
             } else {
-                console.log('[Window] Close window');
+                console.error('[Window] ❌ electron.closeWindow not available');
+                alert('Window controls require Electron');
             }
         }
         
         console.log('[Window] ✅ Window controls loaded');
+        
+        // Test on load
+        setTimeout(() => {
+            console.log('[Window] 🔍 Testing window.electron:', {
+                exists: !!window.electron,
+                minimizeWindow: typeof window.electron?.minimizeWindow,
+                maximizeWindow: typeof window.electron?.maximizeWindow,
+                closeWindow: typeof window.electron?.closeWindow
+            });
+        }, 1000);
     </script>
     
     <!-- MENU BAR FUNCTIONALITY -->
