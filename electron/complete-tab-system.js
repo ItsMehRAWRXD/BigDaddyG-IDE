@@ -1404,37 +1404,102 @@ hello();"></textarea>
     
     createImageGenTab() {
         const imageGenId = `image-gen-${Date.now()}`;
-        return this.createTab({
+        const id = this.createTab({
             title: 'Image Generator',
             icon: '🎨',
             content: `
-                <div id="${imageGenId}" style="padding: 20px; height: 100%; overflow-y: auto;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h2 style="color: #00d4ff; margin: 0;">🎨 AI Image Generator</h2>
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <label style="color: #888; font-size: 12px;">Model:</label>
-                            <select id="${imageGenId}-model" style="padding: 8px 12px; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 5px; color: #fff; font-size: 12px; cursor: pointer;">
-                                <option value="stable-diffusion-xl">Stable Diffusion XL</option>
-                                <option value="stable-diffusion-3">Stable Diffusion 3</option>
-                                <option value="dall-e-3">DALL-E 3</option>
-                                <option value="midjourney">Midjourney</option>
-                            </select>
-                        </div>
-                    </div>
+                <div id="${imageGenId}" style="
+                    padding: 20px;
+                    height: 100%;
+                    overflow-y: auto;
+                    display: flex;
+                    flex-direction: column;
+                ">
                     <div style="margin-bottom: 20px;">
-                        <input 
-                            id="${imageGenId}-prompt" 
-                            type="text" 
-                            placeholder="Describe the image you want to generate..." 
-                            style="width: 100%; padding: 15px; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 8px; color: #fff; margin-bottom: 10px;" 
-                        />
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h2 style="color: #00d4ff; margin: 0;">🎨 AI Image Generator</h2>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <label style="color: #888; font-size: 12px;">Model:</label>
+                                <select id="${imageGenId}-model" style="
+                                    padding: 8px 12px;
+                                    background: #1e1e1e;
+                                    border: 1px solid #00d4ff;
+                                    border-radius: 5px;
+                                    color: #fff;
+                                    font-size: 12px;
+                                    cursor: pointer;
+                                    outline: none;
+                                ">
+                                    <option value="stable-diffusion-xl">Stable Diffusion XL</option>
+                                    <option value="stable-diffusion-3">Stable Diffusion 3</option>
+                                    <option value="dall-e-3">DALL-E 3</option>
+                                    <option value="midjourney">Midjourney</option>
+                                    <option value="ai-description">AI Description (Available Now)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <label style="color: #888; font-size: 13px; display: block; margin-bottom: 8px;">✨ Image Description:</label>
+                            <textarea 
+                                id="${imageGenId}-prompt" 
+                                placeholder="Describe the image you want... (e.g., 'A futuristic cyberpunk city at night with neon lights')" 
+                                style="
+                                    width: 100%;
+                                    min-height: 100px;
+                                    padding: 15px;
+                                    background: #1e1e1e;
+                                    border: 2px solid #00d4ff;
+                                    border-radius: 8px;
+                                    color: #fff;
+                                    font-size: 14px;
+                                    font-family: inherit;
+                                    resize: vertical;
+                                    outline: none;
+                                "
+                            ></textarea>
+                        </div>
+                        
                         <button 
                             id="${imageGenId}-generate" 
-                            style="padding: 12px 24px; background: #00d4ff; color: #000; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.2s;"
-                        >Generate Image</button>
+                            style="
+                                width: 100%;
+                                padding: 15px 24px;
+                                background: linear-gradient(135deg, #00d4ff, #00ff88);
+                                color: #000;
+                                border: none;
+                                border-radius: 8px;
+                                font-weight: bold;
+                                font-size: 16px;
+                                cursor: pointer;
+                                transition: all 0.2s;
+                                box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+                            "
+                            onmouseover="this.style.transform='scale(1.02)'"
+                            onmouseout="this.style.transform='scale(1)'"
+                        >🎨 Generate Image</button>
                     </div>
-                    <div id="${imageGenId}-output" style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 8px; padding: 40px; text-align: center; min-height: 400px;">
-                        <p style="color: #888;">Generated images will appear here</p>
+                    
+                    <div 
+                        id="${imageGenId}-output" 
+                        style="
+                            flex: 1;
+                            background: rgba(0, 0, 0, 0.3);
+                            border: 2px solid rgba(0, 212, 255, 0.2);
+                            border-radius: 12px;
+                            padding: 40px;
+                            text-align: center;
+                            min-height: 400px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        "
+                    >
+                        <div>
+                            <p style="font-size: 64px; margin-bottom: 20px; opacity: 0.3;">🎨</p>
+                            <p style="color: #888; font-size: 16px;">Generated images will appear here</p>
+                            <p style="color: #666; font-size: 12px; margin-top: 10px;">Enter a description above and click Generate</p>
+                        </div>
                     </div>
                 </div>
             `,
@@ -1444,6 +1509,7 @@ hello();"></textarea>
                 }, 100);
             }
         });
+        return id;
     }
     
     /**
