@@ -2024,9 +2024,22 @@ hello();"></textarea>
     }
     
     createTeamTab() {
-                            <p style="color: #888; margin-bottom: 15px;">Browse and install extensions</p>
-                            <button style="background: #00d4ff; color: #000; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold;">Browse Extensions</button>
-                        </div>
+        return this.createTab({
+            title: 'Team Collaboration',
+            icon: '👥',
+            content: `
+                <div style="padding: 20px; height: 100%; overflow-y: auto;">
+                    <h2 style="color: #00d4ff; margin-bottom: 20px;">👥 Team Collaboration</h2>
+                    <div style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 8px; padding: 20px;">
+                        <h3 style="color: #00ff88; margin-bottom: 15px;">Share Session</h3>
+                        <button style="padding: 10px 20px; background: #00d4ff; color: #000; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Start Collaboration</button>
+                    </div>
+                </div>
+            `
+        });
+    }
+    
+    createPerformanceMonitorTab() {
                         
                         <div style="background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 12px; padding: 25px;">
                             <div style="font-size: 48px; margin-bottom: 15px;">🎨</div>
