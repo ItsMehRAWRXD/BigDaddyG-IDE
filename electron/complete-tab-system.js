@@ -1552,29 +1552,176 @@ hello();"></textarea>
     
     // Game dev tabs
     createGameEditorTab() {
+        const gameEditorId = `game-editor-${Date.now()}`;
         return this.createTab({
             title: 'Game Editor',
             icon: '🎮',
             content: `
                 <div style="padding: 20px; height: 100%; overflow-y: auto;">
-                    <h2 style="color: #00d4ff; margin-bottom: 20px;">🎮 Game Editor</h2>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
-                        <button style="padding: 30px 20px; background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 8px; color: #fff; cursor: pointer; text-align: center;">
-                            <div style="font-size: 32px; margin-bottom: 8px;">🎯</div>
-                            <div>Godot</div>
-                        </button>
-                        <button style="padding: 30px 20px; background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 8px; color: #fff; cursor: pointer; text-align: center;">
-                            <div style="font-size: 32px; margin-bottom: 8px;">🔷</div>
-                            <div>Unreal</div>
-                        </button>
-                        <button style="padding: 30px 20px; background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 8px; color: #fff; cursor: pointer; text-align: center;">
-                            <div style="font-size: 32px; margin-bottom: 8px;">🎲</div>
-                            <div>Unity</div>
-                        </button>
+                    <h2 style="color: #00d4ff; margin-bottom: 20px;">🎮 Visual Game Editor</h2>
+                    
+                    <div style="background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                        <h3 style="color: #00ff88; margin-bottom: 15px;">Scene Hierarchy</h3>
+                        <div id="${gameEditorId}-hierarchy" style="background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 5px; padding: 15px; min-height: 150px; font-family: monospace; font-size: 12px;">
+                            <div style="color: #0f0; cursor: pointer; padding: 3px;" onclick="alert('Root Node')">📦 Scene Root</div>
+                            <div style="color: #0f0; cursor: pointer; padding: 3px; margin-left: 20px;" onclick="alert('Camera')">📷 Main Camera</div>
+                            <div style="color: #0f0; cursor: pointer; padding: 3px; margin-left: 20px;" onclick="alert('Player')">🎮 Player</div>
+                            <div style="color: #0f0; cursor: pointer; padding: 3px; margin-left: 40px;" onclick="alert('Sprite')">🎨 Sprite</div>
+                            <div style="color: #0f0; cursor: pointer; padding: 3px; margin-left: 20px;" onclick="alert('Enemy')">👾 Enemy</div>
+                        </div>
+                        <button id="${gameEditorId}-add-node" style="margin-top: 10px; padding: 8px 16px; background: #00d4ff; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">+ Add Node</button>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 20px;">
+                        <div style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 8px; padding: 20px;">
+                            <h3 style="color: #00ff88; margin-bottom: 15px;">🖼️ Viewport</h3>
+                            <canvas id="${gameEditorId}-canvas" width="600" height="400" style="width: 100%; background: #1a1a2e; border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 5px;"></canvas>
+                            <div style="margin-top: 10px; display: flex; gap: 10px;">
+                                <button id="${gameEditorId}-play" style="padding: 8px 16px; background: #00ff88; color: #000; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">▶ Play</button>
+                                <button id="${gameEditorId}-stop" style="padding: 8px 16px; background: #ff4757; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">⏹ Stop</button>
+                            </div>
+                        </div>
+                        
+                        <div style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 8px; padding: 20px;">
+                            <h3 style="color: #00ff88; margin-bottom: 15px;">⚙️ Properties</h3>
+                            <div style="display: grid; gap: 10px;">
+                                <div>
+                                    <label style="color: #888; font-size: 12px; display: block; margin-bottom: 3px;">Position X</label>
+                                    <input type="number" value="0" style="width: 100%; padding: 6px; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 4px; color: #fff;">
+                                </div>
+                                <div>
+                                    <label style="color: #888; font-size: 12px; display: block; margin-bottom: 3px;">Position Y</label>
+                                    <input type="number" value="0" style="width: 100%; padding: 6px; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 4px; color: #fff;">
+                                </div>
+                                <div>
+                                    <label style="color: #888; font-size: 12px; display: block; margin-bottom: 3px;">Rotation</label>
+                                    <input type="range" min="0" max="360" value="0" style="width: 100%;">
+                                </div>
+                                <div>
+                                    <label style="color: #888; font-size: 12px; display: block; margin-bottom: 3px;">Scale</label>
+                                    <input type="range" min="0.1" max="3" step="0.1" value="1" style="width: 100%;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 8px; padding: 20px;">
+                        <h3 style="color: #00ff88; margin-bottom: 15px;">🎯 Quick Launch Engines</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                            <button onclick="window.completeTabSystem?.createGodotTab?.()" style="padding: 20px; background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 8px; color: #fff; cursor: pointer; text-align: center; transition: all 0.2s;">
+                                <div style="font-size: 32px; margin-bottom: 8px;">🎯</div>
+                                <div>Godot Projects</div>
+                            </button>
+                            <button onclick="window.completeTabSystem?.createUnrealTab?.()" style="padding: 20px; background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 8px; color: #fff; cursor: pointer; text-align: center; transition: all 0.2s;">
+                                <div style="font-size: 32px; margin-bottom: 8px;">🔷</div>
+                                <div>Unreal Engine</div>
+                            </button>
+                            <button onclick="window.completeTabSystem?.createUnityTab?.()" style="padding: 20px; background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 8px; color: #fff; cursor: pointer; text-align: center; transition: all 0.2s;">
+                                <div style="font-size: 32px; margin-bottom: 8px;">🎲</div>
+                                <div>Unity Projects</div>
+                            </button>
+                        </div>
                     </div>
                 </div>
-            `
+            `,
+            onActivate: () => {
+                setTimeout(() => this.wireGameEditor(gameEditorId), 100);
+            }
         });
+    }
+    
+    wireGameEditor(gameEditorId) {
+        const canvas = document.getElementById(`${gameEditorId}-canvas`);
+        const playBtn = document.getElementById(`${gameEditorId}-play`);
+        const stopBtn = document.getElementById(`${gameEditorId}-stop`);
+        const addNodeBtn = document.getElementById(`${gameEditorId}-add-node`);
+        
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        let isPlaying = false;
+        let animationId = null;
+        
+        // Draw initial scene
+        function drawScene() {
+            ctx.fillStyle = '#1a1a2e';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw grid
+            ctx.strokeStyle = 'rgba(0, 212, 255, 0.1)';
+            ctx.lineWidth = 1;
+            for (let x = 0; x < canvas.width; x += 50) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += 50) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+            
+            // Draw player
+            ctx.fillStyle = '#00ff88';
+            ctx.fillRect(250, 300, 40, 40);
+            
+            // Draw enemy
+            ctx.fillStyle = '#ff4757';
+            ctx.fillRect(400, 150, 30, 30);
+        }
+        
+        drawScene();
+        
+        playBtn.onclick = () => {
+            isPlaying = true;
+            playBtn.disabled = true;
+            playBtn.style.opacity = '0.5';
+            
+            let frame = 0;
+            function animate() {
+                drawScene();
+                
+                // Animate enemy movement
+                ctx.fillStyle = '#ff4757';
+                ctx.fillRect(400 + Math.sin(frame * 0.05) * 50, 150, 30, 30);
+                
+                frame++;
+                if (isPlaying) {
+                    animationId = requestAnimationFrame(animate);
+                }
+            }
+            animate();
+            
+            console.log('[GameEditor] ✅ Scene playing');
+        };
+        
+        stopBtn.onclick = () => {
+            isPlaying = false;
+            playBtn.disabled = false;
+            playBtn.style.opacity = '1';
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+            drawScene();
+            console.log('[GameEditor] ⏹ Scene stopped');
+        };
+        
+        addNodeBtn.onclick = () => {
+            const nodeName = prompt('Node name:', 'NewNode');
+            if (nodeName) {
+                const hierarchyDiv = document.getElementById(`${gameEditorId}-hierarchy`);
+                const newNode = document.createElement('div');
+                newNode.style.cssText = 'color: #0f0; cursor: pointer; padding: 3px; margin-left: 20px;';
+                newNode.textContent = `📦 ${nodeName}`;
+                newNode.onclick = () => alert(`Selected: ${nodeName}`);
+                hierarchyDiv.appendChild(newNode);
+                console.log('[GameEditor] ✅ Added node:', nodeName);
+            }
+        };
+        
+        console.log('[GameEditor] ✅ Game editor wired');
     }
     
     createGodotTab() {
