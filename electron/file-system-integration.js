@@ -263,6 +263,18 @@ class FileSystemIntegration {
             
             if (result.canceled || !result.filePaths || result.filePaths.length === 0) {
                 console.log('[FileSystem] User canceled folder dialog');
+                
+                // Update any active file explorer tab
+                const activeExplorerContent = document.querySelector('[id^="explorer-"][id$="-content"]');
+                if (activeExplorerContent) {
+                    activeExplorerContent.innerHTML = `
+                        <div style="text-align: center; margin-top: 100px;">
+                            <p style="font-size: 64px; margin-bottom: 20px; opacity: 0.5;">📁</p>
+                            <p style="font-size: 18px; color: #ccc; margin-bottom: 10px;">No folder selected</p>
+                            <p style="font-size: 14px; color: #888;">Click "Open Folder" to try again</p>
+                        </div>
+                    `;
+                }
                 return;
             }
             
@@ -271,7 +283,18 @@ class FileSystemIntegration {
             
         } catch (error) {
             console.error('[FileSystem] Error opening folder:', error);
-            alert('Error opening folder: ' + error.message);
+            
+            // Show error in explorer tab
+            const activeExplorerContent = document.querySelector('[id^="explorer-"][id$="-content"]');
+            if (activeExplorerContent) {
+                activeExplorerContent.innerHTML = `
+                    <div style="text-align: center; margin-top: 100px; color: #ff4757;">
+                        <p style="font-size: 64px; margin-bottom: 20px;">❌</p>
+                        <p style="font-size: 18px; margin-bottom: 10px;">Error opening folder</p>
+                        <p style="font-size: 14px;">${error.message}</p>
+                    </div>
+                `;
+            }
         }
     }
     
@@ -315,7 +338,25 @@ class FileSystemIntegration {
     renderProjectExplorer() {
         if (!this.currentProject) return;
         
-        // Create or get project explorer panel
+        // FIRST: Update the File Explorer TAB content if it exists
+        const activeExplorerContent = document.querySelector('[id^="explorer-"][id$="-content"]');
+        if (activeExplorerContent) {
+            activeExplorerContent.innerHTML = `
+                <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid rgba(0, 212, 255, 0.2);">
+                    <div style="color: #00d4ff; font-weight: bold; font-size: 14px; margin-bottom: 5px;">
+                        📁 ${this.currentProject.name}
+                    </div>
+                    <div style="color: #888; font-size: 11px;">${this.currentProject.path}</div>
+                    <div style="color: #00ff88; font-size: 12px; margin-top: 5px;">${this.currentProject.files.length} items</div>
+                </div>
+                <div id="file-tree-in-tab" style="overflow-y: auto;"></div>
+            `;
+            
+            // Render files in the tab
+            this.renderFileTreeInTab(this.currentProject.files, 'file-tree-in-tab');
+        }
+        
+        // THEN: Create or get project explorer panel
         let panel = document.getElementById('project-explorer-panel');
         
         if (!panel) {
@@ -400,6 +441,58 @@ class FileSystemIntegration {
         
         // Render file tree
         this.renderFileTree(this.currentProject.files, 'project-file-tree');
+    }
+    
+    /**
+     * Render file tree in File Explorer TAB
+     */
+    renderFileTreeInTab(files, containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        
+        container.innerHTML = files.map(file => {
+            const icon = file.type === 'directory' ? '📁' : this.getFileIcon(file.name);
+            const isDir = file.type === 'directory';
+            
+            return `
+                <div 
+                    class="file-tree-item"
+                    style="
+                        padding: 10px 12px;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        color: #ccc;
+                        font-size: 13px;
+                        border-radius: 4px;
+                        margin: 2px 0;
+                        transition: all 0.2s;
+                    "
+                    onclick="window.fileSystem.handleFileClick('${file.path.replace(/\\/g, '\\\\')}', '${file.type}')"
+                    onmouseover="this.style.background='rgba(0,212,255,0.1)'"
+                    onmouseout="this.style.background='transparent'"
+                >
+                    <span style="font-size: 18px;">${icon}</span>
+                    <span style="flex: 1;">${file.name}</span>
+                    ${isDir ? '<span style="color: #888; font-size: 10px;">›</span>' : ''}
+                </div>
+            `;
+        }).join('');
+    }
+    
+    /**
+     * Handle file click from explorer
+     */
+    async handleFileClick(filePath, type) {
+        console.log('[FileSystem] File clicked:', filePath, type);
+        
+        if (type === 'file') {
+            await this.loadFile(filePath);
+        } else if (type === 'directory') {
+            console.log('[FileSystem] TODO: Expand directory');
+            // TODO: Load subdirectory
+        }
     }
     
     /**
