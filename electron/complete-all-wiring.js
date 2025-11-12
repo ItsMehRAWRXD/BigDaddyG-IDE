@@ -768,8 +768,9 @@ waitForDependencies(() => {
                         <button id="${browserId}-refresh" style="padding: 8px 12px; background: rgba(0, 212, 255, 0.2); border: none; border-radius: 4px; cursor: pointer; color: #fff;">🔄</button>
                         <input id="${browserId}-url" type="text" placeholder="Enter URL..." value="https://www.google.com" style="flex: 1; padding: 8px 12px; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 5px; color: #fff;" />
                         <button id="${browserId}-go" style="padding: 8px 20px; background: #00d4ff; color: #000; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Go</button>
+                        <button id="${browserId}-home" style="padding: 8px 12px; background: rgba(0, 212, 255, 0.2); border: none; border-radius: 4px; cursor: pointer; color: #fff;">🏠</button>
                     </div>
-                    <iframe id="${browserId}-frame" style="flex: 1; border: none; background: #fff;"></iframe>
+                    <webview id="${browserId}-frame" src="https://www.google.com" style="flex: 1; border: none; background: #fff;"></webview>
                 </div>
             `,
             onActivate: () => {
@@ -779,53 +780,114 @@ waitForDependencies(() => {
     };
     
     function wireBrowser(browserId) {
+        console.log('[Browser] 🌐 Wiring browser:', browserId);
+        
         const urlInput = document.getElementById(`${browserId}-url`);
         const goBtn = document.getElementById(`${browserId}-go`);
         const backBtn = document.getElementById(`${browserId}-back`);
         const forwardBtn = document.getElementById(`${browserId}-forward`);
         const refreshBtn = document.getElementById(`${browserId}-refresh`);
-        const iframe = document.getElementById(`${browserId}-frame`);
+        const homeBtn = document.getElementById(`${browserId}-home`);
+        const webview = document.getElementById(`${browserId}-frame`);
         
-        if (!iframe) return;
+        if (!webview) {
+            console.error('[Browser] ❌ Webview not found!');
+            return;
+        }
         
-        let history = [];
-        let historyIndex = -1;
+        console.log('[Browser] ✅ Webview found, setting up navigation...');
         
+        // Navigate to URL
         function navigate(url) {
+            if (!url) {
+                console.warn('[Browser] ⚠️ Empty URL');
+                return;
+            }
+            
+            // Add https:// if no protocol
             if (!url.startsWith('http://') && !url.startsWith('https://')) {
                 url = 'https://' + url;
             }
-            iframe.src = url;
-            history = history.slice(0, historyIndex + 1);
-            history.push(url);
-            historyIndex = history.length - 1;
-            urlInput.value = url;
+            
+            console.log('[Browser] 🌐 Navigating to:', url);
+            
+            try {
+                webview.loadURL(url);
+                urlInput.value = url;
+            } catch (error) {
+                console.error('[Browser] ❌ Navigation error:', error);
+                alert('Failed to load URL: ' + error.message);
+            }
         }
         
-        goBtn.onclick = () => navigate(urlInput.value);
-        urlInput.onkeypress = (e) => {
-            if (e.key === 'Enter') navigate(urlInput.value);
-        };
+        // Button handlers
+        if (goBtn) {
+            goBtn.onclick = () => {
+                console.log('[Browser] 🔘 Go button clicked');
+                navigate(urlInput.value);
+            };
+        }
         
-        backBtn.onclick = () => {
-            if (historyIndex > 0) {
-                historyIndex--;
-                iframe.src = history[historyIndex];
-                urlInput.value = history[historyIndex];
-            }
-        };
+        if (urlInput) {
+            urlInput.onkeypress = (e) => {
+                if (e.key === 'Enter') {
+                    console.log('[Browser] ⌨️ Enter pressed');
+                    navigate(urlInput.value);
+                }
+            };
+        }
         
-        forwardBtn.onclick = () => {
-            if (historyIndex < history.length - 1) {
-                historyIndex++;
-                iframe.src = history[historyIndex];
-                urlInput.value = history[historyIndex];
-            }
-        };
+        if (backBtn) {
+            backBtn.onclick = () => {
+                console.log('[Browser] ◀ Back clicked');
+                if (webview.canGoBack()) {
+                    webview.goBack();
+                }
+            };
+        }
         
-        refreshBtn.onclick = () => {
-            iframe.src = iframe.src;
-        };
+        if (forwardBtn) {
+            forwardBtn.onclick = () => {
+                console.log('[Browser] ▶ Forward clicked');
+                if (webview.canGoForward()) {
+                    webview.goForward();
+                }
+            };
+        }
+        
+        if (refreshBtn) {
+            refreshBtn.onclick = () => {
+                console.log('[Browser] 🔄 Refresh clicked');
+                webview.reload();
+            };
+        }
+        
+        if (homeBtn) {
+            homeBtn.onclick = () => {
+                console.log('[Browser] 🏠 Home clicked');
+                navigate('https://www.google.com');
+            };
+        }
+        
+        // Webview event listeners
+        webview.addEventListener('did-start-loading', () => {
+            console.log('[Browser] ⏳ Loading started');
+        });
+        
+        webview.addEventListener('did-stop-loading', () => {
+            console.log('[Browser] ✅ Loading complete');
+            urlInput.value = webview.getURL();
+        });
+        
+        webview.addEventListener('did-fail-load', (event) => {
+            console.error('[Browser] ❌ Load failed:', event.errorDescription);
+        });
+        
+        webview.addEventListener('page-title-updated', (event) => {
+            console.log('[Browser] 📄 Page title:', event.title);
+        });
+        
+        console.log('[Browser] ✅ Browser wired successfully!');
         
         // Load initial page
         navigate(urlInput.value);

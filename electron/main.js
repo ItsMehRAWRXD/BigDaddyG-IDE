@@ -1070,7 +1070,7 @@ function createMainWindow() {
       nodeIntegration: false,
       contextIsolation: true,
       sandbox: false,  // Changed to false to allow preload script to load
-      webviewTag: false,
+      webviewTag: true,  // ✅ ENABLE WEBVIEW for browser tab
       preload: path.join(__dirname, 'preload.js'),
       webSecurity: true,
       allowRunningInsecureContent: false,
