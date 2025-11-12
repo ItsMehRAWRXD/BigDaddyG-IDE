@@ -1902,30 +1902,8 @@ Provide a vivid, detailed description as if you're viewing the actual generated 
 });
 
 // ============================================================================
-// START SERVER
 // ============================================================================
-
-const server = http.createServer(app);
-
-server.listen(PORT, () => {
-  console.log(`🎼 Orchestra-BigDaddyG Server running on port ${PORT}`);
-  console.log(`🔒 Security middleware enabled`);
-  console.log(`⚡ Rate limiting active`);
-  console.log(`🤖 BigDaddyG models loaded: ${Object.keys(BIGDADDYG_MODELS).length}`);
-  console.log(`✅ All 19 API endpoints ready - REAL AGENTIC EXECUTION`);
-  console.log(`🧠 Features: Deep Research | Thinking | Web Search | 1M Context | Memory/RAG`);
-});
-
-server.on('error', (error) => {
-  if (error.code === 'EADDRINUSE') {
-    console.log(`⚠️ Port ${PORT} already in use - server may already be running`);
-  } else {
-    console.error('Server error:', error);
-  }
-});
-
-// ============================================================================
-// UNIVERSAL ERROR CATCHERS - Final safety nets
+// UNIVERSAL ERROR CATCHERS - Must be registered BEFORE server starts
 // ============================================================================
 
 // ---- Catch all runtime errors ----
@@ -1963,7 +1941,29 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('[Orchestra] 💥 UNHANDLED REJECTION - Server continuing but check logs!');
 });
 
-console.log('[Orchestra] 🛡️ Universal error catcher activated');
-console.log('[Orchestra] 📝 All errors logged to: logs/orchestra-errors.log');
+// ============================================================================
+// START SERVER
+// ============================================================================
+
+const server = http.createServer(app);
+
+server.listen(PORT, () => {
+  console.log(`🎼 Orchestra-BigDaddyG Server running on port ${PORT}`);
+  console.log(`🔒 Security middleware enabled`);
+  console.log(`⚡ Rate limiting active`);
+  console.log(`🤖 BigDaddyG models loaded: ${Object.keys(BIGDADDYG_MODELS).length}`);
+  console.log(`✅ All 19 API endpoints ready - REAL AGENTIC EXECUTION`);
+  console.log(`🧠 Features: Deep Research | Thinking | Web Search | 1M Context | Memory/RAG`);
+  console.log(`🛡️ Universal error catcher activated`);
+  console.log(`📝 All errors logged to: logs/orchestra-errors.log`);
+});
+
+server.on('error', (error) => {
+  if (error.code === 'EADDRINUSE') {
+    console.log(`⚠️ Port ${PORT} already in use - server may already be running`);
+  } else {
+    console.error('Server error:', error);
+  }
+});
 
 module.exports = { app, server };
