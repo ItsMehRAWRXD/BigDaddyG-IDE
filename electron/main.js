@@ -3081,7 +3081,7 @@ ipcMain.handle('orchestra:start', () => {
   return { success: true };
 });
 
-// AI Model Generation - Bridge NativeOllamaClient to Orchestra
+// AI Model Generation - Bridge NativeOllamaClient to Orchestra  
 ipcMain.handle('ai:generate', async (event, { model, prompt, options }) => {
   try {
     console.log(`[IPC] 🤖 AI generation request for model: ${model}`);
@@ -3090,6 +3090,35 @@ ipcMain.handle('ai:generate', async (event, { model, prompt, options }) => {
   } catch (error) {
     console.error('[IPC] ❌ AI generation failed:', error);
     return { success: false, error: error.message };
+  }
+});
+
+// Orchestra IPC Handlers - Access BigDaddyGCore's models
+ipcMain.handle('orchestra:get-models', async () => {
+  try {
+    console.log('[IPC] 📋 Orchestra requesting models list');
+    if (bigDaddyGCore && typeof bigDaddyGCore.listModels === 'function') {
+      const models = await bigDaddyGCore.listModels();
+      console.log(`[IPC] ✅ Returning ${models.length} models to Orchestra`);
+      return models.map(m => m.name || m.id);
+    }
+    return ['bigdaddyg:latest', 'bigdaddyg:coder', 'bigdaddyg:python'];
+  } catch (error) {
+    console.error('[IPC] ❌ Failed to get models:', error);
+    return [];
+  }
+});
+
+ipcMain.handle('orchestra:generate', async (event, payload) => {
+  const { model, prompt } = payload;
+  try {
+    console.log(`[IPC] 🤖 Orchestra generate request: ${model}`);
+    const response = await nativeOllamaClient.generate(model, prompt, {});
+    console.log(`[IPC] ✅ Generated ${response.length} characters`);
+    return response;
+  } catch (error) {
+    console.error(`[IPC] ❌ Generation failed for ${model}:`, error.message);
+    return `Error: ${error.message}`;
   }
 });
 
