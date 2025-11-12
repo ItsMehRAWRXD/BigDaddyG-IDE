@@ -7,6 +7,7 @@
 const electronModule = require('electron');
 const { app, BrowserWindow, ipcMain, Menu, dialog } = electronModule;
 const IPCServer = require('./ipc-server');
+const AutoUpdater = require('./auto-updater');
 
 // Verify Electron environment - app.whenReady must be available
 if (!app || typeof app.whenReady !== 'function') {
