@@ -509,15 +509,25 @@ class FileSystemIntegration {
         console.log('[FileSystem] 📋 Rendering', files.length, 'files in tab');
         
         container.innerHTML = files.map(file => {
-            const icon = file.type === 'directory' ? '📁' : this.getFileIcon(file.name);
-            const isDir = file.type === 'directory';
+            // DETECT FILE TYPE if not provided (cross-platform detection)
+            let fileType = file.type;
+            if (!fileType || fileType === 'undefined') {
+                // Detect based on name: files have extensions, directories don't
+                const hasExtension = file.name && file.name.includes('.') && !file.name.startsWith('.');
+                fileType = hasExtension ? 'file' : 'directory';
+            }
+            
+            const icon = fileType === 'directory' ? '📁' : this.getFileIcon(file.name);
+            const isDir = fileType === 'directory';
             const escapedPath = file.path.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+            
+            console.log('[FileSystem] 📄 Rendering:', file.name, 'Type:', fileType, 'Path:', file.path);
             
             return `
                 <div 
                     class="file-tree-item"
                     data-path="${escapedPath}"
-                    data-type="${file.type}"
+                    data-type="${fileType}"
                     data-name="${file.name}"
                     style="
                         padding: 10px 12px;
@@ -531,7 +541,7 @@ class FileSystemIntegration {
                         margin: 2px 0;
                         transition: all 0.2s;
                     "
-                    onclick="window.fileSystem.handleFileClick('${escapedPath}', '${file.type}')"
+                    onclick="window.fileSystem.handleFileClick('${escapedPath}', '${fileType}')"
                     onmouseover="this.style.background='rgba(0,212,255,0.1)'; this.style.borderLeft='3px solid #00d4ff'"
                     onmouseout="this.style.background='transparent'; this.style.borderLeft='3px solid transparent'"
                 >
@@ -546,29 +556,44 @@ class FileSystemIntegration {
     }
     
     /**
-     * Handle file click from explorer
+     * Handle file click from explorer - CROSS-PLATFORM
      */
     async handleFileClick(filePath, type) {
-        console.log('[FileSystem] 📂 File clicked:', filePath, 'Type:', type);
+        console.log('[FileSystem] 🖱️ Click detected!');
+        console.log('[FileSystem] 📂 Path:', filePath);
+        console.log('[FileSystem] 🏷️ Type:', type);
         
-        if (!type || type === 'undefined') {
-            console.warn('[FileSystem] ⚠️ Type is undefined, trying to detect...');
-            // Try to detect if it's a file or directory
-            if (filePath && !filePath.match(/\.\w+$/)) {
-                type = 'directory';
-            } else {
+        // Robust type detection (handles undefined, "undefined" string, etc.)
+        if (!type || type === 'undefined' || type === undefined) {
+            console.warn('[FileSystem] ⚠️ Type is undefined, auto-detecting...');
+            
+            // Extract filename from path (cross-platform)
+            const filename = filePath.split(/[\/\\]/).pop();
+            
+            // Files have extensions (except hidden files like .gitignore)
+            // Directories don't, OR are known folder names
+            const hasExtension = filename.includes('.') && !filename.startsWith('.');
+            const isHiddenFile = filename.startsWith('.') && filename.includes('.');
+            
+            if (hasExtension || isHiddenFile) {
                 type = 'file';
+                console.log('[FileSystem] 🔍 Auto-detected as FILE (has extension)');
+            } else {
+                type = 'directory';
+                console.log('[FileSystem] 🔍 Auto-detected as DIRECTORY (no extension)');
             }
-            console.log('[FileSystem] 🔍 Detected type:', type);
         }
         
+        console.log('[FileSystem] ✅ Final type:', type);
+        
         if (type === 'file') {
-            console.log('[FileSystem] 📄 Loading file in new tab:', filePath);
+            console.log('[FileSystem] 📄 Opening file in new tab...');
             await this.loadFile(filePath);
         } else if (type === 'directory') {
-            console.log('[FileSystem] 📁 Directory clicked, expanding:', filePath);
-            // Load subdirectory
+            console.log('[FileSystem] 📁 Expanding directory...');
             await this.loadProject(filePath);
+        } else {
+            console.error('[FileSystem] ❌ Unknown type:', type);
         }
     }
     
