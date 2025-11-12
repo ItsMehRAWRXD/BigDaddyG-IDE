@@ -30,32 +30,9 @@
     }
 
     function initBigDaddyEditor() {
-        console.log('[BigDaddyOnly] 🎯 Starting BigDaddy Editor initialization...');
-
-        // Tab system creates its own containers - just wait for them
-        const maxRetries = 10;
-        if (!window._bigdaddyRetryCount) window._bigdaddyRetryCount = 0;
-        window._bigdaddyRetryCount++;
-        
-        if (window._bigdaddyRetryCount > maxRetries) {
-            console.error('[BigDaddyOnly] ❌ Max retries reached, giving up');
-            return;
-        }
-        
-        // Find BigDaddy container in tab content
-        let bigdaddyContainer = document.querySelector('#bigdaddy-container') ||
-                               document.querySelector('[id*="editor"]') ||
-                               document.querySelector('#master-tab-content');
-        
-        if (!bigdaddyContainer) {
-            if (window._bigdaddyRetryCount < maxRetries) {
-                setTimeout(initBigDaddyEditor, 500);
-            }
-            return;
-        }
-        
-        // Reset retry counter
-        window._bigdaddyRetryCount = 0;
+        // DISABLED - Tab system handles editor creation now
+        console.log('[BigDaddyOnly] ⚠️ BigDaddy loader disabled - tab system handles editors');
+        return;
 
         // Ensure container is visible
         bigdaddyContainer.style.display = 'block';
@@ -248,19 +225,12 @@ This editor was built entirely from scratch with AI assistance:
 `;
     }
 
-    // Initialize when DOM is ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(initBigDaddyEditor, 100);
-        });
-    } else {
-        setTimeout(initBigDaddyEditor, 100);
-    }
-
-    // Also try after a delay to catch late DOM updates
-    setTimeout(initBigDaddyEditor, 500);
-
-    // Expose init function
+    // DISABLED - All initialization disabled to prevent memory leaks
+    // Tab system handles editor creation
+    console.log('[BigDaddyOnly] ⏸️ Auto-initialization DISABLED');
+    console.log('[BigDaddyOnly] Tab system creates editors - no memory leaks');
+    
+    // Expose for manual use only
     window.initBigDaddyOnly = initBigDaddyEditor;
 
     console.log('[BigDaddyOnly] 🎯 BigDaddy-only editor system ready');
