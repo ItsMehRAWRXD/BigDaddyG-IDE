@@ -7,7 +7,8 @@
 const electronModule = require('electron');
 const { app, BrowserWindow, ipcMain, Menu, dialog } = electronModule;
 const IPCServer = require('./ipc-server');
-const AutoUpdater = require('./auto-updater');
+// Simple git-based auto-updater
+const SimpleAutoUpdater = require('./simple-auto-updater');
 
 // Verify Electron environment - app.whenReady must be available
 if (!app || typeof app.whenReady !== 'function') {
@@ -370,15 +371,12 @@ let ipcServer = null;
 app.whenReady().then(async () => {
   console.log('[BigDaddyG] 🚀 Starting Electron app...');
   
-  // Initialize real terminal backend
-  terminalBackend = new RealTerminalBackend();
-  console.log('[BigDaddyG] ✅ Real terminal backend initialized');
-  
   // ============================================================================
-  // AUTO-UPDATE: Check GitHub for updates BEFORE launching
+  // AUTO-UPDATE: Pull latest code from GitHub BEFORE launching
   // ============================================================================
   try {
-    const autoUpdater = new AutoUpdater();
+    const SimpleAutoUpdater = require('./simple-auto-updater');
+    const autoUpdater = new SimpleAutoUpdater();
     const updateResult = await autoUpdater.checkAndUpdate();
     
     if (updateResult.filesUpdated && updateResult.filesUpdated > 0) {
