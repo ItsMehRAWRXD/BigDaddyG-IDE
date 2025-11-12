@@ -266,8 +266,16 @@ class FileSystemIntegration {
             
             const result = await window.electron.openFolderDialog();
             
-            if (result.canceled || !result.filePaths || result.filePaths.length === 0) {
-                console.log('[FileSystem] User canceled folder dialog');
+            console.log('[FileSystem] 🔍 Dialog result:', result);
+            
+            // Check multiple possible return formats
+            const folderPath = result.filePaths?.[0] || result.folderPath || null;
+            const wasCanceled = result.canceled === true;
+            
+            console.log('[FileSystem] 📊 Parsed:', { folderPath, wasCanceled, result });
+            
+            if (wasCanceled || !folderPath) {
+                console.log('[FileSystem] ⚠️ No folder selected (canceled or empty)');
                 
                 // Update any active file explorer tab
                 const activeExplorerContent = document.querySelector('[id^="explorer-"][id$="-content"]');
@@ -277,13 +285,14 @@ class FileSystemIntegration {
                             <p style="font-size: 64px; margin-bottom: 20px; opacity: 0.5;">📁</p>
                             <p style="font-size: 18px; color: #ccc; margin-bottom: 10px;">No folder selected</p>
                             <p style="font-size: 14px; color: #888;">Click "Open Folder" to try again</p>
+                            <p style="font-size: 12px; color: #666; margin-top: 10px;">Debug: ${JSON.stringify(result)}</p>
                         </div>
                     `;
                 }
                 return;
             }
             
-            const folderPath = result.filePaths[0];
+            console.log('[FileSystem] ✅ Folder selected:', folderPath);
             await this.loadProject(folderPath);
             
         } catch (error) {
