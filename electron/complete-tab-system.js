@@ -1079,7 +1079,7 @@ hello();"></textarea>
             onActivate: () => {
                 setTimeout(() => {
                     this.wireAIChat(chatId);
-                }, 100);
+                }, 300);  // ✅ Increased delay for DOM to be ready
             }
         });
     }
@@ -1340,7 +1340,7 @@ You have access to the user's workspace. You can reference files by name.`;
             onActivate: () => {
                 setTimeout(() => {
                     this.wireAgenticCoding(agenticId);
-                }, 100);
+                }, 300);  // ✅ Increased delay for DOM to be ready
             }
         });
     }
