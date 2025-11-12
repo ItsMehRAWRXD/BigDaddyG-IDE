@@ -1776,6 +1776,237 @@ hello();"></textarea>
                         border: 1px solid rgba(0, 212, 255, 0.2);
                         border-radius: 8px;
                         padding: 15px;
+                    ">
+                        <div style="text-align: center; padding: 40px; color: #888;">
+                            Loading extensions...
+                        </div>
+                    </div>
+                </div>
+            `,
+            onActivate: () => {
+                setTimeout(() => {
+                    this.wireMarketplace(marketplaceId);
+                }, 100);
+            }
+        });
+    }
+    
+    /**
+     * Wire up marketplace with search functionality
+     */
+    wireMarketplace(marketplaceId) {
+        const searchInput = document.getElementById(`${marketplaceId}-search`);
+        const categorySelect = document.getElementById(`${marketplaceId}-category`);
+        const extensionsContainer = document.getElementById(`${marketplaceId}-extensions`);
+        const statsEl = document.getElementById(`${marketplaceId}-stats`);
+        
+        if (!searchInput || !extensionsContainer) {
+            console.error('[Marketplace] Elements not found');
+            return;
+        }
+        
+        // Load extensions database
+        const loadExtensions = () => {
+            if (!window.MARKETPLACE_EXTENSIONS || window.MARKETPLACE_EXTENSIONS.length === 0) {
+                // Create default extensions if database not loaded
+                window.MARKETPLACE_EXTENSIONS = this.getDefaultExtensions();
+            }
+            return window.MARKETPLACE_EXTENSIONS;
+        };
+        
+        const renderExtensions = (extensions) => {
+            if (extensions.length === 0) {
+                extensionsContainer.innerHTML = `
+                    <div style="text-align: center; padding: 60px; color: #888;">
+                        <p style="font-size: 48px; margin-bottom: 20px;">🔍</p>
+                        <p style="font-size: 18px; margin-bottom: 10px;">No extensions found</p>
+                        <p style="font-size: 14px;">Try a different search term</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            extensionsContainer.innerHTML = extensions.map(ext => `
+                <div style="
+                    background: rgba(0, 212, 255, 0.05);
+                    border: 1px solid rgba(0, 212, 255, 0.2);
+                    border-radius: 8px;
+                    padding: 15px;
+                    margin-bottom: 12px;
+                    transition: all 0.2s;
+                    cursor: pointer;
+                "
+                onmouseover="this.style.background='rgba(0,212,255,0.1)'; this.style.borderColor='#00d4ff'"
+                onmouseout="this.style.background='rgba(0,212,255,0.05)'; this.style.borderColor='rgba(0,212,255,0.2)'"
+                >
+                    <div style="display: flex; align-items: start; gap: 15px;">
+                        <div style="font-size: 36px; min-width: 40px;">${ext.icon}</div>
+                        <div style="flex: 1;">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                                <div>
+                                    <h3 style="color: #00d4ff; margin: 0 0 5px 0; font-size: 16px;">${ext.name}</h3>
+                                    <div style="color: #888; font-size: 11px; margin-bottom: 8px;">
+                                        ${ext.publisher} • ${ext.installs.toLocaleString()} installs • ⭐ ${ext.rating}
+                                    </div>
+                                </div>
+                                <button 
+                                    onclick="event.stopPropagation(); alert('Installing ${ext.name}...');"
+                                    style="
+                                        padding: 8px 20px;
+                                        background: #00d4ff;
+                                        color: #000;
+                                        border: none;
+                                        border-radius: 6px;
+                                        font-weight: bold;
+                                        cursor: pointer;
+                                        font-size: 12px;
+                                        white-space: nowrap;
+                                    "
+                                >📥 Install</button>
+                            </div>
+                            <p style="color: #ccc; font-size: 13px; margin: 0 0 8px 0; line-height: 1.4;">
+                                ${ext.description}
+                            </p>
+                            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                ${ext.tags.slice(0, 5).map(tag => `
+                                    <span style="
+                                        background: rgba(0, 212, 255, 0.15);
+                                        padding: 3px 8px;
+                                        border-radius: 3px;
+                                        font-size: 10px;
+                                        color: #00d4ff;
+                                    ">${tag}</span>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Update stats
+            if (statsEl) {
+                statsEl.textContent = `Found ${extensions.length} extensions`;
+            }
+        };
+        
+        const filterExtensions = () => {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const category = categorySelect.value;
+            
+            let filtered = loadExtensions();
+            
+            // Filter by category
+            if (category !== 'all') {
+                filtered = filtered.filter(ext => ext.category === category);
+            }
+            
+            // Filter by search term
+            if (searchTerm) {
+                filtered = filtered.filter(ext => 
+                    ext.name.toLowerCase().includes(searchTerm) ||
+                    ext.description.toLowerCase().includes(searchTerm) ||
+                    ext.publisher.toLowerCase().includes(searchTerm) ||
+                    ext.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            renderExtensions(filtered);
+        };
+        
+        // Search on input
+        searchInput.addEventListener('input', filterExtensions);
+        searchInput.addEventListener('keyup', filterExtensions);
+        
+        // Category filter
+        categorySelect.addEventListener('change', filterExtensions);
+        
+        // Initial render
+        filterExtensions();
+        
+        console.log('[Marketplace] ✅ Marketplace wired with search');
+    }
+    
+    /**
+     * Get default extensions if database not loaded
+     */
+    getDefaultExtensions() {
+        return [
+            {
+                id: 'github.copilot',
+                name: 'GitHub Copilot',
+                category: 'ai',
+                icon: '🤖',
+                description: 'AI pair programmer - suggests code in real-time',
+                publisher: 'GitHub',
+                installs: 125678901,
+                rating: 4.9,
+                version: '1.150.0',
+                tags: ['ai', 'copilot', 'code-completion']
+            },
+            {
+                id: 'amazonwebservices.amazon-q-vscode',
+                name: 'Amazon Q',
+                category: 'ai',
+                icon: '🧠',
+                description: 'Amazon Q - AI-powered code suggestions',
+                publisher: 'AWS',
+                installs: 8901234,
+                rating: 4.7,
+                version: '1.15.0',
+                tags: ['ai', 'amazon-q', 'aws']
+            },
+            {
+                id: 'ms-python.python',
+                name: 'Python',
+                category: 'languages',
+                icon: '🐍',
+                description: 'Python language support',
+                publisher: 'Microsoft',
+                installs: 87654321,
+                rating: 4.8,
+                version: '2024.0.0',
+                tags: ['python', 'intellisense']
+            },
+            {
+                id: 'eamodio.gitlens',
+                name: 'GitLens',
+                category: 'git',
+                icon: '🔍',
+                description: 'Supercharge Git capabilities',
+                publisher: 'GitKraken',
+                installs: 45678901,
+                rating: 4.9,
+                version: '14.7.0',
+                tags: ['git', 'gitlens']
+            },
+            {
+                id: 'ms-azuretools.vscode-docker',
+                name: 'Docker',
+                category: 'devops',
+                icon: '🐋',
+                description: 'Build and manage Docker containers',
+                publisher: 'Microsoft',
+                installs: 34567890,
+                rating: 4.7,
+                version: '1.29.0',
+                tags: ['docker', 'containers']
+            },
+            {
+                id: 'esbenp.prettier-vscode',
+                name: 'Prettier',
+                category: 'formatters',
+                icon: '✨',
+                description: 'Code formatter',
+                publisher: 'Prettier',
+                installs: 56789012,
+                rating: 4.8,
+                version: '10.1.0',
+                tags: ['prettier', 'formatter']
+            }
+        ];
+    }
+    
+    createGitHubTab() {
                     
                     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
                         <div style="background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 12px; padding: 25px;">
