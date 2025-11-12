@@ -469,7 +469,30 @@ class FloatingChat {
                 e.preventDefault();
                 this.close();
             }
+            
+            // Ctrl+Enter to send message
+            if (e.ctrlKey && e.key === 'Enter' && this.isOpen) {
+                e.preventDefault();
+                const input = document.getElementById('floating-chat-input');
+                if (input && input.value.trim()) {
+                    this.send();
+                }
+            }
         });
+        
+        // Also add to textarea directly
+        setTimeout(() => {
+            const input = document.getElementById('floating-chat-input');
+            if (input) {
+                input.addEventListener('keydown', (e) => {
+                    if (e.ctrlKey && e.key === 'Enter') {
+                        e.preventDefault();
+                        this.send();
+                    }
+                });
+                console.log('[FloatingChat] ✅ Ctrl+Enter shortcut registered');
+            }
+        }, 500);
     }
     
     open() {
