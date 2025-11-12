@@ -373,7 +373,15 @@ class FileSystemIntegration {
             
         } catch (error) {
             console.error('[FileSystem] Error loading project:', error);
-            alert('Error loading project: ' + error.message);
+            
+            // Handle specific error types
+            if (error.message.includes('EPERM') || error.message.includes('operation not permitted')) {
+                alert('⚠️ Access Denied\n\nThis folder is protected by Windows.\nTry a different folder like:\n• C:\\Users\\YourName\\Documents\n• D:\\Projects\n• Desktop');
+            } else if (error.message.includes('ENOENT')) {
+                alert('⚠️ Folder Not Found\n\nThe selected folder no longer exists.');
+            } else {
+                alert('Error loading project: ' + error.message);
+            }
         }
     }
     
