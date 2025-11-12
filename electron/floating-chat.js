@@ -635,9 +635,14 @@ class FloatingChat {
     async loadAvailableModels() {
         try {
             // Query Orchestra for available neural network models
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+            
             const response = await fetch('http://localhost:11441/api/ai-mode', {
-                signal: AbortSignal.timeout(3000) // 3 second timeout
+                signal: controller.signal
             });
+            
+            clearTimeout(timeout);
             
             if (!response.ok) {
                 // Endpoint doesn't exist - silently continue with default models
@@ -848,9 +853,13 @@ class FloatingChat {
             console.log('[FloatingChat] 🎯 Sending to Orchestra with params:', params);
             console.log(`[FloatingChat] ⏱️ Max thinking time: ${params.thinking_time}s, Strategy: ${params.timeout_strategy}`);
             
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+            
             const response = await fetch('http://localhost:11441/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                signal: controller.signal,
                 body: JSON.stringify({
                     message,
                     model: this.selectedModel || 'auto',
@@ -1299,11 +1308,17 @@ class FloatingChat {
             const params = this.getParameters();
             console.log('[FloatingChat] 🔧 Applying parameters to Orchestra...', params);
             
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 3000); // 3 second timeout
+            
             const response = await fetch('http://localhost:11441/api/parameters/set', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(params)
+                body: JSON.stringify(params),
+                signal: controller.signal
             });
+            
+            clearTimeout(timeout);
             
             if (!response.ok) {
                 throw new Error(`Server returned ${response.status}`);
@@ -1312,8 +1327,11 @@ class FloatingChat {
             const data = await response.json();
             
             if (data.success) {
-                alert('✅ Parameters applied successfully!\n\n' + JSON.stringify(params, null, 2));
+                // Don't use alert - it blocks UI
                 console.log('[FloatingChat] ✅ Parameters updated successfully');
+                if (window.showNotification) {
+                    window.showNotification('Parameters applied successfully', 'success');
+                }
             } else {
                 throw new Error(data.error || 'Unknown error');
             }
