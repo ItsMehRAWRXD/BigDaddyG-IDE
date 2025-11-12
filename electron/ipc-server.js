@@ -63,10 +63,11 @@ class IPCServer {
     }
     
     async forceKillPort(port) {
-        // ENHANCED: Forcefully kill any process using this port
+        // FIXED: Kill other processes on this port, but NOT ourselves!
         return new Promise((resolve) => {
             const { exec } = require('child_process');
             const isWindows = process.platform === 'win32';
+            const currentPID = process.pid;
             
             if (isWindows) {
                 // Windows: netstat + taskkill
@@ -81,12 +82,24 @@ class IPCServer {
                     
                     lines.forEach(line => {
                         const match = line.trim().match(/LISTENING\s+(\d+)/);
-                        if (match) pids.add(match[1]);
+                        if (match) {
+                            const pid = match[1];
+                            // CRITICAL: Don't kill ourselves!
+                            if (pid !== String(currentPID)) {
+                                pids.add(pid);
+                            } else {
+                                console.log(`[IPC] ℹ️ Port ${port} in use by current process (PID ${currentPID}) - skipping`);
+                            }
+                        }
                     });
                     
-                    if (pids.size === 0) return resolve();
+                    if (pids.size === 0) {
+                        console.log(`[IPC] ✅ Port ${port} only used by us or is free`);
+                        return resolve();
+                    }
                     
-                    console.log(`[IPC] 🔪 Killing PIDs on port ${port}:`, Array.from(pids));
+                    console.log(`[IPC] 🔪 Killing OTHER PIDs on port ${port}:`, Array.from(pids));
+                    console.log(`[IPC] 🛡️ Protecting our PID: ${currentPID}`);
                     
                     pids.forEach(pid => {
                         exec(`taskkill /F /PID ${pid}`, (killErr) => {
@@ -106,10 +119,18 @@ class IPCServer {
                         return resolve();
                     }
                     
-                    const pids = stdout.trim().split('\n');
-                    console.log(`[IPC] 🔪 Killing PIDs on port ${port}:`, pids);
+                    const allPids = stdout.trim().split('\n');
+                    const pidsToKill = allPids.filter(pid => pid !== String(currentPID));
                     
-                    pids.forEach(pid => {
+                    if (pidsToKill.length === 0) {
+                        console.log(`[IPC] ✅ Port ${port} only used by us (PID ${currentPID})`);
+                        return resolve();
+                    }
+                    
+                    console.log(`[IPC] 🔪 Killing OTHER PIDs on port ${port}:`, pidsToKill);
+                    console.log(`[IPC] 🛡️ Protecting our PID: ${currentPID}`);
+                    
+                    pidsToKill.forEach(pid => {
                         exec(`kill -9 ${pid}`, (killErr) => {
                             if (!killErr) {
                                 console.log(`[IPC] ✅ Killed PID ${pid}`);
