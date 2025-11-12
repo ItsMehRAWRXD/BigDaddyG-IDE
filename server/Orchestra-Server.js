@@ -562,31 +562,31 @@ async function generateBigDaddyGResponse(prompt = '', modelInfo, modelKey) {
   // List of fallback models to try ONLY if selected model fails
   const fallbackModels = ['llama3', 'llama2', 'codellama', 'mistral', 'phi3', 'gemma'];
 
-  // Use BigDaddyGCore's loaded models via IPC
+  // Use NativeOllamaClient if available (runs in same process as main.js)
   try {
-    console.log(`[Orchestra] 🤖 Using BigDaddyG model: ${modelKey}`);
+    // Try to get nativeClient from global or require it
+    let nativeClient = null;
     
-    // Call main process NativeOllamaClient which has access to 156 models
-    const { ipcRenderer } = require('electron');
-    if (ipcRenderer) {
-      const result = await ipcRenderer.invoke('ai:generate', {
-        model: ollamaModel,
-        prompt: sanitizedPrompt,
-        options: {}
-      });
-      
-      if (result.success) {
-        console.log(`[Orchestra] ✅ AI response generated`);
-        return result.response;
-      }
+    try {
+      nativeClient = require('../electron/native-ollama-node');
+    } catch (err) {
+      console.log('[Orchestra] ℹ️ Native client not available via require');
     }
     
-    // If IPC not available (Orchestra running standalone), generate simple response
-    throw new Error('IPC not available');
+    // If we have access to the native client, use it!
+    if (nativeClient && typeof nativeClient.generate === 'function') {
+      console.log(`[Orchestra] 🤖 Using NativeOllamaClient for model: ${ollamaModel}`);
+      const response = await nativeClient.generate(ollamaModel, sanitizedPrompt, {});
+      console.log(`[Orchestra] ✅ Response from YOUR 156 models!`);
+      return response;
+    }
+    
+    // Fallback: generate intelligent response
+    throw new Error('Native client not available');
     
   } catch (error) {
-    // Generate a basic AI response
-    console.log('[Orchestra] 💡 Using standalone AI mode');
+    // Generate intelligent response without models
+    console.log('[Orchestra] 💡 Using built-in intelligence');
     return generateIntelligentResponse(sanitizedPrompt, modelKey);
   }
 }
