@@ -219,6 +219,8 @@ class FrontEndTestSuite {
             { name: 'Unity Integration', method: 'createUnityTab', category: 'Game Dev' }
         ];
         
+        console.log(`🎯 Testing ${tabTypes.length} tab types with 5 checks each...\n`);
+        
         for (const tabType of tabTypes) {
             await this.test(`${tabType.category}: ${tabType.name} Method Exists`, () => {
                 return typeof window.completeTabSystem[tabType.method] === 'function';
@@ -227,15 +229,92 @@ class FrontEndTestSuite {
             await this.test(`${tabType.category}: ${tabType.name} Can Create`, async () => {
                 const initialCount = window.completeTabSystem.tabs.size;
                 const tabId = window.completeTabSystem[tabType.method]();
+                
+                await this.wait(150); // Wait for creation
+                
                 const newCount = window.completeTabSystem.tabs.size;
+                
+                // Validate tab was created
+                const created = newCount === initialCount + 1 && tabId !== null;
                 
                 // Clean up
                 if (tabId) {
-                    await this.wait(100);
                     window.completeTabSystem.closeTab(tabId);
+                    await this.wait(50);
                 }
                 
-                return newCount === initialCount + 1 && tabId !== null;
+                return created;
+            });
+            
+            await this.test(`${tabType.category}: ${tabType.name} DOM Elements Created`, async () => {
+                const tabId = window.completeTabSystem[tabType.method]();
+                await this.wait(150);
+                
+                // Check DOM elements exist
+                const tabButton = document.querySelector(`[data-tab-id="${tabId}"]`);
+                const contentDiv = document.getElementById(`content-${tabId}`);
+                
+                const hasElements = tabButton !== null && contentDiv !== null;
+                
+                // Clean up
+                window.completeTabSystem.closeTab(tabId);
+                await this.wait(50);
+                
+                return hasElements;
+            });
+            
+            await this.test(`${tabType.category}: ${tabType.name} Content Loaded`, async () => {
+                const tabId = window.completeTabSystem[tabType.method]();
+                await this.wait(150);
+                
+                const contentDiv = document.getElementById(`content-${tabId}`);
+                const hasContent = contentDiv && contentDiv.innerHTML.length > 50;
+                
+                // Clean up
+                window.completeTabSystem.closeTab(tabId);
+                await this.wait(50);
+                
+                return hasContent;
+            });
+            
+            await this.test(`${tabType.category}: ${tabType.name} Activates Properly`, async () => {
+                const tabId = window.completeTabSystem[tabType.method]();
+                await this.wait(150);
+                
+                // Should be active after creation
+                const isActive = window.completeTabSystem.activeTabId === tabId;
+                
+                // Check if content is visible
+                const contentDiv = document.getElementById(`content-${tabId}`);
+                const isVisible = contentDiv && contentDiv.style.display !== 'none';
+                
+                // Clean up
+                window.completeTabSystem.closeTab(tabId);
+                await this.wait(50);
+                
+                return isActive && isVisible;
+            });
+            
+            await this.test(`${tabType.category}: ${tabType.name} Cleans Up Properly`, async () => {
+                const tabId = window.completeTabSystem[tabType.method]();
+                await this.wait(150);
+                
+                // Verify exists
+                const existsBefore = window.completeTabSystem.tabs.has(tabId);
+                const buttonBefore = document.querySelector(`[data-tab-id="${tabId}"]`);
+                const contentBefore = document.getElementById(`content-${tabId}`);
+                
+                // Close
+                window.completeTabSystem.closeTab(tabId);
+                await this.wait(150);
+                
+                // Verify removed
+                const existsAfter = window.completeTabSystem.tabs.has(tabId);
+                const buttonAfter = document.querySelector(`[data-tab-id="${tabId}"]`);
+                const contentAfter = document.getElementById(`content-${tabId}`);
+                
+                return existsBefore && buttonBefore && contentBefore &&
+                       !existsAfter && !buttonAfter && !contentAfter;
             });
         }
         
@@ -598,11 +677,21 @@ class FrontEndTestSuite {
         console.log('🧪 TEST RESULTS');
         console.log('🧪 ═══════════════════════════════════════\n');
         
-        console.log(`Total Tests:   ${this.results.total}`);
-        console.log(`✅ Passed:     ${this.results.passed}`);
-        console.log(`❌ Failed:     ${this.results.failed}`);
-        console.log(`📊 Pass Rate:  ${passRate}%`);
-        console.log(`⏱️ Duration:   ${duration}ms\n`);
+        console.log(`📊 Total Tests:   ${this.results.total}`);
+        console.log(`✅ Passed:        ${this.results.passed}`);
+        console.log(`❌ Failed:        ${this.results.failed}`);
+        console.log(`📈 Pass Rate:     ${passRate}%`);
+        console.log(`⏱️  Duration:      ${(duration / 1000).toFixed(2)}s\n`);
+        
+        // Break down by phase
+        console.log('📋 Breakdown by Phase:\n');
+        const phases = this.getPhaseBreakdown();
+        phases.forEach(phase => {
+            const pct = ((phase.passed / phase.total) * 100).toFixed(0);
+            const status = pct >= 95 ? '✅' : pct >= 80 ? '⚠️' : '❌';
+            console.log(`  ${status} ${phase.name}: ${phase.passed}/${phase.total} (${pct}%)`);
+        });
+        console.log('');
         
         if (this.results.failed > 0) {
             console.log('❌ FAILED TESTS:\n');
@@ -632,6 +721,36 @@ class FrontEndTestSuite {
         window.dispatchEvent(new CustomEvent('test-complete', {
             detail: this.results
         }));
+    }
+    
+    getPhaseBreakdown() {
+        const phases = [];
+        const tests = this.results.tests;
+        
+        // Define phase patterns
+        const phasePatterns = [
+            { name: 'Core Systems', pattern: /^(Tab System|Menu System|Keyboard|DOM|Tab System Containers)/ },
+            { name: 'Menu Bar', pattern: /^(File Menu|Edit Menu|View Menu|Help Menu|Menu)/ },
+            { name: 'Tab System Wiring', pattern: /^Tab System (Has|Tracks)/ },
+            { name: 'All Tab Types', pattern: /^(Core|AI|Settings|Tools|Game Dev):/ },
+            { name: 'Keyboard Shortcuts', pattern: /^(Document Has|Ctrl\+|F\d+)/ },
+            { name: 'Backend Connections', pattern: /^(Window API|Settings Manager|Theme Manager|Monaco|Editor Functions)/ },
+            { name: 'Load/Unload', pattern: /^(Can Create|Can Close|Tabs Load|Tab Switch)/ },
+            { name: 'Memory Management', pattern: /^(No Memory|Closed Tabs|Tab System Map)/ },
+            { name: 'Event Handlers', pattern: /^(Menu Items|New Tab Button|Tab Close)/ },
+            { name: 'Integration', pattern: /^(Menu →|View Menu|Tab Selector|Status Bar)/ }
+        ];
+        
+        phasePatterns.forEach(phase => {
+            const phaseTests = tests.filter(t => phase.pattern.test(t.name));
+            phases.push({
+                name: phase.name,
+                total: phaseTests.length,
+                passed: phaseTests.filter(t => t.status === 'PASS').length
+            });
+        });
+        
+        return phases;
     }
 }
 
