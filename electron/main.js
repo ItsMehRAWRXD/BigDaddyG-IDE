@@ -1867,7 +1867,7 @@ ipcMain.handle('open-folder-dialog', async () => {
   }
 });
 
-// Read directory
+// Read directory - FIXED: Returns proper 'type' field
 ipcMain.handle('read-dir', async (event, dirPath) => {
   const fs = require('fs').promises;
   try {
@@ -1877,6 +1877,7 @@ ipcMain.handle('read-dir', async (event, dirPath) => {
       name: entry.name,
       isDirectory: entry.isDirectory(),
       isFile: entry.isFile(),
+      type: entry.isDirectory() ? 'directory' : 'file',  // ✅ FIXED: Proper type field
       path: path.join(validatedDir, entry.name)
     }));
     return { success: true, files };

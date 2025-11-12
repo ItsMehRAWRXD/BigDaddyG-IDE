@@ -13,54 +13,129 @@ class IPCServer {
     }
     
     start() {
-        this.server = net.createServer((socket) => {
-            console.log('[IPC] 📡 Client connected');
-            
-            let data = '';
-            
-            socket.on('data', (chunk) => {
-                data += chunk.toString();
+        // ENHANCED: Force kill any existing server on this port before starting
+        this.forceKillPort(this.port).then(() => {
+            this.server = net.createServer((socket) => {
+                console.log('[IPC] 📡 Client connected');
+                
+                let data = '';
+                
+                socket.on('data', (chunk) => {
+                    data += chunk.toString();
+                });
+                
+                socket.on('end', async () => {
+                    try {
+                        const request = JSON.parse(data);
+                        const response = await this.handleCommand(request.command, request.args || []);
+                        socket.write(JSON.stringify(response));
+                    } catch (error) {
+                        socket.write(JSON.stringify({
+                            success: false,
+                            error: error.message
+                        }));
+                    }
+                });
+                
+                socket.on('error', (error) => {
+                    console.error('[IPC] ❌ Socket error:', error.message);
+                });
             });
             
-            socket.on('end', async () => {
-                try {
-                    const request = JSON.parse(data);
-                    const response = await this.handleCommand(request.command, request.args || []);
-                    socket.write(JSON.stringify(response));
-                } catch (error) {
-                    socket.write(JSON.stringify({
-                        success: false,
-                        error: error.message
-                    }));
+            // Set server options to allow immediate restart
+            this.server.maxConnections = 100;
+            
+            this.server.listen(this.port, '127.0.0.1', () => {
+                console.log(`[IPC] ✅ Server listening on port ${this.port}`);
+            });
+            
+            this.server.on('error', (error) => {
+                if (error.code === 'EADDRINUSE') {
+                    console.error(`[IPC] ❌ Port ${this.port} still in use after force kill attempt`);
+                    console.log('[IPC] 💡 Try closing all BigDaddyG instances and restart');
+                } else {
+                    console.error('[IPC] ❌ Server error:', error.message);
                 }
             });
+        }).catch(err => {
+            console.error('[IPC] ❌ Failed to start server:', err);
+        });
+    }
+    
+    async forceKillPort(port) {
+        // ENHANCED: Forcefully kill any process using this port
+        return new Promise((resolve) => {
+            const { exec } = require('child_process');
+            const isWindows = process.platform === 'win32';
             
-            socket.on('error', (error) => {
-                console.error('[IPC] ❌ Socket error:', error.message);
-            });
-        });
-        
-        this.server.listen(this.port, '127.0.0.1', () => {
-            console.log(`[IPC] ✅ Server listening on port ${this.port}`);
-        });
-        
-        this.server.on('error', (error) => {
-            if (error.code === 'EADDRINUSE') {
-                console.warn(`[IPC] ⚠️ Port ${this.port} already in use, retrying...`);
-                setTimeout(() => {
-                    this.server.close();
-                    this.server.listen(this.port);
-                }, 1000);
+            if (isWindows) {
+                // Windows: netstat + taskkill
+                exec(`netstat -ano | findstr :${port}`, (err, stdout) => {
+                    if (err || !stdout) {
+                        console.log(`[IPC] ✅ Port ${port} is free`);
+                        return resolve();
+                    }
+                    
+                    const lines = stdout.split('\n');
+                    const pids = new Set();
+                    
+                    lines.forEach(line => {
+                        const match = line.trim().match(/LISTENING\s+(\d+)/);
+                        if (match) pids.add(match[1]);
+                    });
+                    
+                    if (pids.size === 0) return resolve();
+                    
+                    console.log(`[IPC] 🔪 Killing PIDs on port ${port}:`, Array.from(pids));
+                    
+                    pids.forEach(pid => {
+                        exec(`taskkill /F /PID ${pid}`, (killErr) => {
+                            if (!killErr) {
+                                console.log(`[IPC] ✅ Killed PID ${pid}`);
+                            }
+                        });
+                    });
+                    
+                    setTimeout(resolve, 500);
+                });
             } else {
-                console.error('[IPC] ❌ Server error:', error.message);
+                // Unix: lsof + kill
+                exec(`lsof -ti:${port}`, (err, stdout) => {
+                    if (err || !stdout) {
+                        console.log(`[IPC] ✅ Port ${port} is free`);
+                        return resolve();
+                    }
+                    
+                    const pids = stdout.trim().split('\n');
+                    console.log(`[IPC] 🔪 Killing PIDs on port ${port}:`, pids);
+                    
+                    pids.forEach(pid => {
+                        exec(`kill -9 ${pid}`, (killErr) => {
+                            if (!killErr) {
+                                console.log(`[IPC] ✅ Killed PID ${pid}`);
+                            }
+                        });
+                    });
+                    
+                    setTimeout(resolve, 500);
+                });
             }
         });
     }
     
     stop() {
         if (this.server) {
-            this.server.close();
-            console.log('[IPC] 🛑 Server stopped');
+            // ENHANCED: Forcefully close all connections
+            this.server.close(() => {
+                console.log('[IPC] 🛑 Server stopped gracefully');
+            });
+            
+            // Force unref to allow process to exit
+            if (this.server.unref) {
+                this.server.unref();
+            }
+            
+            this.server = null;
         }
     }
     
