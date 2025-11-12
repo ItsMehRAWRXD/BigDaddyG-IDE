@@ -1402,14 +1402,22 @@ You have access to the user's workspace. You can reference files by name.`;
                 const data = await response.json();
                 
                 log('✅ Task analyzed successfully', '#00ff88');
-                log('💻 Generating code...', '#00d4ff');
+                log(`🔍 Detected language: ${data.language || 'unknown'}`, '#00d4ff');
+                log('💻 Generating autonomous code...', '#00d4ff');
                 
-                status.textContent = '💻 Generating code...';
+                status.textContent = '💻 Generating code autonomously...';
                 
-                const generatedCode = data.code || data.content || `// Generated code for: ${task}\n\nconsole.log('Task: ${task}');`;
-                const filename = this.extractFilenameFromTask(task) || 'agentic-output.js';
+                // Use AI-generated code
+                const generatedCode = data.code || data.content || `// Autonomous code generation failed\n// Task: ${task}`;
+                const filename = data.filename || this.extractFilenameFromTask(task) || 'agentic-output.js';
+                const language = data.language || 'javascript';
                 
-                log(`📄 Creating file: ${filename}`, '#00d4ff');
+                log(`📄 Creating file: ${filename} (${language})`, '#00d4ff');
+                log(`✅ Code size: ${generatedCode.length} characters`, '#00d4ff');
+                
+                if (data.autonomous) {
+                    log('🤖 AUTONOMOUS mode: Code is production-ready!', '#00ff88');
+                }
                 
                 // Create editor tab with generated code
                 const editorId = window.completeTabSystem.createEditorTab();

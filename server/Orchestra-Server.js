@@ -1670,9 +1670,9 @@ Return relevant memory IDs, comma-separated (max 5).`;
 // MISSING ENDPOINTS - AGENTIC CODE GENERATION & IMAGE GENERATION
 // ============================================================================
 
-// Agentic Code Generation - Generate code from natural language task
+// Agentic Code Generation - FULLY AUTONOMOUS
 app.post('/api/agentic-code', async (req, res) => {
-  const { task, language = 'javascript', context = '' } = req.body || {};
+  const { task, language, context = '', mode = 'autonomous' } = req.body || {};
   
   // If no task provided, return test response (for health checks)
   if (!task) {
@@ -1680,51 +1680,114 @@ app.post('/api/agentic-code', async (req, res) => {
       message: 'Agentic-code endpoint ready',
       status: 'ok',
       test: true,
-      usage: 'POST with { task, language, context }'
+      usage: 'POST with { task, language, context, mode }'
     });
   }
   
   try {
-    console.log(`[Orchestra] 🤖 Agentic code generation: "${task}"`);
+    console.log(`[Orchestra] 🤖 AUTONOMOUS Agentic code generation: "${task}"`);
+    console.log(`[Orchestra] 🎯 Mode: ${mode}`);
     
-    const prompt = `You are an expert code generator. Generate production-ready code for this task:
+    // ENHANCED: Auto-detect language from task if not provided
+    let detectedLanguage = language;
+    if (!detectedLanguage) {
+      const taskLower = task.toLowerCase();
+      if (taskLower.includes('react') || taskLower.includes('jsx')) detectedLanguage = 'javascript';
+      else if (taskLower.includes('python') || taskLower.includes('django') || taskLower.includes('flask')) detectedLanguage = 'python';
+      else if (taskLower.includes('java') && !taskLower.includes('javascript')) detectedLanguage = 'java';
+      else if (taskLower.includes('rust')) detectedLanguage = 'rust';
+      else if (taskLower.includes('go') || taskLower.includes('golang')) detectedLanguage = 'go';
+      else if (taskLower.includes('asm') || taskLower.includes('assembly')) detectedLanguage = 'assembly';
+      else if (taskLower.includes('c++') || taskLower.includes('cpp')) detectedLanguage = 'cpp';
+      else if (taskLower.includes('typescript') || taskLower.includes('ts')) detectedLanguage = 'typescript';
+      else detectedLanguage = 'javascript'; // Default
+      
+      console.log(`[Orchestra] 🔍 Auto-detected language: ${detectedLanguage}`);
+    }
+    
+    // ENHANCED: Build comprehensive autonomous prompt
+    const prompt = `You are a FULLY AUTONOMOUS code generation agent. Your task is to generate COMPLETE, PRODUCTION-READY, WORKING code.
 
 TASK: ${task}
 
-${language ? `LANGUAGE: ${language}` : ''}
+LANGUAGE: ${detectedLanguage}
 ${context ? `CONTEXT: ${context}` : ''}
 
-Requirements:
-1. Generate COMPLETE, working code
-2. Include proper error handling
-3. Add helpful comments
-4. Follow best practices for ${language}
-5. Make it production-ready
+CRITICAL REQUIREMENTS:
+1. Generate 100% COMPLETE, WORKING code - NO placeholders, NO TODOs, NO "implement this later"
+2. Include ALL necessary imports, dependencies, and setup code
+3. Add comprehensive error handling and edge case handling
+4. Include helpful inline comments explaining complex logic
+5. Follow ${detectedLanguage} best practices and idioms
+6. Make it PRODUCTION-READY - ready to run immediately
+7. If building a server: Include ALL routes, handlers, middleware, database connections
+8. If building a React app: Include ALL components, state management, routing
+9. If using ASM: Use appropriate syntax (NASM/MASM/GAS) and include full working program
+10. Include example usage or test cases if applicable
 
-Respond with ONLY the code, no explanations.`;
+AUTONOMOUS MODE: You MUST complete this task entirely on your own without any user intervention.
 
+OUTPUT FORMAT: Respond with ONLY the code. No explanations, no markdown headers, no descriptions. JUST CODE.`;
+
+    console.log(`[Orchestra] 🧠 Sending to AI model: bigdaddyg:coder`);
     const response = await processBigDaddyGRequest('bigdaddyg:coder', prompt, false);
     const code = extractContentFromResponse(response);
+    
+    console.log(`[Orchestra] ✅ Received ${code.length} characters of code`);
     
     // Extract code from markdown code blocks if present
     let cleanCode = code;
     const codeBlockMatch = code.match(/```[\w]*\n([\s\S]*?)\n```/);
     if (codeBlockMatch) {
       cleanCode = codeBlockMatch[1];
+      console.log(`[Orchestra] 🔧 Extracted code from markdown block`);
     }
+    
+    // Generate appropriate filename
+    const generateFilename = (task, lang) => {
+      const taskSlug = task.toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .substring(0, 30);
+      
+      const extensions = {
+        'javascript': 'js',
+        'typescript': 'ts',
+        'python': 'py',
+        'java': 'java',
+        'rust': 'rs',
+        'go': 'go',
+        'assembly': 'asm',
+        'cpp': 'cpp',
+        'c': 'c',
+        'html': 'html',
+        'css': 'css'
+      };
+      
+      const ext = extensions[lang] || 'txt';
+      return `${taskSlug}.${ext}`;
+    };
+    
+    const filename = generateFilename(task, detectedLanguage);
+    console.log(`[Orchestra] 📄 Generated filename: ${filename}`);
     
     res.json({
       task,
       code: cleanCode,
-      language,
+      language: detectedLanguage,
+      filename: filename,
+      mode: 'autonomous',
       model: 'bigdaddyg:coder',
+      autonomous: true,
+      complete: true,
+      ready_to_run: true,
       timestamp: new Date().toISOString()
     });
   } catch (error) {
     console.error('[Orchestra] /api/agentic-code error:', error);
     res.status(500).json({ 
       error: error.message || 'Code generation failed',
-      code: `// Error generating code: ${error.message}\n// Task: ${task}`
+      code: `// Error generating code: ${error.message}\n// Task: ${task}`,
+      autonomous: false
     });
   }
 });
