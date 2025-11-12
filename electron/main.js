@@ -446,6 +446,16 @@ app.whenReady().then(async () => {
 });
 
 app.on('window-all-closed', () => {
+  console.log('[BigDaddyG] ⚠️ ⚠️ ⚠️ ALL WINDOWS CLOSED - THIS IS WHY IT EXITS! ⚠️ ⚠️ ⚠️');
+  console.log('[BigDaddyG] Window count:', BrowserWindow.getAllWindows().length);
+  console.log('[BigDaddyG] mainWindow exists:', !!mainWindow);
+  console.log('[BigDaddyG] mainWindow destroyed:', mainWindow?.isDestroyed());
+  
+  // PREVENT IMMEDIATE QUIT - Give us time to see what's happening
+  console.log('[BigDaddyG] 🛑 PREVENTING AUTO-QUIT FOR DEBUGGING');
+  console.log('[BigDaddyG] Press Ctrl+C to manually quit');
+  
+  // Don't quit automatically - keep process alive for debugging
   // Stop IPC server
   if (ipcServer) {
     ipcServer.stop();
@@ -460,9 +470,12 @@ app.on('window-all-closed', () => {
     remoteLogServer.kill();
   }
   
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+  // COMMENTED OUT TO PREVENT AUTO-QUIT
+  // if (process.platform !== 'darwin') {
+  //   app.quit();
+  // }
+  
+  console.log('[BigDaddyG] 🔍 Process staying alive - check logs above to see why window closed');
 });
 
 // ============================================================================
@@ -1182,12 +1195,18 @@ function createMainWindow() {
   
   // Prevent premature closing
   mainWindow.on('close', (event) => {
-    console.log('[BigDaddyG] 🚪 Window close requested');
-    // Allow closing if user requested it
+    console.log('[BigDaddyG] 🚪 🚪 🚪 Window CLOSE EVENT TRIGGERED! 🚪 🚪 🚪');
+    console.log('[BigDaddyG] Stack trace:');
+    console.trace();
+    
+    // PREVENT CLOSING for debugging
+    event.preventDefault();
+    console.log('[BigDaddyG] ❌ CLOSE PREVENTED - Window will stay open for debugging');
+    console.log('[BigDaddyG] Press Alt+F4 or kill process to close');
   });
   
   mainWindow.on('closed', () => {
-    console.log('[BigDaddyG] 🚪 Window closed');
+    console.log('[BigDaddyG] 🚪 Window CLOSED event (this should not happen due to prevention)');
     mainWindow = null;
     if (embeddedBrowser) {
       embeddedBrowser.destroy();
