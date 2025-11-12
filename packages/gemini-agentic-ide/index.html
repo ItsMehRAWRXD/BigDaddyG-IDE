@@ -8,7 +8,7 @@
     <!-- Dependencies -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Use a stable version of Monaco -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.48.0/min/vs/loader.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.48.0/min/vs/loader.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.1/marked.min.js"></script>
     
     <script>
@@ -463,10 +463,10 @@
     function initMonacoEditor() {
         setStatus('Loading editor...', 'warn');
         
-        require.config({ 
-            paths: { 
-                vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.48.0/min/vs' 
-            } 
+        require.config({
+            paths: {
+                vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.48.0/min/vs'
+            }
         });
         
         require(['vs/editor/editor.main'], () => {
