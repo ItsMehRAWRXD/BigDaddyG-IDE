@@ -308,11 +308,16 @@ Respond in JSON format:
     // ========================================================================
 
     initializeUI() {
-        this.createDebugPanel();
-        this.createBreakpointPanel();
-        this.createVariablesPanel();
-        this.createPerformancePanel();
-        this.createAIInsightsPanel();
+        // Safely call panel creation methods
+        try {
+            if (typeof this.createDebugPanel === 'function') this.createDebugPanel();
+            if (typeof this.createBreakpointPanel === 'function') this.createBreakpointPanel();
+            if (typeof this.createVariablesPanel === 'function') this.createVariablesPanel();
+            if (typeof this.createPerformancePanel === 'function') this.createPerformancePanel();
+            if (typeof this.createAIInsightsPanel === 'function') this.createAIInsightsPanel();
+        } catch (error) {
+            console.warn('[AdvancedDebugging] UI initialization warning:', error.message);
+        }
     }
 
     createDebugPanel() {

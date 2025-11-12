@@ -51,7 +51,9 @@
                 `;
                 mainContainer.appendChild(editorContainer);
             } else {
-                console.error('[BigDaddyOnly] ❌ Main container not found!');
+                console.warn('[BigDaddyOnly] ⚠️ Main container not found yet, will retry...');
+                // Retry after tab system creates containers
+                setTimeout(initBigDaddyEditor, 500);
                 return;
             }
         }

@@ -6,10 +6,18 @@
 (function() {
 'use strict';
 
-// Browser-safe require
-const ExtensionHostComplete = window.ExtensionHostComplete || (typeof require !== 'undefined' ? require('./extension-host-complete.js') : null);
-const ExtensionLoaderComplete = window.ExtensionLoaderComplete || (typeof require !== 'undefined' ? require('./extension-loader-complete.js') : null);
-const ExtensionBridgeComplete = window.ExtensionBridgeComplete || (typeof require !== 'undefined' ? require('./extension-bridge-complete.js') : null);
+// Browser-safe require - wait for scripts to load
+function getExtensionHostComplete() {
+    return window.ExtensionHostComplete || (typeof require !== 'undefined' && require('./extension-host-complete.js'));
+}
+
+function getExtensionLoaderComplete() {
+    return window.ExtensionLoaderComplete || (typeof require !== 'undefined' && require('./extension-loader-complete.js'));
+}
+
+function getExtensionBridgeComplete() {
+    return window.ExtensionBridgeComplete || (typeof require !== 'undefined' && require('./extension-bridge-complete.js'));
+}
 
 class MarketplaceIntegrationComplete {
     constructor() {
@@ -31,6 +39,7 @@ class MarketplaceIntegrationComplete {
             
             // Step 1: Initialize Extension Host
             console.log('[MarketplaceIntegration] 📦 Creating extension host...');
+            const ExtensionHostComplete = getExtensionHostComplete();
             if (ExtensionHostComplete) {
                 this.extensionHost = new ExtensionHostComplete();
                 console.log('[MarketplaceIntegration] ✅ Extension host ready');
@@ -41,6 +50,7 @@ class MarketplaceIntegrationComplete {
             
             // Step 2: Initialize Extension Loader
             console.log('[MarketplaceIntegration] 📥 Creating extension loader...');
+            const ExtensionLoaderComplete = getExtensionLoaderComplete();
             if (ExtensionLoaderComplete) {
                 this.extensionLoader = new ExtensionLoaderComplete(this.extensionHost);
                 console.log('[MarketplaceIntegration] ✅ Extension loader ready');
@@ -51,6 +61,7 @@ class MarketplaceIntegrationComplete {
             
             // Step 3: Initialize Extension Bridge
             console.log('[MarketplaceIntegration] 🔌 Creating extension bridge...');
+            const ExtensionBridgeComplete = getExtensionBridgeComplete();
             if (ExtensionBridgeComplete) {
                 this.extensionBridge = new ExtensionBridgeComplete(this.extensionHost, window);
                 console.log('[MarketplaceIntegration] ✅ Extension bridge ready');

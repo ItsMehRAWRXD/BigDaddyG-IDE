@@ -76,10 +76,21 @@ class CompleteTabSystem {
      */
     createCleanLayout() {
         const app = document.getElementById('app');
-        if (!app) return;
+        if (!app) {
+            console.warn('[TabSystem] App container not found, will retry...');
+            return;
+        }
         
         // Clear main container
-        const mainContainer = document.getElementById('main-container');
+        let mainContainer = document.getElementById('main-container');
+        if (!mainContainer) {
+            // Create it if it doesn't exist
+            mainContainer = document.createElement('div');
+            mainContainer.id = 'main-container';
+            mainContainer.style.cssText = 'flex: 1; display: flex; flex-direction: column; overflow: hidden;';
+            app.appendChild(mainContainer);
+        }
+        
         if (mainContainer) {
             mainContainer.innerHTML = '';
             mainContainer.style.cssText = `
