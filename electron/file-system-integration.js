@@ -343,22 +343,30 @@ class FileSystemIntegration {
     renderProjectExplorer() {
         if (!this.currentProject) return;
         
+        console.log('[FileSystem] 📂 Rendering project explorer with', this.currentProject.files.length, 'files');
+        
         // FIRST: Update the File Explorer TAB content if it exists
         const activeExplorerContent = document.querySelector('[id^="explorer-"][id$="-content"]');
         if (activeExplorerContent) {
+            console.log('[FileSystem] ✅ Found File Explorer tab content, updating...');
+            
             activeExplorerContent.innerHTML = `
-                <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid rgba(0, 212, 255, 0.2);">
-                    <div style="color: #00d4ff; font-weight: bold; font-size: 14px; margin-bottom: 5px;">
+                <div style="margin-bottom: 15px; padding: 15px; background: rgba(0, 212, 255, 0.05); border-bottom: 2px solid rgba(0, 212, 255, 0.3); border-radius: 8px 8px 0 0;">
+                    <div style="color: #00d4ff; font-weight: bold; font-size: 16px; margin-bottom: 8px;">
                         📁 ${this.currentProject.name}
                     </div>
-                    <div style="color: #888; font-size: 11px;">${this.currentProject.path}</div>
-                    <div style="color: #00ff88; font-size: 12px; margin-top: 5px;">${this.currentProject.files.length} items</div>
+                    <div style="color: #888; font-size: 11px; font-family: monospace; word-break: break-all;">${this.currentProject.path}</div>
+                    <div style="color: #00ff88; font-size: 13px; margin-top: 8px; font-weight: bold;">✅ ${this.currentProject.files.length} items loaded</div>
                 </div>
-                <div id="file-tree-in-tab" style="overflow-y: auto;"></div>
+                <div id="file-tree-in-tab" style="overflow-y: auto; max-height: 600px; padding: 10px;"></div>
             `;
             
             // Render files in the tab
             this.renderFileTreeInTab(this.currentProject.files, 'file-tree-in-tab');
+            
+            console.log('[FileSystem] ✅ Project rendered in File Explorer tab');
+        } else {
+            console.warn('[FileSystem] ⚠️ File Explorer tab content not found');
         }
         
         // THEN: Create or get project explorer panel
