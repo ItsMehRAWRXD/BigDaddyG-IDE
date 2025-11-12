@@ -55,10 +55,11 @@ class FileSystemIntegration {
     }
     
     init() {
-        console.log('[FileSystem] 📁 Initializing FULL file system integration...');
-        
-        // Register global keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
+        try {
+            console.log('[FileSystem] 📁 Initializing FULL file system integration...');
+            
+            // Register global keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
             // Ctrl+O - Open File
             if (e.ctrlKey && e.key === 'o') {
                 e.preventDefault();
@@ -88,8 +89,8 @@ class FileSystemIntegration {
                 e.preventDefault();
                 this.createNewFile();
             }
-        });
-        
+            });
+            
             // Make globally available
             window.fileSystem = this;
             
