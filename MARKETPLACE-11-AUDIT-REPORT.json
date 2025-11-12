@@ -1,7 +1,7 @@
 {
-  "timestamp": "2025-11-11T05:52:59.888Z",
+  "timestamp": "2025-11-12T07:30:36.753Z",
   "totalRuns": 11,
-  "duration": 1030,
+  "duration": 1056,
   "statistics": {
     "average": 100,
     "min": 100,
@@ -11,7 +11,7 @@
   "results": [
     {
       "runNumber": 1,
-      "timestamp": "2025-11-11T05:52:58.872Z",
+      "timestamp": "2025-11-12T07:30:35.720Z",
       "tests": {
         "extensionHost": {
           "passed": 5,
@@ -149,11 +149,11 @@
       },
       "score": 100,
       "issues": [],
-      "duration": 2
+      "duration": 6
     },
     {
       "runNumber": 2,
-      "timestamp": "2025-11-11T05:52:58.974Z",
+      "timestamp": "2025-11-12T07:30:35.826Z",
       "tests": {
         "extensionHost": {
           "passed": 5,
@@ -291,11 +291,11 @@
       },
       "score": 100,
       "issues": [],
-      "duration": 2
+      "duration": 5
     },
     {
       "runNumber": 3,
-      "timestamp": "2025-11-11T05:52:59.076Z",
+      "timestamp": "2025-11-12T07:30:35.932Z",
       "tests": {
         "extensionHost": {
           "passed": 5,
@@ -437,7 +437,7 @@
     },
     {
       "runNumber": 4,
-      "timestamp": "2025-11-11T05:52:59.178Z",
+      "timestamp": "2025-11-12T07:30:36.035Z",
       "tests": {
         "extensionHost": {
           "passed": 5,
@@ -579,7 +579,7 @@
     },
     {
       "runNumber": 5,
-      "timestamp": "2025-11-11T05:52:59.279Z",
+      "timestamp": "2025-11-12T07:30:36.137Z",
       "tests": {
         "extensionHost": {
           "passed": 5,
@@ -721,7 +721,7 @@
     },
     {
       "runNumber": 6,
-      "timestamp": "2025-11-11T05:52:59.381Z",
+      "timestamp": "2025-11-12T07:30:36.238Z",
       "tests": {
         "extensionHost": {
           "passed": 5,
@@ -859,11 +859,11 @@
       },
       "score": 100,
       "issues": [],
-      "duration": 0
+      "duration": 1
     },
     {
       "runNumber": 7,
-      "timestamp": "2025-11-11T05:52:59.482Z",
+      "timestamp": "2025-11-12T07:30:36.340Z",
       "tests": {
         "extensionHost": {
           "passed": 5,
@@ -1005,7 +1005,7 @@
     },
     {
       "runNumber": 8,
-      "timestamp": "2025-11-11T05:52:59.582Z",
+      "timestamp": "2025-11-12T07:30:36.442Z",
       "tests": {
         "extensionHost": {
           "passed": 5,
@@ -1147,7 +1147,7 @@
     },
     {
       "runNumber": 9,
-      "timestamp": "2025-11-11T05:52:59.683Z",
+      "timestamp": "2025-11-12T07:30:36.547Z",
       "tests": {
         "extensionHost": {
           "passed": 5,
@@ -1285,11 +1285,11 @@
       },
       "score": 100,
       "issues": [],
-      "duration": 1
+      "duration": 2
     },
     {
       "runNumber": 10,
-      "timestamp": "2025-11-11T05:52:59.785Z",
+      "timestamp": "2025-11-12T07:30:36.650Z",
       "tests": {
         "extensionHost": {
           "passed": 5,
@@ -1431,7 +1431,7 @@
     },
     {
       "runNumber": 11,
-      "timestamp": "2025-11-11T05:52:59.886Z",
+      "timestamp": "2025-11-12T07:30:36.751Z",
       "tests": {
         "extensionHost": {
           "passed": 5,
