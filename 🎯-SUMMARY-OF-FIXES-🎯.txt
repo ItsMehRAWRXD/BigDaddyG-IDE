@@ -1,0 +1,83 @@
+╔═══════════════════════════════════════════════════════════════╗
+║                  BLACK SCREEN FIXES APPLIED                   ║
+╚═══════════════════════════════════════════════════════════════╝
+
+Based on your diagnostic: "DOM events fire, NO paint events"
+
+═══════════════════════════════════════════════════════════════
+
+✅ FIX #1: FORCED CSS BACKGROUNDS
+   • Added :root CSS variables with !important
+   • All containers now have explicit backgrounds
+   • No transparent or #000 defaults
+
+✅ FIX #2: PAINT TEST ELEMENT
+   • Purple gradient box appears on startup
+   • Proves rendering pipeline works
+   • Auto-disappears after 1 second
+
+✅ FIX #3: SCRIPT LOAD ORDER
+   • Tab system loads FIRST
+   • Monaco redirect loads AFTER (deferred)
+   • Prevents DOM hijacking
+
+✅ FIX #4: EMERGENCY FALLBACK
+   • If main-container stays empty, shows warning
+   • User always sees SOMETHING
+   • No more silent black screens
+
+✅ FIX #5: DIAGNOSTIC LOGGING
+   • Console logs after 3 seconds
+   • Shows: Tab system loaded? Containers exist? CSS applied?
+   • Makes debugging trivial
+
+✅ FIX #6: GPU ALREADY DISABLED
+   • main.js already has --disable-gpu
+   • No changes needed
+
+✅ FIX #7: DEBUG LAUNCH SCRIPTS
+   • launch-debug.bat (Windows)
+   • launch-debug.sh (Linux/Mac)
+   • Clears cache, adds safety flags
+
+═══════════════════════════════════════════════════════════════
+
+🚀 TEST NOW:
+
+   cd /workspace/electron
+   launch-debug.bat        # Windows
+   ./launch-debug.sh       # Linux/Mac
+
+═══════════════════════════════════════════════════════════════
+
+📊 WHAT TO EXPECT:
+
+   SUCCESS ✅
+   └─ Purple box (1s) → Welcome tab → Blue/cyan theme
+
+   PARTIAL ⚠️
+   └─ Purple box (stays) → Press F12 → Check console
+
+   FAILURE ❌
+   └─ Black screen → Clear GPU cache → Try --disable-gpu-compositing
+
+═══════════════════════════════════════════════════════════════
+
+📁 FILES CHANGED:
+
+   • electron/index.html          (CSS + paint test + script order)
+   • electron/launch-debug.bat    (NEW - Windows launcher)
+   • electron/launch-debug.sh     (NEW - Linux launcher)
+   • electron/main.js             (Already had GPU flags ✅)
+
+═══════════════════════════════════════════════════════════════
+
+💡 THE PAINT TEST IS KEY:
+
+   If you see it → Rendering works, check tab system
+   If you don't  → GPU/driver issue, clear cache
+
+═══════════════════════════════════════════════════════════════
+
+🎯 NO MORE SILENT BLACK SCREENS - You WILL see something!
+

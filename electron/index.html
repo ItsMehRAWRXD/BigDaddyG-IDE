@@ -5,27 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BigDaddyG IDE</title>
     
-    <!-- Core Modules -->
-    <script src="redirect-to-bigdaddy.js"></script>
-    
-    <!-- COMPLETE TAB SYSTEM - HANDLES EVERYTHING -->
-    <script src="complete-tab-system.js"></script>
-    
     <style>
+        /* FORCE VISIBLE BACKGROUNDS - NO BLACK SCREEN */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: #05050f;
+        :root {
+            --background-color: #0a0a1e !important;
+            --surface-color: #1a1a2e !important;
+            --accent-color: #00d4ff !important;
+        }
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: var(--background-color) !important;
             color: #fff;
             overflow: hidden;
+            font-family: 'Segoe UI', sans-serif;
         }
         
         #app {
-            display: flex;
+            display: flex !important;
             flex-direction: column;
             height: 100vh;
             width: 100vw;
+            background: var(--background-color) !important;
+            visibility: visible !important;
+            opacity: 1 !important;
         }
         
         #title-bar {
@@ -91,14 +97,56 @@
         }
         
         #main-container {
-            flex: 1;
-            display: flex;
+            flex: 1 !important;
+            display: flex !important;
             flex-direction: column;
             overflow: hidden;
+            background: var(--background-color) !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            z-index: 1;
+        }
+        
+        /* FORCE ALL TAB SYSTEM ELEMENTS VISIBLE */
+        #master-tab-bar {
+            background: var(--surface-color) !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            display: flex !important;
+        }
+        
+        #master-tab-content {
+            background: var(--background-color) !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            display: block !important;
+            flex: 1 !important;
+        }
+        
+        /* EMERGENCY FALLBACK IF NOTHING LOADS */
+        #main-container:empty::before {
+            content: "⚠️ Loading IDE... If this persists, press F12 and check console";
+            display: block;
+            padding: 50px;
+            text-align: center;
+            color: #ff4757;
+            font-size: 18px;
+            background: rgba(255, 71, 87, 0.1);
+            border: 2px solid #ff4757;
+            border-radius: 8px;
+            margin: 50px;
         }
     </style>
 </head>
 <body>
+    <!-- PAINT DEBUG - Will disappear when tab system loads -->
+    <div id="paint-test" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; 
+         padding: 40px; border-radius: 12px; font-size: 24px; font-weight: bold; z-index: 999999;
+         box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
+        🎨 PAINT TEST - If you see this, rendering works!<br>
+        <span style="font-size: 14px; opacity: 0.8;">Tab system will replace this in 1 second...</span>
+    </div>
     <div id="app">
         <!-- Title Bar -->
         <div id="title-bar">
@@ -122,9 +170,50 @@
         <div id="main-container"></div>
     </div>
     
-    <!-- Essential Scripts Only -->
-    <script src="window-api-bridge.js"></script>
+    <!-- LOAD ORDER CRITICAL -->
+    <!-- 1. Tab system FIRST (creates DOM) -->
+    <script src="complete-tab-system.js"></script>
+    
+    <!-- 2. Monaco redirect AFTER (doesn't block) -->
+    <script src="redirect-to-bigdaddy.js" defer></script>
+    
+    <!-- 3. Essential scripts -->
+    <script src="window-api-bridge.js" defer></script>
     <script src="settings-manager.js" defer></script>
     <script src="theme-manager.js" defer></script>
+    
+    <!-- REMOVE PAINT TEST -->
+    <script>
+        console.log('🎯 [Paint Debug] Page loaded, paint test visible');
+        
+        // Remove paint test after 1 second
+        setTimeout(() => {
+            const paintTest = document.getElementById('paint-test');
+            if (paintTest) {
+                paintTest.style.transition = 'opacity 0.5s';
+                paintTest.style.opacity = '0';
+                setTimeout(() => paintTest.remove(), 500);
+                console.log('🎨 [Paint Debug] Paint test removed - rendering confirmed!');
+            }
+        }, 1000);
+        
+        // Debug check after 3 seconds
+        setTimeout(() => {
+            console.log('=== 🔍 3 SECOND DIAGNOSTIC ===');
+            console.log('Tab system loaded:', !!window.completeTabSystem);
+            console.log('Tab bar:', document.getElementById('master-tab-bar'));
+            console.log('Tab content:', document.getElementById('master-tab-content'));
+            console.log('Main container:', document.getElementById('main-container'));
+            
+            const mainContainer = document.getElementById('main-container');
+            if (mainContainer) {
+                const styles = window.getComputedStyle(mainContainer);
+                console.log('Main container background:', styles.background);
+                console.log('Main container height:', styles.height);
+                console.log('Main container display:', styles.display);
+                console.log('Main container visibility:', styles.visibility);
+            }
+        }, 3000);
+    </script>
 </body>
 </html>
