@@ -14,7 +14,8 @@ class InteractiveTerminal {
         this.history = [];
         this.historyIndex = -1;
         this.currentInput = '';
-        this.workingDirectory = process?.cwd?.() || '/';
+        // Browser-safe: process may not be available in renderer
+        this.workingDirectory = (typeof process !== 'undefined' && process.cwd) ? process.cwd() : '/';
     }
     
     /**
