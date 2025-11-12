@@ -3,9 +3,10 @@
  * Manages IDE themes and appearance
  */
 
-// Browser-safe - don't use const to avoid redeclaration
-var themeFs = (typeof window !== 'undefined' && window._fsModule) ? window._fsModule : null;
-var themePath = (typeof window !== 'undefined' && window._pathModule) ? window._pathModule : null;
+// Browser-safe: Check if we're in Node.js or Browser
+const isNodeEnv = typeof process !== 'undefined' && process.versions && process.versions.node;
+const themeFs = isNodeEnv ? require('fs') : null;
+const themePath = isNodeEnv ? require('path') : null;
 
 class ThemeManager {
     constructor() {
