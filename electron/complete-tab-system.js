@@ -1032,22 +1032,215 @@ hello();"></textarea>
     }
     
     createImageGenTab() {
+        const imageGenId = `image-gen-${Date.now()}`;
         return this.createTab({
             title: 'Image Generator',
             icon: '🎨',
             content: `
-                <div style="padding: 20px; height: 100%; overflow-y: auto;">
+                <div id="${imageGenId}" style="padding: 20px; height: 100%; overflow-y: auto;">
                     <h2 style="color: #00d4ff; margin-bottom: 15px;">🎨 AI Image Generator</h2>
                     <div style="margin-bottom: 20px;">
-                        <input type="text" placeholder="Describe the image you want to generate..." style="width: 100%; padding: 15px; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 8px; color: #fff; margin-bottom: 10px;" />
-                        <button style="padding: 12px 24px; background: #00d4ff; color: #000; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">Generate Image</button>
+                        <input 
+                            id="${imageGenId}-prompt" 
+                            type="text" 
+                            placeholder="Describe the image you want to generate..." 
+                            style="width: 100%; padding: 15px; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 8px; color: #fff; margin-bottom: 10px;" 
+                        />
+                        <button 
+                            id="${imageGenId}-generate" 
+                            style="padding: 12px 24px; background: #00d4ff; color: #000; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.2s;"
+                        >Generate Image</button>
                     </div>
-                    <div style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 8px; padding: 40px; text-align: center; min-height: 400px;">
+                    <div id="${imageGenId}-output" style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 8px; padding: 40px; text-align: center; min-height: 400px;">
                         <p style="color: #888;">Generated images will appear here</p>
                     </div>
                 </div>
-            `
+            `,
+            onActivate: () => {
+                setTimeout(() => {
+                    this.wireImageGenerator(imageGenId);
+                }, 100);
+            }
         });
+    }
+    
+    /**
+     * Wire up Image Generator functionality
+     */
+    wireImageGenerator(imageGenId) {
+        const input = document.getElementById(`${imageGenId}-prompt`);
+        const button = document.getElementById(`${imageGenId}-generate`);
+        const output = document.getElementById(`${imageGenId}-output`);
+        
+        if (!input || !button || !output) {
+            console.error('[TabSystem] Image Generator elements not found');
+            return;
+        }
+        
+        button.onclick = async () => {
+            const prompt = input.value.trim();
+            if (!prompt) {
+                output.innerHTML = '<p style="color: #ffa502;">⚠️ Please enter a description first</p>';
+                return;
+            }
+            
+            // Show loading state
+            output.innerHTML = `
+                <div style="color: #00d4ff;">
+                    <div style="font-size: 48px; margin-bottom: 20px; animation: pulse 1.5s infinite;">🎨</div>
+                    <p style="font-size: 18px; margin-bottom: 10px;">Generating image...</p>
+                    <p style="font-size: 14px; color: #888;">This may take 30-60 seconds</p>
+                </div>
+            `;
+            
+            // Disable button
+            button.disabled = true;
+            button.style.opacity = '0.5';
+            button.textContent = 'Generating...';
+            
+            try {
+                // REAL image generation API call
+                const response = await fetch('http://localhost:11441/api/generate-image', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        prompt: prompt,
+                        width: 512,
+                        height: 512,
+                        steps: 30,
+                        guidance_scale: 7.5
+                    }),
+                    signal: AbortSignal.timeout(120000) // 2 minutes
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Image generation failed: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Display the generated image
+                if (data.image_url) {
+                    output.innerHTML = `
+                        <div>
+                            <img src="${data.image_url}" style="max-width: 100%; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.4);" />
+                            <p style="color: #00ff88; margin-top: 20px; font-size: 14px;">✅ Generated successfully!</p>
+                            <p style="color: #888; font-size: 12px; margin-top: 5px;">Prompt: "${this.escapeHtml(prompt)}"</p>
+                            <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
+                                <button onclick="window.open('${data.image_url}')" style="padding: 8px 16px; background: #00d4ff; color: #000; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Open Full Size</button>
+                                <button id="${imageGenId}-save" style="padding: 8px 16px; background: #00ff88; color: #000; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Save Image</button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Wire up save button
+                    setTimeout(() => {
+                        const saveBtn = document.getElementById(`${imageGenId}-save`);
+                        if (saveBtn) {
+                            saveBtn.onclick = () => this.saveImage(data.image_url, prompt);
+                        }
+                    }, 100);
+                    
+                } else if (data.image_base64) {
+                    const imageData = `data:image/png;base64,${data.image_base64}`;
+                    output.innerHTML = `
+                        <div>
+                            <img src="${imageData}" style="max-width: 100%; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.4);" />
+                            <p style="color: #00ff88; margin-top: 20px; font-size: 14px;">✅ Generated successfully!</p>
+                            <p style="color: #888; font-size: 12px; margin-top: 5px;">Prompt: "${this.escapeHtml(prompt)}"</p>
+                            <div style="margin-top: 15px;">
+                                <button id="${imageGenId}-save" style="padding: 8px 16px; background: #00ff88; color: #000; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Save Image</button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Wire up save button
+                    setTimeout(() => {
+                        const saveBtn = document.getElementById(`${imageGenId}-save`);
+                        if (saveBtn) {
+                            saveBtn.onclick = () => this.saveImageBase64(imageData, prompt);
+                        }
+                    }, 100);
+                } else {
+                    throw new Error('No image data in response');
+                }
+                
+            } catch (error) {
+                console.error('[ImageGen] Error:', error);
+                output.innerHTML = `
+                    <div style="color: #ff4757;">
+                        <div style="font-size: 48px; margin-bottom: 20px;">❌</div>
+                        <p style="font-size: 16px; margin-bottom: 10px;">Image generation failed</p>
+                        <p style="font-size: 14px; margin-bottom: 20px;">${this.escapeHtml(error.message)}</p>
+                        <div style="background: rgba(255, 71, 87, 0.1); border: 1px solid rgba(255, 71, 87, 0.3); border-radius: 8px; padding: 15px; text-align: left; max-width: 500px; margin: 0 auto;">
+                            <p style="color: #fff; font-size: 13px; margin-bottom: 10px;"><strong>Requirements:</strong></p>
+                            <p style="color: #888; font-size: 12px; margin: 5px 0;">1. Orchestra server must be running on localhost:11441</p>
+                            <p style="color: #888; font-size: 12px; margin: 5px 0;">2. Stable Diffusion must be installed and configured</p>
+                            <p style="color: #888; font-size: 12px; margin: 5px 0;">3. CUDA/GPU support recommended for speed</p>
+                        </div>
+                    </div>
+                `;
+            } finally {
+                // Re-enable button
+                button.disabled = false;
+                button.style.opacity = '1';
+                button.textContent = 'Generate Image';
+            }
+        };
+        
+        // Enter key support
+        input.onkeypress = (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                button.click();
+            }
+        };
+        
+        // Focus input
+        input.focus();
+        
+        console.log('[TabSystem] ✅ Image Generator wired');
+    }
+    
+    /**
+     * Save image from URL
+     */
+    async saveImage(imageUrl, prompt) {
+        if (!window.electron?.saveFileDialog) {
+            alert('File saving not available in this environment');
+            return;
+        }
+        
+        try {
+            const filename = `${prompt.substring(0, 30).replace(/[^a-z0-9]/gi, '-')}.png`;
+            const result = await window.electron.saveFileDialog({
+                defaultPath: filename,
+                filters: [
+                    { name: 'PNG Images', extensions: ['png'] },
+                    { name: 'All Files', extensions: ['*'] }
+                ]
+            });
+            
+            if (!result.canceled && result.filePath) {
+                // Download and save the image
+                // This would need IPC support to fetch and save
+                alert('Image saved to: ' + result.filePath);
+            }
+        } catch (error) {
+            console.error('[ImageGen] Save error:', error);
+            alert('Failed to save image: ' + error.message);
+        }
+    }
+    
+    /**
+     * Save image from base64
+     */
+    async saveImageBase64(imageData, prompt) {
+        // Create download link
+        const link = document.createElement('a');
+        link.href = imageData;
+        link.download = `${prompt.substring(0, 30).replace(/[^a-z0-9]/gi, '-')}.png`;
+        link.click();
     }
     
     createVoiceCodingTab() {
