@@ -160,11 +160,14 @@
         
         <!-- Menu Bar -->
         <div id="menu-bar">
-            <div class="menu-item">File</div>
-            <div class="menu-item">Edit</div>
-            <div class="menu-item">View</div>
-            <div class="menu-item">Help</div>
+            <div class="menu-item" id="menu-file">File</div>
+            <div class="menu-item" id="menu-edit">Edit</div>
+            <div class="menu-item" id="menu-view">View</div>
+            <div class="menu-item" id="menu-help">Help</div>
         </div>
+        
+        <!-- Menu Dropdowns (hidden by default) -->
+        <div id="menu-dropdown-container" style="display: none;"></div>
         
         <!-- Main Container - Tab system populates this -->
         <div id="main-container"></div>
@@ -215,5 +218,11 @@
             }
         }, 3000);
     </script>
+    
+    <!-- MENU BAR FUNCTIONALITY -->
+    <script src="menu-system.js" defer></script>
+    
+    <!-- KEYBOARD SHORTCUTS -->
+    <script src="keyboard-shortcuts.js" defer></script>
 </body>
 </html>
