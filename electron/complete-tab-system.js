@@ -19,15 +19,19 @@ class CompleteTabSystem {
     
     initialize() {
         try {
+            console.log('[TabSystem] 🔄 Step 1: Nuking panes...');
             // Remove ALL panes and sidebars
             this.nukeAllPanes();
             
+            console.log('[TabSystem] 🔄 Step 2: Creating clean layout...');
             // Create clean tab-only layout
             this.createCleanLayout();
             
+            console.log('[TabSystem] 🔄 Step 3: Registering shortcuts...');
             // Register shortcuts
             this.registerShortcuts();
             
+            console.log('[TabSystem] 🔄 Step 4: Creating tabs...');
             // Create all feature tabs
             this.createAllTabs();
             
@@ -37,12 +41,26 @@ class CompleteTabSystem {
             
             console.log('[TabSystem] ✅ Complete tab system ready');
             console.log('[TabSystem] 💡 Press Ctrl+T to create new tabs');
+            console.log('[TabSystem] 📊 Tabs created:', this.tabs.size);
+            
+            // Visual confirmation
+            const tabBar = document.getElementById('master-tab-bar');
+            const tabContent = document.getElementById('master-tab-content');
+            console.log('[TabSystem] 🔍 Tab bar exists:', !!tabBar);
+            console.log('[TabSystem] 🔍 Tab content exists:', !!tabContent);
+            
+            if (tabBar && tabContent) {
+                console.log('[TabSystem] ✅ All containers created successfully');
+            } else {
+                console.error('[TabSystem] ❌ Containers missing!');
+            }
             
             // Dispatch ready event
             window.dispatchEvent(new CustomEvent('tab-system-ready'));
             
         } catch (error) {
             console.error('[TabSystem] ❌ Initialization failed:', error);
+            console.error('[TabSystem] Stack:', error.stack);
             // Show error to user
             alert('Tab system failed to load. Check console for details.');
         }
@@ -115,7 +133,7 @@ class CompleteTabSystem {
                 <!-- Tab Bar -->
                 <div id="master-tab-bar" style="
                     display: flex;
-                    background: #05050f;
+                    background: linear-gradient(135deg, #05050f 0%, #0a0a1e 100%);
                     border-bottom: 2px solid #00d4ff;
                     overflow-x: auto;
                     overflow-y: hidden;
@@ -123,6 +141,7 @@ class CompleteTabSystem {
                     align-items: center;
                     scroll-behavior: smooth;
                     gap: 2px;
+                    box-shadow: 0 2px 10px rgba(0, 212, 255, 0.3);
                 ">
                     <button id="new-tab-btn" style="
                         min-width: 45px;
@@ -143,7 +162,8 @@ class CompleteTabSystem {
                     flex: 1;
                     overflow: hidden;
                     position: relative;
-                    background: #0a0a1e;
+                    background: linear-gradient(180deg, #0a0a1e 0%, #050510 100%);
+                    min-height: 400px;
                 "></div>
                 
                 <!-- Status Bar -->
