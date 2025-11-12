@@ -369,6 +369,30 @@ let ipcServer = null;
 
 app.whenReady().then(async () => {
   console.log('[BigDaddyG] 🚀 Starting Electron app...');
+  
+  // ============================================================================
+  // AUTO-UPDATE: Check GitHub for updates BEFORE launching
+  // ============================================================================
+  try {
+    const autoUpdater = new AutoUpdater();
+    const updateResult = await autoUpdater.checkAndUpdate();
+    
+    if (updateResult.filesUpdated && updateResult.filesUpdated > 0) {
+      console.log(`[BigDaddyG] 🔄 Updated ${updateResult.filesUpdated} files from GitHub`);
+      dialog.showMessageBoxSync({
+        type: 'info',
+        title: 'Updates Applied',
+        message: 'BigDaddyG IDE Updated',
+        detail: `${updateResult.filesUpdated} files were updated from GitHub.\n\nThe IDE will now launch with the latest changes.`,
+        buttons: ['OK']
+      });
+    } else {
+      console.log('[BigDaddyG] ✅ Already up to date with GitHub');
+    }
+  } catch (error) {
+    console.error('[BigDaddyG] ⚠️ Auto-update check failed:', error.message);
+    // Continue launching even if update fails
+  }
 
   settingsService.initialize(app);
 

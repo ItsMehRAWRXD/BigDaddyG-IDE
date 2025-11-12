@@ -188,4 +188,16 @@ body {
     }
 }
 
-module.exports = ThemeManager;
+// Browser-safe module export
+try {
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = ThemeManager;
+  }
+} catch (e) {
+  // Browser environment - module not available
+}
+
+// Always expose to window for renderer process
+if (typeof window !== 'undefined') {
+  window.ThemeManager = ThemeManager;
+}
