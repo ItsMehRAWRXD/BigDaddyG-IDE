@@ -415,22 +415,8 @@ class IPCServer {
     }
 }
 
-// Initialize IPC server
-let ipcServer = null;
-
-if (typeof window !== 'undefined') {
-    // Browser environment
-    window.addEventListener('DOMContentLoaded', () => {
-        // Note: IPC server runs in main process, not renderer
-        console.log('[IPC] ℹ️ IPC server should be started from main process');
-    });
-} else {
-    // Node.js environment (main process)
-    ipcServer = new IPCServer();
-    ipcServer.start();
-}
-
-// Export for main process
+// Export for main process - DON'T auto-start!
+// Main.js will create and start the server when ready
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = IPCServer;
 }
