@@ -3,597 +3,522 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gemini Agentic IDE</title>
-    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs/loader.js"></script>
+    <title>AI Developer Workbench - Dual Mode (Gemini + Ollama)</title>
+    
+    <!-- Dependencies -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Use a stable version of Monaco -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.48.0/min/vs/loader.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.1/marked.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: { 
+                            900:'#0f172a', 800:'#1e293b', 700:'#334155',
+                            600: '#475569', 500: '#64748b'
+                        },
+                        indigo: { 500:'#6366f1', 600:'#4f46e5', 400: '#818cf8' },
+                        emerald: { 500:'#10b981', 600:'#059669', 400: '#34d399' },
+                        rose: { 600:'#e11d48', 500: '#f43f5e' },
+                        amber: { 500: '#f59e0b', 400: '#fbbf24' }
+                    },
+                    fontFamily: {
+                        sans:['Inter','system-ui','-apple-system','Segoe UI', 'Arial', 'sans-serif'],
+                        mono:['Fira Code','ui-monospace','SFMono-Regular','Menlo','Monaco','monospace']
+                    },
+                    animation: {
+                        'pulse-soft': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet"/>
+    
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        body { background-color: #0f172a; color: #e2e8f0; }
+        #app { display: flex; height: 100vh; overflow: hidden; }
+        .editor-container { flex: 1; min-width: 0; }
+        #sidebar { width: 420px; min-width: 420px; background-color: #1e293b; border-left: 1px solid #334155; display: flex; flex-direction: column; }
+        #editor { height: 100%; border-radius: 0 0 0.5rem 0.5rem; }
+        #chat { flex-grow: 1; overflow-y: auto; padding: 1rem; scroll-behavior: smooth; }
+        .chat-message { max-width: 90%; margin-bottom: 1rem; }
+        .user-message { background-color: #4f46e5; color: white; border-radius: 0.75rem 0.75rem 0 0.75rem; padding: 0.6rem 1rem; align-self: flex-end; }
+        .agent-message { background-color: #334155; border: 1px solid #475569; color: #e2e8f0; border-radius: 0.75rem 0.75rem 0.75rem 0; padding: 0.6rem 1rem; align-self: flex-start; }
+        .dot { border-radius: 50%; display: inline-block; margin: 0 1px; animation: bounce 1.4s infinite ease-in-out both; }
+        .dot-sm { width: 6px; height: 6px; background-color: #6366f1; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+        .dot:nth-child(1) { animation-delay: -0.32s; }
+        .dot:nth-child(2) { animation-delay: -0.16s; }
+        .dot:nth-child(3) { animation-delay: 0s; }
+        .agent-persona-badge { padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; margin-bottom: 4px; display: inline-block; }
+        .analyst-badge { background-color: #f59e0b; color: #1e293b; }
+        .refactor-badge { background-color: #10b981; color: #1e293b; }
+        .implementer-badge { background-color: #6366f1; color: white; }
+        .orchestrator-badge { background-color: #e11d48; color: white; }
         
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0f172a, #1e293b);
-            color: #e2e8f0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+        /* Monaco tab styling */
+        .tab-bar { background-color: #1e293b; padding: 0 1rem; border-bottom: 1px solid #334155; }
+        .tab { padding: 0.5rem 1rem; cursor: pointer; border-right: 1px solid #334155; font-size: 0.875rem; color: #94a3b8; transition: all 0.2s; }
+        .tab.active { background-color: #0f172a; color: #e2e8f0; border-bottom: 2px solid #6366f1; }
         
-        .header {
-            background: rgba(15, 23, 42, 0.95);
-            padding: 12px 20px;
-            border-bottom: 1px solid #334155;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            backdrop-filter: blur(10px);
-        }
-        
-        .logo {
-            font-size: 20px;
-            font-weight: bold;
-            background: linear-gradient(90deg, #60a5fa, #38bdf8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .model-selector {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .model-selector select {
-            background: #1e293b;
-            color: #e2e8f0;
-            border: 1px solid #334155;
-            padding: 8px 15px;
-            border-radius: 6px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .model-selector select:hover {
-            border-color: #60a5fa;
-        }
-        
-        .container {
-            flex: 1;
-            display: flex;
-            overflow: hidden;
-        }
-        
-        .editor-pane {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .tabs {
-            background: rgba(15, 23, 42, 0.9);
-            padding: 8px 15px;
-            border-bottom: 1px solid #334155;
-            display: flex;
-            gap: 5px;
-        }
-        
-        .tab {
-            padding: 6px 12px;
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 13px;
-            transition: all 0.2s;
-        }
-        
-        .tab.active {
-            background: #3b82f6;
-            border-color: #3b82f6;
-        }
-        
-        .tab:hover {
-            border-color: #60a5fa;
-        }
-        
-        #monaco-editor {
-            flex: 1;
-        }
-        
-        .chat-pane {
-            width: 400px;
-            background: rgba(15, 23, 42, 0.9);
-            border-left: 1px solid #334155;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .chat-header {
-            padding: 15px;
-            border-bottom: 1px solid #334155;
-            font-weight: 600;
-        }
-        
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        
-        .message {
-            padding: 10px 12px;
-            border-radius: 8px;
-            max-width: 90%;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .message.user {
-            background: #1e40af;
-            align-self: flex-end;
-        }
-        
-        .message.assistant {
-            background: #1e293b;
-            border: 1px solid #334155;
-            align-self: flex-start;
-        }
-        
-        .message.error {
-            background: #7f1d1d;
-            border: 1px solid #dc2626;
-            align-self: flex-start;
-        }
-        
-        .message.pre {
-            background: #0f172a;
-            padding: 10px;
-            border-radius: 4px;
-            overflow-x: auto;
-            margin-top: 8px;
-        }
-        
-        .chat-input-container {
-            padding: 15px;
-            border-top: 1px solid #334155;
-            display: flex;
-            gap: 10px;
-        }
-        
-        .chat-input {
-            flex: 1;
-            background: #1e293b;
-            border: 1px solid #334155;
-            color: #e2e8f0;
-            padding: 10px;
-            border-radius: 6px;
-            resize: none;
-            font-family: inherit;
-            font-size: 14px;
-        }
-        
-        .chat-input:focus {
-            outline: none;
-            border-color: #60a5fa;
-        }
-        
-        .btn {
-            background: #3b82f6;
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-        
-        .btn:hover {
-            background: #2563eb;
-            transform: translateY(-1px);
-        }
-        
-        .btn:active {
-            transform: translateY(0);
-        }
-        
-        .btn-secondary {
-            background: #475569;
-        }
-        
-        .btn-secondary:hover {
-            background: #334155;
-        }
-        
-        .action-buttons {
-            padding: 10px 15px;
-            background: rgba(15, 23, 42, 0.9);
-            border-bottom: 1px solid #334155;
-            display: flex;
-            gap: 10px;
-        }
-        
-        .status-bar {
-            background: #0f172a;
-            padding: 8px 20px;
-            border-top: 1px solid #334155;
-            font-size: 12px;
-            color: #94a3b8;
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        .loading {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid #1e293b;
-            border-top: 2px solid #60a5fa;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-left: 8px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        /* Hide scrollbars for a cleaner look */
+        #chat::-webkit-scrollbar, #folder-tree::-webkit-scrollbar { display: none; }
+        #chat, #folder-tree { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body>
-    <div class="header">
-        <div class="logo">🚀 Gemini Agentic IDE</div>
-        <div class="model-selector">
-            <label for="model-select">Model:</label>
-            <select id="model-select"></select>
+<body class="font-sans">
+
+    <div id="app">
+        <!-- Editor Section -->
+        <div class="editor-container flex flex-col p-4">
+            <header class="flex justify-between items-center py-2 px-4 bg-slate-800 rounded-t-lg border-b border-slate-700">
+                <div class="flex items-center space-x-4">
+                    <h1 class="text-xl font-bold text-indigo-400">Agentic Developer Workbench</h1>
+                    <span id="badge-mode" class="px-2 py-1 rounded-full text-xs bg-indigo-500 text-white">Gemini Cloud</span>
+                    <span id="status-indicator" class="text-sm font-medium text-slate-400">Ready.</span>
+                </div>
+                <div class="flex items-center space-x-3 text-sm">
+                    <span id="cursor-pos" class="text-slate-500">Ln 1, Col 1</span>
+                </div>
+            </header>
+
+            <!-- File Tabs (Simulated/Placeholder) -->
+            <div id="tab-bar" class="flex flex-row overflow-x-auto tab-bar">
+                <div class="tab active" data-path="Untitled-1.js">Untitled-1.js</div>
+            </div>
+
+            <!-- Monaco Editor Container -->
+            <div id="editor" class="flex-grow bg-slate-900 border border-slate-700 rounded-b-lg shadow-2xl"></div>
+
+            <!-- File System Controls (Placeholders for Native File System API) -->
+            <footer class="mt-2 flex space-x-3 text-sm">
+                <!-- These buttons require browser permissions (Native File System API) and are placeholders -->
+                <button onclick="alert('File System Access API is required for this. Using local storage for now.')" class="bg-slate-700 hover:bg-slate-600 text-white py-1 px-3 rounded-md transition duration-150">Load Folder</button>
+                <button onclick="alert('File System Access API is required for this. Using local storage for now.')" class="bg-slate-700 hover:bg-slate-600 text-white py-1 px-3 rounded-md transition duration-150">Save File</button>
+            </footer>
         </div>
-    </div>
-    
-    <div class="container">
-        <div class="editor-pane">
-            <div class="tabs">
-                <div class="tab active" data-file="main.js">main.js</div>
-                <div class="tab" data-file="script.py">script.py</div>
+
+        <!-- Sidebar Section (Chat & Controls) -->
+        <div id="sidebar">
+            <div class="p-4 border-b border-slate-700">
+                <h2 class="text-lg font-semibold mb-2 text-emerald-400">Agentic Chat & Controls</h2>
+                <div class="flex items-center space-x-3 mb-3">
+                    <label for="mode" class="text-sm text-slate-400">AI Mode:</label>
+                    <select id="mode" onchange="aiAdapter.updateUIMode()" class="bg-slate-700 text-white text-sm p-1 rounded">
+                        <option value="gemini">Gemini (Cloud)</option>
+                        <option value="ollama">Ollama (Local)</option>
+                    </select>
+                </div>
+                <div id="gemini-row" class="text-sm text-slate-400">
+                    Model: <input type="text" value="gemini-2.5-flash-preview-09-2025" disabled class="bg-slate-700 p-1 rounded w-60 text-xs">
+                </div>
+                <div id="ollama-row" class="text-sm text-slate-400 hidden">
+                    Ollama: <span id="ollama-health" class="font-medium text-amber-400">Checking...</span> |
+                    Model: <select id="ollama-model" class="bg-slate-700 text-white text-sm p-1 rounded">
+                        <option value="llama3">llama3</option>
+                        <option value="codellama">codellama</option>
+                        <option value="phi3">phi3</option>
+                    </select>
+                </div>
             </div>
-            <div class="action-buttons">
-                <button class="btn" onclick="runCodeFromEditor()">▶️ Run Code</button>
-                <button class="btn btn-secondary" onclick="explainCode()">💡 Explain</button>
-                <button class="btn btn-secondary" onclick="refactorCode()">🔧 Refactor</button>
-                <button class="btn btn-secondary" onclick="debugCode()">🐛 Debug</button>
+
+            <!-- Chat Display -->
+            <div id="chat" class="flex flex-col flex-grow">
+                <div class="chat-message agent-message self-start">
+                    <span class="orchestrator-badge">Orchestrator</span>
+                    Hello! I'm your multi-agent coding workbench. Describe what you want to achieve with the code on the left, and I will deploy my Analyst, Refactor, and Implementer agents to assist you.
+                </div>
             </div>
-            <div id="monaco-editor"></div>
+
+            <!-- Chat Input -->
+            <div class="p-4 border-t border-slate-700">
+                <div class="flex space-x-2">
+                    <input type="text" id="user-input" placeholder="Ask the agent to implement a feature, refactor code, or fix a bug..." 
+                           class="flex-grow p-3 rounded-lg bg-slate-700 text-white placeholder-slate-500 focus:ring-indigo-500 focus:border-indigo-500 border-none" 
+                           onkeypress="if(event.key === 'Enter') handleUserInput()">
+                    <button id="btn-send" onclick="handleUserInput()" class="bg-indigo-600 hover:bg-indigo-500 text-white p-3 rounded-lg transition duration-150 active:scale-95">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    </button>
+                    <button id="btn-stop" onclick="stopGeneration()" class="bg-rose-600 hover:bg-rose-500 text-white p-3 rounded-lg transition duration-150 active:scale-95 hidden">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="9" x2="15" y2="15"></line><line x1="15" y1="9" x2="9" y2="15"></line></svg>
+                    </button>
+                </div>
+            </div>
         </div>
-        
-        <div class="chat-pane">
-            <div class="chat-header">
-                AI Assistant <span id="loading-indicator"></span>
-            </div>
-            <div class="chat-messages" id="chat-messages"></div>
-            <div class="chat-input-container">
-                <textarea class="chat-input" id="chat-input" rows="2" placeholder="Ask anything about your code..."></textarea>
-                <button class="btn" onclick="sendChatMessage()">Send</button>
-            </div>
-        </div>
-    </div>
-    
-    <div class="status-bar">
-        <span id="status-left">Ready | BigDaddyG IDE v2.0</span>
-        <span id="status-right">Model: <span id="active-model-display">Loading...</span></span>
     </div>
 
-    <script>
-        // Configuration
-        const GOOGLE_API_KEY = "YOUR_GOOGLE_API_KEY_HERE";
-        const firebaseConfig = {
-            apiKey: "AIzaSyXXXXXXX",
-            authDomain: "bigdaddyg-ai.firebaseapp.com",
-            projectId: "bigdaddyg-ai",
-            storageBucket: "bigdaddyg-ai.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:123456789:web:abc123def456"
-        };
-        
-        let editor;
-        let currentModel = 'gemini-2.5-flash-preview-09-2025';
-        let currentFile = 'main.js';
-        
-        // Initialize Monaco Editor
-        require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs' } });
-        require(['vs/editor/editor.main'], function() {
-            editor = monaco.editor.create(document.getElementById('monaco-editor'), {
-                value: `// Welcome to Gemini Agentic IDE
-// Select a model and start coding!
+<script>
+    // --- Global State & Constants ---
+    let editor = null;
+    let chatHistory = [];
+    let abortController = null;
+    let updateTimer; // for debouncing suggestions
+    const OLLAMA_BASE = 'http://localhost:11434'; // Standard Ollama endpoint
+    
+    // System prompt for the Orchestrator
+    const APP_SYSTEM_PROMPT = `You are the primary orchestration agent for a coding IDE. Your goal is to coordinate a team of specialized sub-agents (Analyst, Refactor, Implementer) to fulfill the user's request. You must ensure the response is helpful, actionable, and uses the code context provided by the editor. The current code context is always provided in the user prompt.`;
 
-function calculateSum(a, b) {
-    return a + b;
+    // --- Utility Functions ---
+
+    const el = selector => document.querySelector(selector);
+
+    /**
+     * Updates the global status indicator in the editor header.
+     * @param {string} message - The status message.
+     * @param {'ok'|'warn'|'error'|'thinking'} type - The status type.
+     */
+    function setStatus(message, type) {
+        const statusEl = el('#status-indicator');
+        if (type === 'thinking') {
+            statusEl.innerHTML = `<span class="dot dot-sm"></span><span class="dot dot-sm"></span><span class="dot dot-sm"></span> ${message}`;
+        } else {
+            statusEl.textContent = message;
+        }
+        
+        statusEl.className = 'text-sm font-medium';
+        switch (type) {
+            case 'ok': statusEl.classList.add('text-emerald-400'); break;
+            case 'warn': statusEl.classList.add('text-amber-400'); break;
+            case 'error': statusEl.classList.add('text-rose-400'); break;
+            case 'thinking':
+                statusEl.classList.add('text-indigo-400');
+                break;
+            default: statusEl.classList.add('text-slate-400');
+        }
+    }
+
+    /**
+     * Renders a message to the chat display.
+     * @param {string} content - The message content (Markdown or HTML).
+     * @param {'user'|'agent'|'orchestrator'|'analyst'|'refactor'|'implementer'} role - The sender role.
+     * @returns {HTMLElement} The newly created message element.
+     */
+    function renderChat(content, role = 'agent') {
+        const chat = el('#chat');
+        const newMsg = document.createElement('div');
+        newMsg.classList.add('chat-message', 'w-full', 'flex', 'flex-col');
+
+        let roleClass = 'agent-message self-start';
+        let roleBadge = role;
+        let badgeClass = '';
+
+        switch (role) {
+            case 'user':
+                roleClass = 'user-message self-end';
+                break;
+            case 'analyst':
+                roleClass = 'agent-message self-start';
+                badgeClass = 'analyst-badge';
+                roleBadge = 'Analyst Agent';
+                break;
+            case 'refactor':
+                roleClass = 'agent-message self-start';
+                badgeClass = 'refactor-badge';
+                roleBadge = 'Refactor Agent';
+                break;
+            case 'implementer':
+                roleClass = 'agent-message self-start';
+                badgeClass = 'implementer-badge';
+                roleBadge = 'Implementer Agent';
+                break;
+            case 'orchestrator':
+            case 'agent':
+            default:
+                roleClass = 'agent-message self-start';
+                badgeClass = 'orchestrator-badge';
+                roleBadge = 'Orchestrator';
+                break;
+        }
+
+        const badgeHtml = role !== 'user' && role !== 'agent' ? `<span class="${badgeClass} agent-persona-badge">${roleBadge}</span>` : '';
+        
+        newMsg.innerHTML = `<div class="${roleClass}">${badgeHtml}${marked.parse(content)}</div>`;
+        chat.appendChild(newMsg);
+        chat.scrollTop = chat.scrollHeight;
+        return newMsg.querySelector(`.${roleClass}`);
+    }
+
+    /**
+     * Appends a chunk of text to the last message in the chat.
+     * @param {HTMLElement} targetEl - The element to append to.
+     * @param {string} chunk - The text chunk.
+     */
+    function appendChunk(targetEl, chunk) {
+        targetEl.textContent += chunk;
+        const parsed = marked.parse(targetEl.textContent);
+        targetEl.innerHTML = parsed;
+        el('#chat').scrollTop = el('#chat').scrollHeight;
+    }
+
+    /**
+     * Adds the final message content to the chat history.
+     * @param {string} role - The role of the speaker.
+     * @param {string} content - The final content.
+     */
+    function saveToHistory(role, content) {
+        chatHistory.push({ role, content });
+        if (chatHistory.length > 20) chatHistory.shift();
+    }
+
+
+    // --- AI Adapter Class (Gemini/Ollama) ---
+
+    class AIAdapter {
+        constructor() {
+            this.mode = 'gemini';
+            this.updateUIMode();
+        }
+
+        async checkOllamaHealth() {
+            try {
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 1000);
+                const res = await fetch(`${OLLAMA_BASE}/api/tags`, { method: 'GET', signal: controller.signal });
+                clearTimeout(timeout);
+                const healthy = res.ok;
+                const healthEl = el('#ollama-health');
+                
+                healthEl.innerHTML = healthy 
+                    ? '<span class="dot bg-emerald-400"></span> Online'
+                    : '<span class="dot bg-rose-400"></span> Offline (Simulated)';
+                
+                return healthy;
+            } catch (err) {
+                el('#ollama-health').innerHTML = '<span class="dot bg-rose-400"></span> Offline (Simulated)';
+                return false;
+            }
+        }
+
+        updateUIMode() {
+            this.mode = el('#mode').value;
+            const isOllama = this.mode === 'ollama';
+
+            el('#gemini-row').classList.toggle('hidden', isOllama);
+            el('#ollama-row').classList.toggle('hidden', !isOllama);
+
+            const badge = el('#badge-mode');
+            badge.textContent = isOllama ? 'Ollama Local' : 'Gemini Cloud';
+            badge.className = `px-2 py-1 rounded-full text-xs ${isOllama ? 'bg-emerald-600' : 'bg-indigo-500'} text-white`;
+        }
+        
+        async generate(prompt, systemInstruction, role, onChunk, signal) {
+            el('#btn-stop').classList.remove('hidden');
+            el('#btn-send').disabled = true;
+
+            const agentMessageEl = renderChat('', role);
+            
+            try {
+                if (this.mode === 'ollama') {
+                    await this.simulateStream(prompt, onChunk, signal, agentMessageEl, 'Ollama');
+                } else {
+                    await this.simulateStream(prompt, onChunk, signal, agentMessageEl, 'Gemini');
+                }
+            } catch (err) {
+                if (err.name === 'AbortError') {
+                    onChunk('\n\n**Generation stopped by user.**', agentMessageEl);
+                    setStatus('Aborted by user', 'warn');
+                } else {
+                    onChunk(`\n\n**Agent Error:** ${err.message}`, agentMessageEl);
+                    setStatus('Generation failed', 'error');
+                }
+            } finally {
+                el('#btn-stop').classList.add('hidden');
+                el('#btn-send').disabled = false;
+                return agentMessageEl.textContent;
+            }
+        }
+
+        async simulateStream(prompt, onChunk, signal, agentMessageEl, modelName) {
+            setStatus(`Agent ${modelName} is thinking...`, 'thinking');
+
+            const fakeResponse = `The ${modelName} model is simulating a response. The prompt was: "${prompt.substring(0, 100)}..."\n\nThis stream simulates a high-quality, step-by-step agent output.`;
+
+            let i = 0;
+            const delay = 30;
+
+            return new Promise((resolve, reject) => {
+                function writeChunk() {
+                    if (signal.aborted) return reject(new DOMException('Aborted', 'AbortError'));
+                    
+                    if (i < fakeResponse.length) {
+                        const chunk = fakeResponse.charAt(i);
+                        onChunk(chunk, agentMessageEl);
+                        i++;
+                        setTimeout(writeChunk, delay);
+                    } else {
+                        setStatus('Ready', 'ok');
+                        resolve(agentMessageEl.textContent);
+                    }
+                }
+                writeChunk();
+            });
+        }
+    }
+
+    const aiAdapter = new AIAdapter();
+
+
+    // --- Agentic Workflow (The Orchestrator) ---
+
+    async function agenticWorkflow(userPrompt, codeContext) {
+        const fullPrompt = `USER REQUEST: ${userPrompt}\n\nCURRENT CODE CONTEXT:\n\`\`\`${editor.getModel().getLanguageId()}\n${codeContext}\n\`\`\``;
+        saveToHistory('user', userPrompt);
+
+        setStatus('Orchestrating agents...', 'thinking');
+        let combinedPlan = '';
+        let finalCode = '';
+
+        const analystPrompt = `Analyze the following code context and user request. Create a **concise, bulleted plan** (max 3 points) detailing necessary steps (e.g., refactoring, new functions, error handling). Do not write any code yet.`;
+        combinedPlan = await runAgent('analyst', fullPrompt, analystPrompt, 'analyst');
+        saveToHistory('analyst', combinedPlan);
+
+        const refactorPrompt = `Based on the Analyst's plan (below) and the original code context, identify and explain any necessary refactoring or code quality improvements for the existing code. Provide only markdown text (no code blocks).
+
+        ANALYSIS PLAN: ${combinedPlan}`;
+        const refactoringNotes = await runAgent('refactor', refactorPrompt, 'Explain necessary refactoring.', 'refactor');
+        saveToHistory('refactor', refactoringNotes);
+        
+        const implementerPrompt = `Based on the Analyst's plan and the Refactor Agent's notes, implement the final, complete, and correct code solution. Your output MUST be a single, complete code block wrapped in \`\`\`language...\`\`\` to be directly usable in the editor.
+
+        ANALYSIS PLAN: ${combinedPlan}
+        REFACTOR NOTES: ${refactoringNotes}`;
+        finalCode = await runAgent('implementer', implementerPrompt, 'Generate the final code block.', 'implementer');
+        saveToHistory('implementer', finalCode);
+
+        const codeBlockMatch = finalCode.match(/```[a-z]*\n([\s\S]*?)```/i);
+        if (codeBlockMatch && codeBlockMatch[1]) {
+            const extractedCode = codeBlockMatch[1].trim();
+            const currentLanguage = editor.getModel().getLanguageId();
+            
+            renderChat(`Code successfully extracted and applied to the editor. Check the left panel for the updated file.`, 'orchestrator');
+            
+            const languageMatch = codeBlockMatch[0].match(/```([a-z]+)/i);
+            const newLanguage = languageMatch && languageMatch[1] ? languageMatch[1] : currentLanguage;
+            
+            editor.setValue(extractedCode);
+            if (newLanguage !== currentLanguage) {
+                monaco.editor.setModelLanguage(editor.getModel(), newLanguage);
+            }
+            setStatus('Code implemented successfully', 'ok');
+        } else {
+            renderChat(`Implementation agent failed to produce a valid code block. Please review the output.`, 'orchestrator');
+            setStatus('Implementation incomplete', 'warn');
+        }
+    }
+
+    async function runAgent(agentRole, prompt, systemInstruction, role) {
+        try {
+            const finalContent = await aiAdapter.generate(
+                prompt, 
+                systemInstruction, 
+                role, 
+                (chunk, targetEl) => appendChunk(targetEl, chunk), 
+                abortController.signal
+            );
+            return finalContent;
+        } catch (error) {
+            return `[AGENT ERROR - ${agentRole.toUpperCase()}] Request failed or was cancelled.`;
+        }
+    }
+
+    // --- UI Handlers ---
+
+    function stopGeneration() {
+        if (abortController) {
+            abortController.abort();
+            setStatus('Stopping generation...', 'warn');
+        }
+    }
+
+    function handleUserInput() {
+        const inputEl = el('#user-input');
+        const userPrompt = inputEl.value.trim();
+
+        if (!userPrompt) return;
+
+        inputEl.value = '';
+        abortController = new AbortController();
+
+        const codeContext = editor.getValue();
+        
+        renderChat(userPrompt, 'user');
+        
+        agenticWorkflow(userPrompt, codeContext).catch(error => {
+            if (error.name !== 'AbortError') {
+                renderChat(`An unexpected error occurred in the workflow: ${error.message}`, 'orchestrator');
+                setStatus('Workflow halted unexpectedly', 'error');
+            }
+        });
+    }
+
+    // --- Editor Initialization ---
+
+    function initMonacoEditor() {
+        setStatus('Loading editor...', 'warn');
+        
+        require.config({ 
+            paths: { 
+                vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.48.0/min/vs' 
+            } 
+        });
+        
+        require(['vs/editor/editor.main'], () => {
+            const initialCode = localStorage.getItem('wb-code') || `// Welcome to the Agentic Developer Workbench!
+// Use the chat on the right to interact with the multi-agent system.
+// Agents will analyze this code and provide a complete implementation.
+
+function calculate(a, b) {
+    // Current function is empty.
+    // REQUEST: Add a function that calculates the sum of a and b, but first checks 
+    // if both are numbers. If not, return an error message string.
+    
+    // Agent analysis will start once you send a prompt.
+    return 0; 
 }
+`;
 
-console.log(calculateSum(5, 10));`,
+            editor = monaco.editor.create(el('#editor'), {
+                value: initialCode,
                 language: 'javascript',
                 theme: 'vs-dark',
+                automaticLayout: true,
                 fontSize: 14,
+                fontFamily: 'Fira Code, ui-monospace, SFMono-Regular, Menlo, Monaco, monospace',
+                fontLigatures: true,
                 minimap: { enabled: true },
-                automaticLayout: true
+                scrollBeyondLastLine: false,
             });
-            
-            // Load cached code if exists
-            const cachedCode = localStorage.getItem('unsavedCode');
-            if (cachedCode) {
-                editor.setValue(cachedCode);
-            }
-            
-            // Auto-save to localStorage
+
+            editor.onDidChangeCursorPosition(e => {
+                const pos = e.position;
+                el('#cursor-pos').textContent = `Ln ${pos.lineNumber}, Col ${pos.column}`;
+            });
+
             editor.onDidChangeModelContent(() => {
-                localStorage.setItem('unsavedCode', editor.getValue());
+                clearTimeout(updateTimer);
+                updateTimer = setTimeout(() => {
+                    localStorage.setItem('wb-code', editor.getValue());
+                }, 500);
             });
+
+            setStatus('Editor ready', 'ok');
         });
-        
-        // Setup model selector
-        async function setupModelSwitcher() {
-            try {
-                const models = await window.ipcRenderer.invoke('list-models');
-                const select = document.getElementById('model-select');
-                const activeModel = await window.ipcRenderer.invoke('get-active-model');
-                
-                select.innerHTML = '';
-                models.forEach(model => {
-                    const option = document.createElement('option');
-                    option.value = model.id;
-                    option.textContent = model.label;
-                    if (model.id === activeModel) option.selected = true;
-                    select.appendChild(option);
-                });
-                
-                updateActiveModelDisplay(activeModel);
-                
-                select.addEventListener('change', async (e) => {
-                    const model = e.target.value;
-                    const result = await window.ipcRenderer.invoke('set-active-model', model);
-                    currentModel = model;
-                    updateActiveModelDisplay(model);
-                    addMessage('system', `Switched to ${result.model}`);
-                });
-                
-                // Load stored model preference
-                const storedModel = localStorage.getItem('activeModel');
-                if (storedModel && storedModel !== activeModel) {
-                    await window.ipcRenderer.invoke('set-active-model', storedModel);
-                    select.value = storedModel;
-                    currentModel = storedModel;
-                    updateActiveModelDisplay(storedModel);
-                }
-            } catch (error) {
-                console.error('Failed to setup model switcher:', error);
-            }
-        }
-        
-        function updateActiveModelDisplay(model) {
-            document.getElementById('active-model-display').textContent = model;
-        }
-        
-        // Chat functionality
-        function addMessage(sender, content) {
-            const messagesContainer = document.getElementById('chat-messages');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${sender}`;
-            
-            if (typeof content === 'object') {
-                content = JSON.stringify(content, null, 2);
-            }
-            
-            // Format code blocks
-            const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
-            const formattedContent = content.replace(codeBlockRegex, (match, lang, code) => {
-                return `<pre><code>${escapeHtml(code)}</code></pre>`;
-            });
-            
-            messageDiv.innerHTML = formattedContent;
-            messagesContainer.appendChild(messageDiv);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-        
-        function escapeHtml(text) {
-            const map = {
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#039;'
-            };
-            return text.replace(/[&<>"']/g, m => map[m]);
-        }
-        
-        function showLoading() {
-            document.getElementById('loading-indicator').innerHTML = '<div class="loading"></div>';
-        }
-        
-        function hideLoading() {
-            document.getElementById('loading-indicator').innerHTML = '';
-        }
-        
-        // AI Inference Functions
-        async function callAI(systemInstruction, userPrompt, mode = 'chat') {
-            showLoading();
-            try {
-                const code = editor.getValue();
-                const fullPrompt = `[SYSTEM]: ${systemInstruction}\n\n[CODE CONTEXT]:\n${code}\n\n[USER]: ${userPrompt}`;
-                addMessage('user', userPrompt);
-                
-                let response;
-                
-                if (currentModel.includes('gemini')) {
-                    response = await callGeminiAPI(fullPrompt);
-                } else if (currentModel.includes('qwen') || currentModel.includes('llama') || currentModel.includes('mistral')) {
-                    response = await callOllamaAPI(fullPrompt);
-                } else if (currentModel.includes('bigdaddyg-local')) {
-                    response = await callBigDaddyGLocalAPI(fullPrompt, systemInstruction);
-                } else {
-                    throw new Error('Unknown model selected');
-                }
-                
-                addMessage('assistant', response);
-                return response;
-            } catch (error) {
-                addMessage('error', `Error: ${error.message}`);
-                console.error('AI call failed:', error);
-            } finally {
-                hideLoading();
-            }
-        }
-        
-        async function callGeminiAPI(prompt) {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/${currentModel}:generateContent?key=${GOOGLE_API_KEY}`;
-            
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{ text: prompt }]
-                    }]
-                })
-            });
-            
-            if (!response.ok) throw new Error(`Gemini API error: ${response.status}`);
-            
-            const data = await response.json();
-            return data.candidates[0].content.parts[0].text;
-        }
-        
-        async function callOllamaAPI(prompt) {
-            const response = await fetch('http://localhost:11434/api/generate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    model: currentModel,
-                    prompt: prompt,
-                    stream: false
-                })
-            });
-            
-            if (!response.ok) throw new Error(`Ollama API error: ${response.status}`);
-            
-            const data = await response.json();
-            return data.response;
-        }
-        
-        async function callBigDaddyGLocalAPI(prompt, systemInstruction) {
-            const response = await fetch('http://localhost:35792/api/infer', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    prompt: prompt,
-                    system_instruction: systemInstruction
-                })
-            });
-            
-            if (!response.ok) throw new Error(`BigDaddyG API error: ${response.status}`);
-            
-            const data = await response.json();
-            return data.output;
-        }
-        
-        // Action Functions
-        async function sendChatMessage() {
-            const input = document.getElementById('chat-input');
-            const message = input.value.trim();
-            if (!message) return;
-            
-            await callAI(
-                "You are a helpful AI assistant for a code editor. Answer questions about the code.",
-                message
-            );
-            input.value = '';
-        }
-        
-        async function runCodeFromEditor() {
-            await callAI(
-                "You are a code execution engine. Execute this code and show the output.",
-                "Execute the code and show me the output"
-            );
-        }
-        
-        async function explainCode() {
-            const code = editor.getValue();
-            await callAI(
-                "You are an expert programmer. Explain the following code in detail.",
-                `Please explain this code:\n\n${code}`
-            );
-        }
-        
-        async function refactorCode() {
-            const code = editor.getValue();
-            const response = await callAI(
-                "You are a code refactoring expert. Improve the following code for performance and readability.",
-                `Refactor this code:\n\n${code}`
-            );
-            
-            // Auto-apply refactored code if it looks like code
-            if (response.includes('function') || response.includes('class') || response.includes('import')) {
-                editor.setValue(response);
-            }
-        }
-        
-        async function debugCode() {
-            const code = editor.getValue();
-            await callAI(
-                "You are a debugging expert. Find and fix bugs in the following code.",
-                `Debug this code:\n\n${code}`
-            );
-        }
-        
-        // Hotkeys
-        window.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.key === 'Enter') runCodeFromEditor();
-            if (e.ctrlKey && e.key === 'r') refactorCode();
-            if (e.ctrlKey && e.key === 'e') explainCode();
-        });
-        
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            setupModelSwitcher();
-            
-            // Setup chat input enter key
-            const chatInput = document.getElementById('chat-input');
-            chatInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendChatMessage();
-                }
-            });
-            
-            // Restore model preference
-            const storedModel = localStorage.getItem('activeModel');
-            if (storedModel) {
-                document.getElementById('model-select').value = storedModel;
-            }
-            
-            console.log('Gemini Agentic IDE initialized');
-        });
-        
-        // Tab switching
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', (e) => {
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                e.target.classList.add('active');
-                currentFile = e.target.dataset.file;
-                
-                // Toggle language mode
-                const lang = currentFile.endsWith('.py') ? 'python' : 'javascript';
-                monaco.editor.setModelLanguage(editor.getModel(), lang);
-            });
-        });
-    </script>
+    }
+
+    // --- Main Application Entry Point ---
+
+    window.onload = function() {
+        initMonacoEditor();
+        aiAdapter.checkOllamaHealth();
+    };
+
+</script>
 </body>
 </html>
