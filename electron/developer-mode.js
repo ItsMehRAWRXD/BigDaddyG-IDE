@@ -3,6 +3,15 @@
  * Advanced settings, debugging tools, and experimental features
  */
 
+// Create immediate stub to prevent crashes before initialization
+if (typeof window !== 'undefined' && !window.developerMode) {
+    window.developerMode = {
+        enabled: false,
+        settings: {},
+        getStats: () => ({ enabled: false, settings: {}, tabs: 0, files: 0, memory: null })
+    };
+}
+
 class DeveloperMode {
     constructor() {
         this.enabled = this.loadSetting('enabled', false);
