@@ -156,4 +156,9 @@ class SettingsManager {
     }
 }
 
-module.exports = SettingsManager;
+// Browser-compatible export
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = SettingsManager;
+} else {
+    window.SettingsManager = SettingsManager;
+}

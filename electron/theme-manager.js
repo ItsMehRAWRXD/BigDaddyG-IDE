@@ -3,9 +3,9 @@
  * Manages IDE themes and appearance
  */
 
-// Browser-safe requires (use window scope to avoid redeclaration)
-const fs = (typeof window !== 'undefined' && window._fsModule) ? window._fsModule : null;
-const path = (typeof window !== 'undefined' && window._pathModule) ? window._pathModule : null;
+// Browser-safe - don't use const to avoid redeclaration
+var themeFs = (typeof window !== 'undefined' && window._fsModule) ? window._fsModule : null;
+var themePath = (typeof window !== 'undefined' && window._pathModule) ? window._pathModule : null;
 
 class ThemeManager {
     constructor() {
