@@ -2007,11 +2007,23 @@ hello();"></textarea>
     }
     
     createGitHubTab() {
-                    
-                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
-                        <div style="background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 12px; padding: 25px;">
-                            <div style="font-size: 48px; margin-bottom: 15px;">📦</div>
-                            <h3 style="color: #00d4ff; margin-bottom: 10px;">Extensions</h3>
+        return this.createTab({
+            title: 'GitHub',
+            icon: '🐙',
+            content: `
+                <div style="padding: 20px; height: 100%; overflow-y: auto;">
+                    <h2 style="color: #00d4ff; margin-bottom: 20px;">🐙 GitHub Integration</h2>
+                    <div style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 8px; padding: 20px;">
+                        <h3 style="color: #00ff88; margin-bottom: 15px;">Repository</h3>
+                        <input type="text" placeholder="https://github.com/user/repo" style="width: 100%; padding: 10px; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 5px; color: #fff; margin-bottom: 10px;" />
+                        <button style="padding: 10px 20px; background: #00d4ff; color: #000; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Clone</button>
+                    </div>
+                </div>
+            `
+        });
+    }
+    
+    createTeamTab() {
                             <p style="color: #888; margin-bottom: 15px;">Browse and install extensions</p>
                             <button style="background: #00d4ff; color: #000; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold;">Browse Extensions</button>
                         </div>
