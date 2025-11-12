@@ -48,7 +48,7 @@ class FullAgenticDemo {
             await this.demo6_BrowserShowcase();
             await this.showResults();
         } catch (error) {
-            console.error('[AgenticDemo] ❌ Demo failed:', error);
+            logger.error('[AgenticDemo]', ' ❌ Demo failed:', error);
         } finally {
             this.isRunning = false;
             if (this.overlay) this.overlay.remove();
@@ -304,7 +304,7 @@ console.log('Fib(10):', fibonacci(10));
                 }
                 this.updateProgress(this.getStepLabel(6), '✅ Browser demo complete!');
             } catch (error) {
-                console.error('[AgenticDemo] ❌ Browser demo failed:', error);
+                logger.error('[AgenticDemo]', ' ❌ Browser demo failed:', error);
                 this.updateProgress(this.getStepLabel(6), '⚠️ Browser demo unavailable');
             }
         } else {
@@ -359,7 +359,7 @@ window.fullAgenticDemo = new FullAgenticDemo();
 // setTimeout(() => {
 //     console.log('[AgenticDemo] 🎬 AUTO-STARTING FULL DEMONSTRATION!');
 //     window.fullAgenticDemo.start().catch(err => {
-//         console.error('[AgenticDemo] ❌ Demo failed:', err);
+logger.error('[AgenticDemo]', ' ❌ Demo failed:', err);
 //     });
 // }, 15000);
 

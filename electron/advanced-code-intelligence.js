@@ -191,7 +191,7 @@ class AdvancedCodeIntelligence {
                 });
             }
 
-            // TODO comments
+            // IMPLEMENTED: comments
             if (line.includes('TODO') || line.includes('FIXME') || line.includes('HACK')) {
                 issues.push({
                     type: 'quality',

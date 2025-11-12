@@ -32,11 +32,11 @@
 
 /* When collapsed */
 .agent-settings.collapsed {
-    width: 0 !important;
-    min-width: 0 !important;
+    width: 0;
+    min-width: 0;
     opacity: 0;
-    padding: 0 !important;
-    overflow: hidden !important;
+    padding: 0;
+    overflow: hidden;
 }
 
 /* Main Content Area */
@@ -233,7 +233,7 @@
     }
     
     #collapse-left-panel-btn {
-        left: 230px !important;
+        left: 230px;
     }
 }
 

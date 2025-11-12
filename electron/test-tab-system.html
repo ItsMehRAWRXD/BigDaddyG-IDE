@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tab System Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0a0a1e;
+            color: #fff;
+            overflow: hidden;
+        }
+        
+        #app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100vw;
+        }
+        
+        #title-bar {
+            height: 35px;
+            background: #05050f;
+            border-bottom: 1px solid #00d4ff;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            color: #00d4ff;
+            font-weight: bold;
+        }
+        
+        #menu-bar {
+            height: 30px;
+            background: #05050f;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.3);
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            gap: 15px;
+            font-size: 13px;
+        }
+        
+        .menu-item {
+            padding: 5px 12px;
+            cursor: pointer;
+            color: #ccc;
+        }
+        
+        .menu-item:hover {
+            background: rgba(0, 212, 255, 0.2);
+        }
+        
+        #main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div id="title-bar">🌌 BigDaddyG IDE - Tab System Test</div>
+        <div id="menu-bar">
+            <div class="menu-item">File</div>
+            <div class="menu-item">Edit</div>
+            <div class="menu-item">View</div>
+        </div>
+        <div id="main-container"></div>
+    </div>
+    
+    <!-- ONLY load tab system -->
+    <script src="complete-tab-system.js"></script>
+</body>
+</html>

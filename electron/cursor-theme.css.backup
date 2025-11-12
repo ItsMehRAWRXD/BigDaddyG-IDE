@@ -1,0 +1,546 @@
+/**
+ * BigDaddyG IDE - Cursor Theme
+ * Clean, light, minimalist design matching Cursor IDE
+ */
+
+:root {
+    /* BigDaddyG Beige + Jade Theme Colors */
+    --cursor-bg: #f5f5eb;              /* Warm beige background */
+    --cursor-bg-secondary: #eeeee0;    /* Lighter beige for panels */
+    --cursor-bg-hover: #e0f7fa;        /* Jade tint on hover */
+    --cursor-border: #00d4ff30;        /* Jade border with transparency */
+    --cursor-text: #2d2d2d;            /* Dark text */
+    --cursor-text-secondary: #00a3b5;  /* Jade text for secondary */
+    --cursor-text-muted: #80cbc4;      /* Muted jade */
+    --cursor-accent: #00d4ff;          /* JADE accent */
+    --cursor-accent-hover: #00bfea;    /* Darker jade on hover */
+    --cursor-jade-light: #b2ebf2;      /* Light jade */
+    --cursor-jade-medium: #4dd0e1;     /* Medium jade */
+    --cursor-jade-dark: #00acc1;       /* Dark jade */
+    --cursor-jade-glow: #00d4ff40;     /* Jade glow effect */
+    --cursor-green: #00c853;           /* Jade green */
+    --cursor-red: #ff5252;             /* Complementary red */
+    --cursor-orange: #ff9800;          /* Warm orange */
+    --cursor-input-bg: #fffef8;        /* Cream input background */
+    --cursor-input-border: #00d4ff80;  /* Jade input border */
+    --cursor-shadow: rgba(0, 212, 255, 0.08); /* Jade shadow */
+
+    /* Runtime customizable variables */
+    --app-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    --app-monospace-font: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+    --app-font-size: 14px;
+    --app-line-height: 1.6;
+    --app-ui-scale: 1;
+    --panel-spacing: 12px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--app-font-family);
+    font-size: var(--app-font-size);
+    line-height: var(--app-line-height);
+    background: var(--cursor-bg);
+    color: var(--cursor-text);
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+#app {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: var(--panel-spacing);
+}
+
+/* ============================================================================
+   TITLE BAR & MENU
+   ============================================================================ */
+
+#title-bar {
+    height: 30px;
+    background: var(--cursor-bg-secondary);
+    border-bottom: 1px solid var(--cursor-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    -webkit-app-region: drag;
+}
+
+.title {
+    font-size: 12px;
+    color: var(--cursor-text-secondary);
+}
+
+#window-controls {
+    display: flex;
+    gap: 10px;
+    -webkit-app-region: no-drag;
+}
+
+.window-btn {
+    background: none;
+    border: none;
+    color: var(--cursor-text-secondary);
+    cursor: pointer;
+    padding: 4px 10px;
+    font-size: 12px;
+}
+
+.window-btn:hover {
+    background: var(--cursor-bg-hover);
+}
+
+.window-btn.close:hover {
+    background: var(--cursor-red);
+    color: white;
+}
+
+/* Menu Bar */
+#menu-bar {
+    height: 35px;
+    background: var(--cursor-bg);
+    border-bottom: 1px solid var(--cursor-border);
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    gap: 15px;
+    font-size: 13px;
+}
+
+.menu-item {
+    padding: 6px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.menu-item:hover {
+    background: var(--cursor-bg-hover);
+}
+
+/* Tab Bar */
+#tab-bar-container {
+    height: 40px;
+    background: var(--cursor-bg-secondary);
+    border-bottom: 1px solid var(--cursor-border);
+    display: flex;
+    align-items: flex-end;
+    padding: 0 10px;
+}
+
+.ide-tab {
+    padding: 8px 16px;
+    background: transparent;
+    border: none;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--cursor-text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ide-tab.active {
+    background: var(--cursor-bg);
+    color: var(--cursor-text);
+    font-weight: 500;
+    border-bottom: 3px solid var(--cursor-accent); /* Jade underline! */
+    box-shadow: 0 -2px 10px var(--cursor-jade-glow);
+}
+
+.ide-tab:hover {
+    background: var(--cursor-bg-hover);
+    border-bottom: 3px solid var(--cursor-jade-light); /* Subtle jade on hover */
+}
+
+.ide-tab .close-btn {
+    margin-left: 8px;
+    opacity: 0.6;
+}
+
+.ide-tab .close-btn:hover {
+    opacity: 1;
+}
+
+/* ============================================================================
+   MAIN LAYOUT (3-COLUMN)
+   ============================================================================ */
+
+#main-container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    gap: var(--panel-spacing);
+    align-items: stretch;
+    padding: 0 var(--panel-spacing);
+}
+
+/* Center Chat Panel (Replaces Monaco) */
+#chat-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--cursor-bg);
+    overflow: hidden;
+}
+
+.chat-input-container {
+    padding: 20px;
+    border-bottom: 1px solid var(--cursor-border);
+}
+
+.chat-input-box {
+    width: 100%;
+    min-height: 120px;
+    padding: 16px;
+    background: var(--cursor-input-bg);
+    border: 2px solid var(--cursor-input-border);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--cursor-text);
+    resize: vertical;
+    box-shadow: 0 2px 8px var(--cursor-shadow), 0 0 0 1px var(--cursor-jade-light);
+    transition: all 0.2s ease;
+}
+
+.chat-input-box:focus {
+    outline: none;
+    border-color: var(--cursor-accent);
+    box-shadow: 0 4px 16px var(--cursor-jade-glow), 
+                0 0 0 3px var(--cursor-jade-light),
+                0 0 20px rgba(0, 212, 255, 0.2); /* Jade glow! */
+    background: #ffffff;
+}
+
+.chat-controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+    align-items: center;
+}
+
+.chat-btn {
+    padding: 8px 16px;
+    background: var(--cursor-bg-secondary);
+    border: 1px solid var(--cursor-border);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--cursor-text);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.chat-btn:hover {
+    background: var(--cursor-bg-hover);
+}
+
+.chat-btn.primary {
+    background: linear-gradient(135deg, var(--cursor-accent) 0%, var(--cursor-jade-medium) 100%);
+    color: white;
+    border-color: var(--cursor-accent);
+    box-shadow: 0 4px 12px var(--cursor-jade-glow),
+                0 0 20px rgba(0, 212, 255, 0.3); /* Jade glow! */
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.chat-btn.primary:hover {
+    background: linear-gradient(135deg, var(--cursor-jade-dark) 0%, var(--cursor-jade-medium) 100%);
+    box-shadow: 0 6px 20px var(--cursor-jade-glow),
+                0 0 30px rgba(0, 212, 255, 0.5); /* Stronger jade glow! */
+    transform: translateY(-2px);
+}
+
+/* Past Chats */
+.past-chats {
+    padding: 20px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.past-chats-header {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--cursor-text-secondary);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+}
+
+.chat-item {
+    padding: 12px;
+    margin-bottom: 8px;
+    background: var(--cursor-input-bg);
+    border: 1px solid var(--cursor-border);
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-item:hover {
+    background: var(--cursor-jade-light);
+    border-color: var(--cursor-accent);
+    box-shadow: 0 2px 8px var(--cursor-jade-glow),
+                inset 0 0 10px rgba(0, 212, 255, 0.1); /* Jade glow! */
+    transform: translateX(4px);
+    transition: all 0.2s ease;
+}
+
+.chat-item-title {
+    font-size: 13px;
+    color: var(--cursor-text);
+}
+
+.chat-item-time {
+    font-size: 12px;
+    color: var(--cursor-jade-dark); /* Jade time indicator */
+    font-weight: 500;
+}
+
+/* Right Sidebar - File Explorer */
+#right-sidebar {
+    flex: 0 0 var(--chat-sidebar-width, 380px);
+    max-width: var(--chat-sidebar-width, 380px);
+    background: var(--void);
+    border-left: 1px solid rgba(0, 212, 255, 0.2);
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+    min-width: 0;
+}
+
+.sidebar-header {
+    padding: 12px;
+    border-bottom: 1px solid var(--cursor-border);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--cursor-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.file-tree {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+}
+
+.file-item, .folder-item {
+    padding: 6px 8px;
+    margin: 2px 0;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--cursor-text);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.file-item:hover, .folder-item:hover {
+    background: var(--cursor-bg-hover);
+}
+
+.file-item.active {
+    background: linear-gradient(135deg, var(--cursor-jade-light) 0%, var(--cursor-jade-medium) 100%);
+    color: var(--cursor-text);
+    font-weight: 600;
+    border-left: 3px solid var(--cursor-accent);
+    box-shadow: 0 2px 8px var(--cursor-jade-glow),
+                inset 0 0 20px rgba(0, 212, 255, 0.1); /* Inner jade glow! */
+}
+
+.folder-item.expanded {
+    font-weight: 500;
+    color: var(--cursor-jade-dark);
+    border-left: 2px solid var(--cursor-jade-light);
+}
+
+.file-icon {
+    font-size: 14px;
+}
+
+/* Bottom Panel - Terminal */
+#bottom-panel {
+    display: flex;
+    flex-direction: column;
+    background: var(--void);
+    border-top: 1px solid rgba(0, 212, 255, 0.2);
+    margin: 0 var(--panel-spacing);
+    transition: max-height 0.3s ease;
+    max-height: 250px;
+    overflow: hidden;
+}
+
+#bottom-panel.collapsed {
+    max-height: 0;
+    border-top: none;
+    display: none;
+}
+
+#bottom-panel-tabs {
+    display: flex;
+    background: rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+#bottom-panel-content {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    font-family: var(--app-monospace-font);
+    font-size: 12px;
+}
+
+/* Status Bar */
+#status-bar {
+    height: 24px;
+    background: linear-gradient(90deg, var(--cursor-accent) 0%, var(--cursor-jade-medium) 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    font-size: 11px;
+    gap: 15px;
+    box-shadow: 0 -2px 10px var(--cursor-jade-glow); /* Jade glow from bottom! */
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    transition: all 0.2s ease;
+}
+
+.status-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+/* Scrollbars with JADE! */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--cursor-bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--cursor-jade-light) 0%, var(--cursor-jade-medium) 100%);
+    border-radius: 5px;
+    border: 2px solid var(--cursor-bg);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, var(--cursor-jade-medium) 0%, var(--cursor-accent) 100%);
+    box-shadow: 0 0 8px var(--cursor-jade-glow); /* Jade glow on scrollbar! */
+}
+
+/* Agent Controls */
+.agent-controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.agent-dropdown {
+    padding: 6px 12px;
+    background: var(--cursor-bg-secondary);
+    border: 1px solid var(--cursor-border);
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.agent-dropdown:hover {
+    background: var(--cursor-bg-hover);
+}
+
+/* Monaco Editor Container */
+#monaco-container {
+    flex: 1;
+    border: 1px solid var(--cursor-border);
+    border-radius: 8px;
+    overflow: auto;
+    margin: 20px;
+    box-shadow: 0 2px 8px var(--cursor-shadow);
+    height: 100%;
+}
+
+/* File Attachments */
+#file-attachments {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.file-attachment {
+    padding: 6px 12px;
+    background: var(--cursor-bg-secondary);
+    border: 1px solid var(--cursor-border);
+    border-radius: 6px;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.file-attachment-remove {
+    background: none;
+    border: none;
+    color: var(--cursor-red);
+    cursor: pointer;
+    padding: 0 4px;
+    font-size: 14px;
+}
+
+.file-attachment-remove:hover {
+    background: rgba(215, 58, 73, 0.1);
+    border-radius: 3px;
+}
+
+.attachment-counter {
+    background: var(--cursor-accent);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+body.layout-no-overlap #floating-chat-panel,
+body.layout-no-overlap #terminal-panel {
+    display: none !important;
+}
+
+body.layout-no-overlap #bottom-panel {
+    display: flex;
+}
+
+body.layout-no-overlap #todo-panel-container {
+    bottom: 20px;
+    right: 20px;
+}
+

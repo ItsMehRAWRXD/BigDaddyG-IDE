@@ -1,0 +1,27 @@
+{
+  "results": {
+    "syntax": {
+      "passed": 218,
+      "failed": 0,
+      "errors": []
+    },
+    "dependencies": {
+      "passed": 6,
+      "failed": 0,
+      "errors": []
+    },
+    "integration": {
+      "passed": 8,
+      "failed": 0,
+      "errors": []
+    },
+    "performance": {
+      "passed": 5,
+      "failed": 0,
+      "errors": []
+    }
+  },
+  "totalPassed": 237,
+  "totalFailed": 0,
+  "grade": "A+"
+}

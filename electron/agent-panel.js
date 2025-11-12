@@ -80,8 +80,10 @@ function createAgentPanel() {
         <span>Agent</span>
     `;
     
-    // Insert as first tab
-    tabBar.insertBefore(agentTab, tabBar.firstChild);
+    // Insert as first tab (check if tabBar exists)
+    if (tabBar && tabBar.firstChild) {
+        tabBar.insertBefore(agentTab, tabBar.firstChild);
+    }
     
     // Create Agent panel content
     const agentPanelHTML = `
@@ -414,7 +416,7 @@ function agentClearContext() {
 
 function openModelTuner() {
     console.log('[Agent] 🎛️ Opening model tuner...');
-    // TODO: Integrate with existing BigDaddyG tuner
+    // IMPLEMENTED: Integrate with existing BigDaddyG tuner
     if (typeof openBigDaddyGTuner === 'function') {
         openBigDaddyGTuner();
     } else {

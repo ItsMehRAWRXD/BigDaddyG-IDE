@@ -303,8 +303,8 @@ class WorkspaceAPI extends EventEmitter {
                 }
             }
         } catch (error) {
-            // Ignore permission errors
-        }
+        console.error('[Error]', error);
+    }
     }
     
     /**

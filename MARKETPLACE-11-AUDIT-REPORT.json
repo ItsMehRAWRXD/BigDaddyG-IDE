@@ -1,0 +1,1577 @@
+{
+  "timestamp": "2025-11-12T07:30:36.753Z",
+  "totalRuns": 11,
+  "duration": 1056,
+  "statistics": {
+    "average": 100,
+    "min": 100,
+    "max": 100,
+    "consistency": 100
+  },
+  "results": [
+    {
+      "runNumber": 1,
+      "timestamp": "2025-11-12T07:30:35.720Z",
+      "tests": {
+        "extensionHost": {
+          "passed": 5,
+          "total": 5,
+          "percentage": 100,
+          "checks": {
+            "fileExists": true,
+            "hasActivate": true,
+            "hasDeactivate": true,
+            "hasContext": true,
+            "hasIPC": true
+          },
+          "status": "✅ PASS"
+        },
+        "extensionLoader": {
+          "passed": 6,
+          "total": 6,
+          "percentage": 100,
+          "checks": {
+            "fileExists": true,
+            "hasDownload": true,
+            "hasVerify": true,
+            "hasExtract": true,
+            "hasActivate": true,
+            "hasPipeline": true
+          },
+          "status": "✅ PASS"
+        },
+        "extensionBridge": {
+          "passed": 6,
+          "total": 6,
+          "percentage": 100,
+          "checks": {
+            "fileExists": true,
+            "hasEditorAPI": true,
+            "hasWorkspaceAPI": true,
+            "hasCommandsAPI": true,
+            "hasUIAPI": true,
+            "hasLanguagesAPI": true
+          },
+          "status": "✅ PASS"
+        },
+        "marketplaceUI": {
+          "passed": 6,
+          "total": 6,
+          "percentage": 100,
+          "checks": {
+            "mainUIExists": true,
+            "pluginMarketplaceExists": true,
+            "hasSearch": true,
+            "hasFilters": true,
+            "hasInstallButton": true,
+            "hasProgress": true
+          },
+          "status": "✅ PASS"
+        },
+        "installationPipeline": {
+          "passed": 5,
+          "total": 5,
+          "percentage": 100,
+          "checks": {
+            "hasDownloadStep": true,
+            "hasVerifyStep": true,
+            "hasExtractStep": true,
+            "hasActivateStep": true,
+            "hasProgressCallbacks": true
+          },
+          "status": "✅ PASS"
+        },
+        "apiCompleteness": {
+          "passed": 8,
+          "total": 8,
+          "percentage": 100,
+          "checks": {
+            "hasEditorAPI": true,
+            "hasWorkspaceAPI": true,
+            "hasCommandsAPI": true,
+            "hasUIAPI": true,
+            "hasLanguagesAPI": true,
+            "hasDebugAPI": true,
+            "hasTerminalAPI": true,
+            "hasFSAPI": true
+          },
+          "status": "✅ PASS"
+        },
+        "fileStructure": {
+          "passed": 5,
+          "total": 5,
+          "percentage": 100,
+          "checks": {
+            "electron/marketplace/extension-host-complete.js": true,
+            "electron/marketplace/extension-loader-complete.js": true,
+            "electron/marketplace/extension-bridge-complete.js": true,
+            "electron/plugin-marketplace.js": true,
+            "electron/ui/complete-marketplace-ui.js": true
+          },
+          "status": "✅ PASS"
+        },
+        "integration": {
+          "passed": 4,
+          "total": 4,
+          "percentage": 100,
+          "checks": {
+            "hostExportsCorrectly": true,
+            "loaderExportsCorrectly": true,
+            "bridgeExportsCorrectly": true,
+            "componentsImportable": true
+          },
+          "status": "✅ PASS"
+        },
+        "errorHandling": {
+          "passed": 4,
+          "total": 4,
+          "percentage": 100,
+          "checks": {
+            "hostHasTryCatch": true,
+            "loaderHasTryCatch": true,
+            "bridgeHasTryCatch": true,
+            "hasErrorReporting": true
+          },
+          "status": "✅ PASS"
+        },
+        "performance": {
+          "passed": 4,
+          "total": 4,
+          "percentage": 100,
+          "checks": {
+            "filesUnder100KB": true,
+            "noBlockingOperations": true,
+            "hasAsyncOperations": true,
+            "efficientDataStructures": true
+          },
+          "status": "✅ PASS"
+        }
+      },
+      "score": 100,
+      "issues": [],
+      "duration": 6
+    },
+    {
+      "runNumber": 2,
+      "timestamp": "2025-11-12T07:30:35.826Z",
+      "tests": {
+        "extensionHost": {
+          "passed": 5,
+          "total": 5,
+          "percentage": 100,
+          "checks": {
+            "fileExists": true,
+            "hasActivate": true,
+            "hasDeactivate": true,
+            "hasContext": true,
+            "hasIPC": true
+          },
+          "status": "✅ PASS"
+        },
+        "extensionLoader": {
+          "passed": 6,
+          "total": 6,
+          "percentage": 100,
+          "checks": {
+            "fileExists": true,
+            "hasDownload": true,
+            "hasVerify": true,
+            "hasExtract": true,
+            "hasActivate": true,
+            "hasPipeline": true
+          },
+          "status": "✅ PASS"
+        },
+        "extensionBridge": {
+          "passed": 6,
+          "total": 6,
+          "percentage": 100,
+          "checks": {
+            "fileExists": true,
+            "hasEditorAPI": true,
+            "hasWorkspaceAPI": true,
+            "hasCommandsAPI": true,
+            "hasUIAPI": true,
+            "hasLanguagesAPI": true
+          },
+          "status": "✅ PASS"
+        },
+        "marketplaceUI": {
+          "passed": 6,
+          "total": 6,
+          "percentage": 100,
+          "checks": {
+            "mainUIExists": true,
+            "pluginMarketplaceExists": true,
+            "hasSearch": true,
+            "hasFilters": true,
+            "hasInstallButton": true,
+            "hasProgress": true
+          },
+          "status": "✅ PASS"
+        },
+        "installationPipeline": {
+          "passed": 5,
+          "total": 5,
+          "percentage": 100,
+          "checks": {
+            "hasDownloadStep": true,
+            "hasVerifyStep": true,
+            "hasExtractStep": true,
+            "hasActivateStep": true,
+            "hasProgressCallbacks": true
+          },
+          "status": "✅ PASS"
+        },
+        "apiCompleteness": {
+          "passed": 8,
+          "total": 8,
+          "percentage": 100,
+          "checks": {
+            "hasEditorAPI": true,
+            "hasWorkspaceAPI": true,
+            "hasCommandsAPI": true,
+            "hasUIAPI": true,
+            "hasLanguagesAPI": true,
+            "hasDebugAPI": true,
+            "hasTerminalAPI": true,
+            "hasFSAPI": true
+          },
+          "status": "✅ PASS"
+        },
+        "fileStructure": {
+          "passed": 5,
+          "total": 5,
+          "percentage": 100,
+          "checks": {
+            "electron/marketplace/extension-host-complete.js": true,
+            "electron/marketplace/extension-loader-complete.js": true,
+            "electron/marketplace/extension-bridge-complete.js": true,
+            "electron/plugin-marketplace.js": true,
+            "electron/ui/complete-marketplace-ui.js": true
+          },
+          "status": "✅ PASS"
+        },
+        "integration": {
+          "passed": 4,
+          "total": 4,
+          "percentage": 100,
+          "checks": {
+            "hostExportsCorrectly": true,
+            "loaderExportsCorrectly": true,
+            "bridgeExportsCorrectly": true,
+            "componentsImportable": true
+          },
+          "status": "✅ PASS"
+        },
+        "errorHandling": {
+          "passed": 4,
+          "total": 4,
+          "percentage": 100,
+          "checks": {
+            "hostHasTryCatch": true,
+            "loaderHasTryCatch": true,
+            "bridgeHasTryCatch": true,
+            "hasErrorReporting": true
+          },
+          "status": "✅ PASS"
+        },
+        "performance": {
+          "passed": 4,
+          "total": 4,
+          "percentage": 100,
+          "checks": {
+            "filesUnder100KB": true,
+            "noBlockingOperations": true,
+            "hasAsyncOperations": true,
+            "efficientDataStructures": true
+          },
+          "status": "✅ PASS"
+        }
+      },
+      "score": 100,
+      "issues": [],
+      "duration": 5
+    },
+    {
+      "runNumber": 3,
+      "timestamp": "2025-11-12T07:30:35.932Z",
+      "tests": {
+        "extensionHost": {
+          "passed": 5,
+          "total": 5,
+          "percentage": 100,
+          "checks": {
+            "fileExists": true,
+            "hasActivate": true,
+            "hasDeactivate": true,
+            "hasContext": true,
+            "hasIPC": true
+          },
+          "status": "✅ PASS"
+        },
+        "extensionLoader": {
+          "passed": 6,
+          "total": 6,
+          "percentage": 100,
+          "checks": {
+            "fileExists": true,
+            "hasDownload": true,
+            "hasVerify": true,
+            "hasExtract": true,
+            "hasActivate": true,
+            "hasPipeline": true
+          },
+          "status": "✅ PASS"
+        },
+        "extensionBridge": {
+          "passed": 6,
+          "total": 6,
+          "percentage": 100,
+          "checks": {
+            "fileExists": true,
+            "hasEditorAPI": true,
+            "hasWorkspaceAPI": true,
+            "hasCommandsAPI": true,
+            "hasUIAPI": true,
+            "hasLanguagesAPI": true
+          },
+          "status": "✅ PASS"
+        },
+        "marketplaceUI": {
+          "passed": 6,
+          "total": 6,
+          "percentage": 100,
+          "checks": {
+            "mainUIExists": true,
+            "pluginMarketplaceExists": true,
+            "hasSearch": true,
+            "hasFilters": true,
+            "hasInstallButton": true,
+            "hasProgress": true
+          },
+          "status": "✅ PASS"
+        },
+        "installationPipeline": {
+          "passed": 5,
+          "total": 5,
+          "percentage": 100,
+          "checks": {
+            "hasDownloadStep": true,
+            "hasVerifyStep": true,
+            "hasExtractStep": true,
+            "hasActivateStep": true,
+            "hasProgressCallbacks": true
+          },
+          "status": "✅ PASS"
+        },
+        "apiCompleteness": {
+          "passed": 8,
+          "total": 8,
+          "percentage": 100,
+          "checks": {
+            "hasEditorAPI": true,
+            "hasWorkspaceAPI": true,
+            "hasCommandsAPI": true,
+            "hasUIAPI": true,
+            "hasLanguagesAPI": true,
+            "hasDebugAPI": true,
+            "hasTerminalAPI": true,
+            "hasFSAPI": true
+          },
+          "status": "✅ PASS"
+        },
+        "fileStructure": {
+          "passed": 5,
+          "total": 5,
+          "percentage": 100,
+          "checks": {
+            "electron/marketplace/extension-host-complete.js": true,
+            "electron/marketplace/extension-loader-complete.js": true,
+            "electron/marketplace/extension-bridge-complete.js": true,
+            "electron/plugin-marketplace.js": true,
+            "electron/ui/complete-marketplace-ui.js": true
+          },
+          "status": "✅ PASS"
+        },
+        "integration": {
+          "passed": 4,
+          "total": 4,
+          "percentage": 100,
+          "checks": {
+            "hostExportsCorrectly": true,
+            "loaderExportsCorrectly": true,
+            "bridgeExportsCorrectly": true,
+            "componentsImportable": true
+          },
+          "status": "✅ PASS"
+        },
+        "errorHandling": {
+          "passed": 4,
+          "total": 4,
+          "percentage": 100,
+          "checks": {
+            "hostHasTryCatch": true,
+            "loaderHasTryCatch": true,
+            "bridgeHasTryCatch": true,
+            "hasErrorReporting": true
+          },
+          "status": "✅ PASS"
+        },
+        "performance": {
+          "passed": 4,
+          "total": 4,
+          "percentage": 100,
+          "checks": {
+            "filesUnder100KB": true,
+            "noBlockingOperations": true,
+            "hasAsyncOperations": true,
+            "efficientDataStructures": true
+          },
+          "status": "✅ PASS"
+        }
+      },
+      "score": 100,
+      "issues": [],
+      "duration": 2
+    },
+    {
+      "runNumber": 4,
+      "timestamp": "2025-11-12T07:30:36.035Z",
+      "tests": {
+        "extensionHost": {
+          "passed": 5,
+          "total": 5,
+          "percentage": 100,
+          "checks": {
+            "fileExists": true,
+            "hasActivate": true,
+            "hasDeactivate": true,
+            "hasContext": true,
+            "hasIPC": true
+          },
+          "status": "✅ PASS"
+        },
+        "extensionLoader": {
+          "passed": 6,
+          "total": 6,
+          "percentage": 100,
+          "checks": {
+            "fileExists": true,
+            "hasDownload": true,
+            "hasVerify": true,
+            "hasExtract": true,
+            "hasActivate": true,
+            "hasPipeline": true
+          },
+          "status": "✅ PASS"
+        },
+        "extensionBridge": {
+          "passed": 6,
+          "total": 6,
+          "percentage": 100,
+          "checks": {
+            "fileExists": true,
+            "hasEditorAPI": true,
+            "hasWorkspaceAPI": true,
+            "hasCommandsAPI": true,
+            "hasUIAPI": true,
+            "hasLanguagesAPI": true
+          },
+          "status": "✅ PASS"
+        },
+        "marketplaceUI": {
+          "passed": 6,
+          "total": 6,
+          "percentage": 100,
+          "checks": {
+            "mainUIExists": true,
+            "pluginMarketplaceExists": true,
+            "hasSearch": true,
+            "hasFilters": true,
+            "hasInstallButton": true,
+            "hasProgress": true
+          },
+          "status": "✅ PASS"
+        },
+        "installationPipeline": {
+          "passed": 5,
+          "total": 5,
+          "percentage": 100,
+          "checks": {
+            "hasDownloadStep": true,
+            "hasVerifyStep": true,
+            "hasExtractStep": true,
+            "hasActivateStep": true,
+            "hasProgressCallbacks": true
+          },
+          "status": "✅ PASS"
+        },
+        "apiCompleteness": {
+          "passed": 8,
+          "total": 8,
+          "percentage": 100,
+          "checks": {
+            "hasEditorAPI": true,
+            "hasWorkspaceAPI": true,
+            "hasCommandsAPI": true,
+            "hasUIAPI": true,
+            "hasLanguagesAPI": true,
+            "hasDebugAPI": true,
+            "hasTerminalAPI": true,
+            "hasFSAPI": true
+          },
+          "status": "✅ PASS"
+        },
+        "fileStructure": {
+          "passed": 5,
+          "total": 5,
+          "percentage": 100,
+          "checks": {
+            "electron/marketplace/extension-host-complete.js": true,
+            "electron/marketplace/extension-loader-complete.js": true,
+            "electron/marketplace/extension-bridge-complete.js": true,
+            "electron/plugin-marketplace.js": true,
+            "electron/ui/complete-marketplace-ui.js": true
+          },
+          "status": "✅ PASS"
+        },
+        "integration": {
+          "passed": 4,
+          "total": 4,
+          "percentage": 100,
+          "checks": {
+            "hostExportsCorrectly": true,
+            "loaderExportsCorrectly": true,
+            "bridgeExportsCorrectly": true,
+            "componentsImportable": true
+          },
+          "status": "✅ PASS"
+        },
+        "errorHandling": {
+          "passed": 4,
+          "total": 4,
+          "percentage": 100,
+          "checks": {
+            "hostHasTryCatch": true,
+            "loaderHasTryCatch": true,
+            "bridgeHasTryCatch": true,
+            "hasErrorReporting": true
+          },
+          "status": "✅ PASS"
+        },
+        "performance": {
+          "passed": 4,
+          "total": 4,
+          "percentage": 100,
+          "checks": {
+            "filesUnder100KB": true,
+            "noBlockingOperations": true,
+            "hasAsyncOperations": true,
+            "efficientDataStructures": true
+          },
+          "status": "✅ PASS"
+        }
+      },
+      "score": 100,
+      "issues": [],
+      "duration": 1
+    },
+    {
+      "runNumber": 5,
+      "timestamp": "2025-11-12T07:30:36.137Z",
+      "tests": {
+        "extensionHost": {
+          "passed": 5,
+          "total": 5,
+          "percentage": 100,
+          "checks": {
+            "fileExists": true,
+            "hasActivate": true,
+            "hasDeactivate": true,
+            "hasContext": true,
+            "hasIPC": true
+          },
+          "status": "✅ PASS"
+        },
+        "extensionLoader": {
+          "passed": 6,
+          "total": 6,
+          "percentage": 100,
+          "checks": {
+            "fileExists": true,
+            "hasDownload": true,
+            "hasVerify": true,
+            "hasExtract": true,
+            "hasActivate": true,
+            "hasPipeline": true
+          },
+          "status": "✅ PASS"
+        },
+        "extensionBridge": {
+          "passed": 6,
+          "total": 6,
+          "percentage": 100,
+          "checks": {
+            "fileExists": true,
+            "hasEditorAPI": true,
+            "hasWorkspaceAPI": true,
+            "hasCommandsAPI": true,
+            "hasUIAPI": true,
+            "hasLanguagesAPI": true
+          },
+          "status": "✅ PASS"
+        },
+        "marketplaceUI": {
+          "passed": 6,
+          "total": 6,
+          "percentage": 100,
+          "checks": {
+            "mainUIExists": true,
+            "pluginMarketplaceExists": true,
+            "hasSearch": true,
+            "hasFilters": true,
+            "hasInstallButton": true,
+            "hasProgress": true
+          },
+          "status": "✅ PASS"
+        },
+        "installationPipeline": {
+          "passed": 5,
+          "total": 5,
+          "percentage": 100,
+          "checks": {
+            "hasDownloadStep": true,
+            "hasVerifyStep": true,
+            "hasExtractStep": true,
+            "hasActivateStep": true,
+            "hasProgressCallbacks": true
+          },
+          "status": "✅ PASS"
+        },
+        "apiCompleteness": {
+          "passed": 8,
+          "total": 8,
+          "percentage": 100,
+          "checks": {
+            "hasEditorAPI": true,
+            "hasWorkspaceAPI": true,
+            "hasCommandsAPI": true,
+            "hasUIAPI": true,
+            "hasLanguagesAPI": true,
+            "hasDebugAPI": true,
+            "hasTerminalAPI": true,
+            "hasFSAPI": true
+          },
+          "status": "✅ PASS"
+        },
+        "fileStructure": {
+          "passed": 5,
+          "total": 5,
+          "percentage": 100,
+          "checks": {
+            "electron/marketplace/extension-host-complete.js": true,
+            "electron/marketplace/extension-loader-complete.js": true,
+            "electron/marketplace/extension-bridge-complete.js": true,
+            "electron/plugin-marketplace.js": true,
+            "electron/ui/complete-marketplace-ui.js": true
+          },
+          "status": "✅ PASS"
+        },
+        "integration": {
+          "passed": 4,
+          "total": 4,
+          "percentage": 100,
+          "checks": {
+            "hostExportsCorrectly": true,
+            "loaderExportsCorrectly": true,
+            "bridgeExportsCorrectly": true,
+            "componentsImportable": true
+          },
+          "status": "✅ PASS"
+        },
+        "errorHandling": {
+          "passed": 4,
+          "total": 4,
+          "percentage": 100,
+          "checks": {
+            "hostHasTryCatch": true,
+            "loaderHasTryCatch": true,
+            "bridgeHasTryCatch": true,
+            "hasErrorReporting": true
+          },
+          "status": "✅ PASS"
+        },
+        "performance": {
+          "passed": 4,
+          "total": 4,
+          "percentage": 100,
+          "checks": {
+            "filesUnder100KB": true,
+            "noBlockingOperations": true,
+            "hasAsyncOperations": true,
+            "efficientDataStructures": true
+          },
+          "status": "✅ PASS"
+        }
+      },
+      "score": 100,
+      "issues": [],
+      "duration": 1
+    },
+    {
+      "runNumber": 6,
+      "timestamp": "2025-11-12T07:30:36.238Z",
+      "tests": {
+        "extensionHost": {
+          "passed": 5,
+          "total": 5,
+          "percentage": 100,
+          "checks": {
+            "fileExists": true,
+            "hasActivate": true,
+            "hasDeactivate": true,
+            "hasContext": true,
+            "hasIPC": true
+          },
+          "status": "✅ PASS"
+        },
+        "extensionLoader": {
+          "passed": 6,
+          "total": 6,
+          "percentage": 100,
+          "checks": {
+            "fileExists": true,
+            "hasDownload": true,
+            "hasVerify": true,
+            "hasExtract": true,
+            "hasActivate": true,
+            "hasPipeline": true
+          },
+          "status": "✅ PASS"
+        },
+        "extensionBridge": {
+          "passed": 6,
+          "total": 6,
+          "percentage": 100,
+          "checks": {
+            "fileExists": true,
+            "hasEditorAPI": true,
+            "hasWorkspaceAPI": true,
+            "hasCommandsAPI": true,
+            "hasUIAPI": true,
+            "hasLanguagesAPI": true
+          },
+          "status": "✅ PASS"
+        },
+        "marketplaceUI": {
+          "passed": 6,
+          "total": 6,
+          "percentage": 100,
+          "checks": {
+            "mainUIExists": true,
+            "pluginMarketplaceExists": true,
+            "hasSearch": true,
+            "hasFilters": true,
+            "hasInstallButton": true,
+            "hasProgress": true
+          },
+          "status": "✅ PASS"
+        },
+        "installationPipeline": {
+          "passed": 5,
+          "total": 5,
+          "percentage": 100,
+          "checks": {
+            "hasDownloadStep": true,
+            "hasVerifyStep": true,
+            "hasExtractStep": true,
+            "hasActivateStep": true,
+            "hasProgressCallbacks": true
+          },
+          "status": "✅ PASS"
+        },
+        "apiCompleteness": {
+          "passed": 8,
+          "total": 8,
+          "percentage": 100,
+          "checks": {
+            "hasEditorAPI": true,
+            "hasWorkspaceAPI": true,
+            "hasCommandsAPI": true,
+            "hasUIAPI": true,
+            "hasLanguagesAPI": true,
+            "hasDebugAPI": true,
+            "hasTerminalAPI": true,
+            "hasFSAPI": true
+          },
+          "status": "✅ PASS"
+        },
+        "fileStructure": {
+          "passed": 5,
+          "total": 5,
+          "percentage": 100,
+          "checks": {
+            "electron/marketplace/extension-host-complete.js": true,
+            "electron/marketplace/extension-loader-complete.js": true,
+            "electron/marketplace/extension-bridge-complete.js": true,
+            "electron/plugin-marketplace.js": true,
+            "electron/ui/complete-marketplace-ui.js": true
+          },
+          "status": "✅ PASS"
+        },
+        "integration": {
+          "passed": 4,
+          "total": 4,
+          "percentage": 100,
+          "checks": {
+            "hostExportsCorrectly": true,
+            "loaderExportsCorrectly": true,
+            "bridgeExportsCorrectly": true,
+            "componentsImportable": true
+          },
+          "status": "✅ PASS"
+        },
+        "errorHandling": {
+          "passed": 4,
+          "total": 4,
+          "percentage": 100,
+          "checks": {
+            "hostHasTryCatch": true,
+            "loaderHasTryCatch": true,
+            "bridgeHasTryCatch": true,
+            "hasErrorReporting": true
+          },
+          "status": "✅ PASS"
+        },
+        "performance": {
+          "passed": 4,
+          "total": 4,
+          "percentage": 100,
+          "checks": {
+            "filesUnder100KB": true,
+            "noBlockingOperations": true,
+            "hasAsyncOperations": true,
+            "efficientDataStructures": true
+          },
+          "status": "✅ PASS"
+        }
+      },
+      "score": 100,
+      "issues": [],
+      "duration": 1
+    },
+    {
+      "runNumber": 7,
+      "timestamp": "2025-11-12T07:30:36.340Z",
+      "tests": {
+        "extensionHost": {
+          "passed": 5,
+          "total": 5,
+          "percentage": 100,
+          "checks": {
+            "fileExists": true,
+            "hasActivate": true,
+            "hasDeactivate": true,
+            "hasContext": true,
+            "hasIPC": true
+          },
+          "status": "✅ PASS"
+        },
+        "extensionLoader": {
+          "passed": 6,
+          "total": 6,
+          "percentage": 100,
+          "checks": {
+            "fileExists": true,
+            "hasDownload": true,
+            "hasVerify": true,
+            "hasExtract": true,
+            "hasActivate": true,
+            "hasPipeline": true
+          },
+          "status": "✅ PASS"
+        },
+        "extensionBridge": {
+          "passed": 6,
+          "total": 6,
+          "percentage": 100,
+          "checks": {
+            "fileExists": true,
+            "hasEditorAPI": true,
+            "hasWorkspaceAPI": true,
+            "hasCommandsAPI": true,
+            "hasUIAPI": true,
+            "hasLanguagesAPI": true
+          },
+          "status": "✅ PASS"
+        },
+        "marketplaceUI": {
+          "passed": 6,
+          "total": 6,
+          "percentage": 100,
+          "checks": {
+            "mainUIExists": true,
+            "pluginMarketplaceExists": true,
+            "hasSearch": true,
+            "hasFilters": true,
+            "hasInstallButton": true,
+            "hasProgress": true
+          },
+          "status": "✅ PASS"
+        },
+        "installationPipeline": {
+          "passed": 5,
+          "total": 5,
+          "percentage": 100,
+          "checks": {
+            "hasDownloadStep": true,
+            "hasVerifyStep": true,
+            "hasExtractStep": true,
+            "hasActivateStep": true,
+            "hasProgressCallbacks": true
+          },
+          "status": "✅ PASS"
+        },
+        "apiCompleteness": {
+          "passed": 8,
+          "total": 8,
+          "percentage": 100,
+          "checks": {
+            "hasEditorAPI": true,
+            "hasWorkspaceAPI": true,
+            "hasCommandsAPI": true,
+            "hasUIAPI": true,
+            "hasLanguagesAPI": true,
+            "hasDebugAPI": true,
+            "hasTerminalAPI": true,
+            "hasFSAPI": true
+          },
+          "status": "✅ PASS"
+        },
+        "fileStructure": {
+          "passed": 5,
+          "total": 5,
+          "percentage": 100,
+          "checks": {
+            "electron/marketplace/extension-host-complete.js": true,
+            "electron/marketplace/extension-loader-complete.js": true,
+            "electron/marketplace/extension-bridge-complete.js": true,
+            "electron/plugin-marketplace.js": true,
+            "electron/ui/complete-marketplace-ui.js": true
+          },
+          "status": "✅ PASS"
+        },
+        "integration": {
+          "passed": 4,
+          "total": 4,
+          "percentage": 100,
+          "checks": {
+            "hostExportsCorrectly": true,
+            "loaderExportsCorrectly": true,
+            "bridgeExportsCorrectly": true,
+            "componentsImportable": true
+          },
+          "status": "✅ PASS"
+        },
+        "errorHandling": {
+          "passed": 4,
+          "total": 4,
+          "percentage": 100,
+          "checks": {
+            "hostHasTryCatch": true,
+            "loaderHasTryCatch": true,
+            "bridgeHasTryCatch": true,
+            "hasErrorReporting": true
+          },
+          "status": "✅ PASS"
+        },
+        "performance": {
+          "passed": 4,
+          "total": 4,
+          "percentage": 100,
+          "checks": {
+            "filesUnder100KB": true,
+            "noBlockingOperations": true,
+            "hasAsyncOperations": true,
+            "efficientDataStructures": true
+          },
+          "status": "✅ PASS"
+        }
+      },
+      "score": 100,
+      "issues": [],
+      "duration": 1
+    },
+    {
+      "runNumber": 8,
+      "timestamp": "2025-11-12T07:30:36.442Z",
+      "tests": {
+        "extensionHost": {
+          "passed": 5,
+          "total": 5,
+          "percentage": 100,
+          "checks": {
+            "fileExists": true,
+            "hasActivate": true,
+            "hasDeactivate": true,
+            "hasContext": true,
+            "hasIPC": true
+          },
+          "status": "✅ PASS"
+        },
+        "extensionLoader": {
+          "passed": 6,
+          "total": 6,
+          "percentage": 100,
+          "checks": {
+            "fileExists": true,
+            "hasDownload": true,
+            "hasVerify": true,
+            "hasExtract": true,
+            "hasActivate": true,
+            "hasPipeline": true
+          },
+          "status": "✅ PASS"
+        },
+        "extensionBridge": {
+          "passed": 6,
+          "total": 6,
+          "percentage": 100,
+          "checks": {
+            "fileExists": true,
+            "hasEditorAPI": true,
+            "hasWorkspaceAPI": true,
+            "hasCommandsAPI": true,
+            "hasUIAPI": true,
+            "hasLanguagesAPI": true
+          },
+          "status": "✅ PASS"
+        },
+        "marketplaceUI": {
+          "passed": 6,
+          "total": 6,
+          "percentage": 100,
+          "checks": {
+            "mainUIExists": true,
+            "pluginMarketplaceExists": true,
+            "hasSearch": true,
+            "hasFilters": true,
+            "hasInstallButton": true,
+            "hasProgress": true
+          },
+          "status": "✅ PASS"
+        },
+        "installationPipeline": {
+          "passed": 5,
+          "total": 5,
+          "percentage": 100,
+          "checks": {
+            "hasDownloadStep": true,
+            "hasVerifyStep": true,
+            "hasExtractStep": true,
+            "hasActivateStep": true,
+            "hasProgressCallbacks": true
+          },
+          "status": "✅ PASS"
+        },
+        "apiCompleteness": {
+          "passed": 8,
+          "total": 8,
+          "percentage": 100,
+          "checks": {
+            "hasEditorAPI": true,
+            "hasWorkspaceAPI": true,
+            "hasCommandsAPI": true,
+            "hasUIAPI": true,
+            "hasLanguagesAPI": true,
+            "hasDebugAPI": true,
+            "hasTerminalAPI": true,
+            "hasFSAPI": true
+          },
+          "status": "✅ PASS"
+        },
+        "fileStructure": {
+          "passed": 5,
+          "total": 5,
+          "percentage": 100,
+          "checks": {
+            "electron/marketplace/extension-host-complete.js": true,
+            "electron/marketplace/extension-loader-complete.js": true,
+            "electron/marketplace/extension-bridge-complete.js": true,
+            "electron/plugin-marketplace.js": true,
+            "electron/ui/complete-marketplace-ui.js": true
+          },
+          "status": "✅ PASS"
+        },
+        "integration": {
+          "passed": 4,
+          "total": 4,
+          "percentage": 100,
+          "checks": {
+            "hostExportsCorrectly": true,
+            "loaderExportsCorrectly": true,
+            "bridgeExportsCorrectly": true,
+            "componentsImportable": true
+          },
+          "status": "✅ PASS"
+        },
+        "errorHandling": {
+          "passed": 4,
+          "total": 4,
+          "percentage": 100,
+          "checks": {
+            "hostHasTryCatch": true,
+            "loaderHasTryCatch": true,
+            "bridgeHasTryCatch": true,
+            "hasErrorReporting": true
+          },
+          "status": "✅ PASS"
+        },
+        "performance": {
+          "passed": 4,
+          "total": 4,
+          "percentage": 100,
+          "checks": {
+            "filesUnder100KB": true,
+            "noBlockingOperations": true,
+            "hasAsyncOperations": true,
+            "efficientDataStructures": true
+          },
+          "status": "✅ PASS"
+        }
+      },
+      "score": 100,
+      "issues": [],
+      "duration": 1
+    },
+    {
+      "runNumber": 9,
+      "timestamp": "2025-11-12T07:30:36.547Z",
+      "tests": {
+        "extensionHost": {
+          "passed": 5,
+          "total": 5,
+          "percentage": 100,
+          "checks": {
+            "fileExists": true,
+            "hasActivate": true,
+            "hasDeactivate": true,
+            "hasContext": true,
+            "hasIPC": true
+          },
+          "status": "✅ PASS"
+        },
+        "extensionLoader": {
+          "passed": 6,
+          "total": 6,
+          "percentage": 100,
+          "checks": {
+            "fileExists": true,
+            "hasDownload": true,
+            "hasVerify": true,
+            "hasExtract": true,
+            "hasActivate": true,
+            "hasPipeline": true
+          },
+          "status": "✅ PASS"
+        },
+        "extensionBridge": {
+          "passed": 6,
+          "total": 6,
+          "percentage": 100,
+          "checks": {
+            "fileExists": true,
+            "hasEditorAPI": true,
+            "hasWorkspaceAPI": true,
+            "hasCommandsAPI": true,
+            "hasUIAPI": true,
+            "hasLanguagesAPI": true
+          },
+          "status": "✅ PASS"
+        },
+        "marketplaceUI": {
+          "passed": 6,
+          "total": 6,
+          "percentage": 100,
+          "checks": {
+            "mainUIExists": true,
+            "pluginMarketplaceExists": true,
+            "hasSearch": true,
+            "hasFilters": true,
+            "hasInstallButton": true,
+            "hasProgress": true
+          },
+          "status": "✅ PASS"
+        },
+        "installationPipeline": {
+          "passed": 5,
+          "total": 5,
+          "percentage": 100,
+          "checks": {
+            "hasDownloadStep": true,
+            "hasVerifyStep": true,
+            "hasExtractStep": true,
+            "hasActivateStep": true,
+            "hasProgressCallbacks": true
+          },
+          "status": "✅ PASS"
+        },
+        "apiCompleteness": {
+          "passed": 8,
+          "total": 8,
+          "percentage": 100,
+          "checks": {
+            "hasEditorAPI": true,
+            "hasWorkspaceAPI": true,
+            "hasCommandsAPI": true,
+            "hasUIAPI": true,
+            "hasLanguagesAPI": true,
+            "hasDebugAPI": true,
+            "hasTerminalAPI": true,
+            "hasFSAPI": true
+          },
+          "status": "✅ PASS"
+        },
+        "fileStructure": {
+          "passed": 5,
+          "total": 5,
+          "percentage": 100,
+          "checks": {
+            "electron/marketplace/extension-host-complete.js": true,
+            "electron/marketplace/extension-loader-complete.js": true,
+            "electron/marketplace/extension-bridge-complete.js": true,
+            "electron/plugin-marketplace.js": true,
+            "electron/ui/complete-marketplace-ui.js": true
+          },
+          "status": "✅ PASS"
+        },
+        "integration": {
+          "passed": 4,
+          "total": 4,
+          "percentage": 100,
+          "checks": {
+            "hostExportsCorrectly": true,
+            "loaderExportsCorrectly": true,
+            "bridgeExportsCorrectly": true,
+            "componentsImportable": true
+          },
+          "status": "✅ PASS"
+        },
+        "errorHandling": {
+          "passed": 4,
+          "total": 4,
+          "percentage": 100,
+          "checks": {
+            "hostHasTryCatch": true,
+            "loaderHasTryCatch": true,
+            "bridgeHasTryCatch": true,
+            "hasErrorReporting": true
+          },
+          "status": "✅ PASS"
+        },
+        "performance": {
+          "passed": 4,
+          "total": 4,
+          "percentage": 100,
+          "checks": {
+            "filesUnder100KB": true,
+            "noBlockingOperations": true,
+            "hasAsyncOperations": true,
+            "efficientDataStructures": true
+          },
+          "status": "✅ PASS"
+        }
+      },
+      "score": 100,
+      "issues": [],
+      "duration": 2
+    },
+    {
+      "runNumber": 10,
+      "timestamp": "2025-11-12T07:30:36.650Z",
+      "tests": {
+        "extensionHost": {
+          "passed": 5,
+          "total": 5,
+          "percentage": 100,
+          "checks": {
+            "fileExists": true,
+            "hasActivate": true,
+            "hasDeactivate": true,
+            "hasContext": true,
+            "hasIPC": true
+          },
+          "status": "✅ PASS"
+        },
+        "extensionLoader": {
+          "passed": 6,
+          "total": 6,
+          "percentage": 100,
+          "checks": {
+            "fileExists": true,
+            "hasDownload": true,
+            "hasVerify": true,
+            "hasExtract": true,
+            "hasActivate": true,
+            "hasPipeline": true
+          },
+          "status": "✅ PASS"
+        },
+        "extensionBridge": {
+          "passed": 6,
+          "total": 6,
+          "percentage": 100,
+          "checks": {
+            "fileExists": true,
+            "hasEditorAPI": true,
+            "hasWorkspaceAPI": true,
+            "hasCommandsAPI": true,
+            "hasUIAPI": true,
+            "hasLanguagesAPI": true
+          },
+          "status": "✅ PASS"
+        },
+        "marketplaceUI": {
+          "passed": 6,
+          "total": 6,
+          "percentage": 100,
+          "checks": {
+            "mainUIExists": true,
+            "pluginMarketplaceExists": true,
+            "hasSearch": true,
+            "hasFilters": true,
+            "hasInstallButton": true,
+            "hasProgress": true
+          },
+          "status": "✅ PASS"
+        },
+        "installationPipeline": {
+          "passed": 5,
+          "total": 5,
+          "percentage": 100,
+          "checks": {
+            "hasDownloadStep": true,
+            "hasVerifyStep": true,
+            "hasExtractStep": true,
+            "hasActivateStep": true,
+            "hasProgressCallbacks": true
+          },
+          "status": "✅ PASS"
+        },
+        "apiCompleteness": {
+          "passed": 8,
+          "total": 8,
+          "percentage": 100,
+          "checks": {
+            "hasEditorAPI": true,
+            "hasWorkspaceAPI": true,
+            "hasCommandsAPI": true,
+            "hasUIAPI": true,
+            "hasLanguagesAPI": true,
+            "hasDebugAPI": true,
+            "hasTerminalAPI": true,
+            "hasFSAPI": true
+          },
+          "status": "✅ PASS"
+        },
+        "fileStructure": {
+          "passed": 5,
+          "total": 5,
+          "percentage": 100,
+          "checks": {
+            "electron/marketplace/extension-host-complete.js": true,
+            "electron/marketplace/extension-loader-complete.js": true,
+            "electron/marketplace/extension-bridge-complete.js": true,
+            "electron/plugin-marketplace.js": true,
+            "electron/ui/complete-marketplace-ui.js": true
+          },
+          "status": "✅ PASS"
+        },
+        "integration": {
+          "passed": 4,
+          "total": 4,
+          "percentage": 100,
+          "checks": {
+            "hostExportsCorrectly": true,
+            "loaderExportsCorrectly": true,
+            "bridgeExportsCorrectly": true,
+            "componentsImportable": true
+          },
+          "status": "✅ PASS"
+        },
+        "errorHandling": {
+          "passed": 4,
+          "total": 4,
+          "percentage": 100,
+          "checks": {
+            "hostHasTryCatch": true,
+            "loaderHasTryCatch": true,
+            "bridgeHasTryCatch": true,
+            "hasErrorReporting": true
+          },
+          "status": "✅ PASS"
+        },
+        "performance": {
+          "passed": 4,
+          "total": 4,
+          "percentage": 100,
+          "checks": {
+            "filesUnder100KB": true,
+            "noBlockingOperations": true,
+            "hasAsyncOperations": true,
+            "efficientDataStructures": true
+          },
+          "status": "✅ PASS"
+        }
+      },
+      "score": 100,
+      "issues": [],
+      "duration": 1
+    },
+    {
+      "runNumber": 11,
+      "timestamp": "2025-11-12T07:30:36.751Z",
+      "tests": {
+        "extensionHost": {
+          "passed": 5,
+          "total": 5,
+          "percentage": 100,
+          "checks": {
+            "fileExists": true,
+            "hasActivate": true,
+            "hasDeactivate": true,
+            "hasContext": true,
+            "hasIPC": true
+          },
+          "status": "✅ PASS"
+        },
+        "extensionLoader": {
+          "passed": 6,
+          "total": 6,
+          "percentage": 100,
+          "checks": {
+            "fileExists": true,
+            "hasDownload": true,
+            "hasVerify": true,
+            "hasExtract": true,
+            "hasActivate": true,
+            "hasPipeline": true
+          },
+          "status": "✅ PASS"
+        },
+        "extensionBridge": {
+          "passed": 6,
+          "total": 6,
+          "percentage": 100,
+          "checks": {
+            "fileExists": true,
+            "hasEditorAPI": true,
+            "hasWorkspaceAPI": true,
+            "hasCommandsAPI": true,
+            "hasUIAPI": true,
+            "hasLanguagesAPI": true
+          },
+          "status": "✅ PASS"
+        },
+        "marketplaceUI": {
+          "passed": 6,
+          "total": 6,
+          "percentage": 100,
+          "checks": {
+            "mainUIExists": true,
+            "pluginMarketplaceExists": true,
+            "hasSearch": true,
+            "hasFilters": true,
+            "hasInstallButton": true,
+            "hasProgress": true
+          },
+          "status": "✅ PASS"
+        },
+        "installationPipeline": {
+          "passed": 5,
+          "total": 5,
+          "percentage": 100,
+          "checks": {
+            "hasDownloadStep": true,
+            "hasVerifyStep": true,
+            "hasExtractStep": true,
+            "hasActivateStep": true,
+            "hasProgressCallbacks": true
+          },
+          "status": "✅ PASS"
+        },
+        "apiCompleteness": {
+          "passed": 8,
+          "total": 8,
+          "percentage": 100,
+          "checks": {
+            "hasEditorAPI": true,
+            "hasWorkspaceAPI": true,
+            "hasCommandsAPI": true,
+            "hasUIAPI": true,
+            "hasLanguagesAPI": true,
+            "hasDebugAPI": true,
+            "hasTerminalAPI": true,
+            "hasFSAPI": true
+          },
+          "status": "✅ PASS"
+        },
+        "fileStructure": {
+          "passed": 5,
+          "total": 5,
+          "percentage": 100,
+          "checks": {
+            "electron/marketplace/extension-host-complete.js": true,
+            "electron/marketplace/extension-loader-complete.js": true,
+            "electron/marketplace/extension-bridge-complete.js": true,
+            "electron/plugin-marketplace.js": true,
+            "electron/ui/complete-marketplace-ui.js": true
+          },
+          "status": "✅ PASS"
+        },
+        "integration": {
+          "passed": 4,
+          "total": 4,
+          "percentage": 100,
+          "checks": {
+            "hostExportsCorrectly": true,
+            "loaderExportsCorrectly": true,
+            "bridgeExportsCorrectly": true,
+            "componentsImportable": true
+          },
+          "status": "✅ PASS"
+        },
+        "errorHandling": {
+          "passed": 4,
+          "total": 4,
+          "percentage": 100,
+          "checks": {
+            "hostHasTryCatch": true,
+            "loaderHasTryCatch": true,
+            "bridgeHasTryCatch": true,
+            "hasErrorReporting": true
+          },
+          "status": "✅ PASS"
+        },
+        "performance": {
+          "passed": 4,
+          "total": 4,
+          "percentage": 100,
+          "checks": {
+            "filesUnder100KB": true,
+            "noBlockingOperations": true,
+            "hasAsyncOperations": true,
+            "efficientDataStructures": true
+          },
+          "status": "✅ PASS"
+        }
+      },
+      "score": 100,
+      "issues": [],
+      "duration": 1
+    }
+  ],
+  "verdict": "🏆 EXCELLENT",
+  "uniqueIssues": 0
+}

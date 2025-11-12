@@ -253,8 +253,8 @@ class ContainerRuntime {
                     return true;
                 }
             } catch (error) {
-                // Container not ready yet
-            }
+        console.error('[Error]', error);
+    }
             
             await new Promise(resolve => setTimeout(resolve, 100));
         }

@@ -1,0 +1,142 @@
+{
+  "timestamp": "2025-11-11T02:32:33.853Z",
+  "totalReferences": 69,
+  "criticalFiles": [
+    {
+      "file": "renderer.js",
+      "references": 11,
+      "details": [
+        "  window.monaco: 3",
+        "  window.monacoEditor: 1",
+        "  monaco.editor: 4",
+        "  monaco-container: 3"
+      ]
+    },
+    {
+      "file": "agentic-global-api.js",
+      "references": 40,
+      "details": [
+        "  window.monaco: 20",
+        "  window.monacoEditor: 20"
+      ]
+    },
+    {
+      "file": "explorer-integration.js",
+      "references": 2,
+      "details": [
+        "  window.monaco: 2"
+      ]
+    },
+    {
+      "file": "agent-panel.js",
+      "references": 5,
+      "details": [
+        "  window.monaco: 2",
+        "  monaco-container: 3"
+      ]
+    },
+    {
+      "file": "terminal-panel.js",
+      "references": 3,
+      "details": [
+        "  window.monaco: 1",
+        "  monaco.editor: 2"
+      ]
+    },
+    {
+      "file": "visual-test-runner.js",
+      "references": 2,
+      "details": [
+        "  window.monaco: 1",
+        "  monaco-container: 1"
+      ]
+    },
+    {
+      "file": "system-verification.js",
+      "references": 3,
+      "details": [
+        "  window.monaco: 2",
+        "  monaco-container: 1"
+      ]
+    },
+    {
+      "file": "file-explorer.js",
+      "references": 1,
+      "details": [
+        "  monaco-container: 1"
+      ]
+    },
+    {
+      "file": "tab-system.js",
+      "references": 2,
+      "details": [
+        "  monaco-container: 2"
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "Editor Creation",
+      "file": "renderer.js",
+      "pattern": {},
+      "expectation": "Should be intercepted by redirect-to-bigdaddy.js"
+    },
+    {
+      "name": "Get Editor Content",
+      "file": "agentic-global-api.js",
+      "pattern": {},
+      "expectation": "Should use wrapper getValue() method"
+    },
+    {
+      "name": "Set Editor Content",
+      "file": "agentic-global-api.js",
+      "pattern": {},
+      "expectation": "Should use wrapper setValue() method"
+    },
+    {
+      "name": "Container Reference",
+      "file": "renderer.js",
+      "pattern": {},
+      "expectation": "Should be redirected to bigdaddy-container"
+    },
+    {
+      "name": "Monaco Check",
+      "file": "system-verification.js",
+      "pattern": {},
+      "expectation": "Should return stubbed Monaco object"
+    }
+  ],
+  "redirections": [
+    {
+      "name": "Monaco API Stub",
+      "coverage": "window.monaco.editor.create()",
+      "status": "✅ Implemented in redirect-to-bigdaddy.js"
+    },
+    {
+      "name": "Editor Wrapper",
+      "coverage": "getValue(), setValue(), getModel(), etc.",
+      "status": "✅ Full Monaco-compatible API"
+    },
+    {
+      "name": "Container Redirect",
+      "coverage": "getElementById(\"monaco-container\")",
+      "status": "✅ Intercepted and redirected"
+    },
+    {
+      "name": "Global Aliases",
+      "coverage": "window.monacoEditor, window.editor",
+      "status": "✅ Point to BigDaddy"
+    },
+    {
+      "name": "Event System",
+      "coverage": "editor-ready, monaco-ready",
+      "status": "✅ Custom events dispatched"
+    },
+    {
+      "name": "Require.js Stub",
+      "coverage": "require([\"vs/editor/editor.main\"])",
+      "status": "✅ Blocked and stubbed"
+    }
+  ],
+  "status": "READY"
+}

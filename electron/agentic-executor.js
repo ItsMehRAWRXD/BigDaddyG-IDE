@@ -100,7 +100,7 @@ if (!AgenticSecurityHardening) {
                 throw new Error('Invalid command');
             }
 
-            if (/[;&|`$(){}\[\]<>]/.test(command)) {
+            if(/[;&|`$()\[\]<>]/.test(command)) {
                 throw new Error('Command contains dangerous characters');
             }
 

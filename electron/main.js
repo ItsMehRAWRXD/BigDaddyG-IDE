@@ -3,9 +3,14 @@
  * Professional desktop IDE with dedicated tabs and syntax highlighting
  */
 
+// Electron Main Process Entry Point
 const electronModule = require('electron');
 const { app, BrowserWindow, ipcMain, Menu, dialog } = electronModule;
+const IPCServer = require('./ipc-server');
+// Simple git-based auto-updater
+const SimpleAutoUpdater = require('./simple-auto-updater');
 
+// Verify Electron environment - app.whenReady must be available
 if (!app || typeof app.whenReady !== 'function') {
   console.error('[BigDaddyG] ❌ Electron "app" module unavailable.');
   console.error('[BigDaddyG]    • ELECTRON_RUN_AS_NODE =', process.env.ELECTRON_RUN_AS_NODE || 'undefined');
@@ -13,6 +18,8 @@ if (!app || typeof app.whenReady !== 'function') {
   console.error('[BigDaddyG] 🚫 This file must be launched with the Electron runtime (e.g. `npm start`).');
   process.exit(1);
 }
+
+// Main process initialization - createWindow will be called by app.whenReady
 const path = require('path');
 const fs = require('fs');
 const http = require('http');
@@ -358,8 +365,36 @@ console.log('[BigDaddyG] 🎯 Target: 240 FPS');
 // APPLICATION LIFECYCLE
 // ============================================================================
 
+// Initialize IPC server for external CLI
+let ipcServer = null;
+
 app.whenReady().then(async () => {
   console.log('[BigDaddyG] 🚀 Starting Electron app...');
+  
+  // ============================================================================
+  // AUTO-UPDATE: Pull latest code from GitHub BEFORE launching
+  // ============================================================================
+  try {
+    const SimpleAutoUpdater = require('./simple-auto-updater');
+    const autoUpdater = new SimpleAutoUpdater();
+    const updateResult = await autoUpdater.checkAndUpdate();
+    
+    if (updateResult.filesUpdated && updateResult.filesUpdated > 0) {
+      console.log(`[BigDaddyG] 🔄 Updated ${updateResult.filesUpdated} files from GitHub`);
+      dialog.showMessageBoxSync({
+        type: 'info',
+        title: 'Updates Applied',
+        message: 'BigDaddyG IDE Updated',
+        detail: `${updateResult.filesUpdated} files were updated from GitHub.\n\nThe IDE will now launch with the latest changes.`,
+        buttons: ['OK']
+      });
+    } else {
+      console.log('[BigDaddyG] ✅ Already up to date with GitHub');
+    }
+  } catch (error) {
+    console.error('[BigDaddyG] ⚠️ Auto-update check failed:', error.message);
+    // Continue launching even if update fails
+  }
 
   settingsService.initialize(app);
 
@@ -367,6 +402,20 @@ app.whenReady().then(async () => {
   bigDaddyGCore = await getBigDaddyGCore();
 
   bigDaddyGCore.attachNativeClient(nativeOllamaClient);
+  
+  // Start HTTP bridge so Orchestra can access BigDaddyGCore's models
+  setTimeout(() => {
+    startModelBridge();
+  }, 2000);
+  
+  // Start IPC server for external CLI communication
+  try {
+    ipcServer = new IPCServer();
+    ipcServer.start();
+    console.log('[BigDaddyG] ✅ IPC server started for external CLI on port 35792');
+  } catch (error) {
+    console.error('[BigDaddyG] ❌ Failed to start IPC server:', error.message);
+  }
   
   // Start Orchestra server
   if (isOrchestraAutoStartEnabled()) {
@@ -402,6 +451,14 @@ app.whenReady().then(async () => {
 });
 
 app.on('window-all-closed', () => {
+  console.log('[BigDaddyG] 👋 All windows closed');
+  
+  // Stop IPC server
+  if (ipcServer) {
+    ipcServer.stop();
+    console.log('[BigDaddyG] 🛑 IPC server stopped');
+  }
+  
   // Stop Orchestra server
   stopOrchestraServer();
   
@@ -410,6 +467,7 @@ app.on('window-all-closed', () => {
     remoteLogServer.kill();
   }
   
+  // Normal quit behavior
   if (process.platform !== 'darwin') {
     app.quit();
   }
@@ -432,7 +490,7 @@ function getOrchestraConfig() {
   const defaults = {
     autoStart: true,
     autoRestart: true,
-    autoStartDelayMs: 1500,
+    autoStartDelayMs: 0,  // ✅ IMMEDIATE START - No delay!
   };
 
   try {
@@ -561,8 +619,8 @@ function startOrchestraServer(options = {}) {
     const resolvedModule = require.resolve(serverPath);
     delete require.cache[resolvedModule];
   } catch (ignore) {
-    // Module not yet cached – nothing to remove.
-  }
+        console.error('[Error]', ignore);
+    }
 
   try {
     const orchestraModule = require(serverPath);
@@ -996,8 +1054,13 @@ function startRemoteLogServer() {
 // MAIN WINDOW
 // ============================================================================
 
+let windowCreationTime = 0;
+
 function createMainWindow() {
+  windowCreationTime = Date.now();
   console.log('[BigDaddyG] 🪟 Creating main window...');
+  console.log('[BigDaddyG] Current directory:', process.cwd());
+  console.log('[BigDaddyG] __dirname:', __dirname);
   
   // Remember window state
   const mainWindowState = windowStateKeeper({
@@ -1020,7 +1083,7 @@ function createMainWindow() {
       nodeIntegration: false,
       contextIsolation: true,
       sandbox: false,  // Changed to false to allow preload script to load
-      webviewTag: false,
+      webviewTag: true,  // ✅ ENABLE WEBVIEW for browser tab
       preload: path.join(__dirname, 'preload.js'),
       webSecurity: true,
       allowRunningInsecureContent: false,
@@ -1040,9 +1103,17 @@ function createMainWindow() {
   // Load IDE - Using Safe Mode Detector
   const htmlFile = safeModeDetector.getHTMLFile();
   
+  const htmlPath = path.join(__dirname, htmlFile);
   console.log(`[BigDaddyG] 📄 Loading: ${htmlFile}`);
+  console.log(`[BigDaddyG] 📂 Full HTML path: ${htmlPath}`);
+  console.log(`[BigDaddyG] 📁 HTML exists:`, require('fs').existsSync(htmlPath));
   console.log(`[BigDaddyG] 🛡️ Safe Mode: ${safeModeDetector.getConfig().SafeMode.enabled}`);
-  mainWindow.loadFile(path.join(__dirname, htmlFile));
+  
+  mainWindow.loadFile(htmlPath).then(() => {
+    console.log('[BigDaddyG] ✅ HTML loaded successfully');
+  }).catch(err => {
+    console.error('[BigDaddyG] ❌ Failed to load HTML:', err);
+  });
   
   // Open DevTools only in development
   if (process.env.NODE_ENV === 'development') {
@@ -1117,11 +1188,42 @@ function createMainWindow() {
     console.log(`[Renderer ${levels[level]}] ${message} (${sourceId}:${line})`);
   });
   
+  // Catch all renderer errors
+  mainWindow.webContents.on('render-process-gone', (event, details) => {
+    console.error('[BigDaddyG] ❌ Renderer process gone!', details);
+  });
+  
+  mainWindow.webContents.on('did-finish-load', () => {
+    console.log('[BigDaddyG] ✅ Page finished loading');
+  });
+  
+  mainWindow.webContents.on('dom-ready', () => {
+    console.log('[BigDaddyG] ✅ DOM ready');
+  });
+  
+  // Track window lifecycle
+  mainWindow.on('close', (event) => {
+    console.log('[BigDaddyG] 🚪 🚪 🚪 Window CLOSE EVENT TRIGGERED! 🚪 🚪 🚪');
+    console.log('[BigDaddyG] Time since creation:', Date.now() - windowCreationTime, 'ms');
+    console.log('[BigDaddyG] Stack trace:');
+    console.trace();
+  });
+  
   mainWindow.on('closed', () => {
+    console.log('[BigDaddyG] 🚪 Window CLOSED event');
     mainWindow = null;
     if (embeddedBrowser) {
       embeddedBrowser.destroy();
     }
+  });
+  
+  // Add unresponsive handler
+  mainWindow.on('unresponsive', () => {
+    console.error('[BigDaddyG] ⚠️ Window became unresponsive!');
+  });
+  
+  mainWindow.on('responsive', () => {
+    console.log('[BigDaddyG] ✅ Window became responsive again');
   });
   
   // Initialize embedded browser
@@ -1817,7 +1919,7 @@ ipcMain.handle('open-folder-dialog', async () => {
   }
 });
 
-// Read directory
+// Read directory - FIXED: Returns proper 'type' field
 ipcMain.handle('read-dir', async (event, dirPath) => {
   const fs = require('fs').promises;
   try {
@@ -1827,6 +1929,7 @@ ipcMain.handle('read-dir', async (event, dirPath) => {
       name: entry.name,
       isDirectory: entry.isDirectory(),
       isFile: entry.isFile(),
+      type: entry.isDirectory() ? 'directory' : 'file',  // ✅ FIXED: Proper type field
       path: path.join(validatedDir, entry.name)
     }));
     return { success: true, files };
@@ -2010,15 +2113,15 @@ ipcMain.handle('search-files', async (event, query, options = {}) => {
                 }
               }
             } catch (err) {
-              // Skip binary or unreadable files
-            }
+        console.error('[Error]', err);
+    }
           }
         } else if (entry.isDirectory()) {
           await searchDirectory(safePath, depth + 1);
         }
       }
     } catch (error) {
-      // Skip inaccessible directories
+        console.error('[Error]', error);
     }
   }
   
@@ -2068,7 +2171,7 @@ ipcMain.handle('read-dir-recursive', async (event, dirPath, maxDepth = 100) => {
         }
       }
     } catch (error) {
-      // Skip inaccessible directories
+        console.error('[Error]', error);
     }
   }
   
@@ -2166,7 +2269,7 @@ ipcMain.handle('scanWorkspace', async (event, options = {}) => {
         }
       }
     } catch (error) {
-      // Skip inaccessible directories silently
+        console.error('[Error]', error);
     }
   }
   
@@ -2260,7 +2363,7 @@ ipcMain.handle('find-by-pattern', async (event, pattern, startPath) => {
         }
       }
     } catch (error) {
-      // Skip inaccessible directories
+        console.error('[Error]', error);
     }
   }
   
@@ -2976,6 +3079,105 @@ ipcMain.handle('drive-polling:status', () => {
 ipcMain.handle('orchestra:start', () => {
   startOrchestraServer();
   return { success: true };
+});
+
+// AI Model Generation - Bridge NativeOllamaClient to Orchestra  
+ipcMain.handle('ai:generate', async (event, { model, prompt, options }) => {
+  try {
+    console.log(`[IPC] 🤖 AI generation request for model: ${model}`);
+    const response = await nativeOllamaClient.generate(model, prompt, options || {});
+    return { success: true, response };
+  } catch (error) {
+    console.error('[IPC] ❌ AI generation failed:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Orchestra IPC Handlers - Access BigDaddyGCore's models
+ipcMain.handle('orchestra:get-models', async () => {
+  try {
+    console.log('[IPC] 📋 Orchestra requesting models list');
+    if (bigDaddyGCore && typeof bigDaddyGCore.listModels === 'function') {
+      const models = await bigDaddyGCore.listModels();
+      console.log(`[IPC] ✅ Returning ${models.length} models to Orchestra`);
+      return models.map(m => m.name || m.id);
+    }
+    return ['bigdaddyg:latest', 'bigdaddyg:coder', 'bigdaddyg:python'];
+  } catch (error) {
+    console.error('[IPC] ❌ Failed to get models:', error);
+    return [];
+  }
+});
+
+ipcMain.handle('orchestra:generate', async (event, payload) => {
+  const { model, prompt } = payload;
+  try {
+    console.log(`[IPC] 🤖 Orchestra generate request: ${model}`);
+    const response = await nativeOllamaClient.generate(model, prompt, {});
+    console.log(`[IPC] ✅ Generated ${response.length} characters`);
+    return response;
+  } catch (error) {
+    console.error(`[IPC] ❌ Generation failed for ${model}:`, error.message);
+    return `Error: ${error.message}`;
+  }
+});
+
+// ============================================================================
+// HTTP BRIDGE FOR ORCHESTRA - Access BigDaddyGCore's 156 models
+// ============================================================================
+
+let bridgeServer = null;
+
+function startModelBridge() {
+  try {
+    const express = require('express');
+    const bridgeApp = express();
+    bridgeApp.use(express.json());
+    
+    // Get models list
+    bridgeApp.get('/api/models', async (req, res) => {
+      try {
+        const models = await bigDaddyGCore.listModels();
+        res.json({ models: models.map(m => ({ name: m.name || m.id, ...m })) });
+      } catch (err) {
+        res.json({ models: [] });
+      }
+    });
+    
+    // Generate response
+    bridgeApp.post('/api/generate', async (req, res) => {
+      const { model, prompt } = req.body;
+      try {
+        console.log(`[Bridge] 🤖 Generate request for model: ${model}`);
+        const response = await nativeOllamaClient.generate(model, prompt, {});
+        res.json({ response });
+      } catch (err) {
+        console.error(`[Bridge] ❌ Generation failed:`, err.message);
+        res.status(500).json({ error: err.message });
+      }
+    });
+    
+    bridgeServer = bridgeApp.listen(11435, '127.0.0.1', () => {
+      console.log('[Bridge] ✅ Model bridge running on port 11435');
+      console.log('[Bridge] 🔗 Orchestra can now access YOUR 156 models!');
+    });
+    
+  } catch (error) {
+    console.error('[Bridge] ❌ Failed to start model bridge:', error);
+  }
+}
+
+// Bridge cleanup on quit
+app.on('window-all-closed', () => {
+  console.log('[BigDaddyG] 👋 All windows closed');
+  
+  // Stop bridge server
+  if (bridgeServer) {
+    bridgeServer.close();
+    console.log('[Bridge] 🛑 Model bridge stopped');
+  }
+  
+  // ... rest of cleanup ...
 });
 
 ipcMain.handle('orchestra:stop', () => {

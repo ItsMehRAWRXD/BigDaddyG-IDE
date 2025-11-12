@@ -1,0 +1,160 @@
+{
+  "timestamp": "2025-11-10T19:19:16.297Z",
+  "stats": {
+    "filesChecked": 50,
+    "issuesFound": 3,
+    "featuresVerified": 0,
+    "featuresMissing": 24
+  },
+  "issues": {
+    "naming": [
+      {
+        "type": "missing_script",
+        "script": "https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js",
+        "severity": "high"
+      },
+      {
+        "type": "missing_script",
+        "script": "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js",
+        "severity": "high"
+      }
+    ],
+    "uiOverlap": [
+      {
+        "type": "z-index",
+        "count": 1
+      }
+    ],
+    "settings": [],
+    "ollama": [
+      "port_config"
+    ],
+    "loading": [],
+    "missingFeatures": {
+      "implemented": [],
+      "missing": [],
+      "partial": [
+        {
+          "file": "complete-integration-fixer.js",
+          "type": "comment",
+          "count": 1
+        },
+        {
+          "file": "backwards-integration-test.js",
+          "type": "comment",
+          "count": 11
+        },
+        {
+          "file": "backwards-integration-test.js",
+          "type": "null_return",
+          "count": 1
+        },
+        {
+          "file": "comprehensive-agentic-test.js",
+          "type": "comment",
+          "count": 2
+        },
+        {
+          "file": "api-key-manager-ui.js",
+          "type": "comment",
+          "count": 1
+        },
+        {
+          "file": "team-collaboration.js",
+          "type": "comment",
+          "count": 3
+        },
+        {
+          "file": "asset-preview-system.js",
+          "type": "comment",
+          "count": 3
+        },
+        {
+          "file": "auto-fixer.js",
+          "type": "comment",
+          "count": 1
+        },
+        {
+          "file": "deep-issue-scanner.js",
+          "type": "comment",
+          "count": 43
+        },
+        {
+          "file": "enhanced-ui-framework.js",
+          "type": "comment",
+          "count": 4
+        },
+        {
+          "file": "ui-components.js",
+          "type": "comment",
+          "count": 1
+        },
+        {
+          "file": "auto-documenter.js",
+          "type": "comment",
+          "count": 5
+        },
+        {
+          "file": "visual-game-editor.js",
+          "type": "comment",
+          "count": 2
+        },
+        {
+          "file": "complete-marketplace-ui.js",
+          "type": "comment",
+          "count": 1
+        },
+        {
+          "file": "standalone-local-ai.js",
+          "type": "comment",
+          "count": 1
+        },
+        {
+          "file": "agent-panel-cursor-style.js",
+          "type": "comment",
+          "count": 48
+        },
+        {
+          "file": "comprehensive-cli-tester.js",
+          "type": "comment",
+          "count": 4
+        },
+        {
+          "file": "quantum-intelligence-engine.js",
+          "type": "comment",
+          "count": 4
+        },
+        {
+          "file": "background-agent-manager.js",
+          "type": "comment",
+          "count": 1
+        },
+        {
+          "file": "background-agent-worker.js",
+          "type": "comment",
+          "count": 6
+        },
+        {
+          "file": "browser-panel.js",
+          "type": "comment",
+          "count": 1
+        },
+        {
+          "file": "chat-history.js",
+          "type": "comment",
+          "count": 2
+        },
+        {
+          "file": "command-generator.js",
+          "type": "comment",
+          "count": 2
+        },
+        {
+          "file": "command-palette.js",
+          "type": "comment",
+          "count": 2
+        }
+      ]
+    }
+  }
+}

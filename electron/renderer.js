@@ -105,7 +105,7 @@ function loadMonacoCSS() {
     return new Promise((resolve, reject) => {
         const link = document.createElement('link');
         link.rel = 'stylesheet';
-        link.href = './node_modules/monaco-editor/min/vs/editor/editor.main.css';
+        link.href = './node_modules/monaco-editor/min/vs/style.css';
         
         link.onload = () => {
             console.log('[BigDaddyG] ✅ Monaco CSS loaded');
@@ -2018,9 +2018,65 @@ if (document.readyState === 'loading') {
 document.addEventListener('DOMContentLoaded', () => {
     initWelcomeMessage();
     initDragAndDrop();
+    initializeAISystem();
 });
 } else {
     initDragAndDrop();
+    initializeAISystem();
+}
+
+// ============================================================================
+// AI SYSTEM INITIALIZATION
+// ============================================================================
+
+function initializeAISystem() {
+    console.log('[AI] Initializing AI system...');
+    
+    // Initialize AI Provider Manager
+    if (typeof AIProviderManager !== 'undefined') {
+        window.aiProviderManager = new AIProviderManager();
+        window.aiProviderManager.initialize().then(() => {
+            console.log('[AI] ✅ Provider Manager initialized');
+            console.log('[AI] Available providers:', Array.from(window.aiProviderManager.providers.keys()));
+            
+            // Initialize API Key Manager UI
+            if (typeof APIKeyManagerUI !== 'undefined') {
+                window.apiKeyManagerUI = new APIKeyManagerUI(window.aiProviderManager);
+                console.log('[UI] ✅ API Key Manager UI initialized');
+                
+                // Add global command to open API key manager
+                window.openAPIKeyManager = () => {
+                    if (window.apiKeyManagerUI) {
+                        window.apiKeyManagerUI.show();
+                    } else {
+                        console.error('[UI] API Key Manager UI not available');
+                    }
+                };
+                
+                console.log('[UI] Use window.openAPIKeyManager() to configure API keys');
+            } else {
+                console.warn('[UI] APIKeyManagerUI not loaded');
+            }
+        }).catch(err => {
+            console.error('[AI] ❌ Provider Manager init failed:', err);
+        });
+    } else {
+        console.warn('[AI] ⚠️ AIProviderManager not loaded - check script includes in index.html');
+    }
+    
+    // Initialize BigDaddyA Integration (if available)
+    if (typeof BigDaddyAIntegration !== 'undefined') {
+        window.bigdaddyA = new BigDaddyAIntegration();
+        window.bigdaddyA.initialize().then(() => {
+            console.log('[BigDaddyA] ✅ Custom LLM runtime initialized');
+        }).catch(err => {
+            console.error('[BigDaddyA] Init failed:', err);
+        });
+    }
+    
+    // Initialize other AI components
+    initializeLogger();
+    initializeMemoryManager();
 }
 
 // Allow Ctrl+Enter to send message
@@ -2033,6 +2089,21 @@ document.getElementById('ai-input').addEventListener('keydown', (e) => {
 
 console.log('[BigDaddyG] ⌨️ Keyboard shortcuts ready:');
 console.log('  • Ctrl+Enter - Send AI message');
+
+// Initialize logger and memory manager
+function initializeLogger() {
+    if (typeof global !== 'undefined' && global.logger) {
+        window.logger = global.logger;
+        console.log('[Logger] ✅ Professional logging system available');
+    }
+}
+
+function initializeMemoryManager() {
+    if (typeof memoryManager !== 'undefined') {
+        console.log('[Memory] ✅ Memory manager available');
+        console.log('[Memory] Use memoryManager.addEventListener() for tracked listeners');
+    }
+}
 
 console.log('[BigDaddyG] ✅ Renderer initialized');
 

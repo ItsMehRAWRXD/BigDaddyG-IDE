@@ -1,0 +1,41 @@
+{
+  "timestamp": "2025-11-10T19:13:49.944Z",
+  "stats": {
+    "total": 54,
+    "passed": 54,
+    "failed": 0
+  },
+  "passRate": 100,
+  "features": {
+    "aiProviders": {
+      "tested": 15,
+      "working": 13
+    },
+    "agenticCore": {
+      "tested": 12,
+      "working": 12
+    },
+    "selfHealing": {
+      "tested": 9,
+      "working": 9
+    },
+    "multiAgent": {
+      "tested": 7,
+      "working": 7
+    },
+    "gameIntegration": {
+      "tested": 9,
+      "working": 9
+    },
+    "uiComponents": {
+      "tested": 8,
+      "working": 8
+    }
+  },
+  "failed": [
+    "Provider openai: ❌ Missing registration or method",
+    "Provider deepseek: ❌ Missing registration or method"
+  ],
+  "warnings": [],
+  "verdict": "EXCELLENT"
+}

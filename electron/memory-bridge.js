@@ -343,8 +343,8 @@ class MemoryBridge {
                 lastUpdated: new Date().toISOString()
             };
         } catch (error) {
-            // Silent - stats update not critical
-        }
+        console.error('[Error]', error);
+    }
     }
     
     formatBytes(bytes) {

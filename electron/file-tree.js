@@ -70,8 +70,8 @@ class DriveScanner {
                     drives.push(driveInfo);
                     console.log(`[FileTree] ✅ Found drive: ${letter}:\\ (${driveInfo.label})`);
                 } catch (error) {
-                    // Drive not accessible or doesn't exist
-                }
+        console.error('[Error]', error);
+    }
             }
         } else if (process.platform === 'darwin') {
             // macOS: /Volumes
@@ -97,8 +97,8 @@ class DriveScanner {
                     drives.push({ path: mountPath, label: mount, type: 'mount' });
                 }
             } catch (error) {
-                // /mnt might not exist
-            }
+        console.error('[Error]', error);
+    }
         }
         
         console.log(`[FileTree] 📊 Found ${drives.length} drive(s)`);

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BigDaddyG IDE - Cognitive Modes Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #e0e0e0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: #a0a0a0;
+            font-size: 16px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .panel h2 {
+            margin-bottom: 20px;
+            color: #ffffff;
+            font-size: 24px;
+        }
+
+        #modes-container {
+            grid-column: 1 / -1;
+        }
+
+        .test-section {
+            margin-top: 20px;
+        }
+
+        .test-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        .test-button:active {
+            transform: translateY(0);
+        }
+
+        #console {
+            background: #1a1a1a;
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .console-line {
+            margin: 4px 0;
+            padding: 4px;
+            border-left: 2px solid transparent;
+            padding-left: 8px;
+        }
+
+        .console-line.info {
+            border-left-color: #3B82F6;
+            color: #60A5FA;
+        }
+
+        .console-line.success {
+            border-left-color: #10B981;
+            color: #34D399;
+        }
+
+        .console-line.warning {
+            border-left-color: #F59E0B;
+            color: #FBBF24;
+        }
+
+        .console-line.error {
+            border-left-color: #EF4444;
+            color: #F87171;
+        }
+
+        .ai-response {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 20px;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .ai-response h3 {
+            color: #667eea;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+
+        .ai-response pre {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 12px;
+            color: #e0e0e0;
+        }
+
+        .export-section {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(102, 126, 234, 0.2);
+            color: #a0aeff;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🧠 Cognitive Modes Demo</h1>
+        <p>Experience AI reasoning control with BigDaddyG IDE</p>
+        <div>
+            <span class="badge">🧠 Thinking</span>
+            <span class="badge">🔍 Search</span>
+            <span class="badge">📋 Planning</span>
+            <span class="badge">💭 Reflect</span>
+            <span class="badge">📚 Learn</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="modes-container" class="panel">
+            <!-- Cognitive modes UI will be injected here -->
+        </div>
+
+        <div class="panel">
+            <h2>🧪 Test Controls</h2>
+            <div class="test-section">
+                <button class="test-button" onclick="testToggleModes()">🔄 Test Toggle All</button>
+                <button class="test-button" onclick="testPresets()">⚡ Test Presets</button>
+                <button class="test-button" onclick="testWeights()">⚖️ Test Weights</button>
+                <button class="test-button" onclick="testAIIntegration()">🤖 Test AI Integration</button>
+                <button class="test-button" onclick="testStatistics()">📊 Show Statistics</button>
+                <button class="test-button" onclick="testExport()">💾 Export Config</button>
+                <button class="test-button" onclick="clearConsole()">🗑️ Clear Console</button>
+            </div>
+
+            <div class="export-section">
+                <button class="test-button" onclick="downloadConfig()">📥 Download Config</button>
+                <button class="test-button" onclick="loadPresetPrompt()">📂 Load Preset</button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>📟 Console Output</h2>
+            <div id="console"></div>
+        </div>
+    </div>
+
+    <!-- Load modules -->
+    <script src="mode-manager.js"></script>
+    <script src="mode-ui.js"></script>
+    <script src="ai-integration.js"></script>
+
+    <script>
+        // Initialize system
+        const modeManager = new CognitiveModeManager();
+        const modeUI = new CognitiveModeUI(modeManager);
+
+        // Mock AI system for demo
+        const mockAISystem = {
+            parameters: {},
+            setParameter(key, value) {
+                this.parameters[key] = value;
+                log(`AI Parameter: ${key} = ${value}`, 'info');
+            }
+        };
+
+        const aiIntegration = new CognitiveAIIntegration(modeManager, mockAISystem);
+
+        // Create UI
+        const container = document.getElementById('modes-container');
+        modeUI.createUI(container);
+
+        // Console logging
+        function log(message, type = 'info') {
+            const consoleDiv = document.getElementById('console');
+            const line = document.createElement('div');
+            line.className = `console-line ${type}`;
+            
+            const timestamp = new Date().toLocaleTimeString();
+            line.textContent = `[${timestamp}] ${message}`;
+            
+            consoleDiv.appendChild(line);
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        }
+
+        function clearConsole() {
+            document.getElementById('console').innerHTML = '';
+            log('Console cleared', 'info');
+        }
+
+        // Intercept console.log
+        const originalLog = console.log;
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            log(args.join(' '), 'info');
+        };
+
+        const originalError = console.error;
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            log(args.join(' '), 'error');
+        };
+
+        // Test functions
+        async function testToggleModes() {
+            log('🧪 Testing toggle all modes...', 'info');
+            
+            const modes = ['thinking', 'search', 'planning', 'reflect', 'learn'];
+            
+            for (const mode of modes) {
+                await sleep(300);
+                modeManager.toggle(mode);
+            }
+            
+            await sleep(500);
+            
+            for (const mode of modes) {
+                await sleep(300);
+                modeManager.toggle(mode);
+            }
+            
+            log('✅ Toggle test complete!', 'success');
+        }
+
+        async function testPresets() {
+            log('🧪 Testing presets...', 'info');
+            
+            const presets = ['coding', 'research', 'planning', 'learning', 'fast', 'default'];
+            
+            for (const preset of presets) {
+                await sleep(800);
+                log(`Loading preset: ${preset}`, 'info');
+                modeUI.loadPreset(preset);
+            }
+            
+            log('✅ Preset test complete!', 'success');
+        }
+
+        async function testWeights() {
+            log('🧪 Testing weights...', 'info');
+            
+            const modes = Object.keys(modeManager.getAllModes());
+            
+            for (const mode of modes) {
+                await sleep(300);
+                const weight = Math.random() * 2;
+                modeManager.setWeight(mode, weight);
+                log(`${mode} weight set to ${weight.toFixed(2)}`, 'info');
+            }
+            
+            await sleep(500);
+            
+            // Reset to 1.0
+            for (const mode of modes) {
+                modeManager.setWeight(mode, 1.0);
+            }
+            
+            log('✅ Weight test complete!', 'success');
+        }
+
+        function testAIIntegration() {
+            log('🧪 Testing AI integration...', 'info');
+            
+            const config = modeManager.getAIConfig();
+            log(`AI Config: ${JSON.stringify(config, null, 2)}`, 'info');
+            
+            const prompt = "Write a function to calculate fibonacci numbers";
+            const enhanced = aiIntegration.enhancePrompt(prompt);
+            
+            log('Enhanced Prompt:', 'info');
+            log(enhanced, 'success');
+            
+            const stats = aiIntegration.getAIStats();
+            log('AI Stats:', 'info');
+            log(JSON.stringify(stats, null, 2), 'info');
+            
+            log('✅ AI integration test complete!', 'success');
+        }
+
+        function testStatistics() {
+            log('📊 Fetching statistics...', 'info');
+            
+            const stats = modeManager.getStatistics();
+            
+            log(`Total Modes: ${stats.totalModes}`, 'info');
+            log(`Enabled: ${stats.enabled}`, 'success');
+            log(`Disabled: ${stats.disabled}`, 'warning');
+            log(`Average Weight: ${stats.averageWeight.toFixed(2)}`, 'info');
+            log(`Total Toggles: ${stats.totalToggles}`, 'info');
+            
+            if (stats.mostToggled) {
+                log(`Most Toggled: ${stats.mostToggled.mode} (${stats.mostToggled.count} times)`, 'info');
+            }
+            
+            const history = modeManager.getHistory(5);
+            log(`Recent History (last 5):`, 'info');
+            history.forEach(entry => {
+                log(`  ${entry.mode}: ${entry.action}`, 'info');
+            });
+        }
+
+        function testExport() {
+            log('💾 Exporting configuration...', 'info');
+            
+            const config = modeManager.exportConfig();
+            log('Exported Config:', 'info');
+            log(JSON.stringify(config, null, 2), 'success');
+        }
+
+        function downloadConfig() {
+            const config = modeManager.exportConfig();
+            const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'cognitive-modes-config.json';
+            a.click();
+            
+            log('📥 Configuration downloaded!', 'success');
+        }
+
+        function loadPresetPrompt() {
+            const presets = ['default', 'coding', 'research', 'planning', 'learning', 'fast'];
+            const choice = prompt('Enter preset name:\n' + presets.join(', '));
+            
+            if (choice && presets.includes(choice)) {
+                modeUI.loadPreset(choice);
+                log(`📂 Loaded preset: ${choice}`, 'success');
+            } else {
+                log('❌ Invalid preset name', 'error');
+            }
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Initial log
+        log('🚀 Cognitive Modes Demo initialized!', 'success');
+        log('Toggle switches above to control AI reasoning modes', 'info');
+        log('Use test buttons to see the system in action', 'info');
+    </script>
+</body>
+</html>

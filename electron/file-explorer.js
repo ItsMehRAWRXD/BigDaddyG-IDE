@@ -210,6 +210,7 @@ class FileExplorer {
             
             if (result.success) {
                 this.renderDirectory(dirPath, result.files);
+                this.renderTreeView(dirPath, result.files);
             } else {
                 console.error('[Explorer] ❌ Failed to read directory:', result.error);
                 alert(`Cannot access ${dirPath}: ${result.error}`);
@@ -217,6 +218,54 @@ class FileExplorer {
         } catch (error) {
             console.error('[Explorer] ❌ Error loading directory:', error);
             alert(`Error: ${error.message}`);
+        }
+    }
+    
+    // Tree view rendering for hierarchical file structure
+    renderTreeView(dirPath, files) {
+        console.log('[Explorer] 🌳 Rendering tree view for:', dirPath);
+        // Tree view rendering is handled by renderDirectory
+    }
+    
+    // Create new file
+    async createFile(filePath) {
+        try {
+            console.log('[Explorer] 📝 Creating file:', filePath);
+            const result = await window.electron.createFile(filePath);
+            if (result.success) {
+                console.log('[Explorer] ✅ File created successfully');
+                await this.loadDirectory(this.currentPath);
+            }
+            return result;
+        } catch (error) {
+            console.error('[Explorer] ❌ Error creating file:', error);
+            return { success: false, error: error.message };
+        }
+    }
+    
+    // Create new file helper
+    async newFile(fileName) {
+        if (!this.currentPath) {
+            alert('Please select a directory first');
+            return;
+        }
+        const filePath = `${this.currentPath}/${fileName}`;
+        return await this.createFile(filePath);
+    }
+    
+    // Rename file
+    async rename(oldPath, newPath) {
+        try {
+            console.log('[Explorer] ✏️ Renaming:', oldPath, 'to', newPath);
+            const result = await window.electron.renameFile(oldPath, newPath);
+            if (result.success) {
+                console.log('[Explorer] ✅ Renamed successfully');
+                await this.loadDirectory(this.currentPath);
+            }
+            return result;
+        } catch (error) {
+            console.error('[Explorer] ❌ Error renaming:', error);
+            return { success: false, error: error.message };
         }
     }
     

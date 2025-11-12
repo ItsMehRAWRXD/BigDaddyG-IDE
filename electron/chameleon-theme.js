@@ -176,24 +176,9 @@ class ChameleonTheme {
     }
     
     updateMonacoTheme() {
-        // If Monaco editor is loaded, update its colors
-        if (typeof monaco !== 'undefined') {
-            monaco.editor.defineTheme('chameleon-dark', {
-                base: 'vs-dark',
-                inherit: true,
-                rules: [
-                    { token: '', foreground: this.hue.toString(16).padStart(6, '0') }
-                ],
-                colors: {
-                    'editor.foreground': this.getHSLA(this.hue),
-                    'editor.selectionBackground': this.getHSLA(this.hue, 0.3)
-                }
-            });
-            
-            if (window.editor) {
-                monaco.editor.setTheme('chameleon-dark');
-            }
-        }
+        // Monaco removed - using BigDaddy Editor
+        // Skip Monaco theme updates
+        return;
     }
     
     setHue(hue) {

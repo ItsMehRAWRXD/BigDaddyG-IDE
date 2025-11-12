@@ -768,7 +768,10 @@ async function requestPermission(action, details = {}) {
 // ============================================================================
 
 // Wrap terminal execution with safety check
-const originalExecute = window.executeTerminalCommand || function() {};
+const originalExecute = window.executeTerminalCommand || function() {
+        console.log('[agentic-safety.js] function executed');
+        return true;
+    };
 
 window.executeTerminalCommand = async function(command, details = {}) {
     const permission = await requestPermission('execute_terminal_commands', {

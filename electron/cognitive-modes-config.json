@@ -1,0 +1,25 @@
+{
+  "modes": {
+    "thinking": {
+      "enabled": true,
+      "weight": 1.0
+    },
+    "search": {
+      "enabled": true,
+      "weight": 1.0
+    },
+    "planning": {
+      "enabled": true,
+      "weight": 1.0
+    },
+    "reflect": {
+      "enabled": true,
+      "weight": 1.0
+    },
+    "learn": {
+      "enabled": true,
+      "weight": 1.0
+    }
+  },
+  "timestamp": 1699660800000
+}

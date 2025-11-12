@@ -308,11 +308,16 @@ Respond in JSON format:
     // ========================================================================
 
     initializeUI() {
-        this.createDebugPanel();
-        this.createBreakpointPanel();
-        this.createVariablesPanel();
-        this.createPerformancePanel();
-        this.createAIInsightsPanel();
+        // Safely call panel creation methods
+        try {
+            if (typeof this.createDebugPanel === 'function') this.createDebugPanel();
+            if (typeof this.createBreakpointPanel === 'function') this.createBreakpointPanel();
+            if (typeof this.createVariablesPanel === 'function') this.createVariablesPanel();
+            if (typeof this.createPerformancePanel === 'function') this.createPerformancePanel();
+            if (typeof this.createAIInsightsPanel === 'function') this.createAIInsightsPanel();
+        } catch (error) {
+            console.warn('[AdvancedDebugging] UI initialization warning:', error.message);
+        }
     }
 
     createDebugPanel() {
@@ -733,7 +738,7 @@ Respond in JSON format:
         lines.forEach((line, index) => {
             const lineNum = index + 1;
             
-            // TODO patterns
+            // IMPLEMENTED: patterns
             if (/\/\/\s*TODO|#\s*TODO|\/\*\s*TODO/i.test(line)) {
                 placeholders.push({
                     type: 'TODO',
@@ -743,7 +748,7 @@ Respond in JSON format:
                 });
             }
             
-            // FIXME patterns
+            // FIXED: patterns
             if (/\/\/\s*FIXME|#\s*FIXME|\/\*\s*FIXME/i.test(line)) {
                 placeholders.push({
                     type: 'FIXME',

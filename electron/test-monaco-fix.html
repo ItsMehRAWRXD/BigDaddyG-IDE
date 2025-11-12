@@ -26,7 +26,7 @@
         
         // Test 1: CSS file accessibility
         addResult('CSS Test', 'pending', 'Checking CSS file...');
-        fetch('./node_modules/monaco-editor/min/vs/editor/editor.main.css')
+        fetch('./node_modules/monaco-editor/min/vs/style.css')
             .then(response => {
                 if (response.ok) {
                     addResult('CSS Test', 'pass', `✅ CSS accessible (${response.status})`);

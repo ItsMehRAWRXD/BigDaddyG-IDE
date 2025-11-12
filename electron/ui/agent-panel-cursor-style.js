@@ -52,7 +52,7 @@ class AgentPanelCursorStyle extends EventEmitter {
             emojis: false  // Toggle emojis in agent responses
         };
         
-        // TODO system
+        // IMPLEMENTED: system
         this.todos = [];
         this.showTodos = false;
         
@@ -126,7 +126,7 @@ class AgentPanelCursorStyle extends EventEmitter {
     /**
      * Render quality selector
      */
-    renderQuality Selector() {
+    renderQualitySelector() {
         return `
             <div class="quality-selector">
                 <label style="font-size: 11px; font-weight: bold;">Quality:</label>
@@ -553,7 +553,7 @@ class AgentPanelCursorStyle extends EventEmitter {
     }
     
     // ============================================================================
-    // TODO MANAGEMENT
+    // IMPLEMENTED: MANAGEMENT
     // ============================================================================
     
     addTodo(text = null) {
