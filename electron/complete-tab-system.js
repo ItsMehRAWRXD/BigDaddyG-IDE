@@ -926,13 +926,76 @@ hello();"></textarea>
         return this.createTab({
             title: 'Marketplace',
             icon: '🛒',
-            content: `<div id="marketplace-tab-content" style="width: 100%; height: 100%;"></div>`,
+            content: `
+                <div id="marketplace-tab-content" style="width: 100%; height: 100%; padding: 40px;">
+                    <h1 style="color: #00d4ff; margin-bottom: 30px;">🛒 Extension Marketplace</h1>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                        <div style="background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 12px; padding: 25px;">
+                            <div style="font-size: 48px; margin-bottom: 15px;">📦</div>
+                            <h3 style="color: #00d4ff; margin-bottom: 10px;">Extensions</h3>
+                            <p style="color: #888; margin-bottom: 15px;">Browse and install extensions</p>
+                            <button style="background: #00d4ff; color: #000; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold;">Browse Extensions</button>
+                        </div>
+                        
+                        <div style="background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 12px; padding: 25px;">
+                            <div style="font-size: 48px; margin-bottom: 15px;">🎨</div>
+                            <h3 style="color: #00d4ff; margin-bottom: 10px;">Themes</h3>
+                            <p style="color: #888; margin-bottom: 15px;">Customize your IDE appearance</p>
+                            <button style="background: #00d4ff; color: #000; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold;">Browse Themes</button>
+                        </div>
+                        
+                        <div style="background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 12px; padding: 25px;">
+                            <div style="font-size: 48px; margin-bottom: 15px;">🔌</div>
+                            <h3 style="color: #00d4ff; margin-bottom: 10px;">Plugins</h3>
+                            <p style="color: #888; margin-bottom: 15px;">Extend IDE functionality</p>
+                            <button style="background: #00d4ff; color: #000; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold;">Browse Plugins</button>
+                        </div>
+                    </div>
+                    
+                    <h2 style="color: #00d4ff; margin-bottom: 20px;">✨ Featured Extensions</h2>
+                    <div style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 8px; padding: 20px;">
+                        <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                            <div style="font-size: 36px; margin-right: 20px;">🚀</div>
+                            <div style="flex: 1;">
+                                <h3 style="color: #00d4ff; margin-bottom: 5px;">AI Code Assistant</h3>
+                                <p style="color: #888; font-size: 14px;">Intelligent code completion and suggestions</p>
+                            </div>
+                            <button style="background: #00d4ff; color: #000; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold;">Install</button>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                            <div style="font-size: 36px; margin-right: 20px;">🎯</div>
+                            <div style="flex: 1;">
+                                <h3 style="color: #00d4ff; margin-bottom: 5px;">Git Integration Plus</h3>
+                                <p style="color: #888; font-size: 14px;">Enhanced Git workflow and visualization</p>
+                            </div>
+                            <button style="background: #00d4ff; color: #000; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold;">Install</button>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center;">
+                            <div style="font-size: 36px; margin-right: 20px;">🐛</div>
+                            <div style="flex: 1;">
+                                <h3 style="color: #00d4ff; margin-bottom: 5px;">Advanced Debugger</h3>
+                                <p style="color: #888; font-size: 14px;">Powerful debugging tools and breakpoints</p>
+                            </div>
+                            <button style="background: #00d4ff; color: #000; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold;">Install</button>
+                        </div>
+                    </div>
+                    
+                    <p style="color: #666; margin-top: 30px; font-size: 12px;">
+                        💡 Tip: Install extensions to enhance your IDE with additional features, themes, and integrations
+                    </p>
+                </div>
+            `,
             onActivate: () => {
-                // Marketplace UI will inject itself
-                if (window.CompleteMarketplaceUI) {
-                    const ui = new window.CompleteMarketplaceUI();
-                    ui.initialize('marketplace-tab-content', window.extensionManager);
-                }
+                // Try to load marketplace UI if available
+                setTimeout(() => {
+                    if (window.CompleteMarketplaceUI) {
+                        const ui = new window.CompleteMarketplaceUI();
+                        ui.initialize('marketplace-tab-content', window.extensionManager);
+                    }
+                }, 100);
             }
         });
     }
