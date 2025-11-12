@@ -571,6 +571,16 @@ class FileSystemIntegration {
         console.log('[FileSystem] 📂 Path:', filePath);
         console.log('[FileSystem] 🏷️ Type:', type);
         
+        // Check for protected/system folders FIRST
+        const protectedFolders = ['$RECYCLE.BIN', 'System Volume Information', 'Recovery', 'Config.Msi', 'ProgramData', 'Recycle.Bin'];
+        const fileName = filePath.split(/[\/\\]/).pop();
+        
+        if (protectedFolders.some(pf => fileName.toLowerCase().includes(pf.toLowerCase()))) {
+            console.warn('[FileSystem] ⚠️ Skipping protected folder:', fileName);
+            alert(`⚠️ Protected System Folder\n\n"${fileName}" is a Windows system folder.\n\nAccess is restricted for security.`);
+            return;
+        }
+        
         // Robust type detection (handles undefined, "undefined" string, etc.)
         if (!type || type === 'undefined' || type === undefined) {
             console.warn('[FileSystem] ⚠️ Type is undefined, auto-detecting...');
@@ -596,10 +606,20 @@ class FileSystemIntegration {
         
         if (type === 'file') {
             console.log('[FileSystem] 📄 Opening file in new tab...');
-            await this.loadFile(filePath);
+            try {
+                await this.loadFile(filePath);
+            } catch (error) {
+                console.error('[FileSystem] Error opening file:', error);
+                alert(`⚠️ Cannot Open File\n\n${error.message}`);
+            }
         } else if (type === 'directory') {
             console.log('[FileSystem] 📁 Expanding directory...');
-            await this.loadProject(filePath);
+            try {
+                await this.loadProject(filePath);
+            } catch (error) {
+                console.error('[FileSystem] Error loading directory:', error);
+                // Error already handled in loadProject
+            }
         } else {
             console.error('[FileSystem] ❌ Unknown type:', type);
         }
