@@ -446,16 +446,8 @@ app.whenReady().then(async () => {
 });
 
 app.on('window-all-closed', () => {
-  console.log('[BigDaddyG] ⚠️ ⚠️ ⚠️ ALL WINDOWS CLOSED - THIS IS WHY IT EXITS! ⚠️ ⚠️ ⚠️');
-  console.log('[BigDaddyG] Window count:', BrowserWindow.getAllWindows().length);
-  console.log('[BigDaddyG] mainWindow exists:', !!mainWindow);
-  console.log('[BigDaddyG] mainWindow destroyed:', mainWindow?.isDestroyed());
+  console.log('[BigDaddyG] 👋 All windows closed');
   
-  // PREVENT IMMEDIATE QUIT - Give us time to see what's happening
-  console.log('[BigDaddyG] 🛑 PREVENTING AUTO-QUIT FOR DEBUGGING');
-  console.log('[BigDaddyG] Press Ctrl+C to manually quit');
-  
-  // Don't quit automatically - keep process alive for debugging
   // Stop IPC server
   if (ipcServer) {
     ipcServer.stop();
@@ -470,12 +462,10 @@ app.on('window-all-closed', () => {
     remoteLogServer.kill();
   }
   
-  // COMMENTED OUT TO PREVENT AUTO-QUIT
-  // if (process.platform !== 'darwin') {
-  //   app.quit();
-  // }
-  
-  console.log('[BigDaddyG] 🔍 Process staying alive - check logs above to see why window closed');
+  // Normal quit behavior
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
 });
 
 // ============================================================================
