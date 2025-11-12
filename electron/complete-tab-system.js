@@ -1127,6 +1127,27 @@ hello();"></textarea>
                 // Use selected model or default to bigdaddyg:latest
                 const selectedModel = modelSelect ? modelSelect.value : 'bigdaddyg:latest';
                 
+                // Build context with file system access if available
+                let contextPrompt = message;
+                
+                if (window.agenticFileAccess && window.agenticFileAccess.currentWorkspace) {
+                    const summary = window.agenticFileAccess.getWorkspaceSummary();
+                    contextPrompt = `[WORKSPACE CONTEXT]
+Path: ${summary.path}
+Total Files: ${summary.totalFiles}
+File Types: ${Object.entries(summary.fileTypes).map(([ext, count]) => `${ext}(${count})`).join(', ')}
+
+Top Files:
+${summary.topFiles.map(f => `- ${f.name}`).join('\n')}
+
+[USER MESSAGE]
+${message}
+
+You have access to the user's workspace. You can reference files by name.`;
+                    
+                    console.log('[AI Chat] 🤖 Added workspace context to prompt');
+                }
+                
                 // REAL Orchestra API call with selected model
                 const response = await fetch('http://localhost:11441/api/chat', {
                     method: 'POST',
