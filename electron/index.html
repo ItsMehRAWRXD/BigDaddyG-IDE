@@ -197,7 +197,10 @@
     </div>
     
     <!-- LOAD ORDER CRITICAL -->
-    <!-- 1. Tab system FIRST (creates DOM) -->
+    <!-- 0. Marketplace Database FIRST (data must exist before tabs) -->
+    <script src="full-marketplace-database.js"></script>
+    
+    <!-- 1. Tab system SECOND (creates DOM) -->
     <script src="complete-tab-system.js"></script>
     
     <!-- 2. Open Files Panel -->
