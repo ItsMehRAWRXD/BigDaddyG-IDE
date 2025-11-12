@@ -485,7 +485,7 @@ function getOrchestraConfig() {
   const defaults = {
     autoStart: true,
     autoRestart: true,
-    autoStartDelayMs: 1500,
+    autoStartDelayMs: 0,  // ✅ IMMEDIATE START - No delay!
   };
 
   try {
