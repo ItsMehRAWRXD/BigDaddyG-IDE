@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BigDaddyG IDE</title>
+    
+    <!-- Core Modules -->
+    <script src="redirect-to-bigdaddy.js"></script>
+    
+    <!-- COMPLETE TAB SYSTEM - HANDLES EVERYTHING -->
+    <script src="complete-tab-system.js"></script>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #05050f;
+            color: #fff;
+            overflow: hidden;
+        }
+        
+        #app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100vw;
+        }
+        
+        #title-bar {
+            height: 35px;
+            background: #05050f;
+            border-bottom: 1px solid #00d4ff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 15px;
+        }
+        
+        #title-bar .title {
+            font-size: 12px;
+            color: #00d4ff;
+            font-weight: bold;
+        }
+        
+        #window-controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .window-btn {
+            background: none;
+            border: 1px solid #00d4ff;
+            color: #00d4ff;
+            width: 30px;
+            height: 25px;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.2s;
+        }
+        
+        .window-btn:hover {
+            background: rgba(0, 212, 255, 0.2);
+        }
+        
+        .window-btn.close:hover {
+            background: #ff4757;
+            border-color: #ff4757;
+        }
+        
+        #menu-bar {
+            height: 30px;
+            background: #05050f;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            font-size: 13px;
+        }
+        
+        .menu-item {
+            padding: 5px 12px;
+            cursor: pointer;
+            color: #ccc;
+            transition: all 0.2s;
+        }
+        
+        .menu-item:hover {
+            background: rgba(0, 212, 255, 0.2);
+        }
+        
+        #main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Title Bar -->
+        <div id="title-bar">
+            <div class="title">🌌 BigDaddyG IDE - Tab-Only UI</div>
+            <div id="window-controls">
+                <button class="window-btn" onclick="if(typeof minimizeWindow !== 'undefined') minimizeWindow()">─</button>
+                <button class="window-btn" onclick="if(typeof maximizeWindow !== 'undefined') maximizeWindow()">□</button>
+                <button class="window-btn close" onclick="if(typeof closeWindow !== 'undefined') closeWindow()">×</button>
+            </div>
+        </div>
+        
+        <!-- Menu Bar -->
+        <div id="menu-bar">
+            <div class="menu-item">File</div>
+            <div class="menu-item">Edit</div>
+            <div class="menu-item">View</div>
+            <div class="menu-item">Help</div>
+        </div>
+        
+        <!-- Main Container - Tab system populates this -->
+        <div id="main-container"></div>
+    </div>
+    
+    <!-- Essential Scripts Only -->
+    <script src="window-api-bridge.js"></script>
+    <script src="settings-manager.js" defer></script>
+    <script src="theme-manager.js" defer></script>
+</body>
+</html>
