@@ -1286,6 +1286,318 @@ Create a detailed, well-reasoned answer with:
   }
 });
 
+// 11. MEMORY MODULE - RAG (Retrieval Augmented Generation)
+// Persistent memory with semantic search and retrieval
+
+let memoryStore = []; // In-memory storage (could be enhanced with vector DB)
+let memoryIndex = 0;
+
+// Add memory to store
+app.post('/api/memory/add', async (req, res) => {
+  const { content, type = 'note', tags = [], importance = 5 } = req.body;
+  
+  if (!content) {
+    return res.status(400).json({ error: 'Content required' });
+  }
+  
+  try {
+    const memory = {
+      id: ++memoryIndex,
+      content,
+      type, // note, code, fact, conversation, etc.
+      tags,
+      importance, // 1-10 scale
+      timestamp: new Date().toISOString(),
+      tokens: estimateTokens(content),
+      embeddings: null // Could add vector embeddings for semantic search
+    };
+    
+    memoryStore.push(memory);
+    
+    res.json({
+      success: true,
+      memory_id: memory.id,
+      total_memories: memoryStore.length,
+      message: 'Memory stored successfully'
+    });
+  } catch (error) {
+    console.error('[Orchestra] /api/memory/add error:', error);
+    res.status(500).json({ error: error.message || 'Memory add failed' });
+  }
+});
+
+// Retrieve memories (with optional filtering)
+app.post('/api/memory/retrieve', async (req, res) => {
+  const { query, limit = 10, type, minImportance = 0 } = req.body;
+  
+  try {
+    let results = memoryStore;
+    
+    // Filter by type
+    if (type) {
+      results = results.filter(m => m.type === type);
+    }
+    
+    // Filter by importance
+    results = results.filter(m => m.importance >= minImportance);
+    
+    // If query provided, do semantic search using AI
+    if (query) {
+      const searchPrompt = `Given this query: "${query}"
+
+Analyze these memories and rank them by relevance (0-10):
+
+${results.slice(0, 50).map((m, i) => `[${i}] ${m.content.substring(0, 200)}...`).join('\n\n')}
+
+Return ONLY the indices of relevant memories, comma-separated, ordered by relevance.
+Example: 3,7,12,1`;
+
+      const aiResponse = await processBigDaddyGRequest('bigdaddyg:latest', searchPrompt, false);
+      const indices = extractContentFromResponse(aiResponse)
+        .split(',')
+        .map(i => parseInt(i.trim()))
+        .filter(i => !isNaN(i) && i >= 0 && i < results.length);
+      
+      // Reorder by AI ranking
+      const rankedResults = indices.map(i => results[i]).filter(Boolean);
+      results = rankedResults.length > 0 ? rankedResults : results;
+    }
+    
+    // Sort by importance if no AI ranking
+    if (!query) {
+      results.sort((a, b) => b.importance - a.importance);
+    }
+    
+    res.json({
+      query: query || 'all',
+      results: results.slice(0, limit),
+      total_found: results.length,
+      total_memories: memoryStore.length,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('[Orchestra] /api/memory/retrieve error:', error);
+    res.status(500).json({ error: error.message || 'Memory retrieval failed' });
+  }
+});
+
+// Search memories by content
+app.post('/api/memory/search', async (req, res) => {
+  const { query, limit = 5 } = req.body;
+  
+  if (!query) {
+    return res.status(400).json({ error: 'Query required' });
+  }
+  
+  try {
+    // Use AI for semantic search
+    const searchPrompt = `Search query: "${query}"
+
+Find the most relevant memories from these:
+
+${memoryStore.slice(0, 100).map((m, i) => 
+  `[${m.id}] (${m.type}, importance: ${m.importance})\n${m.content.substring(0, 150)}...`
+).join('\n\n')}
+
+Return the IDs of the ${limit} most relevant memories, comma-separated.
+Consider semantic similarity, not just keyword matching.
+Example: 15,3,42,7,19`;
+
+    const aiResponse = await processBigDaddyGRequest('bigdaddyg:latest', searchPrompt, false);
+    const ids = extractContentFromResponse(aiResponse)
+      .split(',')
+      .map(id => parseInt(id.trim()))
+      .filter(id => !isNaN(id));
+    
+    const results = ids
+      .map(id => memoryStore.find(m => m.id === id))
+      .filter(Boolean)
+      .slice(0, limit);
+    
+    res.json({
+      query,
+      results,
+      result_count: results.length,
+      searched_memories: memoryStore.length,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('[Orchestra] /api/memory/search error:', error);
+    res.status(500).json({ error: error.message || 'Memory search failed' });
+  }
+});
+
+// Get all memories (paginated)
+app.get('/api/memory/list', async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = parseInt(req.query.pageSize) || 20;
+  
+  try {
+    const start = (page - 1) * pageSize;
+    const end = start + pageSize;
+    const paginatedMemories = memoryStore
+      .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+      .slice(start, end);
+    
+    res.json({
+      memories: paginatedMemories,
+      page,
+      pageSize,
+      total: memoryStore.length,
+      totalPages: Math.ceil(memoryStore.length / pageSize),
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('[Orchestra] /api/memory/list error:', error);
+    res.status(500).json({ error: error.message || 'Memory list failed' });
+  }
+});
+
+// Update memory importance
+app.post('/api/memory/update', async (req, res) => {
+  const { id, importance, tags } = req.body;
+  
+  if (!id) {
+    return res.status(400).json({ error: 'Memory ID required' });
+  }
+  
+  try {
+    const memory = memoryStore.find(m => m.id === id);
+    
+    if (!memory) {
+      return res.status(404).json({ error: 'Memory not found' });
+    }
+    
+    if (importance !== undefined) memory.importance = importance;
+    if (tags) memory.tags = tags;
+    memory.updated = new Date().toISOString();
+    
+    res.json({
+      success: true,
+      memory,
+      message: 'Memory updated'
+    });
+  } catch (error) {
+    console.error('[Orchestra] /api/memory/update error:', error);
+    res.status(500).json({ error: error.message || 'Memory update failed' });
+  }
+});
+
+// Delete memory
+app.delete('/api/memory/delete/:id', async (req, res) => {
+  const id = parseInt(req.params.id);
+  
+  try {
+    const index = memoryStore.findIndex(m => m.id === id);
+    
+    if (index === -1) {
+      return res.status(404).json({ error: 'Memory not found' });
+    }
+    
+    memoryStore.splice(index, 1);
+    
+    res.json({
+      success: true,
+      deleted_id: id,
+      remaining: memoryStore.length,
+      message: 'Memory deleted'
+    });
+  } catch (error) {
+    console.error('[Orchestra] /api/memory/delete error:', error);
+    res.status(500).json({ error: error.message || 'Memory delete failed' });
+  }
+});
+
+// Clear all memories
+app.post('/api/memory/clear', async (req, res) => {
+  try {
+    const count = memoryStore.length;
+    memoryStore = [];
+    memoryIndex = 0;
+    
+    res.json({
+      success: true,
+      cleared: count,
+      message: `Cleared ${count} memories`
+    });
+  } catch (error) {
+    console.error('[Orchestra] /api/memory/clear error:', error);
+    res.status(500).json({ error: error.message || 'Memory clear failed' });
+  }
+});
+
+// RAG: Chat with memory retrieval
+app.post('/api/chat-with-memory', async (req, res) => {
+  const { message, retrieveMemories = true, autoSave = true } = req.body;
+  
+  if (!message) {
+    return res.status(400).json({ error: 'Message required' });
+  }
+  
+  try {
+    let retrievedMemories = [];
+    
+    // Retrieve relevant memories
+    if (retrieveMemories && memoryStore.length > 0) {
+      const searchPrompt = `Query: "${message}"
+
+Find relevant memories from:
+${memoryStore.slice(0, 50).map((m, i) => 
+  `[${m.id}] ${m.content.substring(0, 100)}...`
+).join('\n')}
+
+Return relevant memory IDs, comma-separated (max 5).`;
+
+      const aiResponse = await processBigDaddyGRequest('bigdaddyg:latest', searchPrompt, false);
+      const ids = extractContentFromResponse(aiResponse)
+        .split(',')
+        .map(id => parseInt(id.trim()))
+        .filter(id => !isNaN(id));
+      
+      retrievedMemories = ids
+        .map(id => memoryStore.find(m => m.id === id))
+        .filter(Boolean)
+        .slice(0, 5);
+    }
+    
+    // Build prompt with retrieved memories
+    const memoryContext = retrievedMemories.length > 0
+      ? `\n\nRelevant memories:\n${retrievedMemories.map(m => `- ${m.content}`).join('\n')}`
+      : '';
+    
+    const fullPrompt = `User: ${message}${memoryContext}\n\nAssistant:`;
+    
+    const response = await processBigDaddyGRequest('bigdaddyg:latest', fullPrompt, false);
+    const answer = extractContentFromResponse(response);
+    
+    // Auto-save important interactions
+    if (autoSave) {
+      memoryStore.push({
+        id: ++memoryIndex,
+        content: `Q: ${message}\nA: ${answer.substring(0, 500)}`,
+        type: 'conversation',
+        tags: ['auto-saved'],
+        importance: 5,
+        timestamp: new Date().toISOString(),
+        tokens: estimateTokens(message + answer)
+      });
+    }
+    
+    res.json({
+      message,
+      response: answer,
+      retrieved_memories: retrievedMemories.length,
+      memory_context_used: retrievedMemories.map(m => m.id),
+      auto_saved: autoSave,
+      total_memories: memoryStore.length,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('[Orchestra] /api/chat-with-memory error:', error);
+    res.status(500).json({ error: error.message || 'Memory chat failed' });
+  }
+});
+
 // ============================================================================
 // START SERVER
 // ============================================================================
@@ -1297,8 +1609,8 @@ server.listen(PORT, () => {
   console.log(`🔒 Security middleware enabled`);
   console.log(`⚡ Rate limiting active`);
   console.log(`🤖 BigDaddyG models loaded: ${Object.keys(BIGDADDYG_MODELS).length}`);
-  console.log(`✅ All 12 API endpoints ready - REAL AGENTIC EXECUTION`);
-  console.log(`🧠 Features: Deep Research | Thinking Mode | Web Search | 1M Context`);
+  console.log(`✅ All 19 API endpoints ready - REAL AGENTIC EXECUTION`);
+  console.log(`🧠 Features: Deep Research | Thinking | Web Search | 1M Context | Memory/RAG`);
 });
 
 server.on('error', (error) => {
