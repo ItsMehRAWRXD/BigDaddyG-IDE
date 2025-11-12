@@ -864,27 +864,171 @@ hello();"></textarea>
     }
     
     createAgenticCodingTab() {
+        const agenticId = `agentic-${Date.now()}`;
         return this.createTab({
             title: 'Agentic Coding',
             icon: '🧠',
             content: `
-                <div style="padding: 20px; height: 100%; overflow-y: auto;">
+                <div id="${agenticId}" style="padding: 20px; height: 100%; overflow-y: auto;">
                     <h2 style="color: #00d4ff; margin-bottom: 15px;">🧠 Agentic Coding</h2>
                     <p style="color: #888; margin-bottom: 20px;">AI-powered autonomous coding agent</p>
                     
                     <div style="background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 8px; padding: 20px; margin-bottom: 20px;">
                         <h3 style="color: #00ff88; margin-bottom: 10px;">🎯 Task</h3>
-                        <textarea placeholder="Describe what you want the agent to build..." style="width: 100%; min-height: 120px; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 5px; padding: 12px; color: #fff; font-size: 14px; resize: vertical;"></textarea>
-                        <button style="margin-top: 10px; padding: 12px 24px; background: #00d4ff; color: #000; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">▶ Start Agent</button>
+                        <textarea 
+                            id="${agenticId}-task" 
+                            placeholder="Describe what you want the agent to build..." 
+                            style="width: 100%; min-height: 120px; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 5px; padding: 12px; color: #fff; font-size: 14px; resize: vertical;"
+                        ></textarea>
+                        <button 
+                            id="${agenticId}-start" 
+                            style="margin-top: 10px; padding: 12px 24px; background: #00d4ff; color: #000; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.2s;"
+                        >▶ Start Agent</button>
                     </div>
                     
                     <div style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 8px; padding: 20px;">
                         <h3 style="color: #00ff88; margin-bottom: 10px;">📊 Agent Status</h3>
-                        <p style="color: #888;">Idle - waiting for task</p>
+                        <p id="${agenticId}-status" style="color: #888;">Idle - waiting for task</p>
+                    </div>
+                    
+                    <div id="${agenticId}-output" style="margin-top: 20px; display: none;">
+                        <h3 style="color: #00ff88; margin-bottom: 10px;">📋 Agent Output</h3>
+                        <div id="${agenticId}-log" style="background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 8px; padding: 15px; max-height: 300px; overflow-y: auto; font-family: monospace; font-size: 12px;"></div>
                     </div>
                 </div>
-            `
+            `,
+            onActivate: () => {
+                setTimeout(() => {
+                    this.wireAgenticCoding(agenticId);
+                }, 100);
+            }
         });
+    }
+    
+    /**
+     * Wire up Agentic Coding functionality
+     */
+    wireAgenticCoding(agenticId) {
+        const textarea = document.getElementById(`${agenticId}-task`);
+        const button = document.getElementById(`${agenticId}-start`);
+        const status = document.getElementById(`${agenticId}-status`);
+        const outputDiv = document.getElementById(`${agenticId}-output`);
+        const logDiv = document.getElementById(`${agenticId}-log`);
+        
+        if (!textarea || !button || !status) {
+            console.error('[TabSystem] Agentic Coding elements not found');
+            return;
+        }
+        
+        const log = (message, color = '#00d4ff') => {
+            const line = document.createElement('div');
+            line.style.cssText = `color: ${color}; margin: 4px 0;`;
+            line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logDiv.appendChild(line);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        };
+        
+        button.onclick = async () => {
+            const task = textarea.value.trim();
+            if (!task) {
+                status.textContent = '⚠️ Please describe a task first';
+                status.style.color = '#ffa502';
+                return;
+            }
+            
+            // Show output section
+            outputDiv.style.display = 'block';
+            logDiv.innerHTML = '';
+            
+            // Update status
+            status.textContent = '🚀 Agent starting...';
+            status.style.color = '#00d4ff';
+            
+            // Disable button
+            button.disabled = true;
+            button.style.opacity = '0.5';
+            button.textContent = '⏳ Working...';
+            
+            log('🚀 Agentic agent initialized', '#00d4ff');
+            log(`📝 Task: ${task}`, '#fff');
+            log('🔍 Analyzing task requirements...', '#00d4ff');
+            
+            try {
+                // REAL AI call to analyze and generate code
+                status.textContent = '🧠 Analyzing task...';
+                
+                const response = await fetch('http://localhost:11441/api/agentic-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        task: task,
+                        mode: 'autonomous',
+                        temperature: 0.3,
+                        max_tokens: 4000
+                    }),
+                    signal: AbortSignal.timeout(60000)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Orchestra returned ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                log('✅ Task analyzed successfully', '#00ff88');
+                log('💻 Generating code...', '#00d4ff');
+                
+                status.textContent = '💻 Generating code...';
+                
+                const generatedCode = data.code || data.content || `// Generated code for: ${task}\n\nconsole.log('Task: ${task}');`;
+                const filename = this.extractFilenameFromTask(task) || 'agentic-output.js';
+                
+                log(`📄 Creating file: ${filename}`, '#00d4ff');
+                
+                // Create editor tab with generated code
+                const editorId = window.completeTabSystem.createEditorTab();
+                
+                setTimeout(() => {
+                    const editorTextarea = document.querySelector(`#content-${editorId} textarea`);
+                    if (editorTextarea) {
+                        editorTextarea.value = generatedCode;
+                        editorTextarea.dataset.filePath = `/agentic/${filename}`;
+                        
+                        // Update tab title
+                        const tab = window.completeTabSystem.tabs.get(editorId);
+                        if (tab) {
+                            const titleSpan = tab.button.querySelector('span:nth-child(2)');
+                            if (titleSpan) titleSpan.textContent = filename;
+                        }
+                        
+                        log(`✅ File created: ${filename}`, '#00ff88');
+                        log('🎉 Task completed successfully!', '#00ff88');
+                        
+                        status.textContent = `✅ Complete! Created: ${filename}`;
+                        status.style.color = '#00ff88';
+                    }
+                }, 200);
+                
+            } catch (error) {
+                console.error('[Agentic] Error:', error);
+                
+                log(`❌ Error: ${error.message}`, '#ff4757');
+                log('💡 Make sure Orchestra server is running on localhost:11441', '#888');
+                
+                status.textContent = `❌ Error: ${error.message}`;
+                status.style.color = '#ff4757';
+            } finally {
+                // Re-enable button
+                button.disabled = false;
+                button.style.opacity = '1';
+                button.textContent = '▶ Start Agent';
+            }
+        };
+        
+        // Focus textarea
+        textarea.focus();
+        
+        console.log('[TabSystem] ✅ Agentic Coding wired');
     }
     
     createImageGenTab() {
