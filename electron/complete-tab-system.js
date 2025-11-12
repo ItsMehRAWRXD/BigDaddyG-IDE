@@ -18,23 +18,34 @@ class CompleteTabSystem {
     }
     
     initialize() {
-        // Remove ALL panes and sidebars
-        this.nukeAllPanes();
-        
-        // Create clean tab-only layout
-        this.createCleanLayout();
-        
-        // Register shortcuts
-        this.registerShortcuts();
-        
-        // Create all feature tabs
-        this.createAllTabs();
-        
-        // Make globally available
-        window.completeTabSystem = this;
-        window.tabSystem = this; // Alias
-        
-        console.log('[TabSystem] ✅ Complete tab system ready');
+        try {
+            // Remove ALL panes and sidebars
+            this.nukeAllPanes();
+            
+            // Create clean tab-only layout
+            this.createCleanLayout();
+            
+            // Register shortcuts
+            this.registerShortcuts();
+            
+            // Create all feature tabs
+            this.createAllTabs();
+            
+            // Make globally available
+            window.completeTabSystem = this;
+            window.tabSystem = this; // Alias
+            
+            console.log('[TabSystem] ✅ Complete tab system ready');
+            console.log('[TabSystem] 💡 Press Ctrl+T to create new tabs');
+            
+            // Dispatch ready event
+            window.dispatchEvent(new CustomEvent('tab-system-ready'));
+            
+        } catch (error) {
+            console.error('[TabSystem] ❌ Initialization failed:', error);
+            // Show error to user
+            alert('Tab system failed to load. Check console for details.');
+        }
     }
     
     /**
@@ -554,25 +565,21 @@ class CompleteTabSystem {
     createAllTabs() {
         console.log('[TabSystem] 🎨 Creating initial tabs...');
         
-        // Welcome tab (not closeable)
-        this.createTab({
-            id: 'welcome',
-            title: 'Welcome',
-            icon: '👋',
-            closeable: false,
-            content: this.getWelcomeContent()
-        });
+        // ONLY Welcome tab on startup (no editor, no dependencies)
+        try {
+            this.createTab({
+                id: 'welcome',
+                title: 'Welcome',
+                icon: '👋',
+                closeable: false,
+                content: this.getWelcomeContent()
+            });
+            console.log('[TabSystem] ✅ Welcome tab created');
+        } catch (error) {
+            console.error('[TabSystem] Failed to create welcome tab:', error);
+        }
         
-        // Code Editor tab (important!)
-        this.createEditorTab();
-        
-        // AI Chat tab (common)
-        this.createAIChatTab();
-        
-        // Agentic Coding tab (common)
-        this.createAgenticCodingTab();
-        
-        console.log('[TabSystem] ✅ Initial tabs created');
+        console.log('[TabSystem] ✅ Tab system ready - Press Ctrl+T to create tabs');
     }
     
     // ============================================
@@ -1133,13 +1140,64 @@ hello();"></textarea>
     }
 }
 
-// Auto-initialize
+// Auto-initialize with error handling
+function initializeTabSystem() {
+    try {
+        console.log('[TabSystem] 🚀 Starting tab system initialization...');
+        const tabSystem = new CompleteTabSystem();
+        console.log('[TabSystem] ✅ Tab system initialized successfully');
+        return tabSystem;
+    } catch (error) {
+        console.error('[TabSystem] ❌ Critical error during initialization:', error);
+        // Show user-friendly error
+        document.body.innerHTML = `
+            <div style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 100vh;
+                background: #0a0a1e;
+                color: #fff;
+                font-family: 'Segoe UI', sans-serif;
+                padding: 40px;
+                text-align: center;
+            ">
+                <div>
+                    <h1 style="color: #ff4757; font-size: 48px; margin-bottom: 20px;">⚠️ Tab System Failed</h1>
+                    <p style="color: #888; font-size: 18px; margin-bottom: 20px;">The tab system couldn't initialize.</p>
+                    <pre style="
+                        background: rgba(255, 71, 87, 0.1);
+                        border: 1px solid #ff4757;
+                        border-radius: 8px;
+                        padding: 20px;
+                        text-align: left;
+                        color: #ff4757;
+                        overflow: auto;
+                        max-width: 600px;
+                        margin: 0 auto;
+                    ">${error.message}\n\n${error.stack}</pre>
+                    <button onclick="location.reload()" style="
+                        margin-top: 30px;
+                        padding: 15px 30px;
+                        background: #00d4ff;
+                        color: #000;
+                        border: none;
+                        border-radius: 8px;
+                        font-size: 16px;
+                        font-weight: bold;
+                        cursor: pointer;
+                    ">Reload IDE</button>
+                </div>
+            </div>
+        `;
+        return null;
+    }
+}
+
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        new CompleteTabSystem();
-    });
+    document.addEventListener('DOMContentLoaded', initializeTabSystem);
 } else {
-    new CompleteTabSystem();
+    initializeTabSystem();
 }
 
 })();
