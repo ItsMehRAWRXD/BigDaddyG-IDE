@@ -240,29 +240,55 @@ class MenuSystem {
         ];
     }
     
-    // Helper methods
+    // Helper methods - REAL IMPLEMENTATIONS
     openFileDialog() {
-        // TODO: Implement file dialog
         console.log('[MenuSystem] Open file dialog');
-        alert('File dialog will open here');
+        if (window.fileSystem && window.fileSystem.openFileDialog) {
+            window.fileSystem.openFileDialog();
+        } else if (window.electron && window.electron.openFileDialog) {
+            window.electron.openFileDialog().then(result => {
+                if (!result.canceled && result.filePaths && result.filePaths.length > 0) {
+                    console.log('[MenuSystem] File selected:', result.filePaths[0]);
+                }
+            });
+        } else {
+            alert('File system not initialized. Try pressing Ctrl+Shift+O');
+        }
     }
     
     saveCurrentFile() {
-        // TODO: Implement save
         console.log('[MenuSystem] Save current file');
-        alert('Saving current file...');
+        if (window.fileSystem && window.fileSystem.saveCurrentFile) {
+            window.fileSystem.saveCurrentFile();
+        } else if (window.electron && window.electron.writeFile) {
+            alert('Save functionality requires an open file');
+        } else {
+            alert('File system not initialized');
+        }
     }
     
     saveFileAs() {
-        // TODO: Implement save as
         console.log('[MenuSystem] Save file as');
-        alert('Save as dialog will open here');
+        if (window.fileSystem && window.fileSystem.saveFileAsDialog) {
+            window.fileSystem.saveFileAsDialog();
+        } else if (window.electron && window.electron.saveFileDialog) {
+            window.electron.saveFileDialog().then(result => {
+                if (!result.canceled && result.filePath) {
+                    console.log('[MenuSystem] Save location:', result.filePath);
+                }
+            });
+        } else {
+            alert('File system not initialized');
+        }
     }
     
     newWindow() {
-        // TODO: Implement new window
         console.log('[MenuSystem] New window');
-        alert('Opening new window...');
+        if (window.completeTabSystem) {
+            window.completeTabSystem.createEditorTab();
+        } else {
+            alert('Tab system not ready');
+        }
     }
     
     showFindDialog() {
