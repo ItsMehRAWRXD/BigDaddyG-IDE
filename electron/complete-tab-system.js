@@ -774,6 +774,7 @@ hello();"></textarea>
         const input = document.getElementById(`${chatId}-input`);
         const button = document.getElementById(`${chatId}-send`);
         const messages = document.getElementById(`${chatId}-messages`);
+        const modelSelect = document.getElementById(`${chatId}-model`); // Get model selector if exists
         
         if (!input || !button || !messages) {
             console.error('[TabSystem] AI Chat elements not found');
@@ -811,7 +812,8 @@ hello();"></textarea>
             button.textContent = 'Sending...';
             
             try {
-                const selectedModel = modelSelect ? modelSelect.value : 'gpt-3.5-turbo';
+                // Use selected model or default to bigdaddyg:latest
+                const selectedModel = modelSelect ? modelSelect.value : 'bigdaddyg:latest';
                 
                 // REAL Orchestra API call with selected model
                 const response = await fetch('http://localhost:11441/api/chat', {
