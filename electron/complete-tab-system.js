@@ -655,20 +655,151 @@ hello();"></textarea>
             title: 'File Explorer',
             icon: '📁',
             content: `
-                <div style="padding: 20px; height: 100%; display: flex; flex-direction: column;">
-                    <h2 style="color: #00d4ff; margin-bottom: 20px;">📁 File Explorer</h2>
-                    <div id="${explorerId}" style="flex: 1; overflow: hidden;"></div>
+                <div id="${explorerId}" style="
+                    padding: 20px;
+                    height: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    overflow: hidden;
+                ">
+                    <div style="margin-bottom: 20px;">
+                        <h2 style="color: #00d4ff; margin: 0 0 15px 0;">📁 File Explorer</h2>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <button 
+                                id="${explorerId}-open-folder"
+                                style="
+                                    padding: 10px 20px;
+                                    background: #00d4ff;
+                                    color: #000;
+                                    border: none;
+                                    border-radius: 6px;
+                                    font-weight: bold;
+                                    cursor: pointer;
+                                    font-size: 14px;
+                                "
+                            >📂 Open Folder</button>
+                            <button 
+                                id="${explorerId}-open-file"
+                                style="
+                                    padding: 10px 20px;
+                                    background: rgba(0, 212, 255, 0.2);
+                                    border: 1px solid #00d4ff;
+                                    color: #00d4ff;
+                                    border-radius: 6px;
+                                    font-weight: bold;
+                                    cursor: pointer;
+                                    font-size: 14px;
+                                "
+                            >📄 Open File</button>
+                            <button 
+                                id="${explorerId}-new-file"
+                                style="
+                                    padding: 10px 20px;
+                                    background: rgba(0, 255, 136, 0.2);
+                                    border: 1px solid #00ff88;
+                                    color: #00ff88;
+                                    border-radius: 6px;
+                                    font-weight: bold;
+                                    cursor: pointer;
+                                    font-size: 14px;
+                                "
+                            >➕ New File</button>
+                            <button 
+                                id="${explorerId}-save"
+                                style="
+                                    padding: 10px 20px;
+                                    background: rgba(255, 152, 0, 0.2);
+                                    border: 1px solid #ff9800;
+                                    color: #ff9800;
+                                    border-radius: 6px;
+                                    font-weight: bold;
+                                    cursor: pointer;
+                                    font-size: 14px;
+                                "
+                            >💾 Save</button>
+                        </div>
+                    </div>
+                    
+                    <div 
+                        id="${explorerId}-content"
+                        style="
+                            flex: 1;
+                            background: rgba(0, 0, 0, 0.3);
+                            border: 1px solid rgba(0, 212, 255, 0.2);
+                            border-radius: 8px;
+                            padding: 20px;
+                            overflow-y: auto;
+                            color: #888;
+                        "
+                    >
+                        <div style="text-align: center; margin-top: 100px;">
+                            <p style="font-size: 64px; margin-bottom: 20px; opacity: 0.5;">📁</p>
+                            <p style="font-size: 18px; color: #ccc; margin-bottom: 10px;">No folder opened</p>
+                            <p style="font-size: 14px;">Click "Open Folder" above to browse your files</p>
+                        </div>
+                    </div>
                 </div>
             `,
             onActivate: () => {
                 setTimeout(() => {
-                    if (window.FileExplorerComponent) {
-                        const explorer = new window.FileExplorerComponent(explorerId);
-                        explorer.initialize();
-                    }
+                    this.wireFileExplorer(explorerId);
                 }, 100);
             }
         });
+    }
+    
+    /**
+     * Wire up file explorer functionality
+     */
+    wireFileExplorer(explorerId) {
+        const openFolderBtn = document.getElementById(`${explorerId}-open-folder`);
+        const openFileBtn = document.getElementById(`${explorerId}-open-file`);
+        const newFileBtn = document.getElementById(`${explorerId}-new-file`);
+        const saveBtn = document.getElementById(`${explorerId}-save`);
+        const content = document.getElementById(`${explorerId}-content`);
+        
+        if (!openFolderBtn || !content) {
+            console.error('[TabSystem] File explorer elements not found');
+            return;
+        }
+        
+        // Open Folder button
+        openFolderBtn.addEventListener('click', async () => {
+            if (window.fileSystem) {
+                await window.fileSystem.openFolderDialog();
+            } else {
+                content.innerHTML = '<p style="color: #ff4757; padding: 20px;">File system not initialized. Try pressing Ctrl+Shift+O</p>';
+            }
+        });
+        
+        // Open File button
+        openFileBtn.addEventListener('click', async () => {
+            if (window.fileSystem) {
+                await window.fileSystem.openFileDialog();
+            } else {
+                content.innerHTML = '<p style="color: #ff4757; padding: 20px;">File system not initialized. Try pressing Ctrl+O</p>';
+            }
+        });
+        
+        // New File button
+        newFileBtn.addEventListener('click', () => {
+            if (window.fileSystem) {
+                window.fileSystem.createNewFile();
+            } else if (window.completeTabSystem) {
+                window.completeTabSystem.createEditorTab('Untitled');
+            }
+        });
+        
+        // Save button
+        saveBtn.addEventListener('click', async () => {
+            if (window.fileSystem) {
+                await window.fileSystem.saveCurrentFile();
+            } else {
+                content.innerHTML = '<p style="color: #ff4757; padding: 20px;">File system not initialized. Try pressing Ctrl+S</p>';
+            }
+        });
+        
+        console.log('[TabSystem] ✅ File Explorer wired');
     }
     
     createTerminalTab() {
