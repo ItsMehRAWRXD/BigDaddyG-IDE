@@ -1093,8 +1093,24 @@ hello();"></textarea>
         const messages = document.getElementById(`${chatId}-messages`);
         const modelSelect = document.getElementById(`${chatId}-model`); // Get model selector if exists
         
+        console.log('[TabSystem] 🔍 Looking for AI Chat elements with ID:', chatId);
+        console.log('[TabSystem] 🔍 Found:', { 
+            input: !!input, 
+            button: !!button, 
+            messages: !!messages, 
+            modelSelect: !!modelSelect 
+        });
+        
         if (!input || !button || !messages) {
             console.error('[TabSystem] AI Chat elements not found');
+            console.error('[TabSystem] Expected IDs:');
+            console.error(`  - ${chatId}-input:`, !!input);
+            console.error(`  - ${chatId}-send:`, !!button);
+            console.error(`  - ${chatId}-messages:`, !!messages);
+            
+            // Try to find them anyway
+            const allInputs = document.querySelectorAll('input[type="text"]');
+            console.log('[TabSystem] Found', allInputs.length, 'text inputs on page');
             return;
         }
         
