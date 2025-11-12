@@ -752,37 +752,61 @@ hello();"></textarea>
      * Wire up file explorer functionality
      */
     wireFileExplorer(explorerId) {
+        console.log('[FileExplorer] 🔌 Wiring file explorer:', explorerId);
+        
         const openFolderBtn = document.getElementById(`${explorerId}-open-folder`);
         const openFileBtn = document.getElementById(`${explorerId}-open-file`);
         const newFileBtn = document.getElementById(`${explorerId}-new-file`);
         const saveBtn = document.getElementById(`${explorerId}-save`);
         const content = document.getElementById(`${explorerId}-content`);
         
+        console.log('[FileExplorer] 🔍 Found elements:', {
+            openFolderBtn: !!openFolderBtn,
+            openFileBtn: !!openFileBtn,
+            newFileBtn: !!newFileBtn,
+            saveBtn: !!saveBtn,
+            content: !!content
+        });
+        
         if (!openFolderBtn || !content) {
-            console.error('[TabSystem] File explorer elements not found');
+            console.error('[FileExplorer] ❌ File explorer elements not found!');
+            console.error('[FileExplorer] Missing:', {
+                openFolderBtn: !openFolderBtn,
+                content: !content
+            });
             return;
         }
         
         // Open Folder button
         openFolderBtn.addEventListener('click', async () => {
+            console.log('[FileExplorer] 📂 Open Folder button clicked!');
+            
             if (window.fileSystem) {
+                console.log('[FileExplorer] ✅ FileSystem found, calling openFolderDialog...');
                 await window.fileSystem.openFolderDialog();
             } else {
+                console.error('[FileExplorer] ❌ window.fileSystem not found!');
                 content.innerHTML = '<p style="color: #ff4757; padding: 20px;">File system not initialized. Try pressing Ctrl+Shift+O</p>';
             }
         });
         
         // Open File button
         openFileBtn.addEventListener('click', async () => {
+            console.log('[FileExplorer] 📄 Open File button clicked!');
+            
             if (window.fileSystem) {
+                console.log('[FileExplorer] ✅ FileSystem found, calling openFileDialog...');
                 await window.fileSystem.openFileDialog();
             } else {
+                console.error('[FileExplorer] ❌ window.fileSystem not found!');
                 content.innerHTML = '<p style="color: #ff4757; padding: 20px;">File system not initialized. Try pressing Ctrl+O</p>';
             }
         });
         
         // New File button
         newFileBtn.addEventListener('click', () => {
+            console.log('[FileExplorer] ➕ New File button clicked!');
+            
             if (window.fileSystem) {
                 window.fileSystem.createNewFile();
             } else if (window.completeTabSystem) {
@@ -792,6 +816,8 @@ hello();"></textarea>
         
         // Save button
         saveBtn.addEventListener('click', async () => {
+            console.log('[FileExplorer] 💾 Save button clicked!');
+            
             if (window.fileSystem) {
                 await window.fileSystem.saveCurrentFile();
             } else {
@@ -799,7 +825,8 @@ hello();"></textarea>
             }
         });
         
-        console.log('[TabSystem] ✅ File Explorer wired');
+        console.log('[FileExplorer] ✅ All buttons wired with event listeners');
+        console.log('[FileExplorer] ✅ File Explorer ready - Click buttons to test');
     }
     
     createTerminalTab() {
