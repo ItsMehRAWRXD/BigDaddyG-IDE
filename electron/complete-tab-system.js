@@ -230,6 +230,9 @@ class CompleteTabSystem {
             height: 100%;
             overflow: auto;
             padding: 0;
+            background: #0a0a1e;
+            position: relative;
+            z-index: 1;
         `;
         contentDiv.innerHTML = content;
         
@@ -534,19 +537,43 @@ class CompleteTabSystem {
     // ============================================
     
     createEditorTab() {
+        const editorId = `editor-${Date.now()}`;
         const id = this.createTab({
             title: 'Code Editor',
             icon: '📄',
             content: `
-                <div id="bigdaddy-container" style="width: 100%; height: 100%; background: #1e1e1e; position: relative;"></div>
+                <div id="${editorId}" style="
+                    width: 100%;
+                    height: 100%;
+                    background: #1e1e1e;
+                    position: relative;
+                    display: flex;
+                    flex-direction: column;
+                ">
+                    <textarea id="simple-editor-${editorId}" style="
+                        width: 100%;
+                        height: 100%;
+                        background: #1e1e1e;
+                        color: #d4d4d4;
+                        border: none;
+                        padding: 20px;
+                        font-family: 'Courier New', Consolas, monospace;
+                        font-size: 14px;
+                        line-height: 1.6;
+                        resize: none;
+                        outline: none;
+                    " placeholder="// Start coding here...
+
+function hello() {
+    console.log('Welcome to BigDaddyG IDE!');
+    console.log('Tab-only UI - Press Ctrl+T to create more tabs');
+}
+
+hello();"></textarea>
+                </div>
             `,
             onActivate: () => {
-                // Initialize BigDaddy Editor if needed
-                setTimeout(() => {
-                    if (window.initBigDaddyOnly) {
-                        window.initBigDaddyOnly();
-                    }
-                }, 100);
+                console.log('[TabSystem] ✅ Editor tab activated');
             }
         });
         return id;
