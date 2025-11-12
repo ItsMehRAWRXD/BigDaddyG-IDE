@@ -32,6 +32,62 @@ const DEFAULT_SETTINGS = {
       textSecondary: 'rgba(186, 186, 202, 0.82)',
       editorBackground: 'rgba(14, 14, 18, 0.98)',
       editorForeground: 'rgba(237, 241, 245, 0.97)'
+    },
+    editor: {
+      minimap: {
+        enabled: true,
+        maxColumn: 120,
+        renderCharacters: false
+      },
+      wordWrap: 'on',
+      lineNumbers: 'on',
+      theme: 'bigdaddyg-dark',
+      fontSize: 15,
+      fontFamily: "'JetBrains Mono', 'Fira Code', 'Consolas', 'Courier New', monospace",
+      lineHeight: 24,
+      tabSize: 4,
+      insertSpaces: true,
+      detectIndentation: true,
+      roundedSelection: true,
+      scrollBeyondLastLine: false,
+      automaticLayout: true,
+      quickSuggestions: true,
+      quickSuggestionsDelay: 150,
+      suggestOnTriggerCharacters: true,
+      acceptSuggestionOnEnter: 'on',
+      tabCompletion: 'on',
+      parameterHints: {
+        enabled: true,
+        cycle: false
+      },
+      matchBrackets: 'always',
+      bracketPairColorization: {
+        enabled: true
+      },
+      folding: true,
+      foldingStrategy: 'indentation',
+      showFoldingControls: 'mouseover',
+      occurrencesHighlight: false,
+      renderValidationDecorations: 'on',
+      renderLineHighlight: 'line',
+      renderWhitespace: 'selection',
+      smoothScrolling: true,
+      cursorBlinking: 'smooth',
+      cursorSmoothCaretAnimation: true,
+      largeFileOptimizations: true,
+      maxTokenizationLineLength: 20000,
+      codeLens: false,
+      colorDecorators: false,
+      links: false,
+      scrollbar: {
+        vertical: 'visible',
+        horizontal: 'visible',
+        useShadows: false,
+        verticalHasArrows: false,
+        horizontalHasArrows: false,
+        verticalScrollbarSize: 14,
+        horizontalScrollbarSize: 14
+      }
     }
   },
   layout: {

@@ -153,15 +153,69 @@ function applyAppearance(appearance) {
         root.style.setProperty('--app-monospace-font', appearance.monospaceFont);
     }
 
+    // Apply editor options
     if (window.editor && typeof window.editor.updateOptions === 'function') {
         try {
-            window.editor.updateOptions({
-                fontFamily: appearance.monospaceFont || appearance.fontFamily,
-                fontSize: appearance.fontSize || 15,
-                lineHeight: Math.round((appearance.fontSize || 15) * (appearance.lineHeight || 1.6))
-            });
+            const editorSettings = appearance.editor || {};
+            const editorOptions = {
+                fontFamily: editorSettings.fontFamily || appearance.monospaceFont || appearance.fontFamily,
+                fontSize: editorSettings.fontSize || appearance.fontSize || 15,
+                lineHeight: editorSettings.lineHeight || Math.round((appearance.fontSize || 15) * (appearance.lineHeight || 1.6)),
+                wordWrap: editorSettings.wordWrap || 'on',
+                lineNumbers: editorSettings.lineNumbers || 'on',
+                tabSize: editorSettings.tabSize || 4,
+                insertSpaces: editorSettings.insertSpaces !== undefined ? editorSettings.insertSpaces : true,
+                detectIndentation: editorSettings.detectIndentation !== undefined ? editorSettings.detectIndentation : true,
+                roundedSelection: editorSettings.roundedSelection !== undefined ? editorSettings.roundedSelection : true,
+                scrollBeyondLastLine: editorSettings.scrollBeyondLastLine !== undefined ? editorSettings.scrollBeyondLastLine : false,
+                automaticLayout: editorSettings.automaticLayout !== undefined ? editorSettings.automaticLayout : true,
+                quickSuggestions: editorSettings.quickSuggestions !== undefined ? editorSettings.quickSuggestions : true,
+                quickSuggestionsDelay: editorSettings.quickSuggestionsDelay || 150,
+                suggestOnTriggerCharacters: editorSettings.suggestOnTriggerCharacters !== undefined ? editorSettings.suggestOnTriggerCharacters : true,
+                acceptSuggestionOnEnter: editorSettings.acceptSuggestionOnEnter || 'on',
+                tabCompletion: editorSettings.tabCompletion || 'on',
+                parameterHints: editorSettings.parameterHints || { enabled: true, cycle: false },
+                matchBrackets: editorSettings.matchBrackets || 'always',
+                bracketPairColorization: editorSettings.bracketPairColorization || { enabled: true },
+                folding: editorSettings.folding !== undefined ? editorSettings.folding : true,
+                foldingStrategy: editorSettings.foldingStrategy || 'indentation',
+                showFoldingControls: editorSettings.showFoldingControls || 'mouseover',
+                occurrencesHighlight: editorSettings.occurrencesHighlight !== undefined ? editorSettings.occurrencesHighlight : false,
+                renderValidationDecorations: editorSettings.renderValidationDecorations || 'on',
+                renderLineHighlight: editorSettings.renderLineHighlight || 'line',
+                renderWhitespace: editorSettings.renderWhitespace || 'selection',
+                smoothScrolling: editorSettings.smoothScrolling !== undefined ? editorSettings.smoothScrolling : true,
+                cursorBlinking: editorSettings.cursorBlinking || 'smooth',
+                cursorSmoothCaretAnimation: editorSettings.cursorSmoothCaretAnimation !== undefined ? editorSettings.cursorSmoothCaretAnimation : true,
+                largeFileOptimizations: editorSettings.largeFileOptimizations !== undefined ? editorSettings.largeFileOptimizations : true,
+                maxTokenizationLineLength: editorSettings.maxTokenizationLineLength || 20000,
+                codeLens: editorSettings.codeLens !== undefined ? editorSettings.codeLens : false,
+                colorDecorators: editorSettings.colorDecorators !== undefined ? editorSettings.colorDecorators : false,
+                links: editorSettings.links !== undefined ? editorSettings.links : false,
+                minimap: editorSettings.minimap || { enabled: true, maxColumn: 120, renderCharacters: false },
+                scrollbar: editorSettings.scrollbar || {
+                    vertical: 'visible',
+                    horizontal: 'visible',
+                    useShadows: false,
+                    verticalHasArrows: false,
+                    horizontalHasArrows: false,
+                    verticalScrollbarSize: 14,
+                    horizontalScrollbarSize: 14
+                }
+            };
+            
+            window.editor.updateOptions(editorOptions);
+            
+            // Apply theme if specified
+            if (editorSettings.theme && window.monaco && window.monaco.editor) {
+                try {
+                    window.monaco.editor.setTheme(editorSettings.theme);
+                } catch (themeError) {
+                    console.warn('[SettingsApplier] ⚠️ Failed to set editor theme:', themeError);
+                }
+            }
         } catch (error) {
-            console.warn('[SettingsApplier] ⚠️ Failed to update editor font options:', error);
+            console.warn('[SettingsApplier] ⚠️ Failed to update editor options:', error);
         }
     }
 
@@ -181,6 +235,64 @@ function applyLayout(layout) {
     if (layout.chatWidth) {
         root.style.setProperty('--chat-sidebar-width', `${layout.chatWidth}px`);
     }
+    
+    // Apply snap-to-edges setting
+    if (layout.snapToEdges !== undefined) {
+        document.body.classList.toggle('layout-snap-to-edges', layout.snapToEdges);
+    }
+}
+
+function applyTransparency(transparency) {
+    if (!transparency) return;
+    
+    const root = document.documentElement;
+    const enabled = Boolean(transparency.enabled);
+    
+    // Apply transparency CSS variables
+    if (enabled) {
+        root.style.setProperty('--window-opacity', String(transparency.window ?? 0.95));
+        root.style.setProperty('--side-panel-opacity', String(transparency.sidePanels ?? 0.92));
+        root.style.setProperty('--bottom-panel-opacity', String(transparency.bottomPanel ?? 0.96));
+        root.style.setProperty('--chat-panel-opacity', String(transparency.chatPanels ?? 0.9));
+        
+        // Apply to window if in Electron
+        if (window.electron && window.electron.setWindowOpacity) {
+            try {
+                window.electron.setWindowOpacity(transparency.window ?? 0.95);
+            } catch (error) {
+                console.warn('[SettingsApplier] ⚠️ Failed to set window opacity:', error);
+            }
+        }
+        
+        // Apply to panels
+        const sidebar = document.getElementById('sidebar');
+        const rightSidebar = document.getElementById('right-sidebar');
+        const bottomPanel = document.getElementById('bottom-panel');
+        
+        if (sidebar) {
+            sidebar.style.opacity = String(transparency.sidePanels ?? 0.92);
+        }
+        if (rightSidebar) {
+            rightSidebar.style.opacity = String(transparency.chatPanels ?? 0.9);
+        }
+        if (bottomPanel) {
+            bottomPanel.style.opacity = String(transparency.bottomPanel ?? 0.96);
+        }
+    } else {
+        // Reset to opaque
+        root.style.setProperty('--window-opacity', '1');
+        root.style.setProperty('--side-panel-opacity', '1');
+        root.style.setProperty('--bottom-panel-opacity', '1');
+        root.style.setProperty('--chat-panel-opacity', '1');
+        
+        const sidebar = document.getElementById('sidebar');
+        const rightSidebar = document.getElementById('right-sidebar');
+        const bottomPanel = document.getElementById('bottom-panel');
+        
+        if (sidebar) sidebar.style.opacity = '1';
+        if (rightSidebar) rightSidebar.style.opacity = '1';
+        if (bottomPanel) bottomPanel.style.opacity = '1';
+    }
 }
 
 function applySnapshot(settings) {
@@ -189,6 +301,9 @@ function applySnapshot(settings) {
     window.__appSettings = state.current;
     applyAppearance(settings.appearance);
     applyLayout(settings.layout);
+    if (settings.appearance && settings.appearance.transparency) {
+        applyTransparency(settings.appearance.transparency);
+    }
 }
 
 function handleUpdateEvent(event) {
@@ -238,6 +353,9 @@ function handleUpdateEvent(event) {
 
     applyAppearance(state.current.appearance);
     applyLayout(state.current.layout);
+    if (state.current.appearance && state.current.appearance.transparency) {
+        applyTransparency(state.current.appearance.transparency);
+    }
 }
 
 settingsApi.getDefaults().then((res) => {

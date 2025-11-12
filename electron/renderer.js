@@ -192,10 +192,15 @@ function initMonacoEditor() {
     
     console.log('[BigDaddyG] ✅ CSS loaded, container ready - creating editor instance');
     
+    // Get settings from backend (via settings-applier.js which sets window.__appSettings)
     const appearanceSettings = window.__appSettings?.appearance || {};
-    const editorFontSize = appearanceSettings.fontSize || 14;
-    const editorLineHeight = Math.round(editorFontSize * (appearanceSettings.lineHeight || 1.6));
-    const editorFontFamily = appearanceSettings.monospaceFont || appearanceSettings.fontFamily || 'Consolas, "Courier New", monospace';
+    const editorSettings = appearanceSettings.editor || {};
+    
+    // Use editor-specific settings, fallback to appearance settings, then defaults
+    const editorFontSize = editorSettings.fontSize || appearanceSettings.fontSize || 15;
+    const editorLineHeight = editorSettings.lineHeight || Math.round(editorFontSize * (appearanceSettings.lineHeight || 1.6));
+    const editorFontFamily = editorSettings.fontFamily || appearanceSettings.monospaceFont || appearanceSettings.fontFamily || 'Consolas, "Courier New", monospace';
+    const editorTheme = editorSettings.theme || 'bigdaddyg-dark';
     
     // Define custom theme with jade/cyan selection
     monaco.editor.defineTheme('bigdaddyg-dark', {
@@ -215,84 +220,93 @@ function initMonacoEditor() {
         }
     });
     
-    // Create Monaco Editor instance with performance optimizations
-    editor = monaco.editor.create(container, {
+    // Build editor options from settings with fallbacks
+    const editorOptions = {
         value: getWelcomeMessage(),
         language: 'markdown',
-        theme: 'bigdaddyg-dark', // Use custom theme
+        theme: editorTheme,
         
-        // Editor options
+        // Font settings
         fontSize: editorFontSize,
         lineHeight: editorLineHeight,
         fontFamily: editorFontFamily,
-        lineNumbers: 'on',
-        roundedSelection: true,
-        scrollBeyondLastLine: false, // OPTIMIZED: Reduce render area
-        minimap: {
-            enabled: true,
-            maxColumn: 120, // Limit minimap width for performance
-            renderCharacters: false // Faster minimap rendering
-        },
-        automaticLayout: true,
         
-        // CRITICAL: Enable scrolling
-        scrollbar: {
+        // Editor options from settings
+        lineNumbers: editorSettings.lineNumbers || 'on',
+        wordWrap: editorSettings.wordWrap || 'on',
+        tabSize: editorSettings.tabSize || 4,
+        insertSpaces: editorSettings.insertSpaces !== undefined ? editorSettings.insertSpaces : true,
+        detectIndentation: editorSettings.detectIndentation !== undefined ? editorSettings.detectIndentation : true,
+        roundedSelection: editorSettings.roundedSelection !== undefined ? editorSettings.roundedSelection : true,
+        scrollBeyondLastLine: editorSettings.scrollBeyondLastLine !== undefined ? editorSettings.scrollBeyondLastLine : false,
+        automaticLayout: editorSettings.automaticLayout !== undefined ? editorSettings.automaticLayout : true,
+        
+        // Minimap from settings
+        minimap: editorSettings.minimap || {
+            enabled: true,
+            maxColumn: 120,
+            renderCharacters: false
+        },
+        
+        // Scrollbar from settings
+        scrollbar: editorSettings.scrollbar || {
             vertical: 'visible',
             horizontal: 'visible',
-            useShadows: false, // Disable shadows for performance
+            useShadows: false,
             verticalHasArrows: false,
             horizontalHasArrows: false,
             verticalScrollbarSize: 14,
             horizontalScrollbarSize: 14
         },
         
-        // Advanced features
-        suggestOnTriggerCharacters: true,
-        acceptSuggestionOnEnter: 'on',
-        tabCompletion: 'on',
-        wordWrap: 'on',
+        // Advanced features from settings
+        suggestOnTriggerCharacters: editorSettings.suggestOnTriggerCharacters !== undefined ? editorSettings.suggestOnTriggerCharacters : true,
+        acceptSuggestionOnEnter: editorSettings.acceptSuggestionOnEnter || 'on',
+        tabCompletion: editorSettings.tabCompletion || 'on',
         wrappingIndent: 'indent',
         
-        // Copilot-like features
-        quickSuggestions: true,
-        quickSuggestionsDelay: 150, // Slightly slower for performance
-        parameterHints: {
+        // Copilot-like features from settings
+        quickSuggestions: editorSettings.quickSuggestions !== undefined ? editorSettings.quickSuggestions : true,
+        quickSuggestionsDelay: editorSettings.quickSuggestionsDelay || 150,
+        parameterHints: editorSettings.parameterHints || {
             enabled: true,
-            cycle: false // Reduce complexity
+            cycle: false
         },
         
-        // Bracket matching
-        matchBrackets: 'always',
-        bracketPairColorization: {
+        // Bracket matching from settings
+        matchBrackets: editorSettings.matchBrackets || 'always',
+        bracketPairColorization: editorSettings.bracketPairColorization || {
             enabled: true
         },
         
-        // PERFORMANCE OPTIMIZATIONS
-        folding: true, // Enable code folding
-        foldingStrategy: 'indentation', // Faster than 'auto'
-        showFoldingControls: 'mouseover', // Only show when needed
-        occurrencesHighlight: false, // Disable for large files
-        renderValidationDecorations: 'on', // But keep validation
-        renderLineHighlight: 'line', // Simple line highlight
-        renderWhitespace: 'selection', // Only show in selection
-        smoothScrolling: true,
-        cursorBlinking: 'smooth',
-        cursorSmoothCaretAnimation: true,
+        // Performance optimizations from settings
+        folding: editorSettings.folding !== undefined ? editorSettings.folding : true,
+        foldingStrategy: editorSettings.foldingStrategy || 'indentation',
+        showFoldingControls: editorSettings.showFoldingControls || 'mouseover',
+        occurrencesHighlight: editorSettings.occurrencesHighlight !== undefined ? editorSettings.occurrencesHighlight : false,
+        renderValidationDecorations: editorSettings.renderValidationDecorations || 'on',
+        renderLineHighlight: editorSettings.renderLineHighlight || 'line',
+        renderWhitespace: editorSettings.renderWhitespace || 'selection',
+        smoothScrolling: editorSettings.smoothScrolling !== undefined ? editorSettings.smoothScrolling : true,
+        cursorBlinking: editorSettings.cursorBlinking || 'smooth',
+        cursorSmoothCaretAnimation: editorSettings.cursorSmoothCaretAnimation !== undefined ? editorSettings.cursorSmoothCaretAnimation : true,
         
-        // Large file optimizations
-        largeFileOptimizations: true,
-        maxTokenizationLineLength: 20000,
+        // Large file optimizations from settings
+        largeFileOptimizations: editorSettings.largeFileOptimizations !== undefined ? editorSettings.largeFileOptimizations : true,
+        maxTokenizationLineLength: editorSettings.maxTokenizationLineLength || 20000,
         
-        // Disable expensive features
-        codeLens: false,
-        colorDecorators: false,
-        links: false, // Disable link detection for speed
+        // Disable expensive features from settings
+        codeLens: editorSettings.codeLens !== undefined ? editorSettings.codeLens : false,
+        colorDecorators: editorSettings.colorDecorators !== undefined ? editorSettings.colorDecorators : false,
+        links: editorSettings.links !== undefined ? editorSettings.links : false,
         
         // Memory management
         domReadOnly: false,
-        readOnly: false,
-        renderValidationDecorations: 'editable'
-    });
+        readOnly: false
+    };
+    
+    // Create Monaco Editor instance with settings from backend
+    editor = monaco.editor.create(container, editorOptions);
     
     // Expose editor globally for tests and external access
     window.editor = editor;
