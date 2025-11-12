@@ -723,25 +723,144 @@ hello();"></textarea>
     }
     
     createAIChatTab() {
+        const chatId = `ai-chat-${Date.now()}`;
         return this.createTab({
             title: 'AI Chat',
             icon: '💬',
             content: `
-                <div style="display: flex; flex-direction: column; height: 100%; padding: 20px;">
+                <div id="${chatId}" style="display: flex; flex-direction: column; height: 100%; padding: 20px;">
                     <h2 style="color: #00d4ff; margin-bottom: 15px;">💬 AI Chat</h2>
-                    <div style="flex: 1; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 8px; padding: 15px; overflow-y: auto; margin-bottom: 15px;">
+                    <div id="${chatId}-messages" style="flex: 1; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 8px; padding: 15px; overflow-y: auto; margin-bottom: 15px;">
                         <div style="color: #888; text-align: center; margin-top: 50px;">
                             <p style="font-size: 48px; margin-bottom: 10px;">🤖</p>
                             <p>Ask me anything! I'm here to help with code, debugging, and more.</p>
                         </div>
                     </div>
                     <div style="display: flex; gap: 10px;">
-                        <input type="text" placeholder="Ask AI anything..." style="flex: 1; padding: 15px; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 8px; color: #fff; font-size: 14px;" />
-                        <button style="padding: 15px 30px; background: #00d4ff; color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: all 0.2s;">Send</button>
+                        <input 
+                            id="${chatId}-input" 
+                            type="text" 
+                            placeholder="Ask AI anything..." 
+                            style="flex: 1; padding: 15px; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 8px; color: #fff; font-size: 14px;" 
+                        />
+                        <button 
+                            id="${chatId}-send" 
+                            style="padding: 15px 30px; background: #00d4ff; color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: all 0.2s;"
+                        >Send</button>
                     </div>
                 </div>
-            `
+            `,
+            onActivate: () => {
+                setTimeout(() => {
+                    this.wireAIChat(chatId);
+                }, 100);
+            }
         });
+    }
+    
+    /**
+     * Wire up AI Chat functionality
+     */
+    wireAIChat(chatId) {
+        const input = document.getElementById(`${chatId}-input`);
+        const button = document.getElementById(`${chatId}-send`);
+        const messages = document.getElementById(`${chatId}-messages`);
+        
+        if (!input || !button || !messages) {
+            console.error('[TabSystem] AI Chat elements not found');
+            return;
+        }
+        
+        const sendMessage = async () => {
+            const message = input.value.trim();
+            if (!message) return;
+            
+            // Clear input
+            input.value = '';
+            
+            // Remove welcome message if present
+            const welcome = messages.querySelector('[style*="margin-top: 50px"]');
+            if (welcome) welcome.remove();
+            
+            // Add user message
+            const userMsg = document.createElement('div');
+            userMsg.style.cssText = 'padding: 12px 16px; margin: 8px 0; background: rgba(0, 212, 255, 0.2); border-left: 3px solid #00d4ff; border-radius: 8px;';
+            userMsg.innerHTML = `<strong style="color: #00d4ff;">You:</strong><br><span style="color: #fff;">${this.escapeHtml(message)}</span>`;
+            messages.appendChild(userMsg);
+            messages.scrollTop = messages.scrollHeight;
+            
+            // Add loading message
+            const loadingMsg = document.createElement('div');
+            loadingMsg.style.cssText = 'padding: 12px 16px; margin: 8px 0; background: rgba(0, 255, 136, 0.2); border-left: 3px solid #00ff88; border-radius: 8px;';
+            loadingMsg.innerHTML = `<strong style="color: #00ff88;">AI:</strong><br><span style="color: #fff;">🤔 Thinking...</span>`;
+            messages.appendChild(loadingMsg);
+            messages.scrollTop = messages.scrollHeight;
+            
+            // Disable button while processing
+            button.disabled = true;
+            button.style.opacity = '0.5';
+            button.textContent = 'Sending...';
+            
+            try {
+                // REAL Orchestra API call
+                const response = await fetch('http://localhost:11441/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        messages: [{ role: 'user', content: message }],
+                        temperature: 0.7,
+                        max_tokens: 2000
+                    }),
+                    signal: AbortSignal.timeout(30000)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Orchestra returned ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const aiResponse = data.response || data.message || data.content || 'No response';
+                
+                // Update with real response
+                loadingMsg.innerHTML = `<strong style="color: #00ff88;">AI:</strong><br><span style="color: #fff;">${this.escapeHtml(aiResponse)}</span>`;
+                
+            } catch (error) {
+                console.error('[AI Chat] Error:', error);
+                loadingMsg.innerHTML = `<strong style="color: #ff4757;">AI Error:</strong><br><span style="color: #fff;">❌ ${this.escapeHtml(error.message)}<br><br><span style="color: #888; font-size: 12px;">Make sure Orchestra server is running on localhost:11441</span></span>`;
+                loadingMsg.style.background = 'rgba(255, 71, 87, 0.2)';
+                loadingMsg.style.borderLeft = '3px solid #ff4757';
+            } finally {
+                // Re-enable button
+                button.disabled = false;
+                button.style.opacity = '1';
+                button.textContent = 'Send';
+            }
+            
+            messages.scrollTop = messages.scrollHeight;
+        };
+        
+        // Attach handlers
+        button.onclick = sendMessage;
+        input.onkeypress = (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        };
+        
+        // Focus input
+        input.focus();
+        
+        console.log('[TabSystem] ✅ AI Chat wired');
+    }
+    
+    /**
+     * Escape HTML to prevent XSS
+     */
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
     
     createAgenticCodingTab() {
