@@ -370,6 +370,10 @@ let ipcServer = null;
 app.whenReady().then(async () => {
   console.log('[BigDaddyG] 🚀 Starting Electron app...');
   
+  // Initialize real terminal backend
+  terminalBackend = new RealTerminalBackend();
+  console.log('[BigDaddyG] ✅ Real terminal backend initialized');
+  
   // ============================================================================
   // AUTO-UPDATE: Check GitHub for updates BEFORE launching
   // ============================================================================
