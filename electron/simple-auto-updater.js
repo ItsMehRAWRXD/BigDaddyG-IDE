@@ -9,9 +9,53 @@ const path = require('path');
 class SimpleAutoUpdater {
     constructor() {
         this.repoPath = path.join(__dirname, '..');
-        this.branch = this.getCurrentBranch();
+        this.targetBranch = 'cursor/fix-monaco-editor-to-main-branch-32ca'; // FORCE CORRECT BRANCH
+        this.currentBranch = this.getCurrentBranch();
         
-        console.log(`[AutoUpdater] 📍 Current branch: ${this.branch}`);
+        console.log(`[AutoUpdater] 📍 Current branch: ${this.currentBranch}`);
+        console.log(`[AutoUpdater] 🎯 Target branch: ${this.targetBranch}`);
+        
+        // Auto-switch if on wrong branch
+        if (this.currentBranch !== this.targetBranch) {
+            console.log(`[AutoUpdater] ⚠️ Wrong branch detected! Switching to ${this.targetBranch}...`);
+            this.switchBranch();
+        }
+        
+        this.branch = this.targetBranch;
+    }
+    
+    switchBranch() {
+        try {
+            // Stash any local changes
+            try {
+                execSync('git stash', {
+                    cwd: this.repoPath,
+                    encoding: 'utf8',
+                    stdio: 'pipe'
+                });
+                console.log(`[AutoUpdater] 💾 Stashed local changes`);
+            } catch (e) {
+                // No changes to stash
+            }
+            
+            // Fetch latest
+            execSync('git fetch origin', {
+                cwd: this.repoPath,
+                encoding: 'utf8',
+                stdio: 'pipe'
+            });
+            
+            // Checkout correct branch
+            execSync(`git checkout ${this.targetBranch}`, {
+                cwd: this.repoPath,
+                encoding: 'utf8',
+                stdio: 'pipe'
+            });
+            
+            console.log(`[AutoUpdater] ✅ Switched to branch: ${this.targetBranch}`);
+        } catch (error) {
+            console.error(`[AutoUpdater] ❌ Failed to switch branch:`, error.message);
+        }
     }
     
     getCurrentBranch() {
