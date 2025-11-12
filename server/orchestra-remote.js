@@ -11,36 +11,54 @@ class OrchestraRemote {
   }
 
   async generate(prompt, model = 'deepseek-chat') {
-    // If no API key, use simple built-in AI
-    if (!this.apiKey) {
-      return this.generateBuiltIn(prompt, model);
-    }
-
+    // FIRST: Try BigDaddyGCore via bridge on port 11435
     try {
-      const res = await fetch(`${this.apiBase}/chat/completions`, {
+      const bridgeResponse = await fetch('http://127.0.0.1:11435/api/generate', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.apiKey}`
-        },
-        body: JSON.stringify({
-          model: model,
-          messages: [{ role: 'user', content: prompt }],
-          stream: false
-        }),
-        signal: AbortSignal.timeout(30000)
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model, prompt }),
+        signal: AbortSignal.timeout(5000)
       });
-
-      if (!res.ok) {
-        throw new Error(`API returned ${res.status}`);
+      
+      if (bridgeResponse.ok) {
+        const data = await bridgeResponse.json();
+        console.log('[OrchestraRemote] ✅ Using BigDaddyGCore models (156 models)');
+        return data.response;
       }
-
-      const data = await res.json();
-      return data.choices?.[0]?.message?.content || data.response || '(no response)';
-    } catch (error) {
-      console.log('[OrchestraRemote] API unavailable, using built-in:', error.message);
-      return this.generateBuiltIn(prompt, model);
+    } catch (bridgeError) {
+      console.log('[OrchestraRemote] Bridge unavailable, trying remote API');
     }
+    
+    // SECOND: Try remote API (DeepSeek, Kimi, etc.) if API key provided
+    if (this.apiKey) {
+      try {
+        const res = await fetch(`${this.apiBase}/chat/completions`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.apiKey}`
+          },
+          body: JSON.stringify({
+            model: model,
+            messages: [{ role: 'user', content: prompt }],
+            stream: false
+          }),
+          signal: AbortSignal.timeout(30000)
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          console.log('[OrchestraRemote] ✅ Using remote AI API');
+          return data.choices?.[0]?.message?.content || data.response || '(no response)';
+        }
+      } catch (apiError) {
+        console.log('[OrchestraRemote] Remote API failed:', apiError.message);
+      }
+    }
+    
+    // THIRD: Use built-in AI
+    console.log('[OrchestraRemote] Using built-in AI');
+    return this.generateBuiltIn(prompt, model);
   }
 
   /**

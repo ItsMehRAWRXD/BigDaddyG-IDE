@@ -3088,6 +3088,62 @@ ipcMain.handle('ai:generate', async (event, { model, prompt, options }) => {
   }
 });
 
+// ============================================================================
+// HTTP BRIDGE FOR ORCHESTRA - Access BigDaddyGCore's 156 models
+// ============================================================================
+
+let bridgeServer = null;
+
+function startModelBridge() {
+  try {
+    const express = require('express');
+    const bridgeApp = express();
+    bridgeApp.use(express.json());
+    
+    // Get models list
+    bridgeApp.get('/api/models', async (req, res) => {
+      try {
+        const models = await bigDaddyGCore.listModels();
+        res.json({ models: models.map(m => ({ name: m.name || m.id, ...m })) });
+      } catch (err) {
+        res.json({ models: [] });
+      }
+    });
+    
+    // Generate response
+    bridgeApp.post('/api/generate', async (req, res) => {
+      const { model, prompt } = req.body;
+      try {
+        console.log(`[Bridge] 🤖 Generate request for model: ${model}`);
+        const response = await nativeOllamaClient.generate(model, prompt, {});
+        res.json({ response });
+      } catch (err) {
+        console.error(`[Bridge] ❌ Generation failed:`, err.message);
+        res.status(500).json({ error: err.message });
+      }
+    });
+    
+    bridgeServer = bridgeApp.listen(11435, '127.0.0.1', () => {
+      console.log('[Bridge] ✅ Model bridge running on port 11435');
+      console.log('[Bridge] 🔗 Orchestra can now access YOUR 156 models!');
+    });
+    
+  } catch (error) {
+    console.error('[Bridge] ❌ Failed to start model bridge:', error);
+  }
+}
+
+// Start bridge after BigDaddyGCore is ready
+app.whenReady().then(async () => {
+  // ... existing code ...
+  // Start model bridge AFTER BigDaddyGCore initializes
+  setTimeout(() => {
+    if (bigDaddyGCore && nativeOllamaClient) {
+      startModelBridge();
+    }
+  }, 2000);
+});
+
 ipcMain.handle('orchestra:stop', () => {
   stopOrchestraServer();
   return { success: true };
