@@ -13,9 +13,9 @@ class IPCServer {
     }
     
     start() {
-        // ENHANCED: Force kill any existing server on this port before starting
-        this.forceKillPort(this.port).then(() => {
-            this.server = net.createServer((socket) => {
+        // REMOVED: Don't force kill - it was killing our own process!
+        // Just try to start and handle errors gracefully
+        this.server = net.createServer((socket) => {
                 console.log('[IPC] 📡 Client connected');
                 
                 let data = '';
@@ -51,15 +51,12 @@ class IPCServer {
             
             this.server.on('error', (error) => {
                 if (error.code === 'EADDRINUSE') {
-                    console.error(`[IPC] ❌ Port ${this.port} still in use after force kill attempt`);
-                    console.log('[IPC] 💡 Try closing all BigDaddyG instances and restart');
+                    console.warn(`[IPC] ⚠️ Port ${this.port} in use - IPC server disabled`);
+                    console.log('[IPC] 💡 This is OK - IDE will work without external CLI support');
                 } else {
                     console.error('[IPC] ❌ Server error:', error.message);
                 }
             });
-        }).catch(err => {
-            console.error('[IPC] ❌ Failed to start server:', err);
-        });
     }
     
     async forceKillPort(port) {
