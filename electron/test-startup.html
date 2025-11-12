@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Startup Test</title>
+    <style>
+        body { background: #0a0a1e; color: #00d4ff; font-family: monospace; padding: 20px; }
+        .log { margin: 5px 0; padding: 5px; background: rgba(0, 212, 255, 0.1); border-radius: 3px; }
+        .error { background: rgba(255, 71, 87, 0.2); color: #ff4757; }
+        .success { background: rgba(0, 255, 136, 0.2); color: #00ff88; }
+    </style>
+</head>
+<body>
+    <h1>🔍 BigDaddyG IDE Startup Diagnostic</h1>
+    <div id="logs"></div>
+    
+    <script>
+        const logs = document.getElementById('logs');
+        function log(message, type = 'log') {
+            const div = document.createElement('div');
+            div.className = `log ${type}`;
+            div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logs.appendChild(div);
+            console.log(message);
+        }
+        
+        // Intercept errors
+        window.onerror = function(msg, url, line, col, error) {
+            log(`ERROR: ${msg} at ${url}:${line}:${col}`, 'error');
+            log(`Stack: ${error?.stack}`, 'error');
+            return false;
+        };
+        
+        window.addEventListener('unhandledrejection', e => {
+            log(`UNHANDLED REJECTION: ${e.reason}`, 'error');
+        });
+        
+        log('Starting diagnostic...', 'success');
+        log('Document ready state: ' + document.readyState);
+    </script>
+    
+    <!-- Load scripts in order -->
+    <script>log('Loading marketplace database...')</script>
+    <script src="full-marketplace-database.js"></script>
+    <script>log('✅ Marketplace database loaded', 'success')</script>
+    
+    <script>log('Loading developer mode...')</script>
+    <script src="developer-mode.js"></script>
+    <script>log('✅ Developer mode loaded', 'success')</script>
+    
+    <script>log('Loading tab system...')</script>
+    <script src="complete-tab-system.js"></script>
+    <script>log('✅ Tab system loaded', 'success')</script>
+    
+    <script>
+        setTimeout(() => {
+            log('=== FINAL STATUS ===', 'success');
+            log('window.MARKETPLACE_EXTENSIONS: ' + (window.MARKETPLACE_EXTENSIONS ? window.MARKETPLACE_EXTENSIONS.length + ' items' : 'MISSING'), 
+                window.MARKETPLACE_EXTENSIONS ? 'success' : 'error');
+            log('window.developerMode: ' + (window.developerMode ? 'EXISTS' : 'MISSING'), 
+                window.developerMode ? 'success' : 'error');
+            log('window.completeTabSystem: ' + (window.completeTabSystem ? 'EXISTS' : 'MISSING'), 
+                window.completeTabSystem ? 'success' : 'error');
+            log('All scripts loaded successfully!', 'success');
+        }, 2000);
+    </script>
+</body>
+</html>
