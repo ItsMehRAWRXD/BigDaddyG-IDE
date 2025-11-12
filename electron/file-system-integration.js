@@ -1,0 +1,574 @@
+/**
+ * FULL FILE SYSTEM INTEGRATION
+ * Open files, save files, load projects, browse entire file system
+ * Like VS Code, JetBrains, Sublime - REAL IDE capabilities
+ */
+
+(function() {
+'use strict';
+
+class FileSystemIntegration {
+    constructor() {
+        this.currentProject = null;
+        this.openFiles = new Map(); // Map of file paths to content
+        this.fileWatchers = new Map();
+        this.recentProjects = this.loadRecentProjects();
+        this.init();
+    }
+    
+    init() {
+        console.log('[FileSystem] 📁 Initializing FULL file system integration...');
+        
+        // Register global keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ctrl+O - Open File
+            if (e.ctrlKey && e.key === 'o') {
+                e.preventDefault();
+                this.openFileDialog();
+            }
+            
+            // Ctrl+S - Save File
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                this.saveCurrentFile();
+            }
+            
+            // Ctrl+Shift+S - Save As
+            if (e.ctrlKey && e.shiftKey && e.key === 'S') {
+                e.preventDefault();
+                this.saveFileAsDialog();
+            }
+            
+            // Ctrl+Shift+O - Open Folder/Project
+            if (e.ctrlKey && e.shiftKey && e.key === 'O') {
+                e.preventDefault();
+                this.openFolderDialog();
+            }
+            
+            // Ctrl+N - New File
+            if (e.ctrlKey && e.key === 'n') {
+                e.preventDefault();
+                this.createNewFile();
+            }
+        });
+        
+        // Make globally available
+        window.fileSystem = this;
+        
+        console.log('[FileSystem] ✅ File system integration ready');
+        console.log('[FileSystem] 💡 Ctrl+O = Open File | Ctrl+S = Save | Ctrl+Shift+O = Open Folder');
+    }
+    
+    /**
+     * Open file dialog and load file
+     */
+    async openFileDialog() {
+        try {
+            console.log('[FileSystem] 📂 Opening file dialog...');
+            
+            if (!window.electron || !window.electron.ipcRenderer) {
+                alert('File system access requires Electron');
+                return;
+            }
+            
+            // Send IPC to main process to show open dialog
+            const result = await window.electron.ipcRenderer.invoke('open-file-dialog');
+            
+            if (result.canceled || !result.filePaths || result.filePaths.length === 0) {
+                console.log('[FileSystem] User canceled file dialog');
+                return;
+            }
+            
+            const filePath = result.filePaths[0];
+            await this.loadFile(filePath);
+            
+        } catch (error) {
+            console.error('[FileSystem] Error opening file:', error);
+            alert('Error opening file: ' + error.message);
+        }
+    }
+    
+    /**
+     * Load a file from disk
+     */
+    async loadFile(filePath) {
+        try {
+            console.log('[FileSystem] 📄 Loading file:', filePath);
+            
+            const result = await window.electron.ipcRenderer.invoke('read-file', filePath);
+            
+            if (!result.success) {
+                throw new Error(result.error);
+            }
+            
+            const content = result.content;
+            const fileName = filePath.split(/[\\/]/).pop();
+            
+            // Store in open files
+            this.openFiles.set(filePath, content);
+            
+            // Create editor tab with file content
+            if (window.completeTabSystem) {
+                const editorId = window.completeTabSystem.createEditorTab(fileName);
+                
+                // Set content and file path
+                setTimeout(() => {
+                    const textarea = document.querySelector(`#content-${editorId} textarea`);
+                    if (textarea) {
+                        textarea.value = content;
+                        textarea.dataset.filePath = filePath;
+                        textarea.dataset.fileName = fileName;
+                        
+                        // Mark as saved
+                        textarea.dataset.saved = 'true';
+                        
+                        // Watch for changes
+                        textarea.addEventListener('input', () => {
+                            textarea.dataset.saved = 'false';
+                            this.updateTabTitle(editorId, fileName + ' ●'); // Unsaved indicator
+                        });
+                        
+                        console.log('[FileSystem] ✅ File loaded:', fileName);
+                    }
+                }, 100);
+            }
+            
+            // Add to recent files
+            this.addToRecent(filePath);
+            
+        } catch (error) {
+            console.error('[FileSystem] Error loading file:', error);
+            alert('Error loading file: ' + error.message);
+        }
+    }
+    
+    /**
+     * Save current file
+     */
+    async saveCurrentFile() {
+        try {
+            if (!window.completeTabSystem) return;
+            
+            const activeTabId = window.completeTabSystem.activeTabId;
+            if (!activeTabId) {
+                console.log('[FileSystem] No active tab');
+                return;
+            }
+            
+            const tab = window.completeTabSystem.tabs.get(activeTabId);
+            if (!tab) return;
+            
+            const textarea = tab.content.querySelector('textarea');
+            if (!textarea) {
+                console.log('[FileSystem] Active tab is not an editor');
+                return;
+            }
+            
+            const filePath = textarea.dataset.filePath;
+            
+            if (!filePath) {
+                // No file path - show save as dialog
+                return this.saveFileAsDialog();
+            }
+            
+            // Save to existing path
+            await this.saveFile(filePath, textarea.value);
+            
+            // Mark as saved
+            textarea.dataset.saved = 'true';
+            
+            // Update tab title (remove unsaved indicator)
+            const fileName = textarea.dataset.fileName || filePath.split(/[\\/]/).pop();
+            this.updateTabTitle(activeTabId, fileName);
+            
+            console.log('[FileSystem] ✅ File saved:', filePath);
+            
+        } catch (error) {
+            console.error('[FileSystem] Error saving file:', error);
+            alert('Error saving file: ' + error.message);
+        }
+    }
+    
+    /**
+     * Save file as (choose location)
+     */
+    async saveFileAsDialog() {
+        try {
+            if (!window.completeTabSystem) return;
+            
+            const activeTabId = window.completeTabSystem.activeTabId;
+            if (!activeTabId) return;
+            
+            const tab = window.completeTabSystem.tabs.get(activeTabId);
+            if (!tab) return;
+            
+            const textarea = tab.content.querySelector('textarea');
+            if (!textarea) return;
+            
+            const content = textarea.value;
+            const defaultName = textarea.dataset.fileName || 'untitled.txt';
+            
+            // Show save dialog
+            const result = await window.electron.ipcRenderer.invoke('save-file-dialog', defaultName);
+            
+            if (result.canceled || !result.filePath) {
+                console.log('[FileSystem] User canceled save dialog');
+                return;
+            }
+            
+            const filePath = result.filePath;
+            
+            // Save file
+            await this.saveFile(filePath, content);
+            
+            // Update textarea metadata
+            const fileName = filePath.split(/[\\/]/).pop();
+            textarea.dataset.filePath = filePath;
+            textarea.dataset.fileName = fileName;
+            textarea.dataset.saved = 'true';
+            
+            // Update tab title
+            this.updateTabTitle(activeTabId, fileName);
+            
+            console.log('[FileSystem] ✅ File saved as:', filePath);
+            
+        } catch (error) {
+            console.error('[FileSystem] Error in save as:', error);
+            alert('Error saving file: ' + error.message);
+        }
+    }
+    
+    /**
+     * Save file to disk
+     */
+    async saveFile(filePath, content) {
+        const result = await window.electron.ipcRenderer.invoke('write-file', filePath, content);
+        
+        if (!result.success) {
+            throw new Error(result.error);
+        }
+        
+        // Update in-memory cache
+        this.openFiles.set(filePath, content);
+    }
+    
+    /**
+     * Open folder/project
+     */
+    async openFolderDialog() {
+        try {
+            console.log('[FileSystem] 📁 Opening folder dialog...');
+            
+            const result = await window.electron.ipcRenderer.invoke('open-folder-dialog');
+            
+            if (result.canceled || !result.filePaths || result.filePaths.length === 0) {
+                console.log('[FileSystem] User canceled folder dialog');
+                return;
+            }
+            
+            const folderPath = result.filePaths[0];
+            await this.loadProject(folderPath);
+            
+        } catch (error) {
+            console.error('[FileSystem] Error opening folder:', error);
+            alert('Error opening folder: ' + error.message);
+        }
+    }
+    
+    /**
+     * Load entire project/folder
+     */
+    async loadProject(folderPath) {
+        try {
+            console.log('[FileSystem] 📂 Loading project:', folderPath);
+            
+            const result = await window.electron.ipcRenderer.invoke('read-directory', folderPath);
+            
+            if (!result.success) {
+                throw new Error(result.error);
+            }
+            
+            this.currentProject = {
+                path: folderPath,
+                name: folderPath.split(/[\\/]/).pop(),
+                files: result.files
+            };
+            
+            // Update project explorer
+            this.renderProjectExplorer();
+            
+            // Add to recent projects
+            this.addToRecentProjects(folderPath);
+            
+            console.log('[FileSystem] ✅ Project loaded:', this.currentProject.name);
+            console.log('[FileSystem] 📊 Files found:', result.files.length);
+            
+        } catch (error) {
+            console.error('[FileSystem] Error loading project:', error);
+            alert('Error loading project: ' + error.message);
+        }
+    }
+    
+    /**
+     * Render project explorer with file tree
+     */
+    renderProjectExplorer() {
+        if (!this.currentProject) return;
+        
+        // Create or get project explorer panel
+        let panel = document.getElementById('project-explorer-panel');
+        
+        if (!panel) {
+            panel = document.createElement('div');
+            panel.id = 'project-explorer-panel';
+            panel.style.cssText = `
+                position: fixed;
+                left: 0;
+                top: 95px;
+                width: 300px;
+                bottom: 0;
+                background: #05050f;
+                border-right: 1px solid rgba(0, 212, 255, 0.2);
+                z-index: 99;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+            `;
+            document.body.appendChild(panel);
+            
+            // Adjust main container
+            const mainContainer = document.getElementById('main-container');
+            if (mainContainer) {
+                mainContainer.style.marginLeft = '300px';
+            }
+            
+            // Hide open files panel to avoid overlap
+            const openFilesPanel = document.getElementById('open-files-panel');
+            if (openFilesPanel) {
+                openFilesPanel.style.display = 'none';
+            }
+        }
+        
+        panel.innerHTML = `
+            <div style="
+                padding: 12px;
+                border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+                background: rgba(0, 212, 255, 0.05);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            ">
+                <div>
+                    <div style="color: #00d4ff; font-weight: bold; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">
+                        📁 Project
+                    </div>
+                    <div style="color: #fff; font-size: 13px; margin-top: 4px;">
+                        ${this.currentProject.name}
+                    </div>
+                </div>
+                <button 
+                    onclick="window.fileSystem.closeProject()"
+                    style="
+                        background: rgba(255, 71, 87, 0.2);
+                        border: 1px solid #ff4757;
+                        color: #ff4757;
+                        padding: 4px 8px;
+                        border-radius: 3px;
+                        cursor: pointer;
+                        font-size: 10px;
+                        font-weight: bold;
+                    "
+                >✕</button>
+            </div>
+            <div id="project-file-tree" style="
+                flex: 1;
+                overflow-y: auto;
+                padding: 8px 0;
+            "></div>
+            <div style="
+                padding: 8px 12px;
+                border-top: 1px solid rgba(0, 212, 255, 0.2);
+                font-size: 11px;
+                color: #888;
+            ">
+                <div>${this.currentProject.files.length} items</div>
+                <div style="margin-top: 4px; font-size: 10px; opacity: 0.7;">
+                    ${this.currentProject.path}
+                </div>
+            </div>
+        `;
+        
+        // Render file tree
+        this.renderFileTree(this.currentProject.files, 'project-file-tree');
+    }
+    
+    /**
+     * Render file tree recursively
+     */
+    renderFileTree(files, containerId, depth = 0) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        
+        const html = files.map(file => {
+            const indent = depth * 20;
+            const icon = file.type === 'directory' ? '📁' : this.getFileIcon(file.name);
+            const isDir = file.type === 'directory';
+            
+            return `
+                <div 
+                    class="file-tree-item"
+                    data-path="${file.path}"
+                    data-type="${file.type}"
+                    style="
+                        padding: 6px 12px 6px ${indent + 12}px;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        color: #ccc;
+                        font-size: 13px;
+                        transition: all 0.2s;
+                    "
+                    onclick="window.fileSystem.handleFileTreeClick('${file.path}', '${file.type}')"
+                    onmouseover="this.style.background='rgba(255,255,255,0.05)'"
+                    onmouseout="this.style.background='transparent'"
+                >
+                    <span style="font-size: 16px;">${icon}</span>
+                    <span style="flex: 1;">${file.name}</span>
+                    ${isDir ? '<span style="color: #888; font-size: 10px;">›</span>' : ''}
+                </div>
+            `;
+        }).join('');
+        
+        container.innerHTML += html;
+    }
+    
+    /**
+     * Handle file tree click
+     */
+    async handleFileTreeClick(path, type) {
+        if (type === 'file') {
+            // Load file
+            await this.loadFile(path);
+        } else if (type === 'directory') {
+            // Expand/collapse directory
+            // TODO: Implement directory expansion
+            console.log('[FileSystem] Directory clicked:', path);
+        }
+    }
+    
+    /**
+     * Close current project
+     */
+    closeProject() {
+        this.currentProject = null;
+        
+        const panel = document.getElementById('project-explorer-panel');
+        if (panel) {
+            panel.remove();
+        }
+        
+        // Restore main container margin
+        const mainContainer = document.getElementById('main-container');
+        if (mainContainer) {
+            mainContainer.style.marginLeft = '250px';
+        }
+        
+        // Show open files panel
+        const openFilesPanel = document.getElementById('open-files-panel');
+        if (openFilesPanel) {
+            openFilesPanel.style.display = 'flex';
+        }
+        
+        console.log('[FileSystem] Project closed');
+    }
+    
+    /**
+     * Create new file
+     */
+    createNewFile() {
+        if (window.completeTabSystem) {
+            window.completeTabSystem.createEditorTab('Untitled');
+            console.log('[FileSystem] ✅ New file created');
+        }
+    }
+    
+    /**
+     * Get file icon based on extension
+     */
+    getFileIcon(fileName) {
+        const ext = fileName.split('.').pop().toLowerCase();
+        
+        const iconMap = {
+            'js': '🟨', 'ts': '🔷', 'jsx': '⚛️', 'tsx': '⚛️',
+            'py': '🐍', 'java': '☕', 'cpp': '©️', 'c': '©️',
+            'cs': '🎯', 'go': '🐹', 'rs': '🦀', 'php': '🐘',
+            'rb': '💎', 'swift': '🦅', 'kt': '🟣', 'dart': '🎯',
+            'html': '🌐', 'css': '🎨', 'scss': '🎨', 'sass': '🎨',
+            'json': '📦', 'xml': '📋', 'yaml': '⚙️', 'yml': '⚙️',
+            'md': '📝', 'txt': '📄', 'pdf': '📕', 'doc': '📘',
+            'sh': '🐚', 'bash': '🐚', 'sql': '🗄️', 'db': '🗄️',
+            'vue': '💚', 'svelte': '🔥', 'png': '🖼️', 'jpg': '🖼️',
+            'gif': '🖼️', 'svg': '🎨', 'ico': '🎨'
+        };
+        
+        return iconMap[ext] || '📄';
+    }
+    
+    /**
+     * Update tab title
+     */
+    updateTabTitle(tabId, newTitle) {
+        if (!window.completeTabSystem) return;
+        
+        const tab = window.completeTabSystem.tabs.get(tabId);
+        if (tab && tab.button) {
+            const titleSpan = tab.button.querySelector('span:nth-child(2)');
+            if (titleSpan) {
+                titleSpan.textContent = newTitle;
+            }
+        }
+    }
+    
+    /**
+     * Recent files management
+     */
+    addToRecent(filePath) {
+        let recent = JSON.parse(localStorage.getItem('recentFiles') || '[]');
+        recent = recent.filter(p => p !== filePath);
+        recent.unshift(filePath);
+        recent = recent.slice(0, 10); // Keep last 10
+        localStorage.setItem('recentFiles', JSON.stringify(recent));
+    }
+    
+    addToRecentProjects(folderPath) {
+        this.recentProjects = this.recentProjects.filter(p => p !== folderPath);
+        this.recentProjects.unshift(folderPath);
+        this.recentProjects = this.recentProjects.slice(0, 10);
+        localStorage.setItem('recentProjects', JSON.stringify(this.recentProjects));
+    }
+    
+    loadRecentProjects() {
+        return JSON.parse(localStorage.getItem('recentProjects') || '[]');
+    }
+}
+
+// Auto-initialize
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        window.fileSystem = new FileSystemIntegration();
+    });
+} else {
+    window.fileSystem = new FileSystemIntegration();
+}
+
+// Also init after delay
+setTimeout(() => {
+    if (!window.fileSystem) {
+        window.fileSystem = new FileSystemIntegration();
+    }
+}, 1500);
+
+console.log('[FileSystem] 📁 Module loaded - Full file system integration ready');
+
+})();
