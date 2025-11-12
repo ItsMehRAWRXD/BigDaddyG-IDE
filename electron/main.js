@@ -377,7 +377,9 @@ app.whenReady().then(async () => {
     const autoUpdater = new AutoUpdater();
     const updateResult = await autoUpdater.checkAndUpdate();
     
-    if (updateResult.filesUpdated && updateResult.filesUpdated > 0) {
+    if (updateResult.devBranch) {
+      console.log('[BigDaddyG] ⏭️ Auto-update skipped (development branch)');
+    } else if (updateResult.filesUpdated && updateResult.filesUpdated > 0) {
       console.log(`[BigDaddyG] 🔄 Updated ${updateResult.filesUpdated} files from GitHub`);
       dialog.showMessageBoxSync({
         type: 'info',

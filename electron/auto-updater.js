@@ -13,12 +13,37 @@ class AutoUpdater {
     constructor() {
         this.repoOwner = 'ItsMehRAWRXD';
         this.repoName = 'BigDaddyG-IDE';
-        this.branch = 'main';
+        this.branch = this.detectCurrentBranch(); // Auto-detect current branch
         this.currentVersion = this.loadVersion();
         this.updateCheckUrl = `https://api.github.com/repos/${this.repoOwner}/${this.repoName}/commits/${this.branch}`;
         this.rawContentUrl = `https://raw.githubusercontent.com/${this.repoOwner}/${this.repoName}/${this.branch}`;
         this.updateInProgress = false;
         this.updateWindow = null;
+        
+        console.log(`[AutoUpdater] 🔍 Tracking branch: ${this.branch}`);
+    }
+    
+    /**
+     * Detect current git branch
+     */
+    detectCurrentBranch() {
+        try {
+            const { execSync } = require('child_process');
+            const branch = execSync('git rev-parse --abbrev-ref HEAD', {
+                cwd: __dirname + '/..',
+                encoding: 'utf8'
+            }).trim();
+            
+            if (branch && branch !== 'HEAD') {
+                console.log(`[AutoUpdater] 📍 Detected branch: ${branch}`);
+                return branch;
+            }
+        } catch (error) {
+            console.log('[AutoUpdater] ⚠️ Could not detect git branch, using main');
+        }
+        
+        // Fallback to main if detection fails
+        return 'main';
     }
     
     /**
@@ -80,7 +105,14 @@ class AutoUpdater {
             return { hasUpdate: false };
         }
         
-        console.log('[AutoUpdater] 🔍 Checking for updates...');
+        // Skip auto-update for development/feature branches
+        if (this.branch !== 'main' && !this.branch.startsWith('release/')) {
+            console.log(`[AutoUpdater] ⚠️ Development branch detected: ${this.branch}`);
+            console.log('[AutoUpdater] ⏭️ Skipping auto-update (dev branch)');
+            return { hasUpdate: false, devBranch: true };
+        }
+        
+        console.log('[AutoUpdater] 🔍 Checking for updates on branch: ' + this.branch);
         
         try {
             const latestCommit = await this.fetchLatestCommit();

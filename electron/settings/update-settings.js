@@ -32,8 +32,9 @@ class UpdateSettingsManager {
             checkInterval: 'daily', // 'startup', 'daily', 'weekly', 'manual'
             autoDownload: true,
             notifyBeforeUpdate: false,
-            branch: 'main',
+            branch: 'auto', // 'auto' = detect from git, or specify branch name
             includePrerelease: false,
+            skipDevBranches: true, // Skip auto-update on dev/feature branches
             lastCheck: null
         };
     }
