@@ -382,6 +382,10 @@ class CompleteTabSystem {
                 { icon: '🎨', title: 'Image Generator', action: () => this.createImageGenTab() },
                 { icon: '🗣️', title: 'Voice Coding', action: () => this.createVoiceCodingTab() },
             ],
+            '📊 Views': [
+                { icon: '⚡', title: 'Activity View', action: () => this.createActivityViewTab() },
+                { icon: '🖥️', title: 'Desktop View', action: () => this.createDesktopViewTab() },
+            ],
             '⚙️ Settings': [
                 { icon: '🎨', title: 'Theme Settings', action: () => this.createThemeSettingsTab() },
                 { icon: '⌨️', title: 'Editor Settings', action: () => this.createEditorSettingsTab() },
