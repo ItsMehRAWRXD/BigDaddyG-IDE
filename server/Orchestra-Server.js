@@ -1,12 +1,57 @@
+/**
+ * Orchestra-Server.js - BigDaddyG IDE API Backend
+ * WITH UNIVERSAL ERROR CATCHER & LOGGING
+ */
+
 const express = require('express');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const http = require('http');
 const { spawn } = require('child_process');
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
 const PORT = 11441;
 const DEFAULT_MODEL = 'bigdaddyg:latest';
+
+// ============================================================================
+// UNIVERSAL ERROR CATCHER - Logs everything without crashing
+// ============================================================================
+
+const logDir = path.join(process.cwd(), 'logs');
+if (!fs.existsSync(logDir)) {
+  fs.mkdirSync(logDir, { recursive: true });
+  console.log('[Orchestra] 📁 Created logs directory:', logDir);
+}
+
+/**
+ * Universal error logger - writes to file and console
+ */
+function logError(type, req, err) {
+  const logPath = path.join(logDir, 'orchestra-errors.log');
+  const timestamp = new Date().toISOString();
+  
+  const log =
+    `\n${'='.repeat(80)}\n` +
+    `[${timestamp}] ${type}\n` +
+    `${'='.repeat(80)}\n` +
+    `URL: ${req?.url || 'N/A'}\n` +
+    `Method: ${req?.method || 'N/A'}\n` +
+    `Headers: ${JSON.stringify(req?.headers || {}, null, 2)}\n` +
+    `Body: ${req?.rawBody || JSON.stringify(req?.body || {}, null, 2)}\n` +
+    `Query: ${JSON.stringify(req?.query || {}, null, 2)}\n` +
+    `Error: ${err?.stack || err}\n` +
+    `${'-'.repeat(80)}\n`;
+  
+  try {
+    fs.appendFileSync(logPath, log);
+  } catch (writeErr) {
+    console.error('[Orchestra] ❌ Failed to write to error log:', writeErr);
+  }
+  
+  console.error(`[Orchestra] 🚨 ${type}: ${err?.message || err}`);
+}
 
 const MODEL_ALIAS_ENTRIES = [
   ['bigdaddyg:latest', 'bigdaddyg:latest'],
@@ -70,7 +115,27 @@ app.use((req, res, next) => {
   }
 });
 
-app.use(express.json({ limit: '50mb' }));
+// ---- Capture raw body for debugging ----
+app.use(express.json({ 
+  limit: '50mb',
+  strict: false,
+  verify: (req, res, buf, encoding) => {
+    req.rawBody = buf.toString(encoding || 'utf8');
+  }
+}));
+
+// ---- Handle JSON syntax errors (malformed JSON) ----
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && 'body' in err) {
+    logError('MALFORMED JSON', req, err);
+    return res.status(400).json({ 
+      error: 'Malformed JSON', 
+      message: err.message,
+      hint: 'Check for missing commas, quotes, or brackets in your request body'
+    });
+  }
+  next(err);
+});
 
 // BigDaddyG model registry
 const BIGDADDYG_MODELS = {
@@ -1852,11 +1917,53 @@ server.listen(PORT, () => {
 });
 
 server.on('error', (error) => {
-                if (error.code === 'EADDRINUSE') {
+  if (error.code === 'EADDRINUSE') {
     console.log(`⚠️ Port ${PORT} already in use - server may already be running`);
-                } else {
+  } else {
     console.error('Server error:', error);
   }
 });
+
+// ============================================================================
+// UNIVERSAL ERROR CATCHERS - Final safety nets
+// ============================================================================
+
+// ---- Catch all runtime errors ----
+app.use((err, req, res, next) => {
+  logError('RUNTIME ERROR', req, err);
+  res.status(500).json({ 
+    error: 'Internal Server Error', 
+    message: err.message,
+    hint: 'Check logs/orchestra-errors.log for details'
+  });
+});
+
+// ---- Route not found (404) ----
+app.use((req, res) => {
+  const error = new Error('Route not found');
+  logError('ROUTE NOT FOUND', req, error);
+  res.status(404).json({ 
+    error: 'Not Found', 
+    message: 'Invalid API endpoint',
+    requested: req.url,
+    hint: 'Check the API documentation for valid endpoints'
+  });
+});
+
+// ---- Global process-level catchers ----
+process.on('uncaughtException', err => {
+  const dummyReq = { url: 'process.uncaughtException', method: 'N/A' };
+  logError('UNCAUGHT EXCEPTION', dummyReq, err);
+  console.error('[Orchestra] 💥 UNCAUGHT EXCEPTION - Server continuing but check logs!');
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  const dummyReq = { url: 'process.unhandledRejection', method: 'N/A' };
+  logError('UNHANDLED PROMISE REJECTION', dummyReq, reason);
+  console.error('[Orchestra] 💥 UNHANDLED REJECTION - Server continuing but check logs!');
+});
+
+console.log('[Orchestra] 🛡️ Universal error catcher activated');
+console.log('[Orchestra] 📝 All errors logged to: logs/orchestra-errors.log');
 
 module.exports = { app, server };
