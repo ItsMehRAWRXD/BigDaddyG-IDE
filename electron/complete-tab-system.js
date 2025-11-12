@@ -729,7 +729,16 @@ hello();"></textarea>
             icon: '💬',
             content: `
                 <div id="${chatId}" style="display: flex; flex-direction: column; height: 100%; padding: 20px;">
-                    <h2 style="color: #00d4ff; margin-bottom: 15px;">💬 AI Chat</h2>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h2 style="color: #00d4ff; margin: 0;">💬 AI Chat</h2>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <label style="color: #888; font-size: 12px;">Model:</label>
+                            <select id="${chatId}-model" style="padding: 8px 12px; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 5px; color: #fff; font-size: 12px; cursor: pointer;">
+                                <option value="">Loading models...</option>
+                            </select>
+                            <button id="${chatId}-refresh-models" style="padding: 6px 12px; background: rgba(0, 212, 255, 0.2); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 4px; color: #00d4ff; cursor: pointer; font-size: 11px;">🔄 Refresh</button>
+                        </div>
+                    </div>
                     <div id="${chatId}-messages" style="flex: 1; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 8px; padding: 15px; overflow-y: auto; margin-bottom: 15px;">
                         <div style="color: #888; text-align: center; margin-top: 50px;">
                             <p style="font-size: 48px; margin-bottom: 10px;">🤖</p>
@@ -802,11 +811,14 @@ hello();"></textarea>
             button.textContent = 'Sending...';
             
             try {
-                // REAL Orchestra API call
+                const selectedModel = modelSelect ? modelSelect.value : 'gpt-3.5-turbo';
+                
+                // REAL Orchestra API call with selected model
                 const response = await fetch('http://localhost:11441/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
+                        model: selectedModel,
                         messages: [{ role: 'user', content: message }],
                         temperature: 0.7,
                         max_tokens: 2000
@@ -870,8 +882,18 @@ hello();"></textarea>
             icon: '🧠',
             content: `
                 <div id="${agenticId}" style="padding: 20px; height: 100%; overflow-y: auto;">
-                    <h2 style="color: #00d4ff; margin-bottom: 15px;">🧠 Agentic Coding</h2>
-                    <p style="color: #888; margin-bottom: 20px;">AI-powered autonomous coding agent</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <div>
+                            <h2 style="color: #00d4ff; margin: 0 0 5px 0;">🧠 Agentic Coding</h2>
+                            <p style="color: #888; margin: 0;">AI-powered autonomous coding agent</p>
+                        </div>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <label style="color: #888; font-size: 12px;">Model:</label>
+                            <select id="${agenticId}-model" style="padding: 8px 12px; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 5px; color: #fff; font-size: 12px; cursor: pointer;">
+                                <option value="">Loading models...</option>
+                            </select>
+                        </div>
+                    </div>
                     
                     <div style="background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 8px; padding: 20px; margin-bottom: 20px;">
                         <h3 style="color: #00ff88; margin-bottom: 10px;">🎯 Task</h3>
@@ -1038,7 +1060,18 @@ hello();"></textarea>
             icon: '🎨',
             content: `
                 <div id="${imageGenId}" style="padding: 20px; height: 100%; overflow-y: auto;">
-                    <h2 style="color: #00d4ff; margin-bottom: 15px;">🎨 AI Image Generator</h2>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h2 style="color: #00d4ff; margin: 0;">🎨 AI Image Generator</h2>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <label style="color: #888; font-size: 12px;">Model:</label>
+                            <select id="${imageGenId}-model" style="padding: 8px 12px; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 5px; color: #fff; font-size: 12px; cursor: pointer;">
+                                <option value="stable-diffusion-xl">Stable Diffusion XL</option>
+                                <option value="stable-diffusion-3">Stable Diffusion 3</option>
+                                <option value="dall-e-3">DALL-E 3</option>
+                                <option value="midjourney">Midjourney</option>
+                            </select>
+                        </div>
+                    </div>
                     <div style="margin-bottom: 20px;">
                         <input 
                             id="${imageGenId}-prompt" 
