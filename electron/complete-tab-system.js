@@ -650,17 +650,24 @@ hello();"></textarea>
     }
     
     createFileExplorerTab() {
+        const explorerId = `explorer-${Date.now()}`;
         return this.createTab({
             title: 'File Explorer',
             icon: '📁',
             content: `
-                <div style="padding: 20px; height: 100%; overflow-y: auto;">
+                <div style="padding: 20px; height: 100%; display: flex; flex-direction: column;">
                     <h2 style="color: #00d4ff; margin-bottom: 20px;">📁 File Explorer</h2>
-                    <div id="file-tree-container" style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 8px; padding: 15px; min-height: 400px;">
-                        <p style="color: #888;">File tree will load here...</p>
-                    </div>
+                    <div id="${explorerId}" style="flex: 1; overflow: hidden;"></div>
                 </div>
-            `
+            `,
+            onActivate: () => {
+                setTimeout(() => {
+                    if (window.FileExplorerComponent) {
+                        const explorer = new window.FileExplorerComponent(explorerId);
+                        explorer.initialize();
+                    }
+                }, 100);
+            }
         });
     }
     
