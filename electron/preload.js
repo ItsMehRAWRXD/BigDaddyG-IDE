@@ -22,6 +22,14 @@ const validateOptions = (options) => {
   return options;
 };
 
+// ============================================================================
+// ORCHESTRA API - Access BigDaddyGCore's 156 models via IPC
+// ============================================================================
+contextBridge.exposeInMainWorld('orchestraApi', {
+  getModels: () => ipcRenderer.invoke('orchestra:get-models'),
+  generate: (payload) => ipcRenderer.invoke('orchestra:generate', payload)
+});
+
 // Expose protected methods to renderer process
 contextBridge.exposeInMainWorld('electron', {
   // Window controls
