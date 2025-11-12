@@ -23,24 +23,38 @@ waitForDependencies(() => {
     // Override tab creation methods to add wiring
     const tabSystem = window.completeTabSystem;
     
-    // Store original methods
-    const originalCreateDebugger = tabSystem.createDebuggerTab.bind(tabSystem);
-    const originalCreateVoice = tabSystem.createVoiceCodingTab.bind(tabSystem);
-    const originalCreateMarketplace = tabSystem.createMarketplaceTab.bind(tabSystem);
-    const originalCreateGitHub = tabSystem.createGitHubTab.bind(tabSystem);
-    const originalCreatePerformance = tabSystem.createPerformanceMonitorTab.bind(tabSystem);
-    const originalCreateBrowser = tabSystem.createBrowserTab.bind(tabSystem);
-    const originalCreateTeam = tabSystem.createTeamTab.bind(tabSystem);
-    const originalCreateGameEditor = tabSystem.createGameEditorTab.bind(tabSystem);
-    const originalCreateGodot = tabSystem.createGodotTab.bind(tabSystem);
-    const originalCreateUnreal = tabSystem.createUnrealTab.bind(tabSystem);
-    const originalCreateUnity = tabSystem.createUnityTab.bind(tabSystem);
-    const originalCreateThemeSettings = tabSystem.createThemeSettingsTab.bind(tabSystem);
-    const originalCreateEditorSettings = tabSystem.createEditorSettingsTab.bind(tabSystem);
-    const originalCreateExtensionsSettings = tabSystem.createExtensionsSettingsTab.bind(tabSystem);
-    const originalCreateNetworkSettings = tabSystem.createNetworkSettingsTab.bind(tabSystem);
-    const originalCreateSecuritySettings = tabSystem.createSecuritySettingsTab.bind(tabSystem);
-    const originalCreatePerformanceSettings = tabSystem.createPerformanceSettingsTab.bind(tabSystem);
+    if (!tabSystem) {
+        console.error('[CompleteWiring] ❌ Tab system not found!');
+        return;
+    }
+    
+    // Store original methods SAFELY (only if they exist)
+    const safeBind = (methodName) => {
+        if (typeof tabSystem[methodName] === 'function') {
+            return tabSystem[methodName].bind(tabSystem);
+        } else {
+            console.warn(`[CompleteWiring] ⚠️ Method ${methodName} not found, skipping`);
+            return null;
+        }
+    };
+    
+    const originalCreateDebugger = safeBind('createDebuggerTab');
+    const originalCreateVoice = safeBind('createVoiceCodingTab');
+    const originalCreateMarketplace = safeBind('createMarketplaceTab');
+    const originalCreateGitHub = safeBind('createGitHubTab');
+    const originalCreatePerformance = safeBind('createPerformanceMonitorTab');
+    const originalCreateBrowser = safeBind('createBrowserTab');
+    const originalCreateTeam = safeBind('createTeamTab');
+    const originalCreateGameEditor = safeBind('createGameEditorTab');
+    const originalCreateGodot = safeBind('createGodotTab');
+    const originalCreateUnreal = safeBind('createUnrealTab');
+    const originalCreateUnity = safeBind('createUnityTab');
+    const originalCreateThemeSettings = safeBind('createThemeSettingsTab');
+    const originalCreateEditorSettings = safeBind('createEditorSettingsTab');
+    const originalCreateExtensionsSettings = safeBind('createExtensionsSettingsTab');
+    const originalCreateNetworkSettings = safeBind('createNetworkSettingsTab');
+    const originalCreateSecuritySettings = safeBind('createSecuritySettingsTab');
+    const originalCreatePerformanceSettings = safeBind('createPerformanceSettingsTab');
     
     // ========================================================================
     // DEBUGGER - REAL FUNCTIONALITY
