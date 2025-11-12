@@ -133,10 +133,10 @@ class FileSystemIntegration {
             
             // Check for protected files
             const protectedFiles = ['pagefile.sys', 'hiberfil.sys', 'swapfile.sys'];
-            const fileName = filePath.split(/[\/\\]/).pop().toLowerCase();
+            const fileNameLower = filePath.split(/[\/\\]/).pop().toLowerCase();
             
-            if (protectedFiles.includes(fileName)) {
-                throw new Error(`"${fileName}" is a Windows system file and cannot be opened`);
+            if (protectedFiles.includes(fileNameLower)) {
+                throw new Error(`"${fileNameLower}" is a Windows system file and cannot be opened`);
             }
             
             const result = await window.electron.readFile(filePath);
