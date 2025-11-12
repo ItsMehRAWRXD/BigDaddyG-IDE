@@ -1717,12 +1717,65 @@ hello();"></textarea>
     
     // Tools tabs
     createMarketplaceTab() {
+        const marketplaceId = `marketplace-${Date.now()}`;
         return this.createTab({
             title: 'Marketplace',
             icon: '🛒',
             content: `
-                <div id="marketplace-tab-content" style="width: 100%; height: 100%; padding: 40px;">
-                    <h1 style="color: #00d4ff; margin-bottom: 30px;">🛒 Extension Marketplace</h1>
+                <div id="${marketplaceId}" style="width: 100%; height: 100%; padding: 20px; display: flex; flex-direction: column; overflow: hidden;">
+                    <div style="margin-bottom: 20px;">
+                        <h1 style="color: #00d4ff; margin: 0 0 15px 0; font-size: 28px;">🛒 Extension Marketplace</h1>
+                        
+                        <!-- SEARCH BOX -->
+                        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                            <input 
+                                id="${marketplaceId}-search"
+                                type="text" 
+                                placeholder="🔍 Search extensions (e.g., 'github copilot', 'amazon q', 'docker', 'python')..." 
+                                style="
+                                    flex: 1;
+                                    padding: 12px 15px;
+                                    background: rgba(0, 0, 0, 0.5);
+                                    border: 2px solid #00d4ff;
+                                    border-radius: 8px;
+                                    color: #fff;
+                                    font-size: 14px;
+                                    outline: none;
+                                "
+                            />
+                            <select id="${marketplaceId}-category" style="
+                                padding: 12px 15px;
+                                background: rgba(0, 0, 0, 0.5);
+                                border: 2px solid #00d4ff;
+                                border-radius: 8px;
+                                color: #fff;
+                                font-size: 14px;
+                                cursor: pointer;
+                            ">
+                                <option value="all">All Categories</option>
+                                <option value="ai">AI & Copilots</option>
+                                <option value="languages">Languages</option>
+                                <option value="frameworks">Frameworks</option>
+                                <option value="cloud">Cloud & DevOps</option>
+                                <option value="git">Git & Version Control</option>
+                                <option value="linters">Linters & Formatters</option>
+                                <option value="themes">Themes</option>
+                            </select>
+                        </div>
+                        
+                        <div id="${marketplaceId}-stats" style="color: #888; font-size: 12px; margin-bottom: 10px;">
+                            Loading extensions...
+                        </div>
+                    </div>
+                    
+                    <!-- EXTENSIONS LIST -->
+                    <div id="${marketplaceId}-extensions" style="
+                        flex: 1;
+                        overflow-y: auto;
+                        background: rgba(0, 0, 0, 0.2);
+                        border: 1px solid rgba(0, 212, 255, 0.2);
+                        border-radius: 8px;
+                        padding: 15px;
                     
                     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
                         <div style="background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 12px; padding: 25px;">
