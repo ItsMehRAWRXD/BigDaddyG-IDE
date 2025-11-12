@@ -393,7 +393,7 @@ class CompleteTabSystem {
                 { icon: '🌐', title: 'Network Settings', action: () => this.createNetworkSettingsTab() },
                 { icon: '🔐', title: 'Security Settings', action: () => this.createSecuritySettingsTab() },
                 { icon: '⚡', title: 'Performance Settings', action: () => this.createPerformanceSettingsTab() },
-                { icon: '🛠️', title: 'Developer Mode', action: () => this.createDeveloperModeTab() },
+                // { icon: '🛠️', title: 'Developer Mode', action: () => this.createDeveloperModeTab() },  // DISABLED UNTIL CRASH IS FIXED
             ],
             '🛠️ Tools': [
                 { icon: '🛒', title: 'Marketplace', action: () => this.createMarketplaceTab() },
@@ -2117,9 +2117,22 @@ You have access to the user's workspace. You can reference files by name.`;
         const settings = document.querySelectorAll('.dev-setting');
         const checkboxes = document.querySelectorAll('.dev-checkbox');
         
-        if (!toggleBtn || !window.developerMode) {
+        if (!toggleBtn) {
             console.error('[TabSystem] Developer Mode elements not found');
             return;
+        }
+        
+        // Create safe stub if developer mode not loaded
+        if (!window.developerMode) {
+            console.warn('[TabSystem] Developer Mode manager not loaded, creating stub');
+            window.developerMode = {
+                enabled: false,
+                settings: {},
+                enable: () => { console.log('[DevMode] Stub: enable called'); },
+                disable: () => { console.log('[DevMode] Stub: disable called'); },
+                toggleSetting: () => { console.log('[DevMode] Stub: toggleSetting called'); },
+                getStats: () => ({ enabled: false, settings: {}, tabs: 0, files: 0, memory: null })
+            };
         }
         
         // Update UI based on current state
