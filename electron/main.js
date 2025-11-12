@@ -1059,8 +1059,13 @@ function startRemoteLogServer() {
 // MAIN WINDOW
 // ============================================================================
 
+let windowCreationTime = 0;
+
 function createMainWindow() {
+  windowCreationTime = Date.now();
   console.log('[BigDaddyG] 🪟 Creating main window...');
+  console.log('[BigDaddyG] Current directory:', process.cwd());
+  console.log('[BigDaddyG] __dirname:', __dirname);
   
   // Remember window state
   const mainWindowState = windowStateKeeper({
@@ -1103,9 +1108,17 @@ function createMainWindow() {
   // Load IDE - Using Safe Mode Detector
   const htmlFile = safeModeDetector.getHTMLFile();
   
+  const htmlPath = path.join(__dirname, htmlFile);
   console.log(`[BigDaddyG] 📄 Loading: ${htmlFile}`);
+  console.log(`[BigDaddyG] 📂 Full HTML path: ${htmlPath}`);
+  console.log(`[BigDaddyG] 📁 HTML exists:`, require('fs').existsSync(htmlPath));
   console.log(`[BigDaddyG] 🛡️ Safe Mode: ${safeModeDetector.getConfig().SafeMode.enabled}`);
-  mainWindow.loadFile(path.join(__dirname, htmlFile));
+  
+  mainWindow.loadFile(htmlPath).then(() => {
+    console.log('[BigDaddyG] ✅ HTML loaded successfully');
+  }).catch(err => {
+    console.error('[BigDaddyG] ❌ Failed to load HTML:', err);
+  });
   
   // Open DevTools only in development
   if (process.env.NODE_ENV === 'development') {
@@ -1193,20 +1206,16 @@ function createMainWindow() {
     console.log('[BigDaddyG] ✅ DOM ready');
   });
   
-  // Prevent premature closing
+  // Track window lifecycle
   mainWindow.on('close', (event) => {
     console.log('[BigDaddyG] 🚪 🚪 🚪 Window CLOSE EVENT TRIGGERED! 🚪 🚪 🚪');
+    console.log('[BigDaddyG] Time since creation:', Date.now() - windowCreationTime, 'ms');
     console.log('[BigDaddyG] Stack trace:');
     console.trace();
-    
-    // PREVENT CLOSING for debugging
-    event.preventDefault();
-    console.log('[BigDaddyG] ❌ CLOSE PREVENTED - Window will stay open for debugging');
-    console.log('[BigDaddyG] Press Alt+F4 or kill process to close');
   });
   
   mainWindow.on('closed', () => {
-    console.log('[BigDaddyG] 🚪 Window CLOSED event (this should not happen due to prevention)');
+    console.log('[BigDaddyG] 🚪 Window CLOSED event');
     mainWindow = null;
     if (embeddedBrowser) {
       embeddedBrowser.destroy();
