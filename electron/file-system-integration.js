@@ -795,21 +795,28 @@ class FileSystemIntegration {
     }
 }
 
-// Auto-initialize
+// Auto-initialize with error handling
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-        window.fileSystem = new FileSystemIntegration();
+        try {
+            if (!window.fileSystem) {
+                window.fileSystem = new FileSystemIntegration();
+                console.log('[FileSystem] ✅ Initialized via DOMContentLoaded');
+            }
+        } catch (err) {
+            console.error('[FileSystem] ❌ Init failed:', err);
+        }
     });
 } else {
-    window.fileSystem = new FileSystemIntegration();
-}
-
-// Also init after delay
-setTimeout(() => {
-    if (!window.fileSystem) {
-        window.fileSystem = new FileSystemIntegration();
+    try {
+        if (!window.fileSystem) {
+            window.fileSystem = new FileSystemIntegration();
+            console.log('[FileSystem] ✅ Initialized immediately');
+        }
+    } catch (err) {
+        console.error('[FileSystem] ❌ Init failed:', err);
     }
-}, 1500);
+}
 
 console.log('[FileSystem] 📁 Module loaded - Full file system integration ready');
 
