@@ -754,23 +754,42 @@ class FrontEndTestSuite {
     }
 }
 
-// Auto-run tests when page loads
-window.addEventListener('load', () => {
-    // Wait for all systems to initialize
-    setTimeout(async () => {
-        const tester = new FrontEndTestSuite();
-        await tester.runAllTests();
-    }, 2000);
-});
-
 // Make globally available for manual testing
 window.runFrontEndTests = async () => {
+    console.log('🧪 [FrontEndTest] Starting tests...');
     const tester = new FrontEndTestSuite();
     await tester.runAllTests();
     return window.testResults;
 };
 
-console.log('🧪 [FrontEndTest] Test suite loaded. Tests will run automatically in 2 seconds.');
-console.log('🧪 [FrontEndTest] Or run manually: window.runFrontEndTests()');
+// Add button handler
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        const btn = document.getElementById('run-tests-btn');
+        if (btn) {
+            btn.addEventListener('click', async () => {
+                btn.disabled = true;
+                btn.textContent = '🧪 Running...';
+                btn.style.background = '#888';
+                
+                await window.runFrontEndTests();
+                
+                btn.textContent = '✅ Tests Complete!';
+                btn.style.background = '#2ed573';
+                
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.textContent = '🧪 Run Tests';
+                    btn.style.background = '#00d4ff';
+                }, 3000);
+            });
+            console.log('🧪 [FrontEndTest] Test button ready - Click "🧪 Run Tests" in menu bar');
+        }
+    }, 1000);
+});
+
+console.log('🧪 [FrontEndTest] Test suite loaded');
+console.log('🧪 [FrontEndTest] Click "🧪 Run Tests" button in menu bar OR');
+console.log('🧪 [FrontEndTest] Run in console: window.runFrontEndTests()');
 
 })();
