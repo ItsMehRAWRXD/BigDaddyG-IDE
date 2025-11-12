@@ -231,22 +231,39 @@ class CompleteTabChecker {
     }
     
     /**
-     * Test model selectors
+     * Test model selectors - ACTUALLY CREATE AI CHAT TAB FIRST
      */
     async testModelSelectors() {
         this.logCategory('🤖 MODEL SELECTORS');
+        
+        // Create AI Chat tab to test model loading
+        if (window.completeTabSystem && typeof window.completeTabSystem.createAIChatTab === 'function') {
+            console.log('[TabChecker] Creating AI Chat tab to test model selector...');
+            window.completeTabSystem.createAIChatTab();
+            
+            // Wait for tab to be created and wired
+            await new Promise(resolve => setTimeout(resolve, 500));
+        }
         
         const selects = document.querySelectorAll('select[id*="model"]');
         
         this.test(`Found ${selects.length} model selectors`, () => selects.length > 0);
         
-        selects.forEach((select, idx) => {
+        for (let idx = 0; idx < selects.length; idx++) {
+            const select = selects[idx];
             const hasOptions = select.options.length > 0;
             const notLoading = ![...select.options].some(opt => opt.text.includes('Loading'));
+            const optionCount = select.options.length;
             
-            this.test(`Model selector ${idx + 1} has options`, () => hasOptions);
-            this.test(`Model selector ${idx + 1} not stuck on 'Loading'`, () => notLoading || !hasOptions);
-        });
+            this.test(`Model selector ${idx + 1} has options (found ${optionCount})`, () => hasOptions);
+            this.test(`Model selector ${idx + 1} loaded models (not stuck on 'Loading')`, () => notLoading || !hasOptions);
+            
+            // Log what's in the selector
+            if (hasOptions) {
+                console.log(`[TabChecker] Model selector ${idx + 1} options:`, 
+                    [...select.options].map(opt => opt.text).slice(0, 5).join(', '));
+            }
+        }
     }
     
     /**
