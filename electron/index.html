@@ -15,10 +15,15 @@
                 line: line,
                 column: col,
                 stack: error?.stack,
+                errorObject: error?.toString(),
                 time: new Date().toISOString()
             };
             window.startupErrors.push(errorInfo);
-            console.error('🚨 STARTUP ERROR:', errorInfo);
+            console.error('🚨 STARTUP ERROR:');
+            console.error('  Message:', msg);
+            console.error('  File:', url, 'Line:', line, 'Col:', col);
+            console.error('  Error:', error);
+            console.error('  Stack:', error?.stack);
             
             // Show error in window instead of crashing
             if (window.startupErrors.length === 1) {
