@@ -376,58 +376,96 @@ class CompleteTabSystem {
         
         // Create modal
         const modal = document.createElement('div');
+        modal.id = 'tab-selector-modal';
         modal.style.cssText = `
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.9);
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 100000;
-            animation: fadeIn 0.2s;
+            z-index: 999999;
+            backdrop-filter: blur(10px);
         `;
         
         const container = document.createElement('div');
         container.style.cssText = `
-            background: #0a0a1e;
-            border: 2px solid #00d4ff;
-            border-radius: 15px;
-            padding: 30px;
-            max-width: 900px;
-            width: 90%;
-            max-height: 90%;
+            background: linear-gradient(135deg, #0a0a1e 0%, #1a1a2e 100%);
+            border: 3px solid #00d4ff;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 1000px;
+            width: 95%;
+            max-height: 90vh;
             overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 212, 255, 0.5);
         `;
         
-        let html = '<h1 style="color: #00d4ff; margin-bottom: 30px; text-align: center;">📑 Create New Tab</h1>';
+        let html = `
+            <h1 style="
+                color: #00d4ff; 
+                margin-bottom: 40px; 
+                text-align: center;
+                font-size: 36px;
+                font-weight: 700;
+                text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+            ">📑 Create New Tab</h1>
+        `;
         
         for (const [categoryName, items] of Object.entries(categories)) {
             html += `
-                <h3 style="color: #00ff88; margin: 25px 0 15px 0; font-size: 18px;">${categoryName}</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px;">
+                <h3 style="
+                    color: #00ff88; 
+                    margin: 30px 0 20px 0; 
+                    font-size: 22px;
+                    font-weight: 600;
+                    padding-bottom: 10px;
+                    border-bottom: 2px solid rgba(0, 255, 136, 0.3);
+                ">${categoryName}</h3>
+                <div style="
+                    display: grid; 
+                    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+                    gap: 15px;
+                    margin-bottom: 20px;
+                ">
             `;
             
             items.forEach((item, idx) => {
                 html += `
                     <button data-category="${categoryName}" data-idx="${idx}" style="
-                        padding: 20px 15px;
-                        background: rgba(0, 212, 255, 0.1);
-                        border: 1px solid rgba(0, 212, 255, 0.3);
-                        border-radius: 10px;
+                        padding: 25px 20px;
+                        background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 212, 255, 0.05));
+                        border: 2px solid rgba(0, 212, 255, 0.4);
+                        border-radius: 12px;
                         color: #fff;
                         cursor: pointer;
-                        transition: all 0.2s;
+                        transition: all 0.3s;
                         text-align: center;
-                        font-size: 13px;
+                        font-size: 14px;
+                        font-weight: 500;
                     ">
-                        <div style="font-size: 32px; margin-bottom: 8px;">${item.icon}</div>
-                        <div style="font-weight: 600;">${item.title}</div>
+                        <div style="font-size: 40px; margin-bottom: 12px;">${item.icon}</div>
+                        <div style="font-weight: 700; color: #00d4ff;">${item.title}</div>
                     </button>
                 `;
             });
             
             html += '</div>';
         }
+        
+        html += `
+            <div style="
+                text-align: center;
+                margin-top: 30px;
+                padding-top: 20px;
+                border-top: 1px solid rgba(0, 212, 255, 0.2);
+            ">
+                <p style="color: #888; font-size: 13px;">Press ESC to close</p>
+            </div>
+        `;
         
         container.innerHTML = html;
         modal.appendChild(container);
@@ -436,18 +474,23 @@ class CompleteTabSystem {
         // Add hover effects and clicks
         container.querySelectorAll('button[data-category]').forEach(btn => {
             btn.addEventListener('mouseenter', () => {
-                btn.style.background = 'rgba(0, 212, 255, 0.3)';
+                btn.style.background = 'linear-gradient(135deg, rgba(0, 212, 255, 0.4), rgba(0, 212, 255, 0.2))';
                 btn.style.borderColor = '#00d4ff';
-                btn.style.transform = 'scale(1.05)';
+                btn.style.borderWidth = '3px';
+                btn.style.transform = 'scale(1.08) translateY(-2px)';
+                btn.style.boxShadow = '0 10px 30px rgba(0, 212, 255, 0.4)';
             });
             btn.addEventListener('mouseleave', () => {
-                btn.style.background = 'rgba(0, 212, 255, 0.1)';
-                btn.style.borderColor = 'rgba(0, 212, 255, 0.3)';
+                btn.style.background = 'linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 212, 255, 0.05))';
+                btn.style.borderColor = 'rgba(0, 212, 255, 0.4)';
+                btn.style.borderWidth = '2px';
                 btn.style.transform = 'scale(1)';
+                btn.style.boxShadow = 'none';
             });
             btn.addEventListener('click', () => {
                 const category = btn.dataset.category;
                 const idx = parseInt(btn.dataset.idx);
+                console.log(`[TabSystem] Creating tab: ${categories[category][idx].title}`);
                 categories[category][idx].action();
                 modal.remove();
             });
