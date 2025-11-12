@@ -403,6 +403,11 @@ app.whenReady().then(async () => {
 
   bigDaddyGCore.attachNativeClient(nativeOllamaClient);
   
+  // Start HTTP bridge so Orchestra can access BigDaddyGCore's models
+  setTimeout(() => {
+    startModelBridge();
+  }, 2000);
+  
   // Start IPC server for external CLI communication
   try {
     ipcServer = new IPCServer();
@@ -3133,15 +3138,17 @@ function startModelBridge() {
   }
 }
 
-// Start bridge after BigDaddyGCore is ready
-app.whenReady().then(async () => {
-  // ... existing code ...
-  // Start model bridge AFTER BigDaddyGCore initializes
-  setTimeout(() => {
-    if (bigDaddyGCore && nativeOllamaClient) {
-      startModelBridge();
-    }
-  }, 2000);
+// Bridge cleanup on quit
+app.on('window-all-closed', () => {
+  console.log('[BigDaddyG] 👋 All windows closed');
+  
+  // Stop bridge server
+  if (bridgeServer) {
+    bridgeServer.close();
+    console.log('[Bridge] 🛑 Model bridge stopped');
+  }
+  
+  // ... rest of cleanup ...
 });
 
 ipcMain.handle('orchestra:stop', () => {
