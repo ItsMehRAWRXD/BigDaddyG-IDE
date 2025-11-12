@@ -401,7 +401,7 @@ app.get('/api/models/list', async (_req, res) => {
 async function processBigDaddyGRequest(model, prompt, stream) {
   const resolvedModel = resolveBigDaddyModel(model);
   const modelInfo = BIGDADDYG_MODELS[resolvedModel];
-  const response = generateBigDaddyGResponse(prompt, modelInfo, resolvedModel);
+  const response = await generateBigDaddyGResponse(prompt, modelInfo, resolvedModel);
 
   if (stream) {
     return response.split(' ').map((word, i, arr) => ({
@@ -439,7 +439,7 @@ async function processBigDaddyGChat(model, messages = [], stream) {
   const lastMessage = getLastUserMessage(messages);
   const prompt = lastMessage && typeof lastMessage.content === 'string' ? lastMessage.content : '';
   const modelInfo = BIGDADDYG_MODELS[resolvedModel];
-  const response = generateBigDaddyGResponse(prompt, modelInfo, resolvedModel);
+  const response = await generateBigDaddyGResponse(prompt, modelInfo, resolvedModel);
 
   if (stream) {
     return response.split(' ').map((word, i, arr) => ({
@@ -476,38 +476,61 @@ async function processBigDaddyGChat(model, messages = [], stream) {
   };
 }
 
-function generateBigDaddyGResponse(prompt = '', modelInfo, modelKey) {
+// REAL BigDaddyG response using Ollama API
+async function generateBigDaddyGResponse(prompt = '', modelInfo, modelKey) {
   const fallbackInfo = BIGDADDYG_MODELS[DEFAULT_MODEL];
   const info = modelInfo || fallbackInfo || { name: modelKey || DEFAULT_MODEL, type: 'general' };
-
-  const responses = {
-    coding: [
-      "Here's an optimized solution using modern best practices:",
-      "Let me refactor this code for better performance:",
-      "I'll implement this with proper error handling:"
-    ],
-    python: [
-      "Here's a Pythonic approach to solve this:",
-      "Let me write this using Python best practices:",
-      "I'll implement this with proper type hints:"
-    ],
-    javascript: [
-      "Here's a modern JavaScript solution:",
-      "Let me implement this using ES6+ features:",
-      "I'll write this with proper async/await handling:"
-    ],
-    general: [
-      "Based on my analysis, here's the solution:",
-      "Let me break this down step by step:",
-      "Here's a comprehensive approach:"
-    ]
-  };
-
-  const typeResponses = responses[info.type] || responses.general;
-  const baseResponse = typeResponses[Math.floor(Math.random() * typeResponses.length)];
   const sanitizedPrompt = typeof prompt === 'string' ? prompt : '';
 
-  return `${baseResponse}\n\n\`\`\`\n// BigDaddyG ${info.name} response\n// Processing: ${sanitizedPrompt.substring(0, 50)}...\nconsole.log("BigDaddyG is processing your request...");\n\`\`\`\n\nThis is a simulated response from ${info.name}. In a full implementation, this would connect to the actual BigDaddyG model inference engine.`;
+  try {
+    // Use Ollama to generate REAL response
+    const ollamaModel = modelKey || DEFAULT_MODEL;
+    
+    console.log(`[Orchestra] 🤖 Calling Ollama with model: ${ollamaModel}`);
+    
+    const response = await fetch('http://localhost:11434/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: ollamaModel,
+        prompt: sanitizedPrompt,
+        stream: false
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Ollama API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.response || 'No response from model';
+    
+  } catch (error) {
+    console.error('[Orchestra] ❌ Real model call failed:', error.message);
+    
+    // Fallback: Try to use any available Ollama model
+    try {
+      const fallbackResponse = await fetch('http://localhost:11434/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'llama2', // Most common fallback
+          prompt: sanitizedPrompt,
+          stream: false
+        })
+      });
+      
+      if (fallbackResponse.ok) {
+        const fallbackData = await fallbackResponse.json();
+        return fallbackData.response || 'Fallback response generated';
+      }
+    } catch (fallbackError) {
+      console.error('[Orchestra] ❌ Fallback also failed:', fallbackError.message);
+    }
+    
+    // Last resort: Return error message instead of fake data
+    return `[ERROR] Could not generate real response. Please ensure Ollama is running with model: ${modelKey}. Error: ${error.message}`;
+  }
 }
 
 // Ollama integration
