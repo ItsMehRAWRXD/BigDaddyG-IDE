@@ -328,7 +328,34 @@ class DeveloperMode {
     }
 }
 
-// Initialize and expose globally
-window.developerMode = new DeveloperMode();
-
-console.log('[DevMode] ✅ Developer Mode Manager ready');
+// Initialize when DOM is ready to prevent crashes
+if (typeof window !== 'undefined') {
+    // Wait for DOM to be ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                window.developerMode = new DeveloperMode();
+                console.log('[DevMode] ✅ Developer Mode Manager ready');
+            } catch (err) {
+                console.error('[DevMode] ❌ Failed to initialize:', err);
+                // Create stub to prevent errors
+                window.developerMode = { enabled: false, settings: {}, getStats: () => ({}) };
+            }
+        });
+    } else {
+        // DOM already loaded
+        try {
+            window.developerMode = new DeveloperMode();
+            console.log('[DevMode] ✅ Developer Mode Manager ready');
+        } catch (err) {
+            console.error('[DevMode] ❌ Failed to initialize:', err);
+            // Create stub to prevent errors
+            window.developerMode = { enabled: false, settings: {}, getStats: () => ({}) };
+        }
+    }
+} else {
+    // Node.js environment, create stub
+    if (typeof global !== 'undefined') {
+        global.developerMode = { enabled: false, settings: {}, getStats: () => ({}) };
+    }
+}
