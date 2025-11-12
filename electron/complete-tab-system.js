@@ -2039,67 +2039,6 @@ hello();"></textarea>
         });
     }
     
-    // Settings tabs
-    createThemeSettingsTab() {
-        return this.createTab({
-            title: 'GitHub',
-            icon: '🐙',
-            content: `
-                <div style="padding: 20px; height: 100%; overflow-y: auto;">
-                    <h2 style="color: #00d4ff; margin-bottom: 20px;">🐙 GitHub Integration</h2>
-                    <div style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 8px; padding: 20px;">
-                        <h3 style="color: #00ff88; margin-bottom: 15px;">Repository</h3>
-                        <input type="text" placeholder="https://github.com/user/repo" style="width: 100%; padding: 10px; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 5px; color: #fff; margin-bottom: 10px;" />
-                        <button style="padding: 10px 20px; background: #00d4ff; color: #000; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Clone</button>
-                    </div>
-                </div>
-            `
-        });
-    }
-    
-    createTeamTab() {
-        return this.createTab({
-            title: 'Team Collaboration',
-            icon: '👥',
-            content: `
-                <div style="padding: 20px; height: 100%; overflow-y: auto;">
-                    <h2 style="color: #00d4ff; margin-bottom: 20px;">👥 Team Collaboration</h2>
-                    <div style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 8px; padding: 20px; text-align: center;">
-                        <p style="color: #888; font-size: 48px; margin-bottom: 15px;">👥</p>
-                        <p style="color: #888;">No team members online</p>
-                        <button style="margin-top: 20px; padding: 10px 20px; background: #00d4ff; color: #000; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Invite Team Members</button>
-                    </div>
-                </div>
-            `
-        });
-    }
-    
-    createPerformanceMonitorTab() {
-        return this.createTab({
-            title: 'Performance Monitor',
-            icon: '📊',
-            content: `
-                <div style="padding: 20px; height: 100%; overflow-y: auto;">
-                    <h2 style="color: #00d4ff; margin-bottom: 20px;">📊 Performance Monitor</h2>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-                        <div style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 8px; padding: 20px; text-align: center;">
-                            <div style="color: #00ff88; font-size: 32px; font-weight: bold;">45%</div>
-                            <div style="color: #888; margin-top: 5px;">CPU Usage</div>
-                        </div>
-                        <div style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 8px; padding: 20px; text-align: center;">
-                            <div style="color: #00ff88; font-size: 32px; font-weight: bold;">2.1 GB</div>
-                            <div style="color: #888; margin-top: 5px;">Memory</div>
-                        </div>
-                        <div style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 8px; padding: 20px; text-align: center;">
-                            <div style="color: #00ff88; font-size: 32px; font-weight: bold;">60 FPS</div>
-                            <div style="color: #888; margin-top: 5px;">Frame Rate</div>
-                        </div>
-                    </div>
-                </div>
-            `
-        });
-    }
-    
     createBrowserTab() {
         return this.createTab({
             title: 'Browser',
