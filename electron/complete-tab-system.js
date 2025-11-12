@@ -393,6 +393,7 @@ class CompleteTabSystem {
                 { icon: '🌐', title: 'Network Settings', action: () => this.createNetworkSettingsTab() },
                 { icon: '🔐', title: 'Security Settings', action: () => this.createSecuritySettingsTab() },
                 { icon: '⚡', title: 'Performance Settings', action: () => this.createPerformanceSettingsTab() },
+                { icon: '🛠️', title: 'Developer Mode', action: () => this.createDeveloperModeTab() },
             ],
             '🛠️ Tools': [
                 { icon: '🛒', title: 'Marketplace', action: () => this.createMarketplaceTab() },
@@ -1908,6 +1909,288 @@ You have access to the user's workspace. You can reference files by name.`;
                 </div>
             `
         });
+    }
+    
+    createDeveloperModeTab() {
+        const devId = `dev-mode-${Date.now()}`;
+        return this.createTab({
+            title: 'Developer Mode',
+            icon: '🛠️',
+            content: `
+                <div style="padding: 20px; height: 100%; overflow-y: auto; background: linear-gradient(135deg, #0a0a1e 0%, #1a1a2e 100%);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <div>
+                            <h2 style="color: #ff4757; margin: 0; display: flex; align-items: center; gap: 10px;">
+                                <span style="font-size: 32px;">⚠️</span>
+                                Developer Mode
+                            </h2>
+                            <p style="color: #888; margin: 5px 0 0 0; font-size: 12px;">Advanced settings and experimental features</p>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span id="${devId}-status" style="color: #888; font-size: 12px;">Disabled</span>
+                            <button id="${devId}-toggle" style="
+                                padding: 10px 20px;
+                                background: #ff4757;
+                                color: #fff;
+                                border: none;
+                                border-radius: 6px;
+                                font-weight: bold;
+                                cursor: pointer;
+                                transition: all 0.2s;
+                            ">Enable</button>
+                        </div>
+                    </div>
+                    
+                    <!-- WARNING BANNER -->
+                    <div style="background: rgba(255, 71, 87, 0.1); border: 2px solid #ff4757; border-radius: 10px; padding: 20px; margin-bottom: 25px;">
+                        <h3 style="color: #ff4757; margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px;">
+                            <span>⚠️</span>
+                            Warning: Use at Your Own Risk
+                        </h3>
+                        <p style="color: #ccc; margin: 0; line-height: 1.6; font-size: 13px;">
+                            Developer Mode allows unverified extensions, experimental features, and disabled safety checks. 
+                            This could modify or erase data permanently. Memory is disabled when Developer Mode is active.
+                        </p>
+                    </div>
+                    
+                    <!-- SETTINGS GRID -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-bottom: 25px;">
+                        <!-- Unverified Extensions -->
+                        <div class="dev-setting" data-setting="unverifiedExtensions" style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 10px; padding: 20px; opacity: 0.5; pointer-events: none;">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                                <div>
+                                    <h4 style="color: #00d4ff; margin: 0 0 5px 0;">🔓 Unverified Extensions</h4>
+                                    <p style="color: #888; margin: 0; font-size: 11px;">Allow unsigned extensions</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" class="dev-checkbox" data-setting="unverifiedExtensions" />
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <p style="color: #666; font-size: 11px; margin: 0;">May compromise security</p>
+                        </div>
+                        
+                        <!-- Experimental Features -->
+                        <div class="dev-setting" data-setting="experimentalFeatures" style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 10px; padding: 20px; opacity: 0.5; pointer-events: none;">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                                <div>
+                                    <h4 style="color: #00d4ff; margin: 0 0 5px 0;">🧪 Experimental Features</h4>
+                                    <p style="color: #888; margin: 0; font-size: 11px;">Beta & unstable features</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" class="dev-checkbox" data-setting="experimentalFeatures" />
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <p style="color: #666; font-size: 11px; margin: 0;">May cause crashes</p>
+                        </div>
+                        
+                        <!-- Advanced Debugging -->
+                        <div class="dev-setting" data-setting="advancedDebugging" style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 10px; padding: 20px; opacity: 0.5; pointer-events: none;">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                                <div>
+                                    <h4 style="color: #00d4ff; margin: 0 0 5px 0;">🐛 Advanced Debugging</h4>
+                                    <p style="color: #888; margin: 0; font-size: 11px;">Expose internal APIs</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" class="dev-checkbox" data-setting="advancedDebugging" />
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <p style="color: #666; font-size: 11px; margin: 0;">Access via window.__devMode</p>
+                        </div>
+                        
+                        <!-- Verbose Logging -->
+                        <div class="dev-setting" data-setting="verboseLogging" style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 10px; padding: 20px; opacity: 0.5; pointer-events: none;">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                                <div>
+                                    <h4 style="color: #00d4ff; margin: 0 0 5px 0;">📋 Verbose Logging</h4>
+                                    <p style="color: #888; margin: 0; font-size: 11px;">Detailed console output</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" class="dev-checkbox" data-setting="verboseLogging" />
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <p style="color: #666; font-size: 11px; margin: 0;">May affect performance</p>
+                        </div>
+                        
+                        <!-- Memory Profiling -->
+                        <div class="dev-setting" data-setting="memoryProfiling" style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 10px; padding: 20px; opacity: 0.5; pointer-events: none;">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                                <div>
+                                    <h4 style="color: #00d4ff; margin: 0 0 5px 0;">💾 Memory Profiling</h4>
+                                    <p style="color: #888; margin: 0; font-size: 11px;">Track memory usage</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" class="dev-checkbox" data-setting="memoryProfiling" />
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <p style="color: #666; font-size: 11px; margin: 0;">Updates every 5 seconds</p>
+                        </div>
+                        
+                        <!-- Beta APIs -->
+                        <div class="dev-setting" data-setting="betaAPIs" style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 10px; padding: 20px; opacity: 0.5; pointer-events: none;">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                                <div>
+                                    <h4 style="color: #00d4ff; margin: 0 0 5px 0;">🚀 Beta APIs</h4>
+                                    <p style="color: #888; margin: 0; font-size: 11px;">Experimental APIs</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" class="dev-checkbox" data-setting="betaAPIs" />
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <p style="color: #666; font-size: 11px; margin: 0;">Breaking changes possible</p>
+                        </div>
+                    </div>
+                    
+                    <!-- DEVELOPER STATS -->
+                    <div style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 10px; padding: 20px;">
+                        <h3 style="color: #00ff88; margin: 0 0 15px 0;">📊 Developer Stats</h3>
+                        <div id="${devId}-stats" style="color: #888; font-size: 12px; font-family: monospace;">
+                            Loading...
+                        </div>
+                    </div>
+                    
+                    <style>
+                        .toggle-switch {
+                            position: relative;
+                            display: inline-block;
+                            width: 50px;
+                            height: 24px;
+                        }
+                        
+                        .toggle-switch input {
+                            opacity: 0;
+                            width: 0;
+                            height: 0;
+                        }
+                        
+                        .toggle-slider {
+                            position: absolute;
+                            cursor: pointer;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            bottom: 0;
+                            background-color: #333;
+                            transition: .4s;
+                            border-radius: 24px;
+                        }
+                        
+                        .toggle-slider:before {
+                            position: absolute;
+                            content: "";
+                            height: 16px;
+                            width: 16px;
+                            left: 4px;
+                            bottom: 4px;
+                            background-color: white;
+                            transition: .4s;
+                            border-radius: 50%;
+                        }
+                        
+                        input:checked + .toggle-slider {
+                            background-color: #00d4ff;
+                        }
+                        
+                        input:checked + .toggle-slider:before {
+                            transform: translateX(26px);
+                        }
+                    </style>
+                </div>
+            `,
+            onActivate: () => {
+                setTimeout(() => {
+                    this.wireDeveloperMode(devId);
+                }, 100);
+            }
+        });
+    }
+    
+    wireDeveloperMode(devId) {
+        const toggleBtn = document.getElementById(`${devId}-toggle`);
+        const statusEl = document.getElementById(`${devId}-status`);
+        const statsEl = document.getElementById(`${devId}-stats`);
+        const settings = document.querySelectorAll('.dev-setting');
+        const checkboxes = document.querySelectorAll('.dev-checkbox');
+        
+        if (!toggleBtn || !window.developerMode) {
+            console.error('[TabSystem] Developer Mode elements not found');
+            return;
+        }
+        
+        // Update UI based on current state
+        const updateUI = () => {
+            const enabled = window.developerMode.enabled;
+            
+            toggleBtn.textContent = enabled ? 'Disable' : 'Enable';
+            toggleBtn.style.background = enabled ? '#888' : '#ff4757';
+            statusEl.textContent = enabled ? 'ENABLED ⚠️' : 'Disabled';
+            statusEl.style.color = enabled ? '#ff4757' : '#888';
+            
+            // Enable/disable settings
+            settings.forEach(setting => {
+                setting.style.opacity = enabled ? '1' : '0.5';
+                setting.style.pointerEvents = enabled ? 'auto' : 'none';
+            });
+            
+            // Update checkboxes
+            checkboxes.forEach(checkbox => {
+                const setting = checkbox.dataset.setting;
+                checkbox.checked = window.developerMode.settings[setting] || false;
+            });
+            
+            // Update stats
+            updateStats();
+        };
+        
+        // Update stats
+        const updateStats = () => {
+            const stats = window.developerMode.getStats();
+            statsEl.innerHTML = `
+                <div style="display: grid; gap: 8px;">
+                    <div>Status: <span style="color: ${stats.enabled ? '#ff4757' : '#00ff88'}">${stats.enabled ? 'ENABLED' : 'Disabled'}</span></div>
+                    <div>Open Tabs: <span style="color: #00d4ff">${stats.tabs}</span></div>
+                    <div>Files Loaded: <span style="color: #00d4ff">${stats.files}</span></div>
+                    ${stats.memory ? `
+                        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(0, 212, 255, 0.2);">
+                            <div>Memory Used: <span style="color: #ffa502">${stats.memory.used}</span></div>
+                            <div>Memory Limit: <span style="color: #888">${stats.memory.limit}</span></div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        };
+        
+        // Toggle Developer Mode
+        toggleBtn.onclick = () => {
+            if (window.developerMode.enabled) {
+                window.developerMode.disable();
+            } else {
+                window.developerMode.enable();
+            }
+            updateUI();
+        };
+        
+        // Handle checkbox changes
+        checkboxes.forEach(checkbox => {
+            checkbox.onchange = () => {
+                const setting = checkbox.dataset.setting;
+                window.developerMode.toggleSetting(setting);
+                updateUI();
+            };
+        });
+        
+        // Initial UI update
+        updateUI();
+        
+        // Auto-refresh stats every 5 seconds
+        setInterval(updateStats, 5000);
+        
+        console.log('[TabSystem] ✅ Developer Mode tab wired');
     }
     
     // Tools tabs
