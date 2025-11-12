@@ -1877,6 +1877,53 @@ hello();"></textarea>
             </div>
         `;
     }
+    
+    /**
+     * Extract filename from task description
+     */
+    extractFilenameFromTask(task) {
+        if (!task) return 'untitled.js';
+        
+        // Try to extract filename from task
+        const filePatterns = [
+            /create\s+(?:a\s+)?(?:file\s+)?(?:called\s+)?["']?([a-zA-Z0-9_\-\.]+)["']?/i,
+            /file\s+(?:named\s+)?["']?([a-zA-Z0-9_\-\.]+)["']?/i,
+            /([a-zA-Z0-9_\-]+\.[a-zA-Z0-9]+)/
+        ];
+        
+        for (const pattern of filePatterns) {
+            const match = task.match(pattern);
+            if (match && match[1]) {
+                return match[1];
+            }
+        }
+        
+        // Detect language and use appropriate extension
+        const lowerTask = task.toLowerCase();
+        
+        if (lowerTask.includes('react') || lowerTask.includes('component')) {
+            return 'Component.jsx';
+        } else if (lowerTask.includes('typescript')) {
+            return 'output.ts';
+        } else if (lowerTask.includes('python')) {
+            return 'script.py';
+        } else if (lowerTask.includes('html')) {
+            return 'index.html';
+        } else if (lowerTask.includes('css')) {
+            return 'style.css';
+        } else if (lowerTask.includes('java')) {
+            return 'Main.java';
+        } else if (lowerTask.includes('c++') || lowerTask.includes('cpp')) {
+            return 'main.cpp';
+        } else if (lowerTask.includes('rust')) {
+            return 'main.rs';
+        } else if (lowerTask.includes('go')) {
+            return 'main.go';
+        }
+        
+        // Default
+        return 'generated-code.js';
+    }
 }
 
 // Auto-initialize with error handling
