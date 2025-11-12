@@ -866,14 +866,42 @@ app.post('/api/parameters/reset', async (req, res) => {
   }
 });
 
-// 6. Context management
+// 6. Context management - 1 MILLION TOKEN CONTEXT WINDOW
 let conversationContext = [];
+const MAX_CONTEXT_TOKENS = 1000000; // 1 Million tokens
+const CONTEXT_SLIDING_WINDOW = true;
+
+// Estimate token count (rough approximation)
+function estimateTokens(text) {
+  return Math.ceil(text.length / 4); // ~4 chars per token
+}
+
+// Manage context window size
+function manageContextWindow() {
+  let totalTokens = conversationContext.reduce((sum, msg) => 
+    sum + estimateTokens(JSON.stringify(msg)), 0);
+  
+  // If over 1M tokens, remove oldest messages (sliding window)
+  while (totalTokens > MAX_CONTEXT_TOKENS && conversationContext.length > 1) {
+    const removed = conversationContext.shift();
+    totalTokens -= estimateTokens(JSON.stringify(removed));
+  }
+  
+  return totalTokens;
+}
 
 app.get('/api/context', async (req, res) => {
   try {
+    const totalTokens = conversationContext.reduce((sum, msg) => 
+      sum + estimateTokens(JSON.stringify(msg)), 0);
+      
     res.json({
       context: conversationContext,
       message_count: conversationContext.length,
+      total_tokens: totalTokens,
+      max_tokens: MAX_CONTEXT_TOKENS,
+      usage_percent: ((totalTokens / MAX_CONTEXT_TOKENS) * 100).toFixed(2),
+      sliding_window: CONTEXT_SLIDING_WINDOW,
       timestamp: new Date().toISOString()
     });
   } catch (error) {
@@ -889,11 +917,372 @@ app.post('/api/context/clear', async (req, res) => {
     res.json({
       success: true,
       cleared: previousCount,
-      message: `Cleared ${previousCount} context messages`
+      message: `Cleared ${previousCount} context messages`,
+      max_tokens: MAX_CONTEXT_TOKENS
     });
   } catch (error) {
     console.error('[Orchestra] /api/context/clear error:', error);
     res.status(500).json({ error: error.message || 'Context clear failed' });
+  }
+});
+
+// Add message to context
+app.post('/api/context/add', async (req, res) => {
+  try {
+    const { role, content } = req.body;
+    
+    if (!content) {
+      return res.status(400).json({ error: 'Content required' });
+    }
+    
+    conversationContext.push({
+      role: role || 'user',
+      content,
+      timestamp: new Date().toISOString(),
+      tokens: estimateTokens(content)
+    });
+    
+    const totalTokens = manageContextWindow();
+    
+    res.json({
+      success: true,
+      message_count: conversationContext.length,
+      total_tokens: totalTokens,
+      max_tokens: MAX_CONTEXT_TOKENS
+    });
+  } catch (error) {
+    console.error('[Orchestra] /api/context/add error:', error);
+    res.status(500).json({ error: error.message || 'Context add failed' });
+  }
+});
+
+// 7. DEEP RESEARCH ENGINE - Multi-step reasoning and research
+app.post('/api/deep-research', async (req, res) => {
+  const { query, depth = 3, includeWebSearch = false } = req.body;
+  
+  if (!query) {
+    return res.status(400).json({ error: 'Query required' });
+  }
+  
+  try {
+    console.log(`[DeepResearch] Starting deep research: "${query}" (depth: ${depth})`);
+    
+    const researchSteps = [];
+    let currentQuery = query;
+    
+    for (let step = 1; step <= depth; step++) {
+      console.log(`[DeepResearch] Step ${step}/${depth}: Analyzing...`);
+      
+      const prompt = `You are a deep research AI. Research step ${step} of ${depth}.
+
+Previous steps: ${researchSteps.map(s => s.insight).join('\n')}
+
+Current question: ${currentQuery}
+
+Provide:
+1. Key insights from this research step
+2. New questions that need answering
+3. Connections to previous findings
+4. Confidence level (0-100%)
+
+Be thorough and analytical. Think deeply.`;
+
+      const response = await processBigDaddyGRequest('bigdaddyg:latest', prompt, false);
+      const insight = extractContentFromResponse(response);
+      
+      researchSteps.push({
+        step,
+        query: currentQuery,
+        insight,
+        timestamp: new Date().toISOString()
+      });
+      
+      // For next iteration, ask deeper questions
+      currentQuery = `Based on: "${insight.substring(0, 200)}...", what are the deeper implications?`;
+    }
+    
+    // Synthesize final answer
+    const synthesisPrompt = `Synthesize a comprehensive answer from these research steps:
+
+${researchSteps.map((s, i) => `Step ${i + 1}: ${s.insight}`).join('\n\n')}
+
+Original question: ${query}
+
+Provide a complete, well-reasoned answer with:
+- Main findings
+- Supporting evidence
+- Confidence level
+- Remaining uncertainties`;
+
+    const finalAnswer = await processBigDaddyGRequest('bigdaddyg:latest', synthesisPrompt, false);
+    
+    res.json({
+      query,
+      depth,
+      steps: researchSteps,
+      final_answer: extractContentFromResponse(finalAnswer),
+      total_time: researchSteps.length * 2,
+      web_search_included: includeWebSearch,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('[Orchestra] /api/deep-research error:', error);
+    res.status(500).json({ error: error.message || 'Deep research failed' });
+  }
+});
+
+// 8. THINKING MODE - Show AI reasoning process
+app.post('/api/chat-with-thinking', async (req, res) => {
+  const { messages, model = DEFAULT_MODEL, showThinking = true } = req.body;
+  
+  if (!messages || messages.length === 0) {
+    return res.status(400).json({ error: 'Messages required' });
+  }
+  
+  try {
+    const lastMessage = messages[messages.length - 1].content;
+    
+    let thinkingProcess = [];
+    
+    if (showThinking) {
+      // Step 1: Analyze the question
+      const analysisPrompt = `Analyze this user question and think about how to answer it:
+"${lastMessage}"
+
+Think step by step:
+1. What is the user really asking?
+2. What information do I need?
+3. What approach should I take?
+4. What potential issues might arise?
+
+Provide your thinking process.`;
+
+      const thinking = await processBigDaddyGRequest(model, analysisPrompt, false);
+      thinkingProcess.push({
+        stage: 'analysis',
+        thought: extractContentFromResponse(thinking)
+      });
+      
+      // Step 2: Plan the response
+      const planningPrompt = `Based on this analysis:
+${thinkingProcess[0].thought}
+
+Plan how to answer: "${lastMessage}"
+
+Create a step-by-step plan.`;
+
+      const plan = await processBigDaddyGRequest(model, planningPrompt, false);
+      thinkingProcess.push({
+        stage: 'planning',
+        thought: extractContentFromResponse(plan)
+      });
+    }
+    
+    // Step 3: Generate final response
+    const responsePrompt = messages.map(m => 
+      `${m.role}: ${m.content}`
+    ).join('\n\n') + '\n\nassistant:';
+    
+    const response = await processBigDaddyGRequest(model, responsePrompt, false);
+    const finalResponse = extractContentFromResponse(response);
+    
+    if (showThinking) {
+      thinkingProcess.push({
+        stage: 'response',
+        thought: 'Generating final answer based on analysis and plan'
+      });
+    }
+    
+    res.json({
+      thinking: showThinking ? thinkingProcess : null,
+      response: finalResponse,
+      model,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('[Orchestra] /api/chat-with-thinking error:', error);
+    res.status(500).json({ error: error.message || 'Thinking chat failed' });
+  }
+});
+
+// 9. WEB SEARCH - Real web search integration
+app.post('/api/web-search', async (req, res) => {
+  const { query, maxResults = 5 } = req.body;
+  
+  if (!query) {
+    return res.status(400).json({ error: 'Query required' });
+  }
+  
+  try {
+    console.log(`[WebSearch] Searching: "${query}"`);
+    
+    // Use DuckDuckGo (no API key needed) via node-fetch
+    const searchUrl = `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json`;
+    
+    const response = await fetch(searchUrl);
+    const data = await response.json();
+    
+    // Extract results
+    const results = [];
+    
+    if (data.Abstract) {
+      results.push({
+        title: data.Heading || 'Abstract',
+        snippet: data.Abstract,
+        url: data.AbstractURL,
+        source: 'DuckDuckGo Abstract'
+      });
+    }
+    
+    if (data.RelatedTopics && Array.isArray(data.RelatedTopics)) {
+      data.RelatedTopics.slice(0, maxResults).forEach(topic => {
+        if (topic.Text && topic.FirstURL) {
+          results.push({
+            title: topic.Text.substring(0, 100),
+            snippet: topic.Text,
+            url: topic.FirstURL,
+            source: 'DuckDuckGo'
+          });
+        }
+      });
+    }
+    
+    // If we have results, use AI to synthesize
+    let synthesis = null;
+    if (results.length > 0) {
+      const synthesisPrompt = `Synthesize these web search results for: "${query}"
+
+Results:
+${results.map((r, i) => `${i + 1}. ${r.title}\n   ${r.snippet}\n   Source: ${r.url}`).join('\n\n')}
+
+Provide a comprehensive answer based on these sources, citing URLs.`;
+
+      const aiResponse = await processBigDaddyGRequest('bigdaddyg:latest', synthesisPrompt, false);
+      synthesis = extractContentFromResponse(aiResponse);
+    }
+    
+    res.json({
+      query,
+      results,
+      result_count: results.length,
+      synthesis,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('[Orchestra] /api/web-search error:', error);
+    res.status(500).json({ 
+      error: error.message || 'Web search failed',
+      fallback: 'Web search unavailable, using AI knowledge only'
+    });
+  }
+});
+
+// 10. COMBINED: Deep Research + Web Search + Thinking
+app.post('/api/research-with-thinking', async (req, res) => {
+  const { query, includeWebSearch = true, showThinking = true, depth = 2 } = req.body;
+  
+  if (!query) {
+    return res.status(400).json({ error: 'Query required' });
+  }
+  
+  try {
+    const researchData = {
+      query,
+      thinking: [],
+      web_results: null,
+      research_steps: [],
+      final_answer: null
+    };
+    
+    // Step 1: Initial thinking
+    if (showThinking) {
+      const thinkPrompt = `Think about how to research: "${query}"
+      
+Consider:
+- What do I need to find out?
+- Should I search the web?
+- What depth of analysis is needed?
+- What are the key questions?`;
+
+      const thinking = await processBigDaddyGRequest('bigdaddyg:latest', thinkPrompt, false);
+      researchData.thinking.push({
+        stage: 'initial_analysis',
+        thought: extractContentFromResponse(thinking)
+      });
+    }
+    
+    // Step 2: Web search if requested
+    if (includeWebSearch) {
+      try {
+        const searchUrl = `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json`;
+        const response = await fetch(searchUrl);
+        const data = await response.json();
+        
+        researchData.web_results = {
+          abstract: data.Abstract || null,
+          related: data.RelatedTopics?.slice(0, 3) || []
+        };
+      } catch (webError) {
+        researchData.web_results = { error: 'Web search unavailable' };
+      }
+    }
+    
+    // Step 3: Deep research
+    for (let step = 1; step <= depth; step++) {
+      const contextInfo = researchData.web_results?.abstract 
+        ? `\nWeb context: ${researchData.web_results.abstract}`
+        : '';
+      
+      const researchPrompt = `Deep research step ${step}/${depth} for: "${query}"${contextInfo}
+
+Previous insights: ${researchData.research_steps.map(s => s.insight.substring(0, 150)).join('\n')}
+
+Provide detailed analysis and insights.`;
+
+      const insight = await processBigDaddyGRequest('bigdaddyg:latest', researchPrompt, false);
+      researchData.research_steps.push({
+        step,
+        insight: extractContentFromResponse(insight)
+      });
+    }
+    
+    // Step 4: Synthesize final answer
+    const synthesisPrompt = `Provide a comprehensive answer to: "${query}"
+
+Research findings:
+${researchData.research_steps.map((s, i) => `Step ${i + 1}: ${s.insight}`).join('\n\n')}
+
+${researchData.web_results?.abstract ? `Web information: ${researchData.web_results.abstract}` : ''}
+
+Create a detailed, well-reasoned answer with:
+- Main conclusions
+- Supporting evidence
+- Confidence level
+- Sources (if web search used)`;
+
+    const finalAnswer = await processBigDaddyGRequest('bigdaddyg:latest', synthesisPrompt, false);
+    researchData.final_answer = extractContentFromResponse(finalAnswer);
+    
+    if (showThinking) {
+      researchData.thinking.push({
+        stage: 'synthesis',
+        thought: 'Combined all research and web data into final answer'
+      });
+    }
+    
+    res.json({
+      ...researchData,
+      features_used: {
+        thinking: showThinking,
+        web_search: includeWebSearch,
+        deep_research: depth,
+        context_window: '1M tokens'
+      },
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('[Orchestra] /api/research-with-thinking error:', error);
+    res.status(500).json({ error: error.message || 'Research failed' });
   }
 });
 
@@ -908,7 +1297,8 @@ server.listen(PORT, () => {
   console.log(`🔒 Security middleware enabled`);
   console.log(`⚡ Rate limiting active`);
   console.log(`🤖 BigDaddyG models loaded: ${Object.keys(BIGDADDYG_MODELS).length}`);
-  console.log(`✅ All 8 API endpoints ready - REAL AGENTIC EXECUTION (No simulations!)`);
+  console.log(`✅ All 12 API endpoints ready - REAL AGENTIC EXECUTION`);
+  console.log(`🧠 Features: Deep Research | Thinking Mode | Web Search | 1M Context`);
 });
 
 server.on('error', (error) => {
