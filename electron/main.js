@@ -3076,6 +3076,18 @@ ipcMain.handle('orchestra:start', () => {
   return { success: true };
 });
 
+// AI Model Generation - Bridge NativeOllamaClient to Orchestra
+ipcMain.handle('ai:generate', async (event, { model, prompt, options }) => {
+  try {
+    console.log(`[IPC] 🤖 AI generation request for model: ${model}`);
+    const response = await nativeOllamaClient.generate(model, prompt, options || {});
+    return { success: true, response };
+  } catch (error) {
+    console.error('[IPC] ❌ AI generation failed:', error);
+    return { success: false, error: error.message };
+  }
+});
+
 ipcMain.handle('orchestra:stop', () => {
   stopOrchestraServer();
   return { success: true };

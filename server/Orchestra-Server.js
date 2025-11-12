@@ -562,34 +562,31 @@ async function generateBigDaddyGResponse(prompt = '', modelInfo, modelKey) {
   // List of fallback models to try ONLY if selected model fails
   const fallbackModels = ['llama3', 'llama2', 'codellama', 'mistral', 'phi3', 'gemma'];
 
-  // Try Ollama FIRST (if available)
+  // Use BigDaddyGCore's loaded models via IPC
   try {
-    console.log(`[Orchestra] 🤖 Attempting Ollama model: ${ollamaModel}`);
+    console.log(`[Orchestra] 🤖 Using BigDaddyG model: ${modelKey}`);
     
-    const response = await fetch('http://localhost:11434/api/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    // Call main process NativeOllamaClient which has access to 156 models
+    const { ipcRenderer } = require('electron');
+    if (ipcRenderer) {
+      const result = await ipcRenderer.invoke('ai:generate', {
         model: ollamaModel,
         prompt: sanitizedPrompt,
-        stream: false
-      }),
-      signal: AbortSignal.timeout(3000)  // 3 second timeout
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      console.log(`[Orchestra] ✅ Ollama responded`);
-      return data.response || 'No response from model';
+        options: {}
+      });
+      
+      if (result.success) {
+        console.log(`[Orchestra] ✅ AI response generated`);
+        return result.response;
+      }
     }
     
-    throw new Error(`Ollama returned ${response.status}`);
+    // If IPC not available (Orchestra running standalone), generate simple response
+    throw new Error('IPC not available');
     
   } catch (error) {
-    // Ollama not available - use BUILT-IN AI logic
-    console.log('[Orchestra] 💡 Ollama unavailable, using built-in AI processing');
-    
-    // BUILT-IN AI - Generates intelligent responses based on prompt analysis
+    // Generate a basic AI response
+    console.log('[Orchestra] 💡 Using standalone AI mode');
     return generateIntelligentResponse(sanitizedPrompt, modelKey);
   }
 }
