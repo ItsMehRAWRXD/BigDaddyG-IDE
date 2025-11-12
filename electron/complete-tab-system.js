@@ -506,6 +506,8 @@ class CompleteTabSystem {
      * Create all initial tabs
      */
     createAllTabs() {
+        console.log('[TabSystem] 🎨 Creating initial tabs...');
+        
         // Welcome tab (not closeable)
         this.createTab({
             id: 'welcome',
@@ -515,11 +517,16 @@ class CompleteTabSystem {
             content: this.getWelcomeContent()
         });
         
+        // Code Editor tab (important!)
+        this.createEditorTab();
+        
         // AI Chat tab (common)
         this.createAIChatTab();
         
         // Agentic Coding tab (common)
         this.createAgenticCodingTab();
+        
+        console.log('[TabSystem] ✅ Initial tabs created');
     }
     
     // ============================================
@@ -527,19 +534,22 @@ class CompleteTabSystem {
     // ============================================
     
     createEditorTab() {
-        return this.createTab({
+        const id = this.createTab({
             title: 'Code Editor',
             icon: '📄',
             content: `
-                <div id="bigdaddy-container" style="width: 100%; height: 100%; background: #1e1e1e;"></div>
+                <div id="bigdaddy-container" style="width: 100%; height: 100%; background: #1e1e1e; position: relative;"></div>
             `,
             onActivate: () => {
                 // Initialize BigDaddy Editor if needed
-                if (window.initBigDaddyOnly) {
-                    window.initBigDaddyOnly();
-                }
+                setTimeout(() => {
+                    if (window.initBigDaddyOnly) {
+                        window.initBigDaddyOnly();
+                    }
+                }, 100);
             }
         });
+        return id;
     }
     
     createFileExplorerTab() {

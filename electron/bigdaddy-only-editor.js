@@ -32,56 +32,36 @@
     function initBigDaddyEditor() {
         console.log('[BigDaddyOnly] 🎯 Starting BigDaddy Editor initialization...');
 
-        // Find or create editor container
-        let editorContainer = document.getElementById('editor-container');
+        // Tab system creates its own containers - just wait for them
+        const maxRetries = 10;
+        if (!window._bigdaddyRetryCount) window._bigdaddyRetryCount = 0;
+        window._bigdaddyRetryCount++;
         
-        if (!editorContainer) {
-            console.log('[BigDaddyOnly] ⚠️ Editor container not found, creating...');
-            const mainContainer = document.getElementById('main-container');
-            if (mainContainer) {
-                editorContainer = document.createElement('div');
-                editorContainer.id = 'editor-container';
-                editorContainer.style.cssText = `
-                    flex: 1;
-                    display: flex;
-                    flex-direction: column;
-                    background: #1e1e1e;
-                    position: relative;
-                    overflow: hidden;
-                `;
-                mainContainer.appendChild(editorContainer);
-            } else {
-                console.warn('[BigDaddyOnly] ⚠️ Main container not found yet, will retry...');
-                // Retry after tab system creates containers
-                setTimeout(initBigDaddyEditor, 500);
-                return;
-            }
+        if (window._bigdaddyRetryCount > maxRetries) {
+            console.error('[BigDaddyOnly] ❌ Max retries reached, giving up');
+            return;
         }
-
-        // Ensure editor container is visible
-        editorContainer.style.display = 'flex';
-        editorContainer.style.visibility = 'visible';
-
-        // Find or create BigDaddy container
-        let bigdaddyContainer = document.getElementById('bigdaddy-container');
+        
+        // Find BigDaddy container in tab content
+        let bigdaddyContainer = document.querySelector('#bigdaddy-container') ||
+                               document.querySelector('[id*="editor"]') ||
+                               document.querySelector('#master-tab-content');
         
         if (!bigdaddyContainer) {
-            console.log('[BigDaddyOnly] 📦 Creating BigDaddy container...');
-            bigdaddyContainer = document.createElement('div');
-            bigdaddyContainer.id = 'bigdaddy-container';
-            bigdaddyContainer.style.cssText = `
-                flex: 1;
-                width: 100%;
-                height: 100%;
-                background: #1e1e1e;
-                position: relative;
-            `;
-            editorContainer.appendChild(bigdaddyContainer);
+            if (window._bigdaddyRetryCount < maxRetries) {
+                setTimeout(initBigDaddyEditor, 500);
+            }
+            return;
         }
+        
+        // Reset retry counter
+        window._bigdaddyRetryCount = 0;
 
-        // Make BigDaddy container visible
+        // Ensure container is visible
         bigdaddyContainer.style.display = 'block';
         bigdaddyContainer.style.visibility = 'visible';
+        bigdaddyContainer.style.width = '100%';
+        bigdaddyContainer.style.height = '100%';
 
         // Remove monaco container if it exists
         const monacoContainer = document.getElementById('monaco-container');
