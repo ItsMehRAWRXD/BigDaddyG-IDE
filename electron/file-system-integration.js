@@ -126,10 +126,29 @@ class FileSystemIntegration {
         try {
             console.log('[FileSystem] 📄 Loading file:', filePath);
             
+            // Validate path
+            if (!filePath || filePath === 'undefined' || filePath.trim() === '') {
+                throw new Error('Invalid file path');
+            }
+            
+            // Check for protected files
+            const protectedFiles = ['pagefile.sys', 'hiberfil.sys', 'swapfile.sys'];
+            const fileName = filePath.split(/[\/\\]/).pop().toLowerCase();
+            
+            if (protectedFiles.includes(fileName)) {
+                throw new Error(`"${fileName}" is a Windows system file and cannot be opened`);
+            }
+            
             const result = await window.electron.readFile(filePath);
             
             if (!result.success) {
-                throw new Error(result.error);
+                if (result.error && result.error.includes('ENOENT')) {
+                    throw new Error(`File does not exist:\n${filePath}`);
+                } else if (result.error && result.error.includes('EPERM')) {
+                    throw new Error(`Access denied (system file):\n${filePath}`);
+                } else {
+                    throw new Error(result.error || 'Failed to read file');
+                }
             }
             
             const content = result.content;
