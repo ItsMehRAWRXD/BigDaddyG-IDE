@@ -9,13 +9,20 @@
 
 class FileSystemIntegration {
     constructor() {
-        this.currentProject = null;
-        this.openFiles = new Map(); // Map of file paths to content
-        this.fileWatchers = new Map();
-        this.recentProjects = this.loadRecentProjects();
-        this.platform = this.detectPlatform();
-        console.log('[FileSystem] 🖥️ Platform detected:', this.platform);
-        this.init();
+        try {
+            this.currentProject = null;
+            this.openFiles = new Map(); // Map of file paths to content
+            this.fileWatchers = new Map();
+            this.recentProjects = this.loadRecentProjects();
+            this.platform = this.detectPlatform();
+            console.log('[FileSystem] 🖥️ Platform detected:', this.platform);
+            this.init();
+            console.log('[FileSystem] ✅ Constructor completed successfully');
+        } catch (err) {
+            console.error('[FileSystem] ❌ Constructor failed:', err);
+            console.error('[FileSystem] Stack:', err.stack);
+            throw err;
+        }
     }
     
     /**
@@ -83,11 +90,16 @@ class FileSystemIntegration {
             }
         });
         
-        // Make globally available
-        window.fileSystem = this;
-        
-        console.log('[FileSystem] ✅ File system integration ready');
-        console.log('[FileSystem] 💡 Ctrl+O = Open File | Ctrl+S = Save | Ctrl+Shift+O = Open Folder');
+            // Make globally available
+            window.fileSystem = this;
+            
+            console.log('[FileSystem] ✅ File system integration ready');
+            console.log('[FileSystem] 💡 Ctrl+O = Open File | Ctrl+S = Save | Ctrl+Shift+O = Open Folder');
+        } catch (err) {
+            console.error('[FileSystem] ❌ Init failed:', err);
+            console.error('[FileSystem] Stack:', err.stack);
+            throw err;
+        }
     }
     
     /**
