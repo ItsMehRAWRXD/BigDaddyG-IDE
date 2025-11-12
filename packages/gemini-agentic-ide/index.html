@@ -89,19 +89,17 @@
                 </div>
             </header>
 
-            <!-- File Tabs (Simulated/Placeholder) -->
-            <div id="tab-bar" class="flex flex-row overflow-x-auto tab-bar">
-                <div class="tab active" data-path="Untitled-1.js">Untitled-1.js</div>
-            </div>
+            <!-- File Tabs -->
+            <div id="tab-bar" class="flex flex-row overflow-x-auto tab-bar"></div>
 
             <!-- Monaco Editor Container -->
             <div id="editor" class="flex-grow bg-slate-900 border border-slate-700 rounded-b-lg shadow-2xl"></div>
 
-            <!-- File System Controls (Placeholders for Native File System API) -->
+            <!-- File System Controls -->
             <footer class="mt-2 flex space-x-3 text-sm">
-                <!-- These buttons require browser permissions (Native File System API) and are placeholders -->
-                <button onclick="alert('File System Access API is required for this. Using local storage for now.')" class="bg-slate-700 hover:bg-slate-600 text-white py-1 px-3 rounded-md transition duration-150">Load Folder</button>
-                <button onclick="alert('File System Access API is required for this. Using local storage for now.')" class="bg-slate-700 hover:bg-slate-600 text-white py-1 px-3 rounded-md transition duration-150">Save File</button>
+                <button id="btn-new-file" class="bg-slate-700 hover:bg-slate-600 text-white py-1 px-3 rounded-md transition duration-150">New Tab</button>
+                <button id="btn-open-file" class="bg-slate-700 hover:bg-slate-600 text-white py-1 px-3 rounded-md transition duration-150">Open File</button>
+                <button id="btn-save-file" class="bg-slate-700 hover:bg-slate-600 text-white py-1 px-3 rounded-md transition duration-150">Save File</button>
             </footer>
         </div>
 
