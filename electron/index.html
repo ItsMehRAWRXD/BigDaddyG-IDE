@@ -305,13 +305,16 @@
     </div>
     
     <!-- LOAD ORDER CRITICAL -->
-    <!-- 0. Marketplace Database FIRST (data must exist before tabs) -->
+    <!-- 0. Notification System FIRST (replaces alert()) -->
+    <script src="notification-system.js"></script>
+    
+    <!-- 1. Marketplace Database -->
     <script src="full-marketplace-database.js"></script>
     
-    <!-- 0.5 Developer Mode Manager - DISABLED UNTIL CRASH IS FIXED -->
+    <!-- 2. Developer Mode Manager - DISABLED UNTIL CRASH IS FIXED -->
     <!-- <script src="developer-mode.js"></script> -->
     
-    <!-- 1. Tab system SECOND (creates DOM) -->
+    <!-- 3. Tab system -->
     <script src="complete-tab-system.js"></script>
     
     <!-- 2. Open Files Panel -->
