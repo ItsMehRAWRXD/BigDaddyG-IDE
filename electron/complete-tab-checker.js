@@ -201,29 +201,30 @@ class CompleteTabChecker {
     async testOrchestraEndpoints() {
         this.logCategory('🎼 ORCHESTRA SERVER');
         
+        // Define proper payloads for each endpoint
         const endpoints = [
-            '/health',
-            '/api/models',
-            '/api/chat',
-            '/api/generate',
-            '/api/suggest',
-            '/api/analyze-code',
-            '/api/execute',
-            '/api/agentic-code',
-            '/api/generate-image'
+            { path: '/health', method: 'GET', body: null },
+            { path: '/api/models', method: 'GET', body: null },
+            { path: '/api/chat', method: 'POST', body: { prompt: 'test', model: 'test', messages: [] } },
+            { path: '/api/generate', method: 'POST', body: { prompt: 'test', model: 'test' } },
+            { path: '/api/suggest', method: 'POST', body: { code: 'console.log("test")', language: 'javascript', context: 'test' } },
+            { path: '/api/analyze-code', method: 'POST', body: { code: 'console.log("test")', language: 'javascript', context: 'test' } },
+            { path: '/api/execute', method: 'POST', body: { code: 'console.log("test")', language: 'javascript' } },
+            { path: '/api/agentic-code', method: 'POST', body: { task: 'create a hello world function', language: 'javascript' } },
+            { path: '/api/generate-image', method: 'POST', body: { prompt: 'test image', style: 'realistic', size: '512x512' } }
         ];
         
         for (const endpoint of endpoints) {
             try {
-                const response = await fetch(`http://localhost:11441${endpoint}`, {
-                    method: endpoint.includes('/api/') && endpoint !== '/api/models' ? 'POST' : 'GET',
+                const response = await fetch(`http://localhost:11441${endpoint.path}`, {
+                    method: endpoint.method,
                     headers: { 'Content-Type': 'application/json' },
-                    body: endpoint.includes('/api/') && endpoint !== '/api/models' 
-                        ? JSON.stringify({ prompt: 'test', model: 'test', messages: [] })
-                        : undefined
+                    body: endpoint.body ? JSON.stringify(endpoint.body) : undefined
                 });
                 
-                this.test(`${endpoint}`, () => response.status !== 404);
+                // Success is 200-299 or test mode responses (not 400/404/500)
+                const isSuccess = response.ok || (response.status === 200);
+                this.test(`${endpoint.path}`, () => isSuccess);
             } catch (error) {
                 this.fail(`${endpoint} - ${error.message}`);
             }
