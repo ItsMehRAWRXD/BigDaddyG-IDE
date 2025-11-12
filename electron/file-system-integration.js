@@ -13,7 +13,38 @@ class FileSystemIntegration {
         this.openFiles = new Map(); // Map of file paths to content
         this.fileWatchers = new Map();
         this.recentProjects = this.loadRecentProjects();
+        this.platform = this.detectPlatform();
+        console.log('[FileSystem] 🖥️ Platform detected:', this.platform);
         this.init();
+    }
+    
+    /**
+     * Detect OS platform - CROSS-PLATFORM
+     */
+    detectPlatform() {
+        const userAgent = navigator.userAgent.toLowerCase();
+        if (userAgent.includes('win')) return 'windows';
+        if (userAgent.includes('mac')) return 'mac';
+        if (userAgent.includes('linux')) return 'linux';
+        return 'unknown';
+    }
+    
+    /**
+     * Normalize path for current platform - CROSS-PLATFORM
+     */
+    normalizePath(path) {
+        if (!path) return '';
+        let normalized = String(path).trim();
+        
+        if (this.platform === 'windows') {
+            // Windows: Keep backslashes
+            normalized = normalized.replace(/\//g, '\\');
+        } else {
+            // Mac/Linux: Convert to forward slashes
+            normalized = normalized.replace(/\\\\/g, '/').replace(/\\/g, '/');
+        }
+        
+        return normalized;
     }
     
     init() {
