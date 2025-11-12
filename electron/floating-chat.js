@@ -1319,7 +1319,11 @@ class FloatingChat {
             }
         } catch (error) {
             console.error('[FloatingChat] ❌ Error applying parameters:', error);
-            alert(`❌ Failed to apply parameters:\n\n${error.message}\n\nCheck if Orchestra server is running.`);
+            console.error('[FloatingChat] Failed to apply parameters:', error);
+            // Don't alert - just log and continue
+            if (window.showNotification) {
+                window.showNotification('Parameters not applied (server not running)', 'warning');
+            }
         }
     }
     
