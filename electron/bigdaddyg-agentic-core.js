@@ -520,10 +520,33 @@ class BigDaddyGCoreBridge extends EventEmitter {
   async invokeOllamaChat(payload) {
     try {
       const fetch = await getFetch();
-      const response = await fetch(`${this.ollamaUrl}/api/generate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      
+      // Use /api/chat for chat-style requests (supports message history)
+      // Use /api/generate for simple prompt-based requests
+      const useChatEndpoint = payload.context && payload.context.length > 0;
+      const endpoint = useChatEndpoint ? '/api/chat' : '/api/generate';
+      
+      let requestBody;
+      if (useChatEndpoint) {
+        // Chat endpoint expects messages array
+        const messages = [
+          ...(payload.context || []),
+          { role: 'user', content: payload.message }
+        ];
+        requestBody = {
+          model: payload.model,
+          messages: messages,
+          stream: false,
+          options: {
+            temperature: payload.temperature,
+            top_p: payload.topP,
+            top_k: payload.topK,
+            repeat_penalty: payload.repeatPenalty,
+          },
+        };
+      } else {
+        // Generate endpoint expects prompt
+        requestBody = {
           model: payload.model,
           prompt: payload.message,
           stream: false,
@@ -533,15 +556,26 @@ class BigDaddyGCoreBridge extends EventEmitter {
             top_k: payload.topK,
             repeat_penalty: payload.repeatPenalty,
           },
-        }),
+        };
+      }
+      
+      const response = await fetch(`${this.ollamaUrl}${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody),
         timeout: 60000,
       });
+      
       if (!response.ok) return null;
       const data = await response.json();
+      
+      // Handle both chat and generate response formats
+      const responseText = data?.message?.content || data?.response || '';
+      
       return {
-        content: data?.response || '',
+        content: responseText,
         usage: {
-          prompt_tokens: data?.prompt_eval_count || 0,
+          prompt_tokens: data?.prompt_eval_count || data?.eval_count || 0,
           completion_tokens: data?.eval_count || 0,
           total_tokens: (data?.prompt_eval_count || 0) + (data?.eval_count || 0),
         },
@@ -549,7 +583,7 @@ class BigDaddyGCoreBridge extends EventEmitter {
         provider: 'ollama',
         timestamp: new Date().toISOString(),
       };
-        } catch (error) {
+    } catch (error) {
       console.warn('[BigDaddyG] Ollama chat failed:', error.message);
       return null;
     }
@@ -558,10 +592,33 @@ class BigDaddyGCoreBridge extends EventEmitter {
   async invokeOllamaStream(payload) {
     try {
       const fetch = await getFetch();
-      const response = await fetch(`${this.ollamaUrl}/api/generate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      
+      // Use /api/chat for chat-style requests with context
+      // Use /api/generate for simple prompt-based requests
+      const useChatEndpoint = payload.context && payload.context.length > 0;
+      const endpoint = useChatEndpoint ? '/api/chat' : '/api/generate';
+      
+      let requestBody;
+      if (useChatEndpoint) {
+        // Chat endpoint expects messages array
+        const messages = [
+          ...(payload.context || []),
+          { role: 'user', content: payload.message }
+        ];
+        requestBody = {
+          model: payload.model,
+          messages: messages,
+          stream: true,
+          options: {
+            temperature: payload.temperature,
+            top_p: payload.topP,
+            top_k: payload.topK,
+            repeat_penalty: payload.repeatPenalty,
+          },
+        };
+      } else {
+        // Generate endpoint expects prompt
+        requestBody = {
           model: payload.model,
           prompt: payload.message,
           stream: true,
@@ -571,19 +628,28 @@ class BigDaddyGCoreBridge extends EventEmitter {
             top_k: payload.topK,
             repeat_penalty: payload.repeatPenalty,
           },
-        }),
+        };
+      }
+      
+      const response = await fetch(`${this.ollamaUrl}${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody),
         timeout: 60000,
       });
+      
       if (!response.ok || !response.body) return null;
 
       const reader = response.body.getReader();
+      const decoder = new TextDecoder();
       let buffer = '';
 
       async function* generator() {
         while (true) {
           const { value, done } = await reader.read();
           if (done) break;
-          buffer += Buffer.from(value).toString();
+          
+          buffer += decoder.decode(value, { stream: true });
 
           const parts = buffer.split('\n');
           buffer = parts.pop() || '';
@@ -592,14 +658,16 @@ class BigDaddyGCoreBridge extends EventEmitter {
             if (!part.trim()) continue;
             try {
               const parsed = JSON.parse(part);
+              // Handle both chat and generate response formats
+              const content = parsed?.message?.content || parsed?.delta?.content || parsed?.response || '';
               yield {
-                content: parsed?.response || '',
+                content: content,
                 done: Boolean(parsed?.done),
                 context: parsed?.context,
               };
               if (parsed?.done) return;
-            } catch {
-              continue;
+            } catch (parseError) {
+              // Skip invalid JSON lines
             }
           }
         }

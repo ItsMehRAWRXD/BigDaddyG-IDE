@@ -3,53 +3,7 @@
  * Tests all Ollama features for 100% completeness
  */
 
-// Use built-in fetch (Node 18+) or require node-fetch if needed
-let fetch;
-try {
-  // Try built-in fetch first (Node 18+)
-  if (typeof globalThis.fetch === 'function') {
-    fetch = globalThis.fetch;
-  } else {
-    fetch = require('node-fetch');
-  }
-} catch (e) {
-  // Fallback: use http module
-  const http = require('http');
-  fetch = async (url, options = {}) => {
-    return new Promise((resolve, reject) => {
-      const urlObj = new URL(url);
-      const req = http.request({
-        hostname: urlObj.hostname,
-        port: urlObj.port || (urlObj.protocol === 'https:' ? 443 : 80),
-        path: urlObj.pathname + urlObj.search,
-        method: options.method || 'GET',
-        headers: options.headers || {}
-      }, (res) => {
-        let data = '';
-        res.on('data', chunk => data += chunk);
-        res.on('end', () => {
-          resolve({
-            ok: res.statusCode >= 200 && res.statusCode < 300,
-            status: res.statusCode,
-            statusText: res.statusMessage,
-            json: async () => JSON.parse(data),
-            text: async () => data,
-            body: {
-              getReader: () => ({
-                read: () => Promise.resolve({ done: true, value: null })
-              })
-            }
-          });
-        });
-      });
-      req.on('error', reject);
-      if (options.body) req.write(options.body);
-      req.end();
-    });
-  };
-}
-
-// Use built-in fetch (Node 18+) or fallback
+// Use built-in fetch (Node 18+) or fallback to http module
 let fetch;
 if (typeof globalThis.fetch === 'function') {
   fetch = globalThis.fetch;
@@ -77,7 +31,11 @@ if (typeof globalThis.fetch === 'function') {
               statusText: res.statusMessage,
               json: async () => JSON.parse(data),
               text: async () => data,
-              body: res
+              body: {
+                getReader: () => ({
+                  read: () => Promise.resolve({ done: true, value: null })
+                })
+              }
             });
           });
         });
