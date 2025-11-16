@@ -233,6 +233,19 @@ class UniversalChatHandler {
                 model = 'llama3.2';
             }
             
+            // Check model availability before use
+            if (window.modelAvailabilityChecker) {
+                const isAvailable = await window.modelAvailabilityChecker.checkModel(model);
+                if (!isAvailable) {
+                    console.warn(`[UniversalChat] Model ${model} not available, finding alternative...`);
+                    const alternative = await this.getAvailableModel();
+                    if (alternative && alternative !== model) {
+                        model = alternative;
+                        this.displayMessage('system', `⚠️ Switched to model: ${model}`, source);
+                    }
+                }
+            }
+            
             console.log(`[UniversalChat] Using model: ${model}`);
             
             const controller = new AbortController();

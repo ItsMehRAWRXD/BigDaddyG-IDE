@@ -301,14 +301,113 @@ class AIProviderManager {
     throw new Error('All AI providers failed');
   }
 
-  async chatOllama(message, model) {
-    const res = await fetch('http://localhost:11434/api/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model, prompt: message, stream: false })
-    });
-    const data = await res.json();
-    return { response: data.response, provider: 'ollama', model };
+  async chatOllama(message, model, options = {}) {
+    // Check model availability first
+    if (!await this.checkModelAvailable(model)) {
+      // Try to find alternative model
+      const alternative = await this.findAlternativeModel(model);
+      if (alternative) {
+        console.warn(`[AI] Model ${model} not available, using ${alternative}`);
+        model = alternative;
+      } else {
+        throw new Error(`Model ${model} not available and no alternatives found`);
+      }
+    }
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), options.timeout || 60000);
+
+    try {
+      const res = await fetch('http://localhost:11434/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          model, 
+          prompt: message, 
+          stream: options.stream || false,
+          options: {
+            temperature: options.temperature ?? 0.7,
+            top_p: options.topP ?? 0.9,
+            top_k: options.topK ?? 40,
+            repeat_penalty: options.repeatPenalty ?? 1.1
+          }
+        }),
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeout);
+      
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Ollama API error: ${res.status} - ${errorText.substring(0, 100)}`);
+      }
+      
+      const data = await res.json();
+      return { 
+        response: data.response, 
+        provider: 'ollama', 
+        model,
+        usage: {
+          prompt_tokens: data.prompt_eval_count || 0,
+          completion_tokens: data.eval_count || 0,
+          total_tokens: (data.prompt_eval_count || 0) + (data.eval_count || 0)
+        }
+      };
+    } catch (error) {
+      clearTimeout(timeout);
+      if (error.name === 'AbortError') {
+        throw new Error('Request timeout - model may be too slow or unavailable');
+      }
+      throw error;
+    }
+  }
+
+  async checkModelAvailable(modelName) {
+    try {
+      // Check via discovery
+      if (window.electron?.models?.discover) {
+        const discovery = await window.electron.models.discover();
+        const ollamaModels = discovery.catalog?.ollama?.models || [];
+        const found = ollamaModels.find(m => {
+          const name = typeof m === 'string' ? m : m.name;
+          return name === modelName || name === modelName.split(':')[0];
+        });
+        if (found) return true;
+      }
+
+      // Check via direct API
+      const res = await fetch('http://localhost:11434/api/tags', {
+        signal: AbortSignal.timeout(3000)
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const models = data.models || [];
+        return models.some(m => {
+          const name = typeof m === 'string' ? m : m.name;
+          return name === modelName || name === modelName.split(':')[0];
+        });
+      }
+      return false;
+    } catch (error) {
+      console.warn(`[AI] Could not check model availability: ${error.message}`);
+      return false;
+    }
+  }
+
+  async findAlternativeModel(requestedModel) {
+    try {
+      if (window.electron?.models?.discover) {
+        const discovery = await window.electron.models.discover();
+        const ollamaModels = discovery.catalog?.ollama?.models || [];
+        if (ollamaModels.length > 0) {
+          const model = typeof ollamaModels[0] === 'string' ? ollamaModels[0] : ollamaModels[0].name;
+          return model;
+        }
+      }
+      return this.getDefaultModel('ollama');
+    } catch (error) {
+      return this.getDefaultModel('ollama');
+    }
   }
 
   async chatOrchestra(message, model) {

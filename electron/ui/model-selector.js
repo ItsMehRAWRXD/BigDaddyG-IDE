@@ -12,6 +12,26 @@ class ModelSelector {
   async init(aiManager) {
     this.aiManager = aiManager;
     await this.render();
+    
+    // Load saved preferences
+    if (window.modelPersistence) {
+      const lastModel = window.modelPersistence.getLastSelectedModel();
+      if (lastModel) {
+        const select = document.getElementById('model-select');
+        if (select) {
+          select.value = `ollama:${lastModel}`;
+          this.selectedModel = select.value;
+        }
+      }
+    }
+    
+    // Auto-refresh every 60 seconds
+    if (this.autoRefreshInterval) {
+      clearInterval(this.autoRefreshInterval);
+    }
+    this.autoRefreshInterval = setInterval(() => {
+      this.refresh();
+    }, 60000);
   }
 
   async render() {
@@ -90,6 +110,12 @@ class ModelSelector {
         if (window.modelState) {
           const modelName = e.target.value.includes(':') ? e.target.value.split(':')[1] : e.target.value;
           window.modelState.setActiveModel(modelName);
+        }
+        
+        // Save preference
+        if (window.modelPersistence) {
+          const modelName = e.target.value.includes(':') ? e.target.value.split(':')[1] : e.target.value;
+          window.modelPersistence.setLastSelectedModel(modelName);
         }
       });
       
