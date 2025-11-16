@@ -76,12 +76,32 @@ class StatusManager {
     }
     
     async checkOrchestraStatus() {
+        // 1) IPC bridge (fastest)
+        if (window.orchestraApi?.getModels) {
+            try {
+                const models = await window.orchestraApi.getModels();
+                this.updateStatus('orchestra', true, { models });
+                return;
+            } catch (error) {
+                console.warn('[StatusManager] IPC orchestra check failed:', error.message);
+            }
+        }
+        
+        // 2) Embedded HTTP bridge health
         try {
-            const response = await fetch('http://localhost:11441/health', {
-                method: 'GET',
-                signal: AbortSignal.timeout(3000)
-            });
-            
+            const response = await fetch('http://127.0.0.1:11435/health', { method: 'GET' });
+            if (response.ok) {
+                const data = await response.json();
+                this.updateStatus('orchestra', true, data);
+                return;
+            }
+        } catch (error) {
+            console.warn('[StatusManager] Bridge health check failed:', error.message);
+        }
+        
+        // 3) Legacy orchestra server
+        try {
+            const response = await fetch('http://localhost:11441/health', { method: 'GET' });
             if (response.ok) {
                 const data = await response.json();
                 this.updateStatus('orchestra', true, data);
@@ -94,12 +114,32 @@ class StatusManager {
     }
     
     async checkOllamaStatus() {
+        // 1) IPC / bridge model list
+        if (window.orchestraApi?.getModels) {
+            try {
+                const models = await window.orchestraApi.getModels();
+                this.updateStatus('ollama', true, { models });
+                return;
+            } catch (error) {
+                console.warn('[StatusManager] IPC model list failed:', error.message);
+            }
+        }
+        
+        // 2) Embedded bridge
         try {
-            const response = await fetch('http://localhost:11434/api/tags', {
-                method: 'GET',
-                signal: AbortSignal.timeout(3000)
-            });
-            
+            const response = await fetch('http://127.0.0.1:11435/api/models', { method: 'GET' });
+            if (response.ok) {
+                const data = await response.json();
+                this.updateStatus('ollama', true, data);
+                return;
+            }
+        } catch (error) {
+            console.warn('[StatusManager] Bridge model list failed:', error.message);
+        }
+        
+        // 3) Direct Ollama daemon
+        try {
+            const response = await fetch('http://localhost:11434/api/tags', { method: 'GET' });
             if (response.ok) {
                 const data = await response.json();
                 this.updateStatus('ollama', true, data);

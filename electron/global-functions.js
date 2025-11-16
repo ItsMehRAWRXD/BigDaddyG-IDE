@@ -92,12 +92,41 @@ window.contextManager = {
 window.ollamaManager = {
     baseUrl: 'http://localhost:11434',
     orchestraUrl: 'http://localhost:11441',
+    bridgeUrl: 'http://127.0.0.1:11435',
     availableModels: [],
     diskModels: [],
     orchestraModels: [],
     isConnected: false,
     
     async checkOllama() {
+        // 1) IPC bridge via preload
+        if (window.orchestraApi?.getModels) {
+            try {
+                await window.orchestraApi.getModels();
+                this.isConnected = true;
+                await this.loadModels();
+                return true;
+            } catch (error) {
+                console.warn('[Ollama] IPC bridge check failed:', error.message);
+            }
+        }
+        
+        // 2) Embedded HTTP bridge on 127.0.0.1:11435
+        try {
+            const response = await fetch(`${this.bridgeUrl}/health`, {
+                method: 'GET'
+            });
+            if (response.ok) {
+                this.isConnected = true;
+                await this.loadModels();
+                console.log('[Ollama] ✅ Connected via embedded model bridge');
+                return true;
+            }
+        } catch (bridgeError) {
+            console.log('[Ollama] Bridge unavailable:', bridgeError.message);
+        }
+        
+        // 3) Legacy Ollama daemon on 11434
         try {
             const response = await fetch(`${this.baseUrl}/api/tags`, { 
                 method: 'GET',
@@ -117,6 +146,51 @@ window.ollamaManager = {
     },
     
     async loadModels() {
+        // 1) IPC bridge models
+        if (window.orchestraApi?.getModels) {
+            try {
+                const models = await window.orchestraApi.getModels();
+                if (Array.isArray(models)) {
+                    this.orchestraModels = models.map(name => ({ name }));
+                    this.availableModels = models.map(name => ({ name }));
+                    return {
+                        ollama: this.availableModels,
+                        disk: this.diskModels,
+                        orchestra: this.orchestraModels
+                    };
+                }
+            } catch (error) {
+                console.warn('[Ollama] IPC model fetch failed:', error.message);
+            }
+        }
+        
+        // 2) Embedded HTTP bridge
+        try {
+            const response = await fetch(`${this.bridgeUrl}/api/models`, {
+                method: 'GET'
+            });
+            if (response.ok) {
+                const data = await response.json();
+                const models = data.models || [];
+                this.availableModels = models.map((model) => ({
+                    name: model.name,
+                    size: model.size,
+                    digest: model.digest,
+                    modified: model.modified_at
+                }));
+                this.orchestraModels = models;
+                console.log('[Ollama] 📦 Loaded', this.availableModels.length, 'models via bridge');
+                return {
+                    ollama: this.availableModels,
+                    disk: this.diskModels,
+                    orchestra: this.orchestraModels
+                };
+            }
+        } catch (error) {
+            console.warn('[Ollama] Bridge model list failed:', error.message);
+        }
+
+        // 3) Main-process discovery (fallback)
         try {
             if (window.electron?.models?.discover) {
                 const result = await window.electron.models.discover();
@@ -141,6 +215,7 @@ window.ollamaManager = {
             console.warn('[Ollama] Model discovery via main process failed, falling back to HTTP', error);
         }
 
+        // 4) Direct Ollama API
         try {
             const response = await fetch(`${this.baseUrl}/api/tags`);
             if (response.ok) {
@@ -182,19 +257,46 @@ window.ollamaManager = {
         }
         
         try {
-            // Try Orchestra first, fallback to direct Ollama
+            const selectedModel = model === 'auto' && this.availableModels.length > 0 
+                ? this.availableModels[0].name 
+                : model;
+            
+            // 1) IPC via preload
+            if (window.orchestraApi?.generate) {
+                const result = await window.orchestraApi.generate({
+                    model: selectedModel,
+                    prompt: message
+                });
+                if (result?.success) {
+                    const aiResponse = result.response || '';
+                    await this.storeAIResponse(message, aiResponse, selectedModel);
+                    return { response: aiResponse };
+                }
+            }
+            
+            // 2) Embedded bridge
+            const bridgeResponse = await fetch(`${this.bridgeUrl}/api/generate`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ model: selectedModel, prompt: message })
+            }).catch(() => null);
+            
+            if (bridgeResponse?.ok) {
+                const data = await bridgeResponse.json();
+                const aiResponse = data.response || '';
+                await this.storeAIResponse(message, aiResponse, selectedModel);
+                return { response: aiResponse };
+            }
+            
+            // 3) Legacy Orchestra HTTP server
             let response = await fetch(`${this.orchestraUrl}/api/chat`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message, model })
+                body: JSON.stringify({ message, model: selectedModel })
             }).catch(() => null);
             
-            // If Orchestra fails, try direct Ollama
+            // 4) Direct Ollama fallback
             if (!response || !response.ok) {
-                const selectedModel = model === 'auto' && this.availableModels.length > 0 
-                    ? this.availableModels[0].name 
-                    : model;
-                
                 response = await fetch(`${this.baseUrl}/api/generate`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -209,19 +311,7 @@ window.ollamaManager = {
             if (response && response.ok) {
                 const data = await response.json();
                 const aiResponse = data.response || data.text || '';
-                
-                // Store AI response in memory
-                if (window.memory && aiResponse) {
-                    await window.memory.store(aiResponse, {
-                        type: 'ai_response',
-                        source: 'chat',
-                        context: { model, timestamp: new Date().toISOString() }
-                    });
-                }
-                
-                window.contextManager.addToContext(message, 'user');
-                window.contextManager.addToContext(aiResponse, 'assistant');
-                
+                await this.storeAIResponse(message, aiResponse, selectedModel);
                 return { ...data, response: aiResponse };
             }
         } catch (error) {
@@ -229,6 +319,19 @@ window.ollamaManager = {
         }
         
         return null;
+    },
+    
+    async storeAIResponse(message, aiResponse, model) {
+        if (window.memory && aiResponse) {
+            await window.memory.store(aiResponse, {
+                type: 'ai_response',
+                source: 'chat',
+                context: { model, timestamp: new Date().toISOString() }
+            });
+        }
+        
+        window.contextManager.addToContext(message, 'user');
+        window.contextManager.addToContext(aiResponse, 'assistant');
     },
     
     async autoConnect() {
