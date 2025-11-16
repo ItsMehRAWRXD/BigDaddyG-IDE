@@ -123,7 +123,20 @@ contextBridge.exposeInMainWorld('electron', {
     pullModel: (model) => ipcRenderer.invoke('ollama:pull-model', model),
     deleteModel: (model) => ipcRenderer.invoke('ollama:delete-model', model),
     showModel: (model) => ipcRenderer.invoke('ollama:show-model', model),
-    status: () => ipcRenderer.invoke('ollama:status')
+    status: () => ipcRenderer.invoke('ollama:status'),
+    // Event listeners for health checker updates
+    onModelsUpdated: (callback) => {
+      if (typeof callback !== 'function') return () => {};
+      const listener = (_, data) => callback(data);
+      ipcRenderer.on('ollama:models-updated', listener);
+      return () => ipcRenderer.removeListener('ollama:models-updated', listener);
+    },
+    onStatusChanged: (callback) => {
+      if (typeof callback !== 'function') return () => {};
+      const listener = (_, data) => callback(data);
+      ipcRenderer.on('ollama:status-changed', listener);
+      return () => ipcRenderer.removeListener('ollama:status-changed', listener);
+    }
   },
 
   models: {
