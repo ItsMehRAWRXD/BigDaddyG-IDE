@@ -408,6 +408,9 @@ app.whenReady().then(async () => {
     startModelBridge();
   }, 2000);
   
+  // Start Ollama model health checker and auto-refresh
+  startOllamaHealthChecker();
+  
   // Start IPC server for external CLI communication
   try {
     ipcServer = new IPCServer();
@@ -3184,14 +3187,14 @@ ipcMain.handle('orchestra:get-models', async () => {
 });
 
 ipcMain.handle('orchestra:generate', async (event, payload) => {
-  const { model, prompt } = payload;
+  const { model, prompt, stream = false, options = {} } = payload;
   
   if (!model || !prompt) {
     return `Error: Model and prompt are required`;
   }
   
   try {
-    console.log(`[IPC] 🤖 Orchestra generate request: ${model}`);
+    console.log(`[IPC] 🤖 Orchestra generate request: ${model} (stream: ${stream})`);
     
     // Check if this is an Ollama model
     const isOllama = await isOllamaModel(model);
@@ -3200,31 +3203,94 @@ ipcMain.handle('orchestra:generate', async (event, payload) => {
       // Direct Ollama HTTP call
       console.log(`[IPC] 🦙 Routing to Ollama API for model: ${model}`);
       try {
-        const ollamaResponse = await fetch('http://localhost:11434/api/generate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            model: model,
-            prompt: prompt,
-            stream: false
-          }),
-          signal: AbortSignal.timeout(120000) // 2 minute timeout
-        });
-        
-        if (ollamaResponse.ok) {
-          const ollamaData = await ollamaResponse.json();
-          const responseText = ollamaData.response || '';
-          console.log(`[IPC] ✅ Ollama generated ${responseText.length} characters`);
-          return responseText;
+        if (stream) {
+          // Streaming mode - return event emitter pattern
+          const ollamaResponse = await fetch('http://localhost:11434/api/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              model: model,
+              prompt: prompt,
+              stream: true,
+              options: {
+                temperature: options.temperature ?? 0.7,
+                top_p: options.topP ?? 0.9,
+                top_k: options.topK ?? 40,
+                repeat_penalty: options.repeatPenalty ?? 1.1,
+              }
+            }),
+            signal: AbortSignal.timeout(300000) // 5 minute timeout for streaming
+          });
+          
+          if (!ollamaResponse.ok) {
+            const errorText = await ollamaResponse.text();
+            throw new Error(`Ollama API error (${ollamaResponse.status}): ${errorText}`);
+          }
+          
+          // For streaming, we need to return a readable stream
+          // Since IPC doesn't support streams directly, we'll collect and return
+          const reader = ollamaResponse.body.getReader();
+          const decoder = new TextDecoder();
+          let fullResponse = '';
+          
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            
+            const chunk = decoder.decode(value, { stream: true });
+            const lines = chunk.split('\n').filter(line => line.trim());
+            
+            for (const line of lines) {
+              try {
+                const data = JSON.parse(line);
+                if (data.response) {
+                  fullResponse += data.response;
+                }
+                if (data.done) {
+                  console.log(`[IPC] ✅ Ollama streamed ${fullResponse.length} characters`);
+                  return fullResponse;
+                }
+              } catch (parseError) {
+                // Skip invalid JSON lines
+              }
+            }
+          }
+          
+          return fullResponse;
         } else {
-          const errorText = await ollamaResponse.text();
-          throw new Error(`Ollama API error (${ollamaResponse.status}): ${errorText}`);
+          // Non-streaming mode
+          const ollamaResponse = await fetch('http://localhost:11434/api/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              model: model,
+              prompt: prompt,
+              stream: false,
+              options: {
+                temperature: options.temperature ?? 0.7,
+                top_p: options.topP ?? 0.9,
+                top_k: options.topK ?? 40,
+                repeat_penalty: options.repeatPenalty ?? 1.1,
+              }
+            }),
+            signal: AbortSignal.timeout(120000) // 2 minute timeout
+          });
+          
+          if (ollamaResponse.ok) {
+            const ollamaData = await ollamaResponse.json();
+            const responseText = ollamaData.response || '';
+            console.log(`[IPC] ✅ Ollama generated ${responseText.length} characters`);
+            return responseText;
+          } else {
+            const errorText = await ollamaResponse.text();
+            throw new Error(`Ollama API error (${ollamaResponse.status}): ${errorText}`);
+          }
         }
       } catch (ollamaError) {
         console.error(`[IPC] ❌ Ollama generation failed:`, ollamaError.message);
         // Fallback to BigDaddyGCore if Ollama fails
         console.log(`[IPC] 🔄 Falling back to BigDaddyGCore for model: ${model}`);
-        const fallbackResponse = await nativeOllamaClient.generate(model, prompt, {});
+        const fallbackResponse = await nativeOllamaClient.generate(model, prompt, options);
         const responseText = typeof fallbackResponse === 'string' 
           ? fallbackResponse 
           : fallbackResponse.response || fallbackResponse.content || '';
@@ -3233,12 +3299,24 @@ ipcMain.handle('orchestra:generate', async (event, payload) => {
     } else {
       // BigDaddyG model - use nativeOllamaClient (which routes through BigDaddyGCore)
       console.log(`[IPC] 🎯 Using BigDaddyGCore for model: ${model}`);
-      const response = await nativeOllamaClient.generate(model, prompt, {});
-      const responseText = typeof response === 'string' 
-        ? response 
-        : response.response || response.content || '';
-      console.log(`[IPC] ✅ BigDaddyGCore generated ${responseText.length} characters`);
-      return responseText;
+      if (stream) {
+        // Streaming for BigDaddyG models
+        const streamResponse = await nativeOllamaClient.generateStream(model, prompt, options);
+        let fullResponse = '';
+        for await (const chunk of streamResponse) {
+          fullResponse += chunk.content || '';
+          if (chunk.done) break;
+        }
+        console.log(`[IPC] ✅ BigDaddyGCore streamed ${fullResponse.length} characters`);
+        return fullResponse;
+      } else {
+        const response = await nativeOllamaClient.generate(model, prompt, options);
+        const responseText = typeof response === 'string' 
+          ? response 
+          : response.response || response.content || '';
+        console.log(`[IPC] ✅ BigDaddyGCore generated ${responseText.length} characters`);
+        return responseText;
+      }
     }
   } catch (error) {
     console.error(`[IPC] ❌ Generation failed for ${model}:`, error.message);
@@ -3313,14 +3391,14 @@ function startModelBridge() {
     
     // Generate response (routes to Ollama or BigDaddyGCore based on model type)
     bridgeApp.post('/api/generate', async (req, res) => {
-      const { model, prompt } = req.body;
+      const { model, prompt, stream = false, options = {} } = req.body;
       
       if (!model || !prompt) {
         return res.status(400).json({ error: 'Model and prompt are required' });
       }
       
       try {
-        console.log(`[Bridge] 🤖 Generate request for model: ${model}`);
+        console.log(`[Bridge] 🤖 Generate request for model: ${model} (stream: ${stream})`);
         
         // Check if this is an Ollama model
         const isOllama = await isOllamaModel(model);
@@ -3329,31 +3407,82 @@ function startModelBridge() {
           // Direct Ollama HTTP call
           console.log(`[Bridge] 🦙 Routing to Ollama API for model: ${model}`);
           try {
-            const ollamaResponse = await fetch('http://localhost:11434/api/generate', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                model: model,
-                prompt: prompt,
-                stream: false
-              }),
-              signal: AbortSignal.timeout(120000) // 2 minute timeout
-            });
-            
-            if (ollamaResponse.ok) {
-              const ollamaData = await ollamaResponse.json();
-              const responseText = ollamaData.response || '';
-              console.log(`[Bridge] ✅ Ollama generated ${responseText.length} characters`);
-              return res.json({ response: responseText });
+            if (stream) {
+              // Streaming mode
+              res.setHeader('Content-Type', 'text/event-stream');
+              res.setHeader('Cache-Control', 'no-cache');
+              res.setHeader('Connection', 'keep-alive');
+              
+              const ollamaResponse = await fetch('http://localhost:11434/api/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  model: model,
+                  prompt: prompt,
+                  stream: true,
+                  options: {
+                    temperature: options.temperature ?? 0.7,
+                    top_p: options.topP ?? 0.9,
+                    top_k: options.topK ?? 40,
+                    repeat_penalty: options.repeatPenalty ?? 1.1,
+                  }
+                }),
+                signal: AbortSignal.timeout(300000) // 5 minute timeout for streaming
+              });
+              
+              if (!ollamaResponse.ok) {
+                const errorText = await ollamaResponse.text();
+                throw new Error(`Ollama API error (${ollamaResponse.status}): ${errorText}`);
+              }
+              
+              const reader = ollamaResponse.body.getReader();
+              const decoder = new TextDecoder();
+              
+              while (true) {
+                const { done, value } = await reader.read();
+                if (done) {
+                  res.write('data: [DONE]\n\n');
+                  res.end();
+                  break;
+                }
+                
+                const chunk = decoder.decode(value, { stream: true });
+                res.write(`data: ${chunk}\n\n`);
+              }
             } else {
-              const errorText = await ollamaResponse.text();
-              throw new Error(`Ollama API error (${ollamaResponse.status}): ${errorText}`);
+              // Non-streaming mode
+              const ollamaResponse = await fetch('http://localhost:11434/api/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  model: model,
+                  prompt: prompt,
+                  stream: false,
+                  options: {
+                    temperature: options.temperature ?? 0.7,
+                    top_p: options.topP ?? 0.9,
+                    top_k: options.topK ?? 40,
+                    repeat_penalty: options.repeatPenalty ?? 1.1,
+                  }
+                }),
+                signal: AbortSignal.timeout(120000) // 2 minute timeout
+              });
+              
+              if (ollamaResponse.ok) {
+                const ollamaData = await ollamaResponse.json();
+                const responseText = ollamaData.response || '';
+                console.log(`[Bridge] ✅ Ollama generated ${responseText.length} characters`);
+                return res.json({ response: responseText });
+              } else {
+                const errorText = await ollamaResponse.text();
+                throw new Error(`Ollama API error (${ollamaResponse.status}): ${errorText}`);
+              }
             }
           } catch (ollamaError) {
             console.error(`[Bridge] ❌ Ollama generation failed:`, ollamaError.message);
             // Fallback to BigDaddyGCore if Ollama fails
             console.log(`[Bridge] 🔄 Falling back to BigDaddyGCore for model: ${model}`);
-            const fallbackResponse = await nativeOllamaClient.generate(model, prompt, {});
+            const fallbackResponse = await nativeOllamaClient.generate(model, prompt, options);
             const responseText = typeof fallbackResponse === 'string' 
               ? fallbackResponse 
               : fallbackResponse.response || fallbackResponse.content || '';
@@ -3362,12 +3491,29 @@ function startModelBridge() {
         } else {
           // BigDaddyG model - use nativeOllamaClient (which routes through BigDaddyGCore)
           console.log(`[Bridge] 🎯 Using BigDaddyGCore for model: ${model}`);
-          const response = await nativeOllamaClient.generate(model, prompt, {});
-          const responseText = typeof response === 'string' 
-            ? response 
-            : response.response || response.content || '';
-          console.log(`[Bridge] ✅ BigDaddyGCore generated ${responseText.length} characters`);
-          return res.json({ response: responseText });
+          if (stream) {
+            // Streaming for BigDaddyG models
+            res.setHeader('Content-Type', 'text/event-stream');
+            res.setHeader('Cache-Control', 'no-cache');
+            res.setHeader('Connection', 'keep-alive');
+            
+            const streamResponse = await nativeOllamaClient.generateStream(model, prompt, options);
+            for await (const chunk of streamResponse) {
+              res.write(`data: ${JSON.stringify({ response: chunk.content || '', done: chunk.done || false })}\n\n`);
+              if (chunk.done) {
+                res.write('data: [DONE]\n\n');
+                res.end();
+                break;
+              }
+            }
+          } else {
+            const response = await nativeOllamaClient.generate(model, prompt, options);
+            const responseText = typeof response === 'string' 
+              ? response 
+              : response.response || response.content || '';
+            console.log(`[Bridge] ✅ BigDaddyGCore generated ${responseText.length} characters`);
+            return res.json({ response: responseText });
+          }
         }
       } catch (err) {
         console.error(`[Bridge] ❌ Generation failed:`, err.message);
@@ -3385,6 +3531,92 @@ function startModelBridge() {
   }
 }
 
+// ============================================================================
+// OLLAMA HEALTH CHECKER & AUTO-REFRESH
+// ============================================================================
+
+let ollamaHealthCheckerInterval = null;
+let lastOllamaModelCount = 0;
+
+/**
+ * Checks Ollama server health and refreshes model list
+ */
+async function checkOllamaHealth() {
+  try {
+    const response = await fetch('http://localhost:11434/api/tags', {
+      timeout: 3000
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      const currentModelCount = (data.models || []).length;
+      
+      if (currentModelCount !== lastOllamaModelCount) {
+        console.log(`[Ollama Health] 🔄 Model count changed: ${lastOllamaModelCount} → ${currentModelCount}`);
+        lastOllamaModelCount = currentModelCount;
+        
+        // Notify frontend that models have changed
+        if (mainWindow && !mainWindow.isDestroyed()) {
+          mainWindow.webContents.send('ollama:models-updated', {
+            count: currentModelCount,
+            models: data.models || []
+          });
+        }
+      }
+      
+      return { available: true, modelCount: currentModelCount };
+    } else {
+      console.log('[Ollama Health] ⚠️ Ollama server not responding');
+      return { available: false, error: `HTTP ${response.status}` };
+    }
+  } catch (error) {
+    if (lastOllamaModelCount > 0) {
+      console.log('[Ollama Health] ⚠️ Ollama server unavailable');
+      lastOllamaModelCount = 0;
+      
+      // Notify frontend that Ollama is offline
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send('ollama:status-changed', {
+          available: false,
+          error: error.message
+        });
+      }
+    }
+    return { available: false, error: error.message };
+  }
+}
+
+/**
+ * Starts periodic health checking for Ollama
+ */
+function startOllamaHealthChecker() {
+  // Initial health check
+  checkOllamaHealth().then(result => {
+    if (result.available) {
+      lastOllamaModelCount = result.modelCount || 0;
+      console.log(`[Ollama Health] ✅ Ollama server healthy (${result.modelCount} models)`);
+    }
+  });
+  
+  // Check every 30 seconds
+  ollamaHealthCheckerInterval = setInterval(() => {
+    checkOllamaHealth();
+  }, 30000);
+  
+  console.log('[Ollama Health] 🔄 Health checker started (30s interval)');
+}
+
+/**
+ * Stops Ollama health checker
+ */
+function stopOllamaHealthChecker() {
+  if (ollamaHealthCheckerInterval) {
+    clearInterval(ollamaHealthCheckerInterval);
+    ollamaHealthCheckerInterval = null;
+    console.log('[Ollama Health] 🛑 Health checker stopped');
+  }
+}
+
 // Bridge cleanup on quit
 app.on('window-all-closed', () => {
   console.log('[BigDaddyG] 👋 All windows closed');
@@ -3394,6 +3626,9 @@ app.on('window-all-closed', () => {
     bridgeServer.close();
     console.log('[Bridge] 🛑 Model bridge stopped');
   }
+  
+  // Stop Ollama health checker
+  stopOllamaHealthChecker();
   
   // ... rest of cleanup ...
 });

@@ -1934,16 +1934,57 @@ Provide a vivid, detailed description as if you're viewing the actual generated 
     const response = await processBigDaddyGRequest('bigdaddyg:latest', descriptionPrompt, false);
     const description = extractContentFromResponse(response);
     
-    // Return placeholder data structure
-    // TODO: Integrate with Stable Diffusion API or similar
+    // Try to generate image using Ollama's image generation capabilities
+    // First, check if we have an image generation model available
+    try {
+      const ollamaModels = await getOllamaModels();
+      const imageModels = ollamaModels.filter(m => 
+        m.name.toLowerCase().includes('flux') || 
+        m.name.toLowerCase().includes('image') ||
+        m.name.toLowerCase().includes('stable-diffusion')
+      );
+      
+      if (imageModels.length > 0) {
+        // Use Ollama image generation model if available
+        console.log(`[Orchestra] 🎨 Using Ollama image model: ${imageModels[0].name}`);
+        try {
+          const imageResponse = await forwardToOllama('/api/generate', {
+            model: imageModels[0].name,
+            prompt: `Generate an image: ${prompt}. Style: ${style}. Size: ${size}.`,
+            stream: false
+          });
+          
+          // Ollama doesn't directly generate images, but we can use the description
+          // In a full implementation, this would call a dedicated image generation service
+          res.json({
+            prompt,
+            style,
+            size,
+            description,
+            status: 'generated',
+            image_url: null, // Ollama doesn't generate images directly
+            model_used: imageModels[0].name,
+            note: 'Image generation description created. For actual image generation, integrate with Stable Diffusion API, DALL-E, or similar service.',
+            timestamp: new Date().toISOString()
+          });
+          return;
+        } catch (imageError) {
+          console.warn('[Orchestra] ⚠️ Image model generation failed:', imageError.message);
+        }
+      }
+    } catch (ollamaError) {
+      console.log('[Orchestra] ℹ️ Ollama not available for image generation');
+    }
+    
+    // Fallback: Return AI-generated description
     res.json({
       prompt,
       style,
       size,
       description,
       status: 'generated',
-      image_url: null, // Would contain actual image URL in production
-      note: 'Image generation requires Stable Diffusion/DALL-E integration. Currently returning AI description.',
+      image_url: null,
+      note: 'Image generation requires integration with Stable Diffusion API, DALL-E, or similar service. Currently returning AI-generated description.',
       timestamp: new Date().toISOString()
     });
   } catch (error) {
