@@ -145,11 +145,36 @@ class MonacoInlineAI {
 
   initializeGhostText() {
     this.ghostTextProvider = {
-      provideGhostText: (model, position) => {
+      provideGhostText: async (model, position) => {
         // Return ghost text suggestions
-        return this.getGhostTextSuggestions(model, position);
+        return await this.getGhostTextSuggestions(model, position);
       }
     };
+    
+    // Register ghost text provider with Monaco if available
+    if (typeof monaco !== 'undefined' && monaco.languages && monaco.languages.registerInlineCompletionsProvider) {
+      const languages = ['javascript', 'typescript', 'python', 'java', 'go'];
+      languages.forEach(lang => {
+        monaco.languages.registerInlineCompletionsProvider(lang, {
+          provideInlineCompletions: async (model, position, context, token) => {
+            const suggestions = await this.getGhostTextSuggestions(model, position);
+            if (suggestions && suggestions.length > 0) {
+              return {
+                items: suggestions.map(s => ({
+                  insertText: s.text,
+                  range: s.range,
+                  command: {
+                    id: 'editor.action.inlineSuggest.commit',
+                    title: 'Accept suggestion'
+                  }
+                }))
+              };
+            }
+            return { items: [] };
+          }
+        });
+      });
+    }
   }
 
   initializeInlineDiff() {
@@ -539,16 +564,24 @@ Return ONLY the complete test code in a code block.`;
       throw new Error('Cancelled');
     }
 
-    // Get response with streaming
-    const response = await window.orchestraApi.generate({
-      model: model,
-      prompt: prompt,
-      stream: false, // For now, can be enhanced to streaming
-      options: {
-        temperature: 0.7,
-        top_p: 0.9
-      }
-    });
+    // Get response with streaming support
+    let response;
+    
+    if (cancellationToken && cancellationToken.wantsStreaming) {
+      // Streaming mode - collect chunks
+      response = await this.getStreamingResponse(model, prompt, cancellationToken);
+    } else {
+      // Non-streaming mode
+      response = await window.orchestraApi.generate({
+        model: model,
+        prompt: prompt,
+        stream: false,
+        options: {
+          temperature: 0.7,
+          top_p: 0.9
+        }
+      });
+    }
 
     // Check cancellation again
     if (cancellationToken.cancelled) {
@@ -810,10 +843,63 @@ Return ONLY the complete test code in a code block.`;
   createCancellationToken() {
     return {
       cancelled: false,
+      wantsStreaming: false,
       cancel: () => {
         this.cancelled = true;
       }
     };
+  }
+
+  async getStreamingResponse(model, prompt, cancellationToken) {
+    // Implement streaming response collection
+    if (!window.orchestraApi) {
+      throw new Error('Orchestra API not available');
+    }
+    
+    try {
+      // Use Orchestra API with streaming
+      const response = await window.orchestraApi.generate({
+        model: model,
+        prompt: prompt,
+        stream: true,
+        options: {
+          temperature: 0.7,
+          top_p: 0.9
+        }
+      });
+      
+      // If response is a stream, collect it
+      if (response && typeof response === 'object' && response.on) {
+        return new Promise((resolve, reject) => {
+          let fullText = '';
+          
+          response.on('data', (chunk) => {
+            if (cancellationToken.cancelled) {
+              response.destroy();
+              reject(new Error('Cancelled'));
+              return;
+            }
+            
+            fullText += chunk.toString();
+            // Could emit progress events here for UI updates
+          });
+          
+          response.on('end', () => {
+            resolve(fullText);
+          });
+          
+          response.on('error', (error) => {
+            reject(error);
+          });
+        });
+      }
+      
+      // If already a string, return it
+      return response;
+    } catch (error) {
+      console.error('[MonacoInlineAI] ❌ Streaming failed:', error);
+      throw error;
+    }
   }
 
   cancelCurrentOperation() {
@@ -840,10 +926,58 @@ Return ONLY the complete test code in a code block.`;
     this.redoStack = [];
   }
 
-  getGhostTextSuggestions(model, position) {
+  async getGhostTextSuggestions(model, position) {
     // Return ghost text suggestions for autocomplete
-    // This would integrate with AI for smart suggestions
-    return null; // Can be enhanced
+    if (!this.editor || !window.orchestraApi) {
+      return null;
+    }
+    
+    try {
+      // Get current line and context
+      const line = model.getLineContent(position.lineNumber);
+      const beforeCursor = line.substring(0, position.column - 1);
+      
+      // Only suggest if there's meaningful context
+      if (beforeCursor.trim().length < 3) {
+        return null;
+      }
+      
+      // Get AI suggestion for continuation
+      const prompt = `Complete this code line. Return ONLY the continuation text, no explanations:\n\n${beforeCursor}`;
+      
+      const models = await window.orchestraApi.getModels();
+      const model = models[0] || 'llama3:latest';
+      
+      const response = await window.orchestraApi.generate({
+        model: model,
+        prompt: prompt,
+        stream: false,
+        options: {
+          temperature: 0.3, // Lower temperature for more predictable completions
+          max_tokens: 50
+        }
+      });
+      
+      // Extract suggested text
+      const suggestedText = response.trim().split('\n')[0];
+      
+      if (suggestedText && suggestedText.length > 0) {
+        return [{
+          text: suggestedText,
+          range: {
+            startLineNumber: position.lineNumber,
+            startColumn: position.column,
+            endLineNumber: position.lineNumber,
+            endColumn: position.column
+          }
+        }];
+      }
+      
+      return null;
+    } catch (error) {
+      console.warn('[MonacoInlineAI] ⚠️ Ghost text failed:', error.message);
+      return null;
+    }
   }
 
   showNotification(message, type = 'info') {

@@ -340,12 +340,95 @@ class GitPRUX {
 
   async refreshPRs() {
     // Fetch PRs from GitHub/GitLab
-    // This would integrate with GitHub API
     console.log('[GitPRUX] 🔄 Refreshing PRs...');
     
-    // Placeholder - would fetch from API
-    this.prs = [];
+    try {
+      // Get GitHub token from settings
+      const githubToken = await this.getGitHubToken();
+      
+      if (!githubToken) {
+        console.warn('[GitPRUX] ⚠️ No GitHub token configured');
+        this.prs = [];
+        this.updatePRList();
+        return;
+      }
+      
+      // Get repo info from git remote
+      const repoInfo = await this.getRepoInfo();
+      if (!repoInfo) {
+        this.prs = [];
+        this.updatePRList();
+        return;
+      }
+      
+      // Fetch PRs from GitHub API
+      const response = await fetch(`https://api.github.com/repos/${repoInfo.owner}/${repoInfo.repo}/pulls?state=all&per_page=20`, {
+        headers: {
+          'Authorization': `token ${githubToken}`,
+          'Accept': 'application/vnd.github.v3+json'
+        }
+      });
+      
+      if (response.ok) {
+        const prs = await response.json();
+        this.prs = prs.map(pr => ({
+          number: pr.number,
+          title: pr.title,
+          author: pr.user.login,
+          status: pr.state,
+          url: pr.html_url,
+          createdAt: pr.created_at,
+          updatedAt: pr.updated_at
+        }));
+      } else {
+        console.error('[GitPRUX] ❌ Failed to fetch PRs:', response.statusText);
+        this.prs = [];
+      }
+    } catch (error) {
+      console.error('[GitPRUX] ❌ Error refreshing PRs:', error);
+      this.prs = [];
+    }
+    
     this.updatePRList();
+  }
+
+  async getGitHubToken() {
+    // Get GitHub token from API key store
+    if (window.electron && window.electron.apiKeys) {
+      try {
+        const keys = await window.electron.apiKeys.list();
+        return keys.keys?.github?.key || null;
+      } catch (error) {
+        return null;
+      }
+    }
+    return null;
+  }
+
+  async getRepoInfo() {
+    // Get repo owner and name from git remote
+    if (!window.electron || !window.electron.executeCommand) {
+      return null;
+    }
+    
+    try {
+      const result = await window.electron.executeCommand('git remote get-url origin', 'bash');
+      const url = result.output.trim();
+      
+      // Parse GitHub URL
+      const match = url.match(/github\.com[\/:]([^\/]+)\/([^\/]+)(?:\.git)?$/);
+      if (match) {
+        return {
+          owner: match[1],
+          repo: match[2].replace('.git', '')
+        };
+      }
+      
+      return null;
+    } catch (error) {
+      console.warn('[GitPRUX] ⚠️ Failed to get repo info:', error.message);
+      return null;
+    }
   }
 
   async createPR() {
@@ -360,14 +443,60 @@ class GitPRUX {
     const title = prompt('PR Title:');
     if (!title) return;
 
-    const description = prompt('PR Description:');
+    const description = prompt('PR Description:') || '';
     
-    // Create PR via GitHub API or git command
-    console.log('[GitPRUX] 📝 Creating PR...');
-    
-    // This would call GitHub API
-    if (window.notify) {
-      window.notify.info('PR creation would be implemented with GitHub API');
+    try {
+      const githubToken = await this.getGitHubToken();
+      if (!githubToken) {
+        if (window.notify) {
+          window.notify.error('GitHub token not configured. Set it in Settings > API Keys');
+        }
+        return;
+      }
+      
+      const repoInfo = await this.getRepoInfo();
+      if (!repoInfo) {
+        if (window.notify) {
+          window.notify.error('Could not determine repository');
+        }
+        return;
+      }
+      
+      // Get base branch (usually main or master)
+      const baseResult = await window.electron.executeCommand('git symbolic-ref refs/remotes/origin/HEAD', 'bash');
+      const baseBranch = baseResult.output.trim().split('/').pop() || 'main';
+      
+      // Create PR via GitHub API
+      const response = await fetch(`https://api.github.com/repos/${repoInfo.owner}/${repoInfo.repo}/pulls`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `token ${githubToken}`,
+          'Accept': 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          title: title,
+          body: description,
+          head: this.currentBranch,
+          base: baseBranch
+        })
+      });
+      
+      if (response.ok) {
+        const pr = await response.json();
+        if (window.notify) {
+          window.notify.success(`PR #${pr.number} created: ${pr.html_url}`);
+        }
+        await this.refreshPRs();
+      } else {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to create PR');
+      }
+    } catch (error) {
+      console.error('[GitPRUX] ❌ Failed to create PR:', error);
+      if (window.notify) {
+        window.notify.error(`Failed to create PR: ${error.message}`);
+      }
     }
   }
 

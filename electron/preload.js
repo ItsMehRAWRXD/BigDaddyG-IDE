@@ -50,6 +50,14 @@ contextBridge.exposeInMainWorld('electron', {
   
   // Agentic file system operations (unlimited)
   scanWorkspace: (options) => ipcRenderer.invoke('scanWorkspace', options),
+  
+  // File change events
+  onFileChanged: (callback) => {
+    if (typeof callback !== 'function') return () => {};
+    const listener = (_, event) => callback(event);
+    ipcRenderer.on('file-changed', listener);
+    return () => ipcRenderer.removeListener('file-changed', listener);
+  },
   searchFiles: (query, options) => ipcRenderer.invoke('search-files', validateString(query, 200), validateOptions(options)),
   readDirRecursive: (dirPath, maxDepth) => ipcRenderer.invoke('read-dir-recursive', validatePath(dirPath), Math.min(maxDepth || 10, 20)),
   readFileChunked: (filePath, chunkSize) => ipcRenderer.invoke('read-file-chunked', validatePath(filePath), Math.min(chunkSize || 1024, 10485760)),
@@ -198,6 +206,7 @@ contextBridge.exposeInMainWorld('electron', {
     forward: () => ipcRenderer.invoke('browser:forward'),
     reload: () => ipcRenderer.invoke('browser:reload'),
     stop: () => ipcRenderer.invoke('browser:stop'),
+    screenshot: (options) => ipcRenderer.invoke('browser:screenshot', options),
     show: () => ipcRenderer.invoke('browser:show'),
     hide: () => ipcRenderer.invoke('browser:hide'),
     openYouTube: () => ipcRenderer.invoke('browser:open-youtube'),
@@ -206,7 +215,6 @@ contextBridge.exposeInMainWorld('electron', {
     togglePlayback: () => ipcRenderer.invoke('browser:toggle-playback'),
     enterPictureInPicture: () => ipcRenderer.invoke('browser:enter-pip'),
     getMediaState: () => ipcRenderer.invoke('browser:get-media-state'),
-    screenshot: (options) => ipcRenderer.invoke('browser:screenshot', options),
     analyze: () => ipcRenderer.invoke('browser:analyze'),
     suggestUI: () => ipcRenderer.invoke('browser:suggest-ui'),
     devTools: () => ipcRenderer.invoke('browser:devtools'),

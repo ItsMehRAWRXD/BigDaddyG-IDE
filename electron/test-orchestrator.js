@@ -336,27 +336,209 @@ Provide:
   }
 
   parseJestOutput(output) {
-    // Parse Jest test output
     const failures = [];
-    // Simplified parsing - would need proper Jest output parser
+    if (!output) return failures;
+    
+    // Parse Jest test output
+    const lines = output.split('\n');
+    let currentTest = null;
+    let inFailure = false;
+    let failureMessage = [];
+    
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      
+      // Match test failure: "FAIL  src/file.test.js"
+      const failMatch = line.match(/FAIL\s+(.+)/);
+      if (failMatch) {
+        currentTest = { file: failMatch[1], failures: [] };
+        inFailure = false;
+        continue;
+      }
+      
+      // Match test name: "  ✕ test name (X ms)"
+      const testMatch = line.match(/\s+[✕×]\s+(.+?)\s+\((\d+)\s+ms\)/);
+      if (testMatch) {
+        if (currentTest) {
+          currentTest.failures.push({
+            name: testMatch[1],
+            duration: parseInt(testMatch[2]),
+            message: failureMessage.join('\n'),
+            stack: ''
+          });
+        }
+        failureMessage = [];
+        inFailure = true;
+        continue;
+      }
+      
+      // Match error message
+      if (inFailure && (line.includes('Error:') || line.includes('Expected:') || line.includes('Received:'))) {
+        failureMessage.push(line.trim());
+      }
+      
+      // Match stack trace
+      if (inFailure && line.match(/^\s+at\s+/)) {
+        failureMessage.push(line.trim());
+      }
+    }
+    
+    if (currentTest && currentTest.failures.length > 0) {
+      failures.push(currentTest);
+    }
+    
     return failures;
   }
 
   parsePytestOutput(output) {
-    // Parse pytest output
     const failures = [];
+    if (!output) return failures;
+    
+    // Parse pytest output
+    const lines = output.split('\n');
+    let currentTest = null;
+    let failureMessage = [];
+    let inFailure = false;
+    
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      
+      // Match test failure: "FAILED test_file.py::test_name"
+      const failMatch = line.match(/FAILED\s+(.+?::.+)/);
+      if (failMatch) {
+        const [file, test] = failMatch[1].split('::');
+        currentTest = { file, test, message: '', stack: '' };
+        inFailure = true;
+        failureMessage = [];
+        continue;
+      }
+      
+      // Match error details
+      if (inFailure) {
+        if (line.includes('AssertionError:') || line.includes('Error:')) {
+          failureMessage.push(line.trim());
+        } else if (line.match(/^\s+File\s+/)) {
+          failureMessage.push(line.trim());
+        } else if (line.trim() && !line.startsWith('=')) {
+          failureMessage.push(line.trim());
+        }
+      }
+      
+      // End of failure
+      if (inFailure && line.startsWith('=')) {
+        if (currentTest) {
+          currentTest.message = failureMessage.join('\n');
+          failures.push(currentTest);
+        }
+        currentTest = null;
+        inFailure = false;
+        failureMessage = [];
+      }
+    }
+    
     return failures;
   }
 
   parseJUnitOutput(output) {
-    // Parse JUnit output
     const failures = [];
+    if (!output) return failures;
+    
+    // Parse JUnit/Maven test output
+    const lines = output.split('\n');
+    let currentTest = null;
+    let inFailure = false;
+    let failureMessage = [];
+    
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      
+      // Match test failure: "[ERROR] Tests run: X, Failures: Y"
+      const errorMatch = line.match(/\[ERROR\]\s+Tests run:\s+(\d+),\s+Failures:\s+(\d+)/);
+      if (errorMatch) {
+        // Look for test class and method
+        for (let j = i + 1; j < Math.min(i + 20, lines.length); j++) {
+          const testLine = lines[j];
+          const testMatch = testLine.match(/(\w+)\.(\w+)\s*\(/);
+          if (testMatch) {
+            currentTest = {
+              class: testMatch[1],
+              method: testMatch[2],
+              message: '',
+              stack: ''
+            };
+            inFailure = true;
+            break;
+          }
+        }
+        continue;
+      }
+      
+      // Collect failure details
+      if (inFailure && currentTest) {
+        if (line.includes('java.lang.') || line.includes('Exception:')) {
+          failureMessage.push(line.trim());
+        } else if (line.trim() && !line.startsWith('[')) {
+          failureMessage.push(line.trim());
+        }
+      }
+    }
+    
+    if (currentTest && failureMessage.length > 0) {
+      currentTest.message = failureMessage.join('\n');
+      failures.push(currentTest);
+    }
+    
     return failures;
   }
 
   parseGoOutput(output) {
-    // Parse go test output
     const failures = [];
+    if (!output) return failures;
+    
+    // Parse go test output
+    const lines = output.split('\n');
+    let currentTest = null;
+    let failureMessage = [];
+    let inFailure = false;
+    
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      
+      // Match test failure: "--- FAIL: TestName (X.XXs)"
+      const failMatch = line.match(/--- FAIL:\s+(\w+)\s+\(([\d.]+)s\)/);
+      if (failMatch) {
+        currentTest = {
+          name: failMatch[1],
+          duration: parseFloat(failMatch[2]),
+          message: '',
+          stack: ''
+        };
+        inFailure = true;
+        failureMessage = [];
+        continue;
+      }
+      
+      // Collect failure details
+      if (inFailure && currentTest) {
+        if (line.includes('Error:') || line.includes('FAIL:')) {
+          failureMessage.push(line.trim());
+        } else if (line.trim() && !line.startsWith('ok') && !line.startsWith('FAIL')) {
+          failureMessage.push(line.trim());
+        }
+      }
+      
+      // End of test output
+      if (inFailure && (line.startsWith('FAIL') || line.startsWith('ok'))) {
+        if (currentTest && failureMessage.length > 0) {
+          currentTest.message = failureMessage.join('\n');
+          failures.push(currentTest);
+        }
+        currentTest = null;
+        inFailure = false;
+        failureMessage = [];
+      }
+    }
+    
     return failures;
   }
 

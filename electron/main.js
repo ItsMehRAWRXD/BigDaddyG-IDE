@@ -26,6 +26,104 @@ const http = require('http');
 const { spawn } = require('child_process');
 const { validateFsPath } = require('./security/path-utils');
 
+// File watcher for change tracking
+let fileWatchers = new Map();
+let chokidar;
+try {
+  chokidar = require('chokidar');
+} catch (error) {
+  console.warn('[BigDaddyG] ⚠️ chokidar not available, file watching disabled');
+  chokidar = null;
+}
+
+// Initialize file watcher system
+function initializeFileWatcher() {
+  if (!chokidar) {
+    console.warn('[FileWatcher] ⚠️ File watching disabled (chokidar not available)');
+    return;
+  }
+  
+  // Watch workspace directory for changes
+  const workspacePath = process.cwd();
+  if (workspacePath) {
+    try {
+      const watcher = chokidar.watch(workspacePath, {
+        ignored: /(^|[\/\\])\../, // ignore dotfiles
+        persistent: true,
+        ignoreInitial: true,
+        ignorePermissionErrors: true
+      });
+      
+      watcher.on('change', (filePath) => {
+        if (mainWindow && !mainWindow.isDestroyed()) {
+          mainWindow.webContents.send('file-changed', {
+            path: filePath,
+            type: 'change'
+          });
+        }
+      });
+      
+      watcher.on('add', (filePath) => {
+        if (mainWindow && !mainWindow.isDestroyed()) {
+          mainWindow.webContents.send('file-changed', {
+            path: filePath,
+            type: 'add'
+          });
+        }
+      });
+      
+      watcher.on('unlink', (filePath) => {
+        if (mainWindow && !mainWindow.isDestroyed()) {
+          mainWindow.webContents.send('file-changed', {
+            path: filePath,
+            type: 'delete'
+          });
+        }
+      });
+      
+      fileWatchers.set(workspacePath, watcher);
+      console.log('[FileWatcher] ✅ Watching workspace:', workspacePath);
+    } catch (error) {
+      console.error('[FileWatcher] ❌ Failed to initialize:', error.message);
+    }
+  }
+}
+
+// IPC handler to watch specific directory
+ipcMain.handle('watch-directory', async (event, dirPath) => {
+  if (!chokidar) {
+    return { success: false, error: 'File watching not available' };
+  }
+  
+  try {
+    const validatedPath = validateDirectoryPath(dirPath, { label: 'Watch directory' });
+    
+    if (fileWatchers.has(validatedPath)) {
+      return { success: true, alreadyWatching: true };
+    }
+    
+    const watcher = chokidar.watch(validatedPath, {
+      ignored: /(^|[\/\\])\../,
+      persistent: true,
+      ignoreInitial: true
+    });
+    
+    watcher.on('change', (filePath) => {
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send('file-changed', {
+          path: filePath,
+          type: 'change'
+        });
+      }
+    });
+    
+    fileWatchers.set(validatedPath, watcher);
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
 // Try to load electron-window-state with fallback
 let windowStateKeeper;
 try {
@@ -435,6 +533,9 @@ app.whenReady().then(async () => {
   
   // Set up application menu
   createMenu();
+  
+  // Initialize file watcher for change tracking
+  initializeFileWatcher();
 
   try {
     await ensureApiKeyStore();
@@ -1989,6 +2090,154 @@ ipcMain.handle('get-app-path', () => {
 });
 
 // ============================================================================
+// SCAN WORKSPACE - For repo context provider
+// ============================================================================
+ipcMain.handle('scanWorkspace', async (event, options = {}) => {
+  const fs = require('fs').promises;
+  const path = require('path');
+  
+  try {
+    const workspacePath = options.path || app.getPath('home');
+    const includeSymbols = options.includeSymbols || false;
+    const includeTests = options.includeTests || false;
+    const languages = options.languages || ['javascript', 'typescript', 'python', 'java', 'go'];
+    
+    const symbols = [];
+    const files = [];
+    const testFiles = [];
+    
+    // Recursive directory scan
+    async function scanDirectory(dirPath, depth = 0, maxDepth = 10) {
+      if (depth > maxDepth) return;
+      
+      try {
+        const entries = await fs.readdir(dirPath, { withFileTypes: true });
+        
+        for (const entry of entries) {
+          const fullPath = path.join(dirPath, entry.name);
+          
+          // Skip node_modules, .git, etc.
+          if (entry.name.startsWith('.') || entry.name === 'node_modules' || entry.name === 'dist' || entry.name === 'build') {
+            continue;
+          }
+          
+          if (entry.isDirectory()) {
+            await scanDirectory(fullPath, depth + 1, maxDepth);
+          } else if (entry.isFile()) {
+            const ext = path.extname(entry.name).toLowerCase();
+            const langMap = {
+              '.js': 'javascript',
+              '.ts': 'typescript',
+              '.py': 'python',
+              '.java': 'java',
+              '.go': 'go'
+            };
+            
+            const language = langMap[ext];
+            if (language && languages.includes(language)) {
+              files.push({
+                path: fullPath,
+                name: entry.name,
+                language: language
+              });
+              
+              // Check if test file
+              if (includeTests && (entry.name.includes('test') || entry.name.includes('spec'))) {
+                testFiles.push(fullPath);
+              }
+              
+              // Extract symbols if requested
+              if (includeSymbols) {
+                try {
+                  const content = await fs.readFile(fullPath, 'utf8');
+                  const fileSymbols = extractSymbols(content, language, fullPath);
+                  symbols.push(...fileSymbols);
+                } catch (err) {
+                  // Skip if can't read
+                }
+              }
+            }
+          }
+        }
+      } catch (err) {
+        // Skip directories we can't read
+      }
+    }
+    
+    await scanDirectory(workspacePath);
+    
+    return {
+      success: true,
+      symbols: symbols,
+      files: files,
+      testFiles: testFiles,
+      workspacePath: workspacePath
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+});
+
+// Helper function to extract symbols from code
+function extractSymbols(content, language, filePath) {
+  const symbols = [];
+  const lines = content.split('\n');
+  
+  // Simple regex-based symbol extraction
+  const patterns = {
+    javascript: [
+      { regex: /^(?:export\s+)?(?:async\s+)?function\s+(\w+)/, kind: 'function' },
+      { regex: /^(?:export\s+)?const\s+(\w+)\s*=\s*(?:async\s*)?\(/, kind: 'function' },
+      { regex: /^(?:export\s+)?class\s+(\w+)/, kind: 'class' },
+      { regex: /^(?:export\s+)?(?:const|let|var)\s+(\w+)/, kind: 'variable' }
+    ],
+    typescript: [
+      { regex: /^(?:export\s+)?(?:async\s+)?function\s+(\w+)/, kind: 'function' },
+      { regex: /^(?:export\s+)?(?:const|let|var)\s+(\w+)\s*[:=]\s*(?:async\s*)?\(/, kind: 'function' },
+      { regex: /^(?:export\s+)?(?:public\s+|private\s+)?class\s+(\w+)/, kind: 'class' },
+      { regex: /^(?:export\s+)?(?:const|let|var)\s+(\w+)/, kind: 'variable' },
+      { regex: /^(?:export\s+)?interface\s+(\w+)/, kind: 'interface' }
+    ],
+    python: [
+      { regex: /^def\s+(\w+)/, kind: 'function' },
+      { regex: /^class\s+(\w+)/, kind: 'class' },
+      { regex: /^(\w+)\s*=\s*[^=]/, kind: 'variable' }
+    ],
+    java: [
+      { regex: /^(?:public|private|protected)\s+(?:static\s+)?(?:void|\w+)\s+(\w+)\s*\(/, kind: 'function' },
+      { regex: /^(?:public|private|protected)\s+class\s+(\w+)/, kind: 'class' },
+      { regex: /^(?:public|private|protected)\s+(?:static\s+)?(\w+)\s+\w+;/, kind: 'variable' }
+    ],
+    go: [
+      { regex: /^func\s+(\w+)/, kind: 'function' },
+      { regex: /^type\s+(\w+)/, kind: 'type' },
+      { regex: /^var\s+(\w+)/, kind: 'variable' }
+    ]
+  };
+  
+  const langPatterns = patterns[language] || patterns.javascript;
+  
+  lines.forEach((line, index) => {
+    langPatterns.forEach(pattern => {
+      const match = line.match(pattern.regex);
+      if (match) {
+        symbols.push({
+          name: match[1],
+          kind: pattern.kind,
+          file: filePath,
+          line: index + 1
+        });
+      }
+    });
+  });
+  
+  return symbols;
+}
+
+// ============================================================================
 // ERROR LOGGING TO FILE
 // ============================================================================
 
@@ -2220,7 +2469,7 @@ ipcMain.handle('read-file-chunked', async (event, filePath, chunkSize = 1024 * 1
   }
 });
 
-// Scan workspace for file search (used by command palette)
+// Scan workspace for file search (used by command palette and repo context)
 ipcMain.handle('scanWorkspace', async (event, options = {}) => {
   const fs = require('fs').promises;
   let workspacePath;
@@ -2230,11 +2479,19 @@ ipcMain.handle('scanWorkspace', async (event, options = {}) => {
     });
   } catch (error) {
     console.error('[FileSystem] ❌ Workspace scan validation error:', error);
-    return [];
+    return options.includeSymbols ? { success: false, error: error.message } : [];
   }
+  
+  // Enhanced scanWorkspace with symbol extraction support
+  const includeSymbols = options.includeSymbols || false;
+  const includeTests = options.includeTests || false;
+  const languages = options.languages || ['javascript', 'typescript', 'python', 'java', 'go'];
   const maxFiles = options.maxFiles || 500;
   const maxDepth = options.maxDepth || 5;
+  
   const files = [];
+  const symbols = [];
+  const testFiles = [];
   
   async function scan(dirPath, depth = 0) {
     if (depth > maxDepth || files.length >= maxFiles) return;
@@ -2259,13 +2516,52 @@ ipcMain.handle('scanWorkspace', async (event, options = {}) => {
           continue;
         }
         
-        files.push({
-          name: entry.name,
-          path: safePath,
-          isDirectory: entry.isDirectory(),
-          isFile: entry.isFile(),
-          depth: depth
-        });
+        if (entry.isFile()) {
+          const ext = path.extname(entry.name).toLowerCase();
+          const langMap = {
+            '.js': 'javascript',
+            '.ts': 'typescript',
+            '.py': 'python',
+            '.java': 'java',
+            '.go': 'go'
+          };
+          
+          const language = langMap[ext];
+          if (language && languages.includes(language)) {
+            files.push({
+              name: entry.name,
+              path: safePath,
+              isDirectory: false,
+              isFile: true,
+              language: language,
+              depth: depth
+            });
+            
+            // Check if test file
+            if (includeTests && (entry.name.includes('test') || entry.name.includes('spec'))) {
+              testFiles.push(safePath);
+            }
+            
+            // Extract symbols if requested
+            if (includeSymbols) {
+              try {
+                const content = await fs.readFile(safePath, 'utf8');
+                const fileSymbols = extractSymbols(content, language, safePath);
+                symbols.push(...fileSymbols);
+              } catch (err) {
+                // Skip if can't read
+              }
+            }
+          }
+        } else {
+          files.push({
+            name: entry.name,
+            path: safePath,
+            isDirectory: true,
+            isFile: false,
+            depth: depth
+          });
+        }
         
         if (entry.isDirectory() && depth < maxDepth) {
           await scan(safePath, depth + 1);
@@ -2280,10 +2576,22 @@ ipcMain.handle('scanWorkspace', async (event, options = {}) => {
     console.log(`[FileSystem] 🔍 Scanning workspace: ${workspacePath}`);
     await scan(workspacePath);
     console.log(`[FileSystem] ✅ Found ${files.length} files`);
+    
+    // Return enhanced result if symbols requested
+    if (includeSymbols || includeTests) {
+      return {
+        success: true,
+        symbols: symbols,
+        files: files,
+        testFiles: testFiles,
+        workspacePath: workspacePath
+      };
+    }
+    
     return files;
   } catch (error) {
     console.error('[FileSystem] ❌ Workspace scan error:', error);
-    return [];
+    return includeSymbols ? { success: false, error: error.message } : [];
   }
 });
 
@@ -2513,6 +2821,36 @@ ipcMain.handle('memory:decay', async () => {
 
 ipcMain.handle('memory:clear', async () => {
   return memoryService.clearAllMemories();
+});
+
+// ============================================================================
+// BROWSER IPC HANDLERS (for agent loop)
+// ============================================================================
+
+ipcMain.handle('browser:navigate', async (event, url) => {
+  try {
+    if (!embeddedBrowser) {
+      return { success: false, error: 'Browser not initialized' };
+    }
+    
+    await embeddedBrowser.navigate(url);
+    return { success: true, url };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('browser:screenshot', async (event, options = {}) => {
+  try {
+    if (!embeddedBrowser) {
+      return { success: false, error: 'Browser not initialized' };
+    }
+    
+    const screenshot = await embeddedBrowser.captureScreenshot(options);
+    return { success: true, screenshot };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
 });
 
 // ============================================================================
