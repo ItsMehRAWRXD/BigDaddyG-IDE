@@ -11,7 +11,7 @@
 (function() {
 'use strict';
 
-class MemoryDashboard {
+    class MemoryDashboard {
     constructor() {
         this.panel = null;
         this.updateInterval = null;
@@ -24,11 +24,16 @@ class MemoryDashboard {
     // PANEL CREATION
     // ========================================================================
     
-    open() {
+        open() {
         if (this.panel) {
             this.panel.style.display = 'flex';
             this.isVisible = true;
-            this.startAutoUpdate();
+                this.startAutoUpdate();
+                if (!this.isMemoryServiceAvailable()) {
+                    this.renderUnavailableState();
+                } else {
+                    this.refreshStats();
+                }
             return;
         }
         
@@ -53,7 +58,7 @@ class MemoryDashboard {
         }
     }
     
-    createPanel() {
+        createPanel() {
         const panel = document.createElement('div');
         panel.id = 'memory-dashboard-panel';
         panel.style.cssText = `
@@ -77,14 +82,14 @@ class MemoryDashboard {
         panel.innerHTML = `
             <!-- Header -->
             <div style="padding: 20px; background: rgba(0, 0, 0, 0.5); border-bottom: 2px solid var(--cyan); display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <h2 style="margin: 0 0 5px 0; color: var(--cyan); font-size: 22px;">🧠 Memory Dashboard</h2>
-                    <p style="margin: 0; color: #888; font-size: 13px;">OpenMemory Integration - Persistent Agentic Context</p>
-                </div>
-                <div style="display: flex; gap: 10px;">
-                    <button onclick="window.memoryDashboard.refreshStats()" style="background: var(--green); color: #000; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px;">🔄 Refresh</button>
-                    <button onclick="window.memoryDashboard.applyDecay()" style="background: var(--orange); color: #000; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px;">🗑️ Apply Decay</button>
-                    <button onclick="window.memoryDashboard.close()" style="background: rgba(255, 71, 87, 0.2); border: 1px solid var(--red); color: var(--red); padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 13px;">✕ Close</button>
+                    <div>
+                        <h2 style="margin: 0 0 5px 0; color: var(--cyan); font-size: 22px;">🧠 Memory Dashboard</h2>
+                        <p style="margin: 0; color: #888; font-size: 13px;">OpenMemory Integration - Persistent Agentic Context</p>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="window.memoryDashboard.refreshStats()" style="background: var(--green); color: #000; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px;">🔄 Refresh</button>
+                        <button class="memory-action memory-action-decay" data-default-title="Apply decay to memories" onclick="window.memoryDashboard.applyDecay()" style="background: var(--orange); color: #000; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px;">🗑️ Apply Decay</button>
+                        <button onclick="window.memoryDashboard.close()" style="background: rgba(255, 71, 87, 0.2); border: 1px solid var(--red); color: var(--red); padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 13px;">✕ Close</button>
                 </div>
             </div>
             
@@ -163,14 +168,14 @@ class MemoryDashboard {
                             </div>
                         </div>
                         
-                        <div>
-                            <div style="font-size: 12px; color: #888; margin-bottom: 8px;">Actions</div>
-                            <button onclick="window.memoryDashboard.applyDecay()" style="width: 100%; padding: 12px; background: rgba(255, 107, 53, 0.2); border: 1px solid var(--orange); color: var(--orange); border-radius: 6px; cursor: pointer; font-size: 13px; margin-bottom: 8px;">
-                                🗑️ Apply Decay Now
-                            </button>
-                            <button onclick="window.memoryDashboard.clearMemories()" style="width: 100%; padding: 12px; background: rgba(255, 71, 87, 0.2); border: 1px solid var(--red); color: var(--red); border-radius: 6px; cursor: pointer; font-size: 13px;">
-                                ⚠️ Clear All Memories
-                            </button>
+                            <div>
+                                <div style="font-size: 12px; color: #888; margin-bottom: 8px;">Actions</div>
+                                <button class="memory-action memory-action-decay" data-default-title="Apply decay to memories" onclick="window.memoryDashboard.applyDecay()" style="width: 100%; padding: 12px; background: rgba(255, 107, 53, 0.2); border: 1px solid var(--orange); color: var(--orange); border-radius: 6px; cursor: pointer; font-size: 13px; margin-bottom: 8px;">
+                                    🗑️ Apply Decay Now
+                                </button>
+                                <button class="memory-action memory-action-clear" data-default-title="Clear all stored memories" onclick="window.memoryDashboard.clearMemories()" style="width: 100%; padding: 12px; background: rgba(255, 71, 87, 0.2); border: 1px solid var(--red); color: var(--red); border-radius: 6px; cursor: pointer; font-size: 13px;">
+                                    ⚠️ Clear All Memories
+                                </button>
                         </div>
                     </div>
                 </div>
@@ -208,8 +213,15 @@ class MemoryDashboard {
         document.body.appendChild(panel);
         this.panel = panel;
         
-        // Initial data load
-        this.refreshStats();
+            // Initial data load or offline state
+            if (this.isMemoryServiceAvailable()) {
+                this.refreshStats();
+                this.setMemoryControlsEnabled(true);
+            } else {
+                this.renderUnavailableState();
+                this.setMemoryControlsEnabled(false);
+                this.showServiceNotification('Memory service offline', 'Start OpenMemory or enable the memory bridge to use the dashboard.');
+            }
         
         console.log('[MemoryDashboard] ✅ Panel created');
     }
@@ -218,7 +230,13 @@ class MemoryDashboard {
     // DATA UPDATES
     // ========================================================================
     
-    async refreshStats() {
+        async refreshStats() {
+            if (!this.isMemoryServiceAvailable()) {
+                this.renderUnavailableState();
+                this.setMemoryControlsEnabled(false);
+                return;
+            }
+            
         try {
             // Update memory stats
             if (window.memoryBridge) {
@@ -243,10 +261,11 @@ class MemoryDashboard {
             }
             
             // Update Ollama models
-            await this.updateOllamaModels();
+                await this.updateOllamaModels();
             
             // Update recent memories
             await this.updateRecentMemories();
+                this.setMemoryControlsEnabled(true);
             
             console.log('[MemoryDashboard] ✅ Stats refreshed');
             
@@ -255,8 +274,13 @@ class MemoryDashboard {
         }
     }
     
-    async updateOllamaModels() {
+        async updateOllamaModels() {
         try {
+                if (!window.ollamaManager || typeof window.ollamaManager.getModels !== 'function') {
+                    this.renderOllamaUnavailable();
+                    return;
+                }
+                
             const models = await window.ollamaManager.getModels();
             const container = document.getElementById('ollama-models-list');
             
@@ -284,17 +308,29 @@ class MemoryDashboard {
             
         } catch (error) {
             console.error('[MemoryDashboard] ❌ Failed to update models:', error);
+                this.renderOllamaUnavailable();
         }
     }
     
-    async updateRecentMemories() {
+        async updateRecentMemories() {
         try {
-            if (!window.memory) {
-                return;
-            }
+                const container = document.getElementById('recent-memories-list');
+                
+                if (!window.memory) {
+                    if (container) {
+                        container.innerHTML = `
+                            <div style="text-align: center; padding: 40px; color: #888; font-size: 13px;">
+                                <div style="font-size: 32px; margin-bottom: 10px;">⚠️</div>
+                                <div>Memory engine inactive</div>
+                                <div style="font-size: 11px; margin-top: 8px; opacity: 0.7;">Start OpenMemory to view stored memories.</div>
+                            </div>
+                        `;
+                    }
+                    return;
+                }
             
             const memories = await window.memory.recent(10);
-            const container = document.getElementById('recent-memories-list');
+                
             
             if (!memories || memories.length === 0) {
                 container.innerHTML = `
@@ -334,7 +370,13 @@ class MemoryDashboard {
     // ACTIONS
     // ========================================================================
     
-    async applyDecay() {
+        async applyDecay() {
+            if (!this.isMemoryServiceAvailable()) {
+                this.showServiceNotification('Memory service offline', 'Start OpenMemory before applying decay.');
+                this.setMemoryControlsEnabled(false);
+                return;
+            }
+            
         if (!confirm('Apply decay to all memories? This will reduce the strength of old, unused memories.')) {
             return;
         }
@@ -351,7 +393,13 @@ class MemoryDashboard {
         }
     }
     
-    async clearMemories() {
+        async clearMemories() {
+            if (!this.isMemoryServiceAvailable()) {
+                this.showServiceNotification('Memory service offline', 'Start OpenMemory before clearing memories.');
+                this.setMemoryControlsEnabled(false);
+                return;
+            }
+            
         if (!confirm('⚠️ Clear ALL memories? This will archive all existing memories. This action cannot be undone.')) {
             return;
         }
@@ -365,6 +413,80 @@ class MemoryDashboard {
         } catch (error) {
             console.error('[MemoryDashboard] ❌ Failed to clear memories:', error);
             alert('❌ Failed to clear memories. Check console for details.');
+        }
+        }
+        
+        isMemoryServiceAvailable() {
+            return Boolean(window.memory || window.memoryBridge);
+        }
+        
+        setMemoryControlsEnabled(enabled) {
+            if (!this.panel) return;
+            const buttons = this.panel.querySelectorAll('.memory-action');
+            buttons.forEach((btn) => {
+                btn.disabled = !enabled;
+                btn.style.opacity = enabled ? '1' : '0.5';
+                btn.style.pointerEvents = enabled ? 'auto' : 'none';
+                if (!enabled) {
+                    btn.title = 'Memory service offline';
+                } else if (btn.dataset.defaultTitle) {
+                    btn.title = btn.dataset.defaultTitle;
+                }
+            });
+        }
+        
+        renderUnavailableState() {
+            const statsGrid = document.getElementById('memory-stats-grid');
+            if (statsGrid) {
+                statsGrid.innerHTML = `
+                    <div class="stat-box" style="grid-column: span 2;">
+                        <div class="stat-value" style="color: var(--orange);">Offline</div>
+                        <div class="stat-label" style="color: #ff6b6b;">Memory service not detected</div>
+                    </div>
+                    <div style="grid-column: span 2; padding: 12px; background: rgba(255,107,53,0.1); border-radius: 8px; border-left: 3px solid var(--orange); font-size: 12px; color: #ccc;">
+                        Launch OpenMemory from the Tools menu or enable the memory bridge in settings to activate this dashboard.
+                    </div>
+                `;
+            }
+            
+            const contextStatus = document.getElementById('context-status');
+            if (contextStatus) {
+                contextStatus.innerHTML = `<span style="color: #ff6b6b;">Context status unavailable (memory offline)</span>`;
+            }
+            
+            this.renderOllamaUnavailable();
+            
+            const memoriesList = document.getElementById('recent-memories-list');
+            if (memoriesList) {
+                memoriesList.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #888; font-size: 13px;">
+                        <div style="font-size: 32px; margin-bottom: 10px;">🧠</div>
+                        <div>Memory service offline</div>
+                        <div style="font-size: 11px; margin-top: 8px; opacity: 0.7;">Start OpenMemory to view stored memories.</div>
+                    </div>
+                `;
+            }
+        }
+        
+        renderOllamaUnavailable() {
+            const container = document.getElementById('ollama-models-list');
+            if (!container) return;
+            container.innerHTML = `
+                <div style="text-align: center; padding: 40px; color: #888; font-size: 13px;">
+                    <div style="font-size: 32px; margin-bottom: 10px;">🦙</div>
+                    <div>Model list unavailable</div>
+                    <div style="font-size: 11px; margin-top: 8px; opacity: 0.7;">Reconnect Ollama or the native model bridge.</div>
+                </div>
+            `;
+        }
+        
+        showServiceNotification(message, detail = '') {
+            const fullMessage = detail ? `${message}\n${detail}` : message;
+            if (window.showNotification) {
+                window.showNotification('Memory Service', fullMessage, 'error', 4000);
+            } else {
+                alert(`Memory Service:\n${fullMessage}`);
+            }
         }
     }
     
