@@ -3093,16 +3093,90 @@ ipcMain.handle('ai:generate', async (event, { model, prompt, options }) => {
   }
 });
 
-// Orchestra IPC Handlers - Access BigDaddyGCore's models
+// ============================================================================
+// MODEL TYPE DETECTION HELPER
+// ============================================================================
+
+/**
+ * Determines if a model is an Ollama model (not a BigDaddyG model)
+ * @param {string} modelName - The model name to check
+ * @returns {boolean} True if it's an Ollama model, false if BigDaddyG
+ */
+async function isOllamaModel(modelName) {
+  if (!modelName || typeof modelName !== 'string') return false;
+  
+  const normalized = modelName.toLowerCase().trim();
+  
+  // BigDaddyG models always start with "bigdaddyg"
+  if (normalized.startsWith('bigdaddyg')) {
+    return false;
+  }
+  
+  // Check if it's in BigDaddyGCore's available models
+  if (bigDaddyGCore && bigDaddyGCore.availableModels) {
+    const bigDaddyGModels = Array.from(bigDaddyGCore.availableModels.keys());
+    const hasModel = bigDaddyGModels.some(name => name.toLowerCase() === normalized);
+    if (hasModel) {
+      return false;
+    }
+  }
+  
+  // If we can't determine, check Ollama directly
+  try {
+    const response = await fetch('http://localhost:11434/api/tags', { timeout: 2000 });
+    if (response.ok) {
+      const data = await response.json();
+      const ollamaModels = (data.models || []).map(m => m.name.toLowerCase());
+      return ollamaModels.includes(normalized);
+    }
+  } catch (error) {
+    // Ollama not available, assume it's not an Ollama model
+  }
+  
+  // Default: assume it's an Ollama model if not BigDaddyG
+  return true;
+}
+
+// Orchestra IPC Handlers - Access BigDaddyGCore's models AND Ollama models
 ipcMain.handle('orchestra:get-models', async () => {
   try {
     console.log('[IPC] 📋 Orchestra requesting models list');
+    const allModels = [];
+    
+    // Get BigDaddyG models
     if (bigDaddyGCore && typeof bigDaddyGCore.listModels === 'function') {
-      const models = await bigDaddyGCore.listModels();
-      console.log(`[IPC] ✅ Returning ${models.length} models to Orchestra`);
-      return models.map(m => m.name || m.id);
+      try {
+        const bigDaddyGModels = await bigDaddyGCore.listModels();
+        const modelNames = bigDaddyGModels.map(m => m.name || m.id).filter(Boolean);
+        allModels.push(...modelNames);
+        console.log(`[IPC] ✅ Found ${modelNames.length} BigDaddyG models`);
+      } catch (error) {
+        console.warn('[IPC] ⚠️ Failed to get BigDaddyG models:', error.message);
+      }
     }
-    return ['bigdaddyg:latest', 'bigdaddyg:coder', 'bigdaddyg:python'];
+    
+    // Get Ollama models
+    try {
+      const ollamaResponse = await fetch('http://localhost:11434/api/tags', {
+        timeout: 3000
+      });
+      if (ollamaResponse.ok) {
+        const ollamaData = await ollamaResponse.json();
+        const ollamaModels = (ollamaData.models || []).map(m => m.name).filter(Boolean);
+        allModels.push(...ollamaModels);
+        console.log(`[IPC] ✅ Found ${ollamaModels.length} Ollama models`);
+      } else {
+        console.log('[IPC] ℹ️ Ollama server not responding (may not be running)');
+      }
+    } catch (ollamaError) {
+      console.log('[IPC] ℹ️ Ollama not available for model listing:', ollamaError.message);
+    }
+    
+    // Remove duplicates and sort
+    const uniqueModels = [...new Set(allModels)].sort();
+    console.log(`[IPC] ✅ Returning ${uniqueModels.length} total models to Orchestra`);
+    return uniqueModels;
+    
   } catch (error) {
     console.error('[IPC] ❌ Failed to get models:', error);
     return [];
@@ -3111,11 +3185,61 @@ ipcMain.handle('orchestra:get-models', async () => {
 
 ipcMain.handle('orchestra:generate', async (event, payload) => {
   const { model, prompt } = payload;
+  
+  if (!model || !prompt) {
+    return `Error: Model and prompt are required`;
+  }
+  
   try {
     console.log(`[IPC] 🤖 Orchestra generate request: ${model}`);
-    const response = await nativeOllamaClient.generate(model, prompt, {});
-    console.log(`[IPC] ✅ Generated ${response.length} characters`);
-    return response;
+    
+    // Check if this is an Ollama model
+    const isOllama = await isOllamaModel(model);
+    
+    if (isOllama) {
+      // Direct Ollama HTTP call
+      console.log(`[IPC] 🦙 Routing to Ollama API for model: ${model}`);
+      try {
+        const ollamaResponse = await fetch('http://localhost:11434/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: model,
+            prompt: prompt,
+            stream: false
+          }),
+          signal: AbortSignal.timeout(120000) // 2 minute timeout
+        });
+        
+        if (ollamaResponse.ok) {
+          const ollamaData = await ollamaResponse.json();
+          const responseText = ollamaData.response || '';
+          console.log(`[IPC] ✅ Ollama generated ${responseText.length} characters`);
+          return responseText;
+        } else {
+          const errorText = await ollamaResponse.text();
+          throw new Error(`Ollama API error (${ollamaResponse.status}): ${errorText}`);
+        }
+      } catch (ollamaError) {
+        console.error(`[IPC] ❌ Ollama generation failed:`, ollamaError.message);
+        // Fallback to BigDaddyGCore if Ollama fails
+        console.log(`[IPC] 🔄 Falling back to BigDaddyGCore for model: ${model}`);
+        const fallbackResponse = await nativeOllamaClient.generate(model, prompt, {});
+        const responseText = typeof fallbackResponse === 'string' 
+          ? fallbackResponse 
+          : fallbackResponse.response || fallbackResponse.content || '';
+        return responseText;
+      }
+    } else {
+      // BigDaddyG model - use nativeOllamaClient (which routes through BigDaddyGCore)
+      console.log(`[IPC] 🎯 Using BigDaddyGCore for model: ${model}`);
+      const response = await nativeOllamaClient.generate(model, prompt, {});
+      const responseText = typeof response === 'string' 
+        ? response 
+        : response.response || response.content || '';
+      console.log(`[IPC] ✅ BigDaddyGCore generated ${responseText.length} characters`);
+      return responseText;
+    }
   } catch (error) {
     console.error(`[IPC] ❌ Generation failed for ${model}:`, error.message);
     return `Error: ${error.message}`;
@@ -3134,23 +3258,117 @@ function startModelBridge() {
     const bridgeApp = express();
     bridgeApp.use(express.json());
     
-    // Get models list
+    // Get models list (BigDaddyG + Ollama)
     bridgeApp.get('/api/models', async (req, res) => {
       try {
-        const models = await bigDaddyGCore.listModels();
-        res.json({ models: models.map(m => ({ name: m.name || m.id, ...m })) });
+        const allModels = [];
+        
+        // Get BigDaddyG models
+        if (bigDaddyGCore && typeof bigDaddyGCore.listModels === 'function') {
+          try {
+            const bigDaddyGModels = await bigDaddyGCore.listModels();
+            bigDaddyGModels.forEach(m => {
+              allModels.push({
+                name: m.name || m.id,
+                type: 'bigdaddyg',
+                source: 'bigdaddyg-core',
+                ...m
+              });
+            });
+            console.log(`[Bridge] ✅ Found ${bigDaddyGModels.length} BigDaddyG models`);
+          } catch (err) {
+            console.warn('[Bridge] ⚠️ Failed to get BigDaddyG models:', err.message);
+          }
+        }
+        
+        // Get Ollama models
+        try {
+          const ollamaResponse = await fetch('http://localhost:11434/api/tags', {
+            timeout: 3000
+          });
+          if (ollamaResponse.ok) {
+            const ollamaData = await ollamaResponse.json();
+            (ollamaData.models || []).forEach(m => {
+              allModels.push({
+                name: m.name,
+                type: 'ollama',
+                source: 'ollama-api',
+                size: m.size,
+                modified_at: m.modified_at,
+                ...m
+              });
+            });
+            console.log(`[Bridge] ✅ Found ${ollamaData.models?.length || 0} Ollama models`);
+          }
+        } catch (ollamaError) {
+          console.log('[Bridge] ℹ️ Ollama not available for model listing');
+        }
+        
+        res.json({ models: allModels });
       } catch (err) {
+        console.error('[Bridge] ❌ Failed to get models:', err.message);
         res.json({ models: [] });
       }
     });
     
-    // Generate response
+    // Generate response (routes to Ollama or BigDaddyGCore based on model type)
     bridgeApp.post('/api/generate', async (req, res) => {
       const { model, prompt } = req.body;
+      
+      if (!model || !prompt) {
+        return res.status(400).json({ error: 'Model and prompt are required' });
+      }
+      
       try {
         console.log(`[Bridge] 🤖 Generate request for model: ${model}`);
-        const response = await nativeOllamaClient.generate(model, prompt, {});
-        res.json({ response });
+        
+        // Check if this is an Ollama model
+        const isOllama = await isOllamaModel(model);
+        
+        if (isOllama) {
+          // Direct Ollama HTTP call
+          console.log(`[Bridge] 🦙 Routing to Ollama API for model: ${model}`);
+          try {
+            const ollamaResponse = await fetch('http://localhost:11434/api/generate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                model: model,
+                prompt: prompt,
+                stream: false
+              }),
+              signal: AbortSignal.timeout(120000) // 2 minute timeout
+            });
+            
+            if (ollamaResponse.ok) {
+              const ollamaData = await ollamaResponse.json();
+              const responseText = ollamaData.response || '';
+              console.log(`[Bridge] ✅ Ollama generated ${responseText.length} characters`);
+              return res.json({ response: responseText });
+            } else {
+              const errorText = await ollamaResponse.text();
+              throw new Error(`Ollama API error (${ollamaResponse.status}): ${errorText}`);
+            }
+          } catch (ollamaError) {
+            console.error(`[Bridge] ❌ Ollama generation failed:`, ollamaError.message);
+            // Fallback to BigDaddyGCore if Ollama fails
+            console.log(`[Bridge] 🔄 Falling back to BigDaddyGCore for model: ${model}`);
+            const fallbackResponse = await nativeOllamaClient.generate(model, prompt, {});
+            const responseText = typeof fallbackResponse === 'string' 
+              ? fallbackResponse 
+              : fallbackResponse.response || fallbackResponse.content || '';
+            return res.json({ response: responseText });
+          }
+        } else {
+          // BigDaddyG model - use nativeOllamaClient (which routes through BigDaddyGCore)
+          console.log(`[Bridge] 🎯 Using BigDaddyGCore for model: ${model}`);
+          const response = await nativeOllamaClient.generate(model, prompt, {});
+          const responseText = typeof response === 'string' 
+            ? response 
+            : response.response || response.content || '';
+          console.log(`[Bridge] ✅ BigDaddyGCore generated ${responseText.length} characters`);
+          return res.json({ response: responseText });
+        }
       } catch (err) {
         console.error(`[Bridge] ❌ Generation failed:`, err.message);
         res.status(500).json({ error: err.message });
@@ -3159,7 +3377,7 @@ function startModelBridge() {
     
     bridgeServer = bridgeApp.listen(11435, '127.0.0.1', () => {
       console.log('[Bridge] ✅ Model bridge running on port 11435');
-      console.log('[Bridge] 🔗 Orchestra can now access YOUR 156 models!');
+      console.log('[Bridge] 🔗 Orchestra can now access BigDaddyG models AND Ollama models!');
     });
     
   } catch (error) {

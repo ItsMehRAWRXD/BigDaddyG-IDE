@@ -170,6 +170,25 @@ function resolveBigDaddyModel(model) {
   return DEFAULT_MODEL;
 }
 
+/**
+ * Determines if a model is an Ollama model (not a BigDaddyG model)
+ * @param {string} modelName - The model name to check
+ * @returns {boolean} True if it's an Ollama model, false if BigDaddyG
+ */
+function isOllamaModel(modelName) {
+  if (!modelName || typeof modelName !== 'string') return false;
+  
+  const normalized = normalizeModelId(modelName).toLowerCase().trim();
+  
+  // BigDaddyG models always start with "bigdaddyg" or are in the registry
+  if (normalized.startsWith('bigdaddyg') || BIGDADDYG_MODELS[normalized]) {
+    return false;
+  }
+  
+  // Everything else is assumed to be an Ollama model
+  return true;
+}
+
 function normalizeChatMessages(body = {}) {
   const { messages, message, prompt } = body;
 
@@ -313,25 +332,45 @@ app.get('/health', (req, res) => {
             });
         });
 
-// List models
+// List models (BigDaddyG + Ollama)
 app.get('/api/models', async (req, res) => {
   try {
-    const ollamaModels = await getOllamaModels();
-    const models = [
-      ...Object.entries(BIGDADDYG_MODELS).map(([id, info]) => ({
-        name: id,
-        ...info,
-        modified_at: new Date().toISOString(),
-        size: 0,
-        digest: `bigdaddyg-${id}`,
-        details: { format: 'gguf', family: 'bigdaddyg' }
-      })),
-      ...ollamaModels
-    ];
+    const allModels = [];
     
-    res.json({ models });
-            } catch (error) {
-    res.status(500).json({ error: error.message });
+    // Get BigDaddyG models
+    const bigDaddyGModels = Object.entries(BIGDADDYG_MODELS).map(([id, info]) => ({
+      name: id,
+      ...info,
+      type: 'bigdaddyg',
+      source: 'bigdaddyg-core',
+      modified_at: new Date().toISOString(),
+      size: 0,
+      digest: `bigdaddyg-${id}`,
+      details: { format: 'gguf', family: 'bigdaddyg' }
+    }));
+    allModels.push(...bigDaddyGModels);
+    console.log(`[Orchestra] ✅ Found ${bigDaddyGModels.length} BigDaddyG models`);
+    
+    // Get Ollama models
+    try {
+      const ollamaModels = await getOllamaModels();
+      ollamaModels.forEach(model => {
+        allModels.push({
+          ...model,
+          type: 'ollama',
+          source: 'ollama-api'
+        });
+      });
+      console.log(`[Orchestra] ✅ Found ${ollamaModels.length} Ollama models`);
+    } catch (ollamaError) {
+      console.log('[Orchestra] ℹ️ Ollama not available for model listing:', ollamaError.message);
+    }
+    
+    res.json({ models: allModels });
+  } catch (error) {
+    console.error('[Orchestra] ❌ Failed to list models:', error);
+    logError('MODELS_ENDPOINT_ERROR', req, error);
+    res.status(500).json({ error: error.message || 'Failed to list models' });
   }
 });
 
@@ -346,8 +385,10 @@ app.post('/api/generate', async (req, res) => {
   }
 
   try {
+    // Check if this is a BigDaddyG model
     if (BIGDADDYG_MODELS[resolvedModel]) {
       // BigDaddyG model processing
+      console.log(`[Orchestra] 🎯 Processing BigDaddyG model: ${resolvedModel}`);
       const response = await processBigDaddyGRequest(resolvedModel, prompt, stream);
       if (stream) {
         res.setHeader('Content-Type', 'application/x-ndjson');
@@ -357,15 +398,46 @@ app.post('/api/generate', async (req, res) => {
         res.json(response);
       }
     } else {
-      // Forward to Ollama
-      const response = await forwardToOllama('/api/generate', {
-        ...req.body,
-        model: normalizedModel
-      });
-      res.json(response);
+      // Check if this is an Ollama model
+      if (isOllamaModel(normalizedModel)) {
+        // Direct Ollama HTTP call
+        console.log(`[Orchestra] 🦙 Routing to Ollama API for model: ${normalizedModel}`);
+        try {
+          const ollamaResponse = await forwardToOllama('/api/generate', {
+            model: normalizedModel,
+            prompt: prompt,
+            stream: stream
+          });
+          
+          if (stream && ollamaResponse.stream) {
+            res.setHeader('Content-Type', 'application/x-ndjson');
+            // Handle streaming response from Ollama
+            res.json(ollamaResponse);
+          } else {
+            res.json(ollamaResponse);
+          }
+        } catch (ollamaError) {
+          console.error(`[Orchestra] ❌ Ollama generation failed:`, ollamaError.message);
+          // Fallback to OrchestraRemote (which will try bridge, then remote API, then built-in)
+          console.log(`[Orchestra] 🔄 Falling back to OrchestraRemote for model: ${normalizedModel}`);
+          try {
+            const fallbackResponse = await remoteAI.generate(prompt, normalizedModel);
+            res.json({ response: fallbackResponse });
+          } catch (fallbackError) {
+            res.status(500).json({ error: `Ollama failed: ${ollamaError.message}. Fallback also failed: ${fallbackError.message}` });
+          }
+        }
+      } else {
+        // Unknown model type, try OrchestraRemote
+        console.log(`[Orchestra] 🔄 Using OrchestraRemote for model: ${normalizedModel}`);
+        const response = await remoteAI.generate(prompt, normalizedModel);
+        res.json({ response: response });
+      }
     }
-            } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch (error) {
+    console.error('[Orchestra] ❌ Generate endpoint error:', error);
+    logError('GENERATE_ENDPOINT_ERROR', req, error);
+    res.status(500).json({ error: error.message || 'Generation failed' });
   }
 });
 
@@ -373,7 +445,7 @@ app.post('/api/generate', async (req, res) => {
 app.post('/api/chat', async (req, res) => {
   const body = req.body || {};
   const stream = Boolean(body.stream);
-  const requestedModel = normalizeModelId(body.model);
+  const requestedModel = normalizeModelId(body.model || DEFAULT_MODEL);
   const normalizedMessages = normalizeChatMessages(body);
 
   if (normalizedMessages.length === 0) {
@@ -384,7 +456,9 @@ app.post('/api/chat', async (req, res) => {
   const targetModel = BIGDADDYG_MODELS[bigDaddyModel] ? bigDaddyModel : (requestedModel || bigDaddyModel);
 
   try {
+    // Check if this is a BigDaddyG model
     if (BIGDADDYG_MODELS[bigDaddyModel]) {
+      console.log(`[Orchestra] 🎯 Processing BigDaddyG chat for model: ${bigDaddyModel}`);
       const response = await processBigDaddyGChat(bigDaddyModel, normalizedMessages, stream);
 
       if (stream) {
@@ -396,16 +470,41 @@ app.post('/api/chat', async (req, res) => {
       return res.json(formatChatResponse(response, bigDaddyModel));
     }
 
-    const upstreamBody = {
-      ...body,
-      model: targetModel,
-      messages: normalizedMessages
-    };
+    // Check if this is an Ollama model
+    if (isOllamaModel(requestedModel)) {
+      console.log(`[Orchestra] 🦙 Routing to Ollama API for chat model: ${requestedModel}`);
+      try {
+        const upstreamBody = {
+          ...body,
+          model: requestedModel,
+          messages: normalizedMessages
+        };
 
-    const upstreamResponse = await forwardToOllama('/api/chat', upstreamBody);
-    return res.json(formatChatResponse(upstreamResponse, targetModel));
+        const upstreamResponse = await forwardToOllama('/api/chat', upstreamBody);
+        return res.json(formatChatResponse(upstreamResponse, requestedModel));
+      } catch (ollamaError) {
+        console.error(`[Orchestra] ❌ Ollama chat failed:`, ollamaError.message);
+        // Fallback to OrchestraRemote
+        console.log(`[Orchestra] 🔄 Falling back to OrchestraRemote for model: ${requestedModel}`);
+        try {
+          const lastMessage = normalizedMessages[normalizedMessages.length - 1];
+          const fallbackResponse = await remoteAI.generate(lastMessage.content, requestedModel);
+          return res.json(formatChatResponse({ response: fallbackResponse }, requestedModel));
+        } catch (fallbackError) {
+          return res.status(500).json({ error: `Ollama failed: ${ollamaError.message}. Fallback also failed: ${fallbackError.message}` });
+        }
+      }
+    }
+
+    // Unknown model type, try OrchestraRemote
+    console.log(`[Orchestra] 🔄 Using OrchestraRemote for chat model: ${requestedModel}`);
+    const lastMessage = normalizedMessages[normalizedMessages.length - 1];
+    const response = await remoteAI.generate(lastMessage.content, requestedModel);
+    return res.json(formatChatResponse({ response: response }, requestedModel));
+    
   } catch (error) {
     console.error('[Orchestra] /api/chat error:', error);
+    logError('CHAT_ENDPOINT_ERROR', req, error);
     return res.status(500).json({ error: error.message || 'Chat request failed' });
   }
 });
