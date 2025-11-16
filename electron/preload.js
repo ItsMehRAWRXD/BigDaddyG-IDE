@@ -118,14 +118,22 @@ contextBridge.exposeInMainWorld('electron', {
     status: () => ipcRenderer.invoke('ollama:status')
   },
 
-  models: {
-    discover: (options) => ipcRenderer.invoke('models:discover', options),
-    load: (name, options) => ipcRenderer.invoke('models:load', name, options),
-    unload: (name) => ipcRenderer.invoke('models:unload', name),
-    info: (name) => ipcRenderer.invoke('models:info', name),
-    stats: () => ipcRenderer.invoke('models:stats'),
-    list: () => ipcRenderer.invoke('ollama:list-models')
-  },
+    models: {
+      discover: (options) => ipcRenderer.invoke('models:discover', options),
+      load: (name, options) => ipcRenderer.invoke('models:load', name, options),
+      unload: (name) => ipcRenderer.invoke('models:unload', name),
+      info: (name) => ipcRenderer.invoke('models:info', name),
+      stats: () => ipcRenderer.invoke('models:stats'),
+      list: () => ipcRenderer.invoke('ollama:list-models'),
+      clearCache: () => ipcRenderer.invoke('models:clear-cache')
+    },
+    ollama: {
+      listModels: () => ipcRenderer.invoke('ollama:list-models'),
+      status: () => ipcRenderer.invoke('ollama:status'),
+      pullModel: (modelName) => ipcRenderer.invoke('ollama:pull-model', modelName),
+      deleteModel: (modelName) => ipcRenderer.invoke('ollama:delete-model', modelName),
+      showModel: (modelName) => ipcRenderer.invoke('ollama:show-model', modelName)
+    },
   
   settings: {
     getAll: () => ipcRenderer.invoke('settings:get-all'),
