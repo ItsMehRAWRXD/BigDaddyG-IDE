@@ -125,24 +125,30 @@ Keys are encrypted and never logged to console.
 
 ## Testing
 
-**Test AI provider:**
+**Automated regression suite:**
+```
+npm test -- __tests__/agentic/ai-response-handler.test.js __tests__/agentic/bigdaddyg-agentic-core.test.js
+```
+- Verifies the chat panel prefers `agenticAI`/`aiProviderManager` and only falls back to the legacy Orchestra HTTP bridge when necessary.
+- Ensures cross-platform Ollama directories (`$HOME/.ollama`, `/usr/local/share/ollama`, etc.) are detected during model discovery.
+
+**Quick interactive checks:**
 ```javascript
-// Test OpenAI
+// Test OpenAI (or any provider)
 const result = await window.aiProviderManager.chat("Say hello", {
   provider: 'openai',
   model: 'gpt-4o-mini'
 });
 console.log(result.response);
-```
 
-**Test model discovery:**
-```javascript
+// Test Ollama via the new bridge
+await window.agenticAI.chat("Write a Python hello world", { provider: 'ollama', model: 'llama3.2' });
+
+// Test model discovery
 const models = await window.electron.models.discover();
 console.log(models);
-```
 
-**Test extension status:**
-```javascript
+// Test extension status
 const status = await window.electron.marketplace.status();
 console.log(status.installed);
 ```
