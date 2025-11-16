@@ -1,678 +1,594 @@
 /**
- * Enhanced Command Palette - File Search & Terminal Integration
- * Ctrl+Shift+P functionality with comprehensive command access
+ * Command Palette - Full Cursor-like Command System
+ * Provides: Fuzzy search, slash commands, tool mapping
  */
 
+(function() {
+'use strict';
+
 class CommandPalette {
-    constructor() {
-        this.isOpen = false;
-        this.currentFilter = '';
-        this.selectedIndex = 0;
-        this.commands = [];
-        this.files = [];
-        this.init();
-    }
+  constructor() {
+    this.commands = new Map();
+    this.history = [];
+    this.isOpen = false;
+    this.currentInput = '';
+    this.filteredCommands = [];
+    
+    console.log('[CommandPalette] 🎯 Initializing command palette...');
+    this.initialize();
+  }
 
-    init() {
-        this.loadCommands();
-        this.scanFiles();
-    }
+  initialize() {
+    // Register all commands
+    this.registerAllCommands();
+    
+    // Create UI
+    this.createUI();
+    
+    // Register keyboard shortcut (Ctrl+Shift+P or Ctrl+K)
+    this.registerShortcuts();
+    
+    // Make globally available
+    window.commandPalette = this;
+    
+    console.log('[CommandPalette] ✅ Command palette ready');
+  }
 
-    loadCommands() {
-        this.commands = [
-            // File Operations
-            { name: 'File: New File', action: () => this.createNewFile(), category: 'file' },
-            { name: 'File: Open File', action: () => this.openFile(), category: 'file' },
-            { name: 'File: Save', action: () => this.saveFile(), category: 'file' },
-            { name: 'File: Save As', action: () => this.saveFileAs(), category: 'file' },
-            
-            // Terminal Commands
-            { name: 'Terminal: New Terminal', action: () => this.openTerminal(), category: 'terminal' },
-            { name: 'Terminal: New PowerShell', action: () => this.openPowerShell(), category: 'terminal' },
-            { name: 'Terminal: New Command Prompt', action: () => this.openCommandPrompt(), category: 'terminal' },
-            { name: 'Terminal: Run Build', action: () => this.runBuild(), category: 'terminal' },
-            { name: 'Terminal: Run npm install', action: () => this.runCommand('npm install'), category: 'terminal' },
-            { name: 'Terminal: Run npm start', action: () => this.runCommand('npm start'), category: 'terminal' },
-            { name: 'Terminal: Run git status', action: () => this.runCommand('git status'), category: 'terminal' },
-            
-            // View Commands
-            { name: 'View: Toggle Sidebar', action: () => this.toggleSidebar(), category: 'view' },
-            { name: 'View: Toggle Terminal', action: () => this.toggleTerminal(), category: 'view' },
-            { name: 'View: Reload Window', action: () => location.reload(), category: 'view' },
-            
-            // AI Commands
-            { name: 'AI: Open Chat', action: () => this.openAIChat(), category: 'ai' },
-            { name: 'AI: Generate Code', action: () => this.generateCode(), category: 'ai' },
-        ];
-    }
+  registerAllCommands() {
+    // AI Commands
+    this.registerCommand('ai.explain', 'Explain Selection', 'Explain selected code', () => {
+      if (window.monacoInlineAI) {
+        window.monacoInlineAI.explainSelection();
+      }
+    });
 
-    async scanFiles() {
-        try {
-            if (window.electron && window.electron.scanWorkspace) {
-                this.files = await window.electron.scanWorkspace();
-            }
-        } catch (error) {
-            console.warn('[CommandPalette] File scanning not available:', error);
+    this.registerCommand('ai.quick-fix', 'Quick Fix', 'Fix issues in selected code', () => {
+      if (window.monacoInlineAI) {
+        window.monacoInlineAI.quickFix();
+      }
+    });
+
+    this.registerCommand('ai.refactor', 'Refactor', 'Refactor selected code', () => {
+      if (window.monacoInlineAI) {
+        window.monacoInlineAI.refactor();
+      }
+    });
+
+    this.registerCommand('ai.add-docstrings', 'Add Docstrings', 'Add documentation to code', () => {
+      if (window.monacoInlineAI) {
+        window.monacoInlineAI.addDocstrings();
+      }
+    });
+
+    this.registerCommand('ai.write-tests', 'Write Tests', 'Generate tests for code', () => {
+      if (window.monacoInlineAI) {
+        window.monacoInlineAI.writeTests();
+      }
+    });
+
+    // File Commands
+    this.registerCommand('file.new', 'New File', 'Create a new file', () => {
+      if (window.completeTabSystem) {
+        window.completeTabSystem.createTab({ type: 'code', title: 'Untitled' });
+      }
+    });
+
+    this.registerCommand('file.open', 'Open File', 'Open a file', async () => {
+      if (window.electron && window.electron.openFileDialog) {
+        const result = await window.electron.openFileDialog();
+        if (result && !result.canceled && result.filePaths.length > 0) {
+          // Open file
+          console.log('Opening:', result.filePaths[0]);
         }
+      }
+    });
+
+    this.registerCommand('file.save', 'Save File', 'Save current file', () => {
+      if (window.electron && window.electron.writeFile) {
+        // Save logic
+        console.log('Saving file...');
+      }
+    });
+
+    // Git Commands
+    this.registerCommand('git.commit', 'Git: Commit', 'Commit changes', () => {
+      if (window.gitManager) {
+        window.gitManager.commit();
+      }
+    });
+
+    this.registerCommand('git.push', 'Git: Push', 'Push to remote', () => {
+      if (window.gitManager) {
+        window.gitManager.push();
+      }
+    });
+
+    this.registerCommand('git.pull', 'Git: Pull', 'Pull from remote', () => {
+      if (window.gitManager) {
+        window.gitManager.pull();
+      }
+    });
+
+    // Test Commands
+    this.registerCommand('test.run', 'Run Tests', 'Run all tests', () => {
+      if (window.testRunner) {
+        window.testRunner.runAll();
+      }
+    });
+
+    this.registerCommand('test.watch', 'Watch Tests', 'Watch mode for tests', () => {
+      if (window.testRunner) {
+        window.testRunner.watch();
+      }
+    });
+
+    // Search Commands
+    this.registerCommand('search.files', 'Search Files', 'Search in files', () => {
+      this.showSearchDialog('files');
+    });
+
+    this.registerCommand('search.symbols', 'Search Symbols', 'Search symbols', () => {
+      this.showSearchDialog('symbols');
+    });
+
+    console.log(`[CommandPalette] ✅ Registered ${this.commands.size} commands`);
+  }
+
+  registerCommand(id, label, description, handler) {
+    this.commands.set(id, {
+      id,
+      label,
+      description,
+      handler,
+      keywords: `${label} ${description}`.toLowerCase()
+    });
+  }
+
+  createUI() {
+    // Create command palette container
+    const container = document.createElement('div');
+    container.id = 'command-palette';
+    container.className = 'command-palette';
+    container.style.display = 'none';
+    container.innerHTML = `
+      <div class="command-palette-input-container">
+        <input type="text" 
+               id="command-palette-input" 
+               class="command-palette-input" 
+               placeholder="Type a command or search... (e.g., /fix, /refactor, /test)"
+               autocomplete="off">
+        <div class="command-palette-hint">Press Esc to close, Enter to execute</div>
+      </div>
+      <div class="command-palette-results" id="command-palette-results">
+        <!-- Results will be populated here -->
+      </div>
+    `;
+
+    // Add styles
+    this.addStyles();
+
+    document.body.appendChild(container);
+
+    // Setup input handler
+    const input = document.getElementById('command-palette-input');
+    input.addEventListener('input', (e) => {
+      this.handleInput(e.target.value);
+    });
+
+    input.addEventListener('keydown', (e) => {
+      this.handleKeyDown(e);
+    });
+  }
+
+  addStyles() {
+    if (document.getElementById('command-palette-styles')) {
+      return; // Styles already added
     }
 
-    show() {
-        if (this.isOpen) {
-            this.hide();
-            return;
+    const style = document.createElement('style');
+    style.id = 'command-palette-styles';
+    style.textContent = `
+      .command-palette {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 600px;
+        max-width: 90vw;
+        background: #1e1e1e;
+        border: 1px solid #3e3e3e;
+        border-radius: 8px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        z-index: 10000;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      }
+
+      .command-palette-input-container {
+        padding: 12px;
+        border-bottom: 1px solid #3e3e3e;
+      }
+
+      .command-palette-input {
+        width: 100%;
+        padding: 8px 12px;
+        background: #252526;
+        border: 1px solid #3e3e3e;
+        border-radius: 4px;
+        color: #cccccc;
+        font-size: 14px;
+        outline: none;
+      }
+
+      .command-palette-input:focus {
+        border-color: #007acc;
+      }
+
+      .command-palette-hint {
+        margin-top: 4px;
+        font-size: 11px;
+        color: #858585;
+      }
+
+      .command-palette-results {
+        max-height: 400px;
+        overflow-y: auto;
+      }
+
+      .command-palette-item {
+        padding: 10px 12px;
+        cursor: pointer;
+        border-bottom: 1px solid #2d2d2d;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .command-palette-item:hover,
+      .command-palette-item.selected {
+        background: #2a2d2e;
+      }
+
+      .command-palette-item-label {
+        font-weight: 500;
+        color: #cccccc;
+      }
+
+      .command-palette-item-description {
+        font-size: 12px;
+        color: #858585;
+      }
+
+      .command-palette-item-shortcut {
+        font-size: 11px;
+        color: #858585;
+        background: #2d2d2d;
+        padding: 2px 6px;
+        border-radius: 3px;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  registerShortcuts() {
+    document.addEventListener('keydown', (e) => {
+      // Ctrl+Shift+P or Ctrl+K
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'P') {
+        e.preventDefault();
+        this.open();
+      } else if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        this.open();
+      } else if (e.key === 'Escape' && this.isOpen) {
+        e.preventDefault();
+        this.close();
+      }
+    });
+  }
+
+  open() {
+    this.isOpen = true;
+    const container = document.getElementById('command-palette');
+    const input = document.getElementById('command-palette-input');
+    
+    if (container && input) {
+      container.style.display = 'block';
+      input.value = '';
+      input.focus();
+      this.handleInput('');
+    }
+  }
+
+  close() {
+    this.isOpen = false;
+    const container = document.getElementById('command-palette');
+    const input = document.getElementById('command-palette-input');
+    
+    if (container && input) {
+      container.style.display = 'none';
+      input.value = '';
+      this.filteredCommands = [];
+    }
+  }
+
+  handleInput(value) {
+    this.currentInput = value;
+    
+    // Check for slash commands
+    if (value.startsWith('/')) {
+      this.handleSlashCommand(value);
+      return;
+    }
+
+    // Fuzzy search commands
+    this.filteredCommands = this.fuzzySearch(value);
+    this.renderResults();
+  }
+
+  handleSlashCommand(input) {
+    const command = input.substring(1).trim().toLowerCase();
+    const args = command.split(' ');
+    const cmd = args[0];
+    const params = args.slice(1).join(' ');
+
+    // Map slash commands to actions
+    const slashCommands = {
+      'fix': () => {
+        if (window.monacoInlineAI) {
+          window.monacoInlineAI.quickFix();
+          this.close();
         }
-
-        this.isOpen = true;
-        this.selectedIndex = 0;
-        this.currentFilter = '';
-        
-        const overlay = document.createElement('div');
-        overlay.id = 'command-palette-overlay';
-        overlay.innerHTML = `
-            <div class="command-palette">
-                <div class="palette-header">
-                    <input type="text" id="palette-input" placeholder="Search files, commands..." autocomplete="off">
-                </div>
-                <div class="palette-results" id="palette-results"></div>
-            </div>
-        `;
-
-        this.addStyles();
-        document.body.appendChild(overlay);
-        
-        const input = document.getElementById('palette-input');
-        input.focus();
-        
-        this.setupEventListeners();
-        this.updateResults();
-    }
-
-    hide() {
-        const overlay = document.getElementById('command-palette-overlay');
-        if (overlay) {
-            overlay.remove();
+      },
+      'refactor': () => {
+        if (window.monacoInlineAI) {
+          window.monacoInlineAI.refactor();
+          this.close();
         }
-        this.isOpen = false;
-    }
-
-    addStyles() {
-        if (document.getElementById('command-palette-styles')) return;
-        
-        const styles = document.createElement('style');
-        styles.id = 'command-palette-styles';
-        styles.textContent = `
-            #command-palette-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0, 0, 0, 0.8);
-                backdrop-filter: blur(5px);
-                z-index: 10000;
-                display: flex;
-                justify-content: center;
-                padding-top: 80px;
-            }
-
-            .command-palette {
-                width: 700px;
-                max-width: 90%;
-                height: fit-content;
-                max-height: 600px;
-                background: rgba(15, 15, 35, 0.98);
-                border: 1px solid var(--cyan, #00d4ff);
-                border-radius: 12px;
-                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
-                display: flex;
-                flex-direction: column;
-                overflow: hidden;
-            }
-
-            .palette-header {
-                padding: 0;
-                border-bottom: 1px solid rgba(0, 212, 255, 0.2);
-            }
-
-            #palette-input {
-                width: 100%;
-                padding: 18px 24px;
-                background: transparent;
-                border: none;
-                color: #fff;
-                font-size: 16px;
-                outline: none;
-                font-family: 'Segoe UI', system-ui, sans-serif;
-            }
-
-            #palette-input::placeholder {
-                color: rgba(255, 255, 255, 0.5);
-            }
-
-            .palette-results {
-                flex: 1;
-                overflow-y: auto;
-                max-height: 500px;
-            }
-
-            .result-item {
-                padding: 12px 24px;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                transition: background 0.15s;
-                border-left: 3px solid transparent;
-            }
-
-            .result-item:hover,
-            .result-item.selected {
-                background: rgba(0, 212, 255, 0.1);
-                border-left-color: var(--cyan, #00d4ff);
-            }
-
-            .result-icon {
-                width: 20px;
-                height: 20px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 14px;
-                flex-shrink: 0;
-            }
-
-            .result-content {
-                flex: 1;
-                min-width: 0;
-            }
-
-            .result-title {
-                color: #fff;
-                font-size: 14px;
-                font-weight: 500;
-                margin-bottom: 2px;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-
-            .result-subtitle {
-                color: rgba(255, 255, 255, 0.6);
-                font-size: 12px;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-
-            .result-shortcut {
-                background: rgba(0, 0, 0, 0.4);
-                padding: 4px 8px;
-                border-radius: 4px;
-                font-size: 11px;
-                color: var(--cyan, #00d4ff);
-                font-family: monospace;
-                flex-shrink: 0;
-            }
-
-            .category-header {
-                padding: 8px 24px;
-                background: rgba(0, 0, 0, 0.3);
-                color: var(--cyan, #00d4ff);
-                font-size: 12px;
-                font-weight: 600;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-                border-bottom: 1px solid rgba(0, 212, 255, 0.1);
-            }
-        `;
-        document.head.appendChild(styles);
-    }
-
-    setupEventListeners() {
-        const overlay = document.getElementById('command-palette-overlay');
-        const input = document.getElementById('palette-input');
-
-        overlay.addEventListener('click', (e) => {
-            if (e.target === overlay) this.hide();
-        });
-
-        input.addEventListener('input', (e) => {
-            this.currentFilter = e.target.value;
-            this.selectedIndex = 0;
-            this.updateResults();
-        });
-
-        input.addEventListener('keydown', (e) => {
-            switch (e.key) {
-                case 'Escape':
-                    this.hide();
-                    break;
-                case 'ArrowDown':
-                    e.preventDefault();
-                    this.moveSelection(1);
-                    break;
-                case 'ArrowUp':
-                    e.preventDefault();
-                    this.moveSelection(-1);
-                    break;
-                case 'Enter':
-                    e.preventDefault();
-                    this.executeSelected();
-                    break;
-            }
-        });
-    }
-
-    updateResults() {
-        const results = document.getElementById('palette-results');
-        const filter = this.currentFilter.toLowerCase();
-        
-        let allItems = [];
-        
-        // Add commands
-        const matchingCommands = this.commands.filter(cmd => 
-            cmd.name.toLowerCase().includes(filter)
-        );
-        
-        // Add files
-        const matchingFiles = this.files.filter(file => 
-            file.name.toLowerCase().includes(filter) ||
-            file.path.toLowerCase().includes(filter)
-        ).slice(0, 20); // Limit file results
-
-        // Group by category
-        const grouped = {};
-        
-        if (matchingCommands.length > 0) {
-            matchingCommands.forEach(cmd => {
-                const category = cmd.category || 'other';
-                if (!grouped[category]) grouped[category] = [];
-                grouped[category].push({
-                    type: 'command',
-                    item: cmd,
-                    title: cmd.name,
-                    subtitle: this.getCategoryName(category),
-                    icon: this.getCategoryIcon(category)
-                });
-            });
+      },
+      'doc': () => {
+        if (window.monacoInlineAI) {
+          window.monacoInlineAI.addDocstrings();
+          this.close();
         }
-
-        if (matchingFiles.length > 0) {
-            if (!grouped.files) grouped.files = [];
-            matchingFiles.forEach(file => {
-                grouped.files.push({
-                    type: 'file',
-                    item: file,
-                    title: file.name,
-                    subtitle: file.path,
-                    icon: this.getFileIcon(file.name)
-                });
-            });
+      },
+      'test': () => {
+        if (window.monacoInlineAI) {
+          window.monacoInlineAI.writeTests();
+          this.close();
         }
-
-        // Render results
-        results.innerHTML = '';
-        allItems = [];
-
-        Object.entries(grouped).forEach(([category, items]) => {
-            if (items.length === 0) return;
-
-            const header = document.createElement('div');
-            header.className = 'category-header';
-            header.textContent = this.getCategoryName(category);
-            results.appendChild(header);
-
-            items.forEach((item, index) => {
-                const element = this.createResultElement(item, allItems.length);
-                results.appendChild(element);
-                allItems.push(item);
-            });
-        });
-
-        this.allItems = allItems;
-        this.updateSelection();
-    }
-
-    createResultElement(item, index) {
-        const element = document.createElement('div');
-        element.className = 'result-item';
-        element.dataset.index = index;
-        
-        element.innerHTML = `
-            <div class="result-icon">${item.icon}</div>
-            <div class="result-content">
-                <div class="result-title">${item.title}</div>
-                <div class="result-subtitle">${item.subtitle}</div>
-            </div>
-        `;
-
-        element.addEventListener('click', () => {
-            this.selectedIndex = index;
-            this.executeSelected();
-        });
-
-        return element;
-    }
-
-    moveSelection(direction) {
-        if (!this.allItems || this.allItems.length === 0) return;
-        
-        this.selectedIndex = Math.max(0, Math.min(
-            this.allItems.length - 1,
-            this.selectedIndex + direction
-        ));
-        
-        this.updateSelection();
-    }
-
-    updateSelection() {
-        document.querySelectorAll('.result-item').forEach((item, index) => {
-            item.classList.toggle('selected', index === this.selectedIndex);
-        });
-
-        // Scroll to selected item
-        const selected = document.querySelector('.result-item.selected');
-        if (selected) {
-            selected.scrollIntoView({ block: 'nearest' });
+      },
+      'explain': () => {
+        if (window.monacoInlineAI) {
+          window.monacoInlineAI.explainSelection();
+          this.close();
         }
+      },
+      'review': () => {
+        this.executeCommand('ai.review');
+        this.close();
+      },
+      'run': () => {
+        this.executeCommand('test.run');
+        this.close();
+      },
+      'search': () => {
+        this.executeCommand('search.files', params);
+        this.close();
+      },
+      'commit': () => {
+        this.executeCommand('git.commit', params);
+        this.close();
+      },
+      'pr': () => {
+        this.executeCommand('git.create-pr', params);
+        this.close();
+      }
+    };
+
+    if (slashCommands[cmd]) {
+      // Show preview or execute immediately
+      this.showSlashCommandPreview(cmd, params, slashCommands[cmd]);
+    } else {
+      // Show available slash commands
+      this.showSlashCommandHelp();
+    }
+  }
+
+  showSlashCommandPreview(cmd, params, handler) {
+    const results = document.getElementById('command-palette-results');
+    if (!results) return;
+
+    results.innerHTML = `
+      <div class="command-palette-item selected">
+        <div>
+          <div class="command-palette-item-label">/${cmd}</div>
+          <div class="command-palette-item-description">Execute ${cmd} command${params ? ` with: ${params}` : ''}</div>
+        </div>
+        <div class="command-palette-item-shortcut">Enter to execute</div>
+      </div>
+    `;
+
+    // Store handler for Enter key
+    this.pendingSlashHandler = handler;
+  }
+
+  showSlashCommandHelp() {
+    const results = document.getElementById('command-palette-results');
+    if (!results) return;
+
+    const commands = [
+      { cmd: 'fix', desc: 'Quick fix selected code' },
+      { cmd: 'refactor', desc: 'Refactor selected code' },
+      { cmd: 'doc', desc: 'Add docstrings' },
+      { cmd: 'test', desc: 'Write tests' },
+      { cmd: 'explain', desc: 'Explain selection' },
+      { cmd: 'review', desc: 'Code review' },
+      { cmd: 'run', desc: 'Run tests' },
+      { cmd: 'search', desc: 'Search files' },
+      { cmd: 'commit', desc: 'Git commit' },
+      { cmd: 'pr', desc: 'Create PR' }
+    ];
+
+    let html = '<div class="command-palette-section">Available Commands:</div>';
+    commands.forEach(c => {
+      html += `
+        <div class="command-palette-item">
+          <div>
+            <div class="command-palette-item-label">/${c.cmd}</div>
+            <div class="command-palette-item-description">${c.desc}</div>
+          </div>
+        </div>
+      `;
+    });
+
+    results.innerHTML = html;
+  }
+
+  fuzzySearch(query) {
+    if (!query) {
+      return Array.from(this.commands.values()).slice(0, 10);
     }
 
-    executeSelected() {
-        if (!this.allItems || this.selectedIndex >= this.allItems.length) return;
-        
-        const selected = this.allItems[this.selectedIndex];
-        this.hide();
-        
-        if (selected.type === 'command') {
-            selected.item.action();
-        } else if (selected.type === 'file') {
-            this.openFileInEditor(selected.item);
+    const lowerQuery = query.toLowerCase();
+    const scored = Array.from(this.commands.values())
+      .map(cmd => {
+        const score = this.calculateScore(cmd.keywords, lowerQuery);
+        return { cmd, score };
+      })
+      .filter(item => item.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 10)
+      .map(item => item.cmd);
+
+    return scored;
+  }
+
+  calculateScore(text, query) {
+    if (text.includes(query)) {
+      return 100;
+    }
+    
+    // Simple fuzzy matching
+    let score = 0;
+    let textIndex = 0;
+    
+    for (let i = 0; i < query.length; i++) {
+      const char = query[i];
+      const foundIndex = text.indexOf(char, textIndex);
+      if (foundIndex !== -1) {
+        score += 10 - (foundIndex - textIndex);
+        textIndex = foundIndex + 1;
+      } else {
+        return 0;
+      }
+    }
+    
+    return score;
+  }
+
+  renderResults() {
+    const results = document.getElementById('command-palette-results');
+    if (!results) return;
+
+    if (this.filteredCommands.length === 0) {
+      results.innerHTML = '<div class="command-palette-item">No commands found</div>';
+      return;
+    }
+
+    let html = '';
+    this.filteredCommands.forEach((cmd, index) => {
+      const selected = index === 0 ? 'selected' : '';
+      html += `
+        <div class="command-palette-item ${selected}" data-command-id="${cmd.id}">
+          <div>
+            <div class="command-palette-item-label">${cmd.label}</div>
+            <div class="command-palette-item-description">${cmd.description}</div>
+          </div>
+        </div>
+      `;
+    });
+
+    results.innerHTML = html;
+
+    // Add click handlers
+    results.querySelectorAll('.command-palette-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const commandId = item.dataset.commandId;
+        if (commandId) {
+          this.executeCommand(commandId);
+          this.close();
         }
-    }
+      });
+    });
+  }
 
-    // Command implementations
-    createNewFile() {
-        if (window.createNewTab) {
-            window.createNewTab('untitled', 'plaintext', '', null);
+  handleKeyDown(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      
+      // Execute slash command if pending
+      if (this.pendingSlashHandler) {
+        this.pendingSlashHandler();
+        this.pendingSlashHandler = null;
+        return;
+      }
+
+      // Execute first filtered command
+      if (this.filteredCommands.length > 0) {
+        this.executeCommand(this.filteredCommands[0].id);
+        this.close();
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      this.selectNext();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      this.selectPrevious();
+    }
+  }
+
+  selectNext() {
+    // Implement selection navigation
+  }
+
+  selectPrevious() {
+    // Implement selection navigation
+  }
+
+  executeCommand(commandId, ...args) {
+    const command = this.commands.get(commandId);
+    if (command && command.handler) {
+      try {
+        command.handler(...args);
+        this.addToHistory(commandId);
+      } catch (error) {
+        console.error(`[CommandPalette] ❌ Command failed: ${commandId}`, error);
+        if (window.notify) {
+          window.notify.error(`Command failed: ${command.label}`);
         }
+      }
     }
+  }
 
-    openFile() {
-        if (window.electron && window.electron.openFileDialog) {
-            window.electron.openFileDialog();
-        }
+  addToHistory(commandId) {
+    this.history.unshift(commandId);
+    if (this.history.length > 50) {
+      this.history.pop();
     }
+  }
 
-    saveFile() {
-        if (window.saveFile) {
-            window.saveFile();
-        }
-    }
-
-    saveFileAs() {
-        if (window.saveFileAs) {
-            window.saveFileAs();
-        }
-    }
-
-    openTerminal() {
-        this.createTerminal('bash');
-    }
-
-    openPowerShell() {
-        this.createTerminal('powershell');
-    }
-
-    openCommandPrompt() {
-        this.createTerminal('cmd');
-    }
-
-    createTerminal(shell = 'bash') {
-        const terminalPanel = document.getElementById('terminal-panel') || this.createTerminalPanel();
-        
-        const terminalId = `terminal-${Date.now()}`;
-        const terminalTab = document.createElement('div');
-        terminalTab.className = 'terminal-tab active';
-        terminalTab.innerHTML = `
-            <span>${shell.toUpperCase()}</span>
-            <button onclick="this.parentElement.remove()" style="margin-left: 8px; background: none; border: none; color: #fff; cursor: pointer;">×</button>
-        `;
-
-        const terminal = document.createElement('div');
-        terminal.id = terminalId;
-        terminal.className = 'terminal-instance';
-        terminal.style.cssText = `
-            width: 100%;
-            height: 100%;
-            background: #1e1e1e;
-            color: #fff;
-            font-family: 'Consolas', monospace;
-            padding: 10px;
-            overflow-y: auto;
-        `;
-
-        if (window.electron && window.electron.createTerminal) {
-            window.electron.createTerminal(terminalId, shell);
-        } else {
-            this.createWebTerminal(terminal, shell);
-        }
-
-        terminalPanel.querySelector('.terminal-tabs').appendChild(terminalTab);
-        terminalPanel.querySelector('.terminal-content').appendChild(terminal);
-        terminalPanel.style.display = 'flex';
-    }
-
-    createTerminalPanel() {
-        const panel = document.createElement('div');
-        panel.id = 'terminal-panel';
-        panel.style.cssText = `
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 300px;
-            background: #2d2d30;
-            border-top: 1px solid var(--cyan);
-            display: none;
-            flex-direction: column;
-            z-index: 1000;
-        `;
-
-        panel.innerHTML = `
-            <div class="terminal-tabs" style="display: flex; background: #1e1e1e; padding: 5px; gap: 5px;"></div>
-            <div class="terminal-content" style="flex: 1; position: relative;"></div>
-        `;
-
-        document.body.appendChild(panel);
-        return panel;
-    }
-
-    createWebTerminal(container, shell) {
-        const prompt = shell === 'powershell' ? 'PS> ' : shell === 'cmd' ? 'C:\\> ' : '$ ';
-        
-        container.innerHTML = `
-            <div class="terminal-output"></div>
-            <div class="terminal-input-line">
-                <span class="terminal-prompt">${prompt}</span>
-                <input type="text" class="terminal-input" style="background: transparent; border: none; color: #fff; outline: none; flex: 1;">
-            </div>
-        `;
-
-        const input = container.querySelector('.terminal-input');
-        const output = container.querySelector('.terminal-output');
-
-        input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                const command = input.value.trim();
-                if (command) {
-                    this.executeTerminalCommand(command, output, shell);
-                    input.value = '';
-                }
-            }
-        });
-
-        input.focus();
-    }
-
-    executeTerminalCommand(command, output, shell) {
-        const commandLine = document.createElement('div');
-        commandLine.innerHTML = `<span style="color: #00d4ff;">${shell === 'powershell' ? 'PS> ' : shell === 'cmd' ? 'C:\\> ' : '$ '}</span>${command}`;
-        output.appendChild(commandLine);
-
-        if (window.electron && window.electron.executeCommand) {
-            window.electron.executeCommand(command, shell).then(result => {
-                const resultDiv = document.createElement('div');
-                resultDiv.textContent = result;
-                output.appendChild(resultDiv);
-                output.scrollTop = output.scrollHeight;
-            });
-        } else {
-            // Web fallback for basic commands
-            this.handleWebCommand(command, output);
-        }
-    }
-
-    handleWebCommand(command, output) {
-        const resultDiv = document.createElement('div');
-        
-        if (command === 'help') {
-            resultDiv.innerHTML = `Available commands: help, clear, echo, date`;
-        } else if (command === 'clear') {
-            output.innerHTML = '';
-            return;
-        } else if (command.startsWith('echo ')) {
-            resultDiv.textContent = command.substring(5);
-        } else if (command === 'date') {
-            resultDiv.textContent = new Date().toString();
-        } else {
-            resultDiv.innerHTML = `<span style="color: #ff6b6b;">Command not found: ${command}</span>`;
-        }
-        
-        output.appendChild(resultDiv);
-        output.scrollTop = output.scrollHeight;
-    }
-
-    runCommand(command) {
-        this.openTerminal();
-        setTimeout(() => {
-            const input = document.querySelector('.terminal-input');
-            if (input) {
-                input.value = command;
-                input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
-            }
-        }, 100);
-    }
-
-    runBuild() {
-        // Detect build system and run appropriate command
-        if (this.files.some(f => f.name === 'package.json')) {
-            this.runCommand('npm run build');
-        } else if (this.files.some(f => f.name === 'Makefile')) {
-            this.runCommand('make');
-        } else {
-            this.runCommand('build');
-        }
-    }
-
-    toggleSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        if (sidebar) {
-            sidebar.style.display = sidebar.style.display === 'none' ? 'flex' : 'none';
-        }
-    }
-
-    toggleTerminal() {
-        const terminal = document.getElementById('terminal-panel');
-        if (terminal) {
-            terminal.style.display = terminal.style.display === 'none' ? 'flex' : 'none';
-        }
-    }
-
-    openAIChat() {
-        if (window.floatingChat) {
-            window.floatingChat.toggle();
-        }
-    }
-
-    generateCode() {
-        // Open AI with code generation prompt
-        this.openAIChat();
-        setTimeout(() => {
-            const input = document.querySelector('#floating-chat-input, #ai-input');
-            if (input) {
-                input.value = 'Generate code for: ';
-                input.focus();
-            }
-        }, 100);
-    }
-
-    openFileInEditor(file) {
-        if (window.electron && window.electron.openFile) {
-            window.electron.openFile(file.path);
-        } else if (window.openFile) {
-            window.openFile(file.path);
-        }
-    }
-
-    // Helper methods
-    getCategoryName(category) {
-        const names = {
-            file: 'Files',
-            terminal: 'Terminal',
-            view: 'View',
-            ai: 'AI Assistant',
-            files: 'Files',
-            other: 'Commands'
-        };
-        return names[category] || 'Commands';
-    }
-
-    getCategoryIcon(category) {
-        const icons = {
-            file: '📄',
-            terminal: '⚡',
-            view: '👁️',
-            ai: '🤖',
-            other: '⚙️'
-        };
-        return icons[category] || '⚙️';
-    }
-
-    getFileIcon(filename) {
-        const ext = filename.split('.').pop()?.toLowerCase();
-        const icons = {
-            js: '🟨',
-            ts: '🔷',
-            html: '🌐',
-            css: '🎨',
-            json: '📋',
-            md: '📝',
-            py: '🐍',
-            java: '☕',
-            cpp: '⚡',
-            c: '⚡',
-            go: '🐹',
-            rs: '🦀',
-            php: '🐘',
-            rb: '💎',
-            sh: '🐚',
-            bat: '⚙️',
-            exe: '⚙️',
-            dll: '📚'
-        };
-        return icons[ext] || '📄';
-    }
+  showSearchDialog(type) {
+    // Implement search dialog
+    console.log(`[CommandPalette] 🔍 Search: ${type}`);
+  }
 }
 
-// Initialize and integrate with hotkey manager
-window.commandPalette = new CommandPalette();
-
-// Update hotkey manager to use enhanced command palette
-if (window.hotkeyManager) {
-    // Replace the existing Ctrl+Shift+P handler
-    window.hotkeyManager.register('Ctrl+Shift+P', () => {
-        window.commandPalette.show();
-    }, 'Enhanced Command Palette');
+// Auto-initialize
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    new CommandPalette();
+  });
+} else {
+  new CommandPalette();
 }
 
-console.log('[CommandPalette] 🎯 Enhanced command palette loaded');
+})();
