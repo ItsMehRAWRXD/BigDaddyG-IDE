@@ -22,6 +22,13 @@ const validateOptions = (options) => {
   return options;
 };
 
+// Orchestra + AI bridge - makes native models available to renderer
+contextBridge.exposeInMainWorld('orchestraApi', {
+  getModels: () => ipcRenderer.invoke('orchestra:get-models'),
+  generate: (payload) => ipcRenderer.invoke('orchestra:generate', payload),
+  aiGenerate: (payload) => ipcRenderer.invoke('ai:generate', payload)
+});
+
 // Expose protected methods to renderer process
 contextBridge.exposeInMainWorld('electron', {
   // Window controls

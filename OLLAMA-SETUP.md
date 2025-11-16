@@ -1,4 +1,4 @@
-﻿# 🦙 Ollama Integration - Quick Setup Guide
+# 🦙 Ollama Integration - Quick Setup Guide
 
 **Your BigDaddyG IDE has FULL Ollama support built-in!**
 
@@ -11,11 +11,12 @@ Your IDE **already has** complete Ollama integration:
 - ✅ Auto-detects Ollama models
 - ✅ Proxy endpoint with CORS support
 - ✅ Automatic model routing
-- ✅ Fallback to BigDaddyG if Ollama offline
+- ✅ Embedded bridge on `http://127.0.0.1:11435` that exposes every model loaded by BigDaddyG Core (no extra config)
+- ✅ Remote API fallback if you provide `API_KEY`
 - ✅ Works with ANY Ollama model
 
-**Location:** `<http://localhost:11434`> (Ollama default)
-**Integration:** Orchestra Server (`server/Orchestra-Server.js`)
+**Location:** `<http://localhost:11434`> (Ollama default) + `http://127.0.0.1:11435` (BigDaddyG bridge)
+**Integration:** Orchestra Server (`server/Orchestra-Server.js`) + Electron native bridge (`electron/main.js`)
 
 ---
 
@@ -136,6 +137,23 @@ fetch('<http://localhost:11441/api/chat',> {
 });
 
 ```plaintext
+### **Method 5: Native Bridge (NEW)**
+
+```plaintext
+✅ BigDaddyG now launches an internal bridge on http://127.0.0.1:11435
+✅ Every model loaded via the IDE or Ollama CLI is exposed automatically
+✅ Orchestra Server, agent panels, and external tools all reuse the same bridge
+✅ If the bridge is unavailable, the system falls back to the classic /api/chat endpoint or your configured remote API key
+```
+
+Use it directly if you want raw responses:
+
+```bash
+curl -X POST http://127.0.0.1:11435/api/generate \
+  -H "Content-Type: application/json" \
+  -d '{"model":"bigdaddyg:latest","prompt":"Summarize the latest build status"}'
+```
+
 ---
 
 ## 🔧 **Configuration**

@@ -150,6 +150,7 @@ let bigDaddyGCore = null;
 let orchestraAutoStartTimer = null;
 let orchestraRestartTimer = null;
 let orchestraManuallyStopped = false;
+let bridgeServer = null;
 
 if (!global.modelDiscoveryCache) {
   global.modelDiscoveryCache = null;
@@ -368,6 +369,11 @@ app.whenReady().then(async () => {
 
   bigDaddyGCore.attachNativeClient(nativeOllamaClient);
   
+  // Give BigDaddyGCore a moment to finish loading models before exposing them
+  setTimeout(() => {
+    startModelBridge();
+  }, 2000);
+  
   // Start Orchestra server
   if (isOrchestraAutoStartEnabled()) {
     orchestraAutoStartTimer = scheduleOrchestraAutoStart('startup', getOrchestraAutoStartDelay(), 'auto');
@@ -402,6 +408,9 @@ app.whenReady().then(async () => {
 });
 
 app.on('window-all-closed', () => {
+  // Stop HTTP bridge that exposes native Ollama models
+  stopModelBridge();
+  
   // Stop Orchestra server
   stopOrchestraServer();
   
@@ -2978,6 +2987,50 @@ ipcMain.handle('orchestra:start', () => {
   return { success: true };
 });
 
+ipcMain.handle('ai:generate', async (_event, { model, prompt, options = {} } = {}) => {
+  try {
+    if (!model || !prompt) {
+      throw new Error('Model and prompt are required');
+    }
+    console.log(`[IPC] 🤖 AI generation request for model: ${model}`);
+    const response = await nativeOllamaClient.generate(model, prompt, options);
+    return { success: true, response };
+  } catch (error) {
+    console.error('[IPC] ❌ AI generation failed:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('orchestra:get-models', async () => {
+  try {
+    console.log('[IPC] 📋 Orchestra requesting models list');
+    const coreInstance = bigDaddyGCore || (await getBigDaddyGCore().catch(() => null));
+    if (!coreInstance || typeof coreInstance.listModels !== 'function') {
+      return [];
+    }
+    const models = await coreInstance.listModels();
+    return models.map((model) => model.name || model.id);
+  } catch (error) {
+    console.error('[IPC] ❌ Failed to list Orchestra models:', error);
+    return [];
+  }
+});
+
+ipcMain.handle('orchestra:generate', async (_event, payload = {}) => {
+  const { model, prompt, options = {} } = payload;
+  try {
+    if (!model || !prompt) {
+      throw new Error('Model and prompt are required');
+    }
+    console.log(`[IPC] 🤖 Orchestra generate request: ${model}`);
+    const response = await nativeOllamaClient.generate(model, prompt, options);
+    return { success: true, response };
+  } catch (error) {
+    console.error(`[IPC] ❌ Orchestra generation failed for ${model}:`, error);
+    return { success: false, error: error.message };
+  }
+});
+
 ipcMain.handle('orchestra:stop', () => {
   stopOrchestraServer();
   return { success: true };
@@ -2987,6 +3040,76 @@ ipcMain.handle('orchestra:status', async () => {
   const isRunning = await checkOrchestraHealth();
   return { running: isRunning };
 });
+
+// ============================================================================
+// HTTP BRIDGE - expose native Ollama client to Orchestra and external tools
+// ============================================================================
+
+function startModelBridge() {
+  if (bridgeServer) {
+    return;
+  }
+
+  try {
+    const express = require('express');
+    const bridgeApp = express();
+    bridgeApp.use(express.json({ limit: '5mb' }));
+
+    bridgeApp.get('/health', async (_req, res) => {
+      try {
+        const stats = nativeOllamaClient.getStats();
+        res.json({ status: 'ok', stats });
+      } catch (error) {
+        res.status(500).json({ status: 'error', error: error.message });
+      }
+    });
+
+    bridgeApp.get('/api/models', async (_req, res) => {
+      try {
+        const coreInstance = bigDaddyGCore || (await getBigDaddyGCore().catch(() => null));
+        if (!coreInstance || typeof coreInstance.listModels !== 'function') {
+          return res.json({ models: [] });
+        }
+        const models = await coreInstance.listModels();
+        res.json({ models: models.map((model) => ({ name: model.name || model.id, ...model })) });
+      } catch (error) {
+        console.error('[Bridge] ❌ Failed to list models:', error);
+        res.status(500).json({ error: error.message });
+      }
+    });
+
+    bridgeApp.post('/api/generate', async (req, res) => {
+      const { model, prompt, options = {} } = req.body || {};
+      if (!model || !prompt) {
+        return res.status(400).json({ error: 'Model and prompt are required' });
+      }
+
+      try {
+        console.log(`[Bridge] 🤖 Generate request for model: ${model}`);
+        const response = await nativeOllamaClient.generate(model, prompt, options);
+        res.json({ response });
+      } catch (error) {
+        console.error('[Bridge] ❌ Generation failed:', error);
+        res.status(500).json({ error: error.message });
+      }
+    });
+
+    bridgeServer = bridgeApp.listen(11435, '127.0.0.1', () => {
+      console.log('[Bridge] ✅ Model bridge running on http://127.0.0.1:11435');
+    });
+  } catch (error) {
+    console.error('[Bridge] ❌ Unable to start model bridge:', error);
+  }
+}
+
+function stopModelBridge() {
+  if (bridgeServer) {
+    bridgeServer.close(() => {
+      console.log('[Bridge] 🛑 Model bridge stopped');
+    });
+    bridgeServer = null;
+  }
+}
 
 // ============================================================================
 // FILE SYSTEM OPERATIONS

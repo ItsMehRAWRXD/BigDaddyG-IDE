@@ -960,7 +960,7 @@
             console.log('[Monaco] 🎨 Preloading CSS...');
             const cssLink = document.createElement('link');
             cssLink.rel = 'stylesheet';
-            cssLink.href = './node_modules/monaco-editor/min/vs/editor/editor.main.css';
+            cssLink.href = './node_modules/monaco-editor/min/vs/style.css';
             
             cssLink.onload = function() {
                 console.log('[Monaco] ✅ CSS loaded successfully');
@@ -1136,6 +1136,9 @@
     <script src="agentic-coder.js"></script>
     <script src="agentic-safety.js"></script>
     <script src="command-generator.js"></script>
+    
+    <!-- Unified Orchestra client (must load before agent panels) -->
+    <script src="orchestra-client.js"></script>
     <script src="agent-panel.js"></script>
     <script src="autocomplete-engine.js"></script>
     <script src="agentic-executor.js"></script>

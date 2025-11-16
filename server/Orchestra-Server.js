@@ -3,10 +3,12 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const http = require('http');
 const { spawn } = require('child_process');
+const OrchestraRemote = require('./orchestra-remote');
 
 const app = express();
 const PORT = 11441;
 const DEFAULT_MODEL = 'bigdaddyg:latest';
+const remoteAI = new OrchestraRemote();
 
 const MODEL_ALIAS_ENTRIES = [
   ['bigdaddyg:latest', 'bigdaddyg:latest'],
@@ -401,7 +403,7 @@ app.get('/api/models/list', async (_req, res) => {
 async function processBigDaddyGRequest(model, prompt, stream) {
   const resolvedModel = resolveBigDaddyModel(model);
   const modelInfo = BIGDADDYG_MODELS[resolvedModel];
-  const response = generateBigDaddyGResponse(prompt, modelInfo, resolvedModel);
+  const response = await generateBigDaddyGResponse(prompt, modelInfo, resolvedModel);
 
   if (stream) {
     return response.split(' ').map((word, i, arr) => ({
@@ -439,7 +441,7 @@ async function processBigDaddyGChat(model, messages = [], stream) {
   const lastMessage = getLastUserMessage(messages);
   const prompt = lastMessage && typeof lastMessage.content === 'string' ? lastMessage.content : '';
   const modelInfo = BIGDADDYG_MODELS[resolvedModel];
-  const response = generateBigDaddyGResponse(prompt, modelInfo, resolvedModel);
+  const response = await generateBigDaddyGResponse(prompt, modelInfo, resolvedModel);
 
   if (stream) {
     return response.split(' ').map((word, i, arr) => ({
@@ -476,38 +478,15 @@ async function processBigDaddyGChat(model, messages = [], stream) {
   };
 }
 
-function generateBigDaddyGResponse(prompt = '', modelInfo, modelKey) {
-  const fallbackInfo = BIGDADDYG_MODELS[DEFAULT_MODEL];
-  const info = modelInfo || fallbackInfo || { name: modelKey || DEFAULT_MODEL, type: 'general' };
-
-  const responses = {
-    coding: [
-      "Here's an optimized solution using modern best practices:",
-      "Let me refactor this code for better performance:",
-      "I'll implement this with proper error handling:"
-    ],
-    python: [
-      "Here's a Pythonic approach to solve this:",
-      "Let me write this using Python best practices:",
-      "I'll implement this with proper type hints:"
-    ],
-    javascript: [
-      "Here's a modern JavaScript solution:",
-      "Let me implement this using ES6+ features:",
-      "I'll write this with proper async/await handling:"
-    ],
-    general: [
-      "Based on my analysis, here's the solution:",
-      "Let me break this down step by step:",
-      "Here's a comprehensive approach:"
-    ]
-  };
-
-  const typeResponses = responses[info.type] || responses.general;
-  const baseResponse = typeResponses[Math.floor(Math.random() * typeResponses.length)];
-  const sanitizedPrompt = typeof prompt === 'string' ? prompt : '';
-
-  return `${baseResponse}\n\n\`\`\`\n// BigDaddyG ${info.name} response\n// Processing: ${sanitizedPrompt.substring(0, 50)}...\nconsole.log("BigDaddyG is processing your request...");\n\`\`\`\n\nThis is a simulated response from ${info.name}. In a full implementation, this would connect to the actual BigDaddyG model inference engine.`;
+async function generateBigDaddyGResponse(prompt = '', modelInfo, modelKey) {
+  try {
+    const targetModel = modelKey || DEFAULT_MODEL;
+    return await remoteAI.generate(prompt, targetModel);
+  } catch (error) {
+    console.error('[Orchestra] ❌ Remote generation failed, using fallback:', error.message);
+    const sanitizedPrompt = typeof prompt === 'string' ? prompt : '';
+    return `Fallback response for "${sanitizedPrompt.substring(0, 80)}"`;
+  }
 }
 
 // Ollama integration

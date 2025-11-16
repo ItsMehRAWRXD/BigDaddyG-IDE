@@ -17,7 +17,7 @@ function diagnoseMonaco() {
     
     // Check if Monaco CSS is loaded
     const cssLinks = Array.from(document.querySelectorAll('link[rel="stylesheet"]'));
-    const monacoCss = cssLinks.find(link => link.href.includes('editor.main.css'));
+    const monacoCss = cssLinks.find(link => link.href.includes('vs/style.css'));
     results.cssLoaded = !!monacoCss;
     console.log(`✅ Monaco CSS: ${results.cssLoaded ? 'LOADED' : '❌ MISSING'}`);
     

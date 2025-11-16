@@ -17,85 +17,95 @@ function createFixture() {
   return { rootDir, nestedDir, filePath };
 }
 
-test('validateFsPath allows files within allowed directories', (t) => {
+test('validateFsPath allows files within allowed directories', () => {
   const { rootDir, nestedDir, filePath } = createFixture();
-  t.teardown(() => fs.rmSync(rootDir, { recursive: true, force: true }));
+  try {
+    const resolvedFile = validateFsPath(filePath, {
+      allowedBasePaths: [rootDir],
+      allowFiles: true,
+      allowDirectories: false,
+      mustExist: true,
+    });
 
-  const resolvedFile = validateFsPath(filePath, {
-    allowedBasePaths: [rootDir],
-    allowFiles: true,
-    allowDirectories: false,
-    mustExist: true,
-  });
+    const resolvedDir = validateFsPath(nestedDir, {
+      allowedBasePaths: [rootDir],
+      allowFiles: false,
+      allowDirectories: true,
+      mustExist: true,
+    });
 
-  const resolvedDir = validateFsPath(nestedDir, {
-    allowedBasePaths: [rootDir],
-    allowFiles: false,
-    allowDirectories: true,
-    mustExist: true,
-  });
-
-  assert.strictEqual(resolvedFile, path.resolve(filePath));
-  assert.strictEqual(resolvedDir, path.resolve(nestedDir));
+    assert.strictEqual(resolvedFile, path.resolve(filePath));
+    assert.strictEqual(resolvedDir, path.resolve(nestedDir));
+  } finally {
+    fs.rmSync(rootDir, { recursive: true, force: true });
+  }
 });
 
-test('validateFsPath blocks traversal outside allowed directories', (t) => {
+test('validateFsPath blocks traversal outside allowed directories', () => {
   const { rootDir } = createFixture();
-  t.teardown(() => fs.rmSync(rootDir, { recursive: true, force: true }));
-
-  assert.throws(
-    () =>
-      validateFsPath(path.join(rootDir, '..', 'outside.txt'), {
-        allowedBasePaths: [rootDir],
-        allowFiles: true,
-        allowDirectories: false,
-      }),
-    /not within an allowed directory/i,
-  );
+  try {
+    assert.throws(
+      () =>
+        validateFsPath(path.join(rootDir, '..', 'outside.txt'), {
+          allowedBasePaths: [rootDir],
+          allowFiles: true,
+          allowDirectories: false,
+        }),
+      /not within an allowed directory/i,
+    );
+  } finally {
+    fs.rmSync(rootDir, { recursive: true, force: true });
+  }
 });
 
-test('validateFsPath rejects null bytes', (t) => {
+test('validateFsPath rejects null bytes', () => {
   const { rootDir, filePath } = createFixture();
-  t.teardown(() => fs.rmSync(rootDir, { recursive: true, force: true }));
-
-  assert.throws(
-    () =>
-      validateFsPath(`${filePath}\u0000`, {
-        allowedBasePaths: [rootDir],
-        allowFiles: true,
-        allowDirectories: false,
-      }),
-    /null byte/i,
-  );
+  try {
+    assert.throws(
+      () =>
+        validateFsPath(`${filePath}\u0000`, {
+          allowedBasePaths: [rootDir],
+          allowFiles: true,
+          allowDirectories: false,
+        }),
+      /null byte/i,
+    );
+  } finally {
+    fs.rmSync(rootDir, { recursive: true, force: true });
+  }
 });
 
-test('validateFsPath respects mustExist=false for future files', (t) => {
+test('validateFsPath respects mustExist=false for future files', () => {
   const { rootDir, nestedDir } = createFixture();
-  t.teardown(() => fs.rmSync(rootDir, { recursive: true, force: true }));
+  try {
+    const futureFile = path.join(nestedDir, 'new-file.txt');
+    const futureResolved = validateFsPath(futureFile, {
+      allowedBasePaths: [rootDir],
+      allowFiles: true,
+      allowDirectories: false,
+      mustExist: false,
+    });
 
-  const futureFile = path.join(nestedDir, 'new-file.txt');
-  const futureResolved = validateFsPath(futureFile, {
-    allowedBasePaths: [rootDir],
-    allowFiles: true,
-    allowDirectories: false,
-    mustExist: false,
-  });
-
-  assert.strictEqual(futureResolved, path.resolve(futureFile));
+    assert.strictEqual(futureResolved, path.resolve(futureFile));
+  } finally {
+    fs.rmSync(rootDir, { recursive: true, force: true });
+  }
 });
 
-test('validateFsPath normalises path casing within allowed directories', (t) => {
+test('validateFsPath normalises path casing within allowed directories', () => {
   const { rootDir } = createFixture();
-  t.teardown(() => fs.rmSync(rootDir, { recursive: true, force: true }));
+  try {
+    const caseVariant = path.join(rootDir, 'nested', 'TEST.txt');
+    const resolved = validateFsPath(caseVariant, {
+      allowedBasePaths: [rootDir],
+      allowFiles: true,
+      allowDirectories: false,
+      mustExist: false,
+    });
 
-  const caseVariant = path.join(rootDir, 'nested', 'TEST.txt');
-  const resolved = validateFsPath(caseVariant, {
-    allowedBasePaths: [rootDir],
-    allowFiles: true,
-    allowDirectories: false,
-    mustExist: false,
-  });
-
-  assert.strictEqual(resolved, path.resolve(caseVariant));
+    assert.strictEqual(resolved, path.resolve(caseVariant));
+  } finally {
+    fs.rmSync(rootDir, { recursive: true, force: true });
+  }
 });
 
