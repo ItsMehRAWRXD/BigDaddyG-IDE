@@ -54,6 +54,20 @@ const SettingsImporter = require('./settings/settings-importer');
 const ApiKeyStore = require('./settings/api-key-store');
 const settingsService = require('./settings/settings-service');
 
+// Initialize Prompt Processor (Cursor compatibility)
+let promptProcessor = null;
+try {
+  const PromptProcessor = require('./prompt-processing/prompt-processor');
+  promptProcessor = new PromptProcessor();
+  promptProcessor.initialize().then(() => {
+    console.log('[Main] ✅ Prompt processor initialized');
+  }).catch(err => {
+    console.warn('[Main] ⚠️ Prompt processor init failed:', err.message);
+  });
+} catch (error) {
+  console.log('[Main] ⚠️ Prompt processor not available (optional):', error.message);
+}
+
 // Initialize Agent Core
 let agentCore = null;
 try {
@@ -3432,9 +3446,32 @@ ipcMain.on('window-close', () => {
 // NATIVE OLLAMA NODE.JS HTTP CLIENT
 // ============================================================================
 
+// Process prompt through prompt processor if available
+async function processPromptForAI(prompt, context = {}) {
+  if (promptProcessor) {
+    try {
+      const processed = await promptProcessor.processPrompt(prompt, context);
+      return processed.prompt;
+    } catch (error) {
+      console.warn('[Main] Prompt processing failed, using original:', error.message);
+      return prompt;
+    }
+  }
+  return prompt;
+}
+
 ipcMain.handle('bigdaddyg:generate', async (event, model, prompt, options) => {
   try {
-    const response = await nativeOllamaClient.generate(model, prompt, options || {});
+    // Process prompt through prompt processor
+    const processedPrompt = await processPromptForAI(prompt, {
+      model,
+      agent: options?.agent || 'coder',
+      currentFile: options?.currentFile,
+      features: options?.features,
+      tuning: options?.tuning
+    });
+    
+    const response = await nativeOllamaClient.generate(model, processedPrompt, options || {});
     return { success: true, response };
   } catch (error) {
     console.error('[BigDaddyG] Native generate failed:', error);
@@ -3462,7 +3499,16 @@ ipcMain.handle('bigdaddyg:clear-cache', async () => {
 
 ipcMain.handle('native-ollama-node:generate', async (event, model, prompt, options = {}) => {
   try {
-    const response = await nativeOllamaClient.generate(model, prompt, options);
+    // Process prompt through prompt processor
+    const processedPrompt = await processPromptForAI(prompt, {
+      model,
+      agent: options?.agent || 'coder',
+      currentFile: options?.currentFile,
+      features: options?.features,
+      tuning: options?.tuning
+    });
+    
+    const response = await nativeOllamaClient.generate(model, processedPrompt, options);
     return { success: true, response };
   } catch (error) {
     console.error('[NativeOllama] Generation failed:', error);
