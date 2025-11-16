@@ -119,7 +119,12 @@ contextBridge.exposeInMainWorld('electron', {
   },
 
   models: {
-    discover: () => ipcRenderer.invoke('models:discover')
+    discover: (options) => ipcRenderer.invoke('models:discover', options),
+    load: (name, options) => ipcRenderer.invoke('models:load', name, options),
+    unload: (name) => ipcRenderer.invoke('models:unload', name),
+    info: (name) => ipcRenderer.invoke('models:info', name),
+    stats: () => ipcRenderer.invoke('models:stats'),
+    list: () => ipcRenderer.invoke('ollama:list-models')
   },
   
   settings: {

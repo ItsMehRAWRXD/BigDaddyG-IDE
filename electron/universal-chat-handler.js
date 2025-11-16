@@ -149,10 +149,91 @@ class UniversalChatHandler {
         });
     }
     
+    async getSelectedModel() {
+        // Try to get from model selector
+        const selector = document.getElementById('model-select') || 
+                        document.getElementById('floating-model-selector') ||
+                        document.querySelector('[data-model-selector]');
+        if (selector && selector.value) {
+            const value = selector.value;
+            // Handle formats like "ollama:model-name" or just "model-name"
+            return value.includes(':') ? value.split(':')[1] : value;
+        }
+        
+        // Try model state manager
+        if (window.modelState && window.modelState.getActiveModel()) {
+            const active = window.modelState.getActiveModel();
+            return active.id || active.name;
+        }
+        
+        // Try AI provider manager
+        if (window.aiProviderManager) {
+            const models = window.aiProviderManager.getAvailableModels();
+            const ollamaModels = models.ollama?.combined || models.ollama?.server || [];
+            if (ollamaModels.length > 0) {
+                const model = typeof ollamaModels[0] === 'string' ? ollamaModels[0] : ollamaModels[0].name;
+                return model;
+            }
+        }
+        
+        return null;
+    }
+    
+    async getAvailableModel() {
+        try {
+            // Try electron models discovery
+            if (window.electron?.models?.discover) {
+                const discovery = await window.electron.models.discover();
+                const ollamaModels = discovery.catalog?.ollama?.models || [];
+                if (ollamaModels.length > 0) {
+                    const model = typeof ollamaModels[0] === 'string' ? ollamaModels[0] : ollamaModels[0].name;
+                    return model;
+                }
+            }
+            
+            // Fallback: direct Ollama API call
+            if (window.electron?.models?.list) {
+                const models = await window.electron.models.list();
+                if (models && models.length > 0) {
+                    const model = typeof models[0] === 'string' ? models[0] : models[0].name;
+                    return model;
+                }
+            }
+            
+            // Last resort: try Ollama API directly
+            const response = await fetch('http://localhost:11434/api/tags', { 
+                signal: AbortSignal.timeout(3000) 
+            });
+            if (response.ok) {
+                const data = await response.json();
+                const models = data.models || [];
+                if (models.length > 0) {
+                    return typeof models[0] === 'string' ? models[0] : models[0].name;
+                }
+            }
+        } catch (error) {
+            console.warn('[UniversalChat] Failed to discover models:', error);
+        }
+        
+        return null;
+    }
+    
     async sendToOllama(message, source) {
         try {
             const sanitizedMessage = this.sanitizeInput(message);
             const typingId = this.displayMessage('assistant', '💭 Thinking...', source);
+            
+            // Get model dynamically
+            let model = await this.getSelectedModel();
+            if (!model) {
+                model = await this.getAvailableModel();
+            }
+            if (!model) {
+                // Last resort default
+                model = 'llama3.2';
+            }
+            
+            console.log(`[UniversalChat] Using model: ${model}`);
             
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 30000);
@@ -161,7 +242,7 @@ class UniversalChatHandler {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    model: 'deepseek-coder:33b-instruct-q4_K_M',
+                    model: model,
                     prompt: sanitizedMessage,
                     stream: false
                 }),
@@ -170,7 +251,10 @@ class UniversalChatHandler {
             
             clearTimeout(timeoutId);
             
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`HTTP ${response.status}: ${errorText.substring(0, 100)}`);
+            }
             
             const data = await response.json();
             const answer = this.sanitizeInput(data.response || 'No response from AI');
@@ -180,8 +264,15 @@ class UniversalChatHandler {
             
         } catch (error) {
             console.error('[UniversalChat] ❌ Error sending to Ollama:', error);
-            this.removeMessage(typingId);
-            const errorMsg = error.name === 'AbortError' ? 'Request timeout' : 'Connection failed';
+            if (typeof typingId !== 'undefined') {
+                this.removeMessage(typingId);
+            }
+            let errorMsg = 'Connection failed';
+            if (error.name === 'AbortError') {
+                errorMsg = 'Request timeout';
+            } else if (error.message) {
+                errorMsg = error.message.substring(0, 100);
+            }
             this.displayMessage('error', `Error: ${errorMsg}`, source);
         }
     }

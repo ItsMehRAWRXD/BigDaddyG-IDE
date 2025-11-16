@@ -118,8 +118,11 @@ class FloatingChat {
                             <option value="cheetah-stealth">🔐 Cheetah Stealth (Security)</option>
                             <option value="code-supernova">⭐ Code Supernova (Multi-lang)</option>
                         </optgroup>
-                        <optgroup label="🤖 Neural Network Models (Built-in)" id="neural-models-group">
-                            <option value="bigdaddyg:latest">💎 BigDaddyG Latest (4.7GB, Built-in)</option>
+                        <optgroup label="🤖 Ollama Models" id="ollama-models-group">
+                            <!-- Dynamically populated -->
+                        </optgroup>
+                        <optgroup label="🤖 Neural Network Models (Built-in)" id="neural-models-group" style="display: none;">
+                            <!-- Dynamically populated -->
                         </optgroup>
                     </select>
                     <button onclick="floatingChat.toggleAIMode()" id="ai-mode-toggle" style="
@@ -478,6 +481,9 @@ class FloatingChat {
         this.isOpen = true;
         this.panel.style.display = 'block';
         
+        // Load available models when opening
+        this.loadAvailableModels();
+        
         // Animate in
         setTimeout(() => {
             this.panel.style.opacity = '1';
@@ -568,6 +574,32 @@ class FloatingChat {
         }
     }
     
+    async getEffectiveModel() {
+        // If auto, discover and select best model
+        if (this.selectedModel === 'auto' || !this.selectedModel) {
+            try {
+                if (window.electron?.models?.discover) {
+                    const discovery = await window.electron.models.discover();
+                    const ollamaModels = discovery.catalog?.ollama?.models || [];
+                    if (ollamaModels.length > 0) {
+                        const model = typeof ollamaModels[0] === 'string' ? ollamaModels[0] : ollamaModels[0].name;
+                        return model;
+                    }
+                }
+            } catch (error) {
+                console.warn('[FloatingChat] Auto-discovery failed:', error);
+            }
+            return 'auto';
+        }
+        
+        // Return selected model, handling format like "ollama:model-name"
+        if (this.selectedModel.includes(':')) {
+            return this.selectedModel.split(':')[1];
+        }
+        
+        return this.selectedModel;
+    }
+    
     getModelDisplayName(modelName) {
         const displayNames = {
             'auto': '🤖 Auto (Smart Selection)',
@@ -634,42 +666,121 @@ class FloatingChat {
     
     async loadAvailableModels() {
         try {
-            // Query Orchestra for available neural network models
-            const response = await fetch('http://localhost:11441/api/ai-mode', {
-                signal: AbortSignal.timeout(3000) // 3 second timeout
-            });
+            const selector = document.getElementById('floating-model-selector');
+            if (!selector) return;
             
-            if (!response.ok) {
-                // Endpoint doesn't exist - silently continue with default models
-                return;
+            // Get actual Ollama models from discovery
+            let ollamaModels = [];
+            let bigdaddygModels = [];
+            
+            // Try electron models discovery first
+            if (window.electron?.models?.discover) {
+                try {
+                    const discovery = await window.electron.models.discover();
+                    ollamaModels = discovery.catalog?.ollama?.models || [];
+                    bigdaddygModels = discovery.catalog?.bigdaddyg?.models || [];
+                } catch (error) {
+                    console.warn('[FloatingChat] Discovery failed:', error);
+                }
             }
             
-            const data = await response.json();
+            // Fallback: direct Ollama API
+            if (ollamaModels.length === 0 && window.electron?.models?.list) {
+                try {
+                    const models = await window.electron.models.list();
+                    ollamaModels = Array.isArray(models) ? models : [];
+                } catch (error) {
+                    console.warn('[FloatingChat] List failed:', error);
+                }
+            }
             
-            // Check if neural network models are available
-            if (data.loaded && data.mode === 'neural_network') {
-                const neuralGroup = document.getElementById('neural-models-group');
-                if (neuralGroup) {
-                    neuralGroup.style.display = 'block';
+            // Format model names
+            const formatModelName = (m) => {
+                if (typeof m === 'string') return m;
+                return m.name || m.id || String(m);
+            };
+            
+            // Update Ollama models optgroup
+            let ollamaGroup = selector.querySelector('optgroup[label*="Ollama"]') || 
+                              selector.querySelector('#ollama-models-group');
+            
+            if (!ollamaGroup && ollamaModels.length > 0) {
+                // Create optgroup if it doesn't exist
+                ollamaGroup = document.createElement('optgroup');
+                ollamaGroup.label = '🤖 Ollama Models';
+                ollamaGroup.id = 'ollama-models-group';
+                selector.appendChild(ollamaGroup);
+            }
+            
+            if (ollamaModels.length > 0 && ollamaGroup) {
+                ollamaGroup.style.display = 'block';
+                // Clear existing options except first (Auto)
+                const existingOptions = Array.from(ollamaGroup.querySelectorAll('option'));
+                existingOptions.forEach(opt => {
+                    if (opt.value !== 'auto') opt.remove();
+                });
+                
+                // Add discovered Ollama models
+                ollamaModels.forEach(m => {
+                    const name = formatModelName(m);
+                    const displayName = typeof m === 'object' && m.size 
+                        ? `${name} (${(m.size / 1024 / 1024 / 1024).toFixed(2)}GB)` 
+                        : name;
                     
-                    // Add the loaded model
                     const option = document.createElement('option');
-                    option.value = 'neural_network_active';
-                    option.textContent = `🤖 ${data.model || 'Neural Network'} (${data.mode})`;
-                    neuralGroup.appendChild(option);
+                    option.value = name;
+                    option.textContent = `🤖 ${displayName}`;
+                    ollamaGroup.appendChild(option);
+                });
+                
+                console.log(`[FloatingChat] ✅ Loaded ${ollamaModels.length} Ollama models`);
+            }
+            
+            // Update BigDaddyG models if available
+            if (bigdaddygModels.length > 0) {
+                let bigdaddygGroup = selector.querySelector('optgroup[label*="BigDaddyG"]');
+                if (!bigdaddygGroup) {
+                    bigdaddygGroup = document.createElement('optgroup');
+                    bigdaddygGroup.label = '💎 BigDaddyG Models';
+                    selector.appendChild(bigdaddygGroup);
                 }
                 
-                // Update mode indicator
-                const indicator = document.getElementById('model-mode-indicator');
-                if (indicator) {
-                    indicator.textContent = '🤖 Neural Network';
-                    indicator.style.background = 'rgba(0, 150, 255, 0.1)';
+                bigdaddygModels.forEach(m => {
+                    const name = formatModelName(m);
+                    const option = document.createElement('option');
+                    option.value = name;
+                    option.textContent = `💎 ${name}`;
+                    bigdaddygGroup.appendChild(option);
+                });
+            }
+            
+            // Query Orchestra for neural network status (optional)
+            try {
+                const response = await fetch('http://localhost:11441/api/ai-mode', {
+                    signal: AbortSignal.timeout(2000)
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.loaded && data.mode === 'neural_network') {
+                        const neuralGroup = document.getElementById('neural-models-group');
+                        if (neuralGroup) {
+                            neuralGroup.style.display = 'block';
+                            
+                            const option = document.createElement('option');
+                            option.value = data.model || 'neural_network_active';
+                            option.textContent = `🤖 ${data.model || 'Neural Network'} (Active)`;
+                            neuralGroup.appendChild(option);
+                        }
+                    }
                 }
+            } catch (error) {
+                // Orchestra endpoint optional, ignore errors
             }
             
             console.log('[FloatingChat] ✅ Available models loaded');
         } catch (error) {
-            console.log('[FloatingChat] ℹ️ Could not load neural network models (using pattern matching)');
+            console.warn('[FloatingChat] ⚠️ Error loading models:', error);
         }
     }
     
@@ -853,7 +964,7 @@ class FloatingChat {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     message,
-                    model: this.selectedModel || 'auto',
+                    model: await this.getEffectiveModel(),
                     parameters: params,
                     deep_research: this.deepResearchEnabled,
                     include_thinking: this.deepResearchEnabled,

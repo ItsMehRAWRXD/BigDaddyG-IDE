@@ -38,33 +38,113 @@ class ModelStateManager {
         this.loading = true;
         
         try {
-            // Try Orchestra health endpoint for models
-            if (window.statusManager && window.statusManager.isServiceRunning('orchestra')) {
-                const response = await fetch('http://localhost:11441/health');
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.models) {
-                        this.availableModels = data.models;
-                        if (data.models.length > 0 && !this.activeModel) {
-                            this.setActiveModel(data.models[0].id, data.models[0]);
-                        }
+            // Primary: Use electron models discovery (Ollama + BigDaddyG)
+            if (window.electron?.models?.discover) {
+                try {
+                    const discovery = await window.electron.models.discover();
+                    
+                    // Combine all model sources
+                    const ollamaModels = discovery.catalog?.ollama?.models || [];
+                    const bigdaddygModels = discovery.catalog?.bigdaddyg?.models || [];
+                    const customModels = discovery.catalog?.custom?.models || [];
+                    
+                    this.availableModels = [
+                        ...ollamaModels.map(m => ({
+                            id: typeof m === 'string' ? m : (m.name || m.id),
+                            name: typeof m === 'string' ? m : (m.name || m.id),
+                            type: 'ollama',
+                            source: 'ollama-api',
+                            ...(typeof m === 'object' ? m : {})
+                        })),
+                        ...bigdaddygModels.map(m => ({
+                            id: typeof m === 'string' ? m : (m.name || m.id),
+                            name: typeof m === 'string' ? m : (m.name || m.id),
+                            type: 'bigdaddyg',
+                            source: 'orchestra',
+                            ...(typeof m === 'object' ? m : {})
+                        })),
+                        ...customModels.map(m => ({
+                            id: typeof m === 'string' ? m : (m.name || m.id),
+                            name: typeof m === 'string' ? m : (m.name || m.id),
+                            type: 'custom',
+                            source: 'custom',
+                            ...(typeof m === 'object' ? m : {})
+                        }))
+                    ];
+                    
+                    // Set active model if none selected
+                    if (this.availableModels.length > 0 && !this.activeModel) {
+                        const first = this.availableModels[0];
+                        this.setActiveModel(first.id, first);
                     }
+                    
+                    console.log(`[ModelState] Loaded ${this.availableModels.length} models from discovery`);
+                    this.notifyListeners('models-loaded', this.availableModels);
+                    this.loading = false;
+                    return;
+                } catch (error) {
+                    console.warn('[ModelState] Discovery failed, trying fallbacks:', error);
                 }
             }
             
-            // Fallback: get from model hot-swap registry
+            // Fallback 1: Try Orchestra health endpoint
+            if (this.availableModels.length === 0) {
+                try {
+                    const response = await fetch('http://localhost:11441/health', { 
+                        signal: AbortSignal.timeout(2000) 
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.models && Array.isArray(data.models)) {
+                            this.availableModels = data.models.map(m => ({
+                                id: m.id || m.name,
+                                name: m.name || m.id,
+                                type: 'bigdaddyg',
+                                source: 'orchestra',
+                                ...m
+                            }));
+                        }
+                    }
+                } catch (error) {
+                    console.warn('[ModelState] Orchestra health check failed:', error);
+                }
+            }
+            
+            // Fallback 2: Direct Ollama API
+            if (this.availableModels.length === 0 && window.electron?.models?.list) {
+                try {
+                    const models = await window.electron.models.list();
+                    if (Array.isArray(models) && models.length > 0) {
+                        this.availableModels = models.map(m => ({
+                            id: typeof m === 'string' ? m : (m.name || m.id),
+                            name: typeof m === 'string' ? m : (m.name || m.id),
+                            type: 'ollama',
+                            source: 'ollama-api',
+                            ...(typeof m === 'object' ? m : {})
+                        }));
+                    }
+                } catch (error) {
+                    console.warn('[ModelState] Ollama list failed:', error);
+                }
+            }
+            
+            // Fallback 3: Model hot-swap registry
             if (this.availableModels.length === 0 && window.ModelRegistry) {
                 this.availableModels = Object.entries(window.ModelRegistry)
                     .filter(([key, value]) => value !== null)
                     .map(([key, value]) => ({
                         id: key,
+                        name: value.name || key,
+                        type: 'registry',
+                        source: 'registry',
                         ...value
                     }));
-                    
-                if (this.availableModels.length > 0 && !this.activeModel) {
-                    const first = this.availableModels[0];
-                    this.setActiveModel(first.id, first);
-                }
+            }
+            
+            // Set active model if we have models
+            if (this.availableModels.length > 0 && !this.activeModel) {
+                const first = this.availableModels[0];
+                this.setActiveModel(first.id, first);
             }
             
             console.log(`[ModelState] Loaded ${this.availableModels.length} models`);

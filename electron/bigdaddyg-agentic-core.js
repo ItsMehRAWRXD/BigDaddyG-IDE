@@ -421,19 +421,69 @@ class BigDaddyGCoreBridge extends EventEmitter {
   }
 
   selectBestModel(message, options = {}) {
+    // If model explicitly specified, validate and use it
     if (options.model) {
-      return options.model;
+      const requestedModel = options.model.trim();
+      
+      // Check if model is available
+      const modelInfo = this.availableModels.get(requestedModel);
+      if (modelInfo) {
+        return requestedModel;
+      }
+      
+      // Try case-insensitive match
+      const found = Array.from(this.availableModels.keys()).find(
+        name => name.toLowerCase() === requestedModel.toLowerCase()
+      );
+      if (found) {
+        return found;
+      }
+      
+      // Model not found, but continue to fallback instead of error
+      console.warn(`[BigDaddyG] Requested model "${requestedModel}" not found, using fallback`);
     }
 
-    const preferred = Array.from(this.availableModels.values()).find((model) =>
-      model.name.toLowerCase().startsWith('bigdaddyg'),
+    // Prefer BigDaddyG models if available
+    const bigdaddygModels = Array.from(this.availableModels.values()).filter((model) =>
+      model.name.toLowerCase().startsWith('bigdaddyg') || 
+      model.type === 'bigdaddyg' ||
+      model.family === 'bigdaddyg'
     );
-    if (preferred) {
-      return preferred.name;
+    if (bigdaddygModels.length > 0) {
+      return bigdaddygModels[0].name;
     }
 
+    // Fallback to Ollama models
+    const ollamaModels = Array.from(this.availableModels.values()).filter((model) =>
+      model.type === 'ollama' || 
+      model.source === 'ollama-api' ||
+      model.name.includes(':') // Ollama models often have format "model:tag"
+    );
+    if (ollamaModels.length > 0) {
+      // Prefer loaded models
+      const loaded = ollamaModels.find(m => this.loadedModels.has(m.name));
+      if (loaded) {
+        return loaded.name;
+      }
+      return ollamaModels[0].name;
+    }
+
+    // Fallback to any available model
     const firstAvailable = Array.from(this.availableModels.keys())[0];
-    return firstAvailable || 'bigdaddyg:latest';
+    if (firstAvailable) {
+      return firstAvailable;
+    }
+
+    // Last resort defaults
+    const defaults = ['llama3.2', 'llama3', 'mistral', 'codellama', 'bigdaddyg:latest'];
+    for (const defaultModel of defaults) {
+      if (this.availableModels.has(defaultModel)) {
+        return defaultModel;
+      }
+    }
+
+    // Ultimate fallback
+    return 'llama3.2';
   }
 
   async invokeOrchestraChat(payload) {
