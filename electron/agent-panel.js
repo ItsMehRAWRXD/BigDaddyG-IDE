@@ -453,25 +453,40 @@ async function sendAgentMessage() {
             }
         }
         
-        // Query AI
-        const response = await fetch('http://localhost:11441/api/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                message: fullMessage,
-                model: AgentConfig.currentModel,
-                mode: AgentConfig.currentMode,
-                quality: AgentConfig.quality,
-                webSearch: AgentConfig.webSearch,
-                deepResearch: AgentConfig.deepResearch
-            })
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
+        const providerOptions = {
+            provider: 'ollama',
+            model: AgentConfig.currentModel,
+            mode: AgentConfig.currentMode,
+            quality: AgentConfig.quality,
+            webSearch: AgentConfig.webSearch,
+            deepResearch: AgentConfig.deepResearch
+        };
+
+        let data;
+        if (window.agenticAI && window.agenticAI.ready) {
+            data = await window.agenticAI.chat(fullMessage, providerOptions);
+        } else if (window.aiProviderManager) {
+            data = await window.aiProviderManager.chat(fullMessage, providerOptions);
+        } else {
+            const response = await fetch('http://localhost:11441/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: fullMessage,
+                    model: AgentConfig.currentModel,
+                    mode: AgentConfig.currentMode,
+                    quality: AgentConfig.quality,
+                    webSearch: AgentConfig.webSearch,
+                    deepResearch: AgentConfig.deepResearch
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            data = await response.json();
         }
-        
-        const data = await response.json();
         
         // Remove thinking indicator
         if (thinkingId) {
@@ -479,14 +494,15 @@ async function sendAgentMessage() {
         }
         
         // Add AI response
-        addAgentAIMessage(data.response);
+        const responseText = data?.response || data?.content || data?.reply || '';
+        addAgentAIMessage(responseText);
         
         // Update context
-        AgentConfig.currentContext += estimateTokens(message + data.response);
+        AgentConfig.currentContext += estimateTokens(message + responseText);
         updateAgentContext();
         
         // Auto-insert code if detected
-        const codeBlocks = extractCodeBlocks(data.response);
+        const codeBlocks = extractCodeBlocks(responseText);
         if (codeBlocks.length > 0 && AgentConfig.currentMode === 'Coder') {
             // Offer to insert code
             setTimeout(() => {

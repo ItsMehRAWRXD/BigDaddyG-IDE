@@ -35,7 +35,7 @@ class BigDaddyGCoreBridge extends EventEmitter {
     }
 
     discoverModelPaths() {
-    const candidates = [
+    const windowsCandidates = [
             'D:\\ollama\\models',
             'D:\\OllamaModels',
             'D:\\01-AI-Models\\Ollama\\Models',
@@ -51,9 +51,20 @@ class BigDaddyGCoreBridge extends EventEmitter {
             'D:\\BIGDADDYG-RECOVERY\\D-Drive-Recovery\\ollama',
       'D:\\Backup\\Garre\\.ollama',
         ];
+
+    const unixCandidates = [
+      path.join(process.env.HOME || '', '.ollama'),
+      path.join(process.env.HOME || '', '.ollama', 'models'),
+      '/usr/local/share/ollama',
+      '/usr/share/ollama',
+      '/var/lib/ollama',
+      '/opt/ollama',
+      '/Applications/Ollama.app/Contents/Resources',
+    ];
+    
+    const candidates = [...windowsCandidates, ...unixCandidates];
         
-    return candidates.filter((candidate) => {
-      if (!candidate) return false;
+    return Array.from(new Set(candidates.filter(Boolean))).filter((candidate) => {
             try {
         return fs.existsSync(candidate);
             } catch {
